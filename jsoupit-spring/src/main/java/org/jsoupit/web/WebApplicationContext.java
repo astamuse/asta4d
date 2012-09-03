@@ -1,8 +1,11 @@
 package org.jsoupit.web;
 
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -20,6 +23,10 @@ public class WebApplicationContext extends Context {
     public final static String SCOPE_QUERYPARAM_ALIAS = "param";
 
     public final static String SCOPE_SESSION = "session";
+
+    public final static String SCOPE_HEADER = "header";
+
+    public final static String SCOPE_COOKIE = "cookie";
 
     private final static String SAVEKEY_REQUEST = WebApplicationContext.class.getName() + "##SAVEKEY-REQUEST";
 
@@ -60,6 +67,29 @@ public class WebApplicationContext extends Context {
                 }
             }
             map = dataMap;
+            break;
+        case SCOPE_HEADER: {
+            map = new HashMap<>();
+            HttpServletRequest request = getRequest();
+            Enumeration<String> headerNames = request.getHeaderNames();
+            String name;
+            String value;
+            while (headerNames.hasMoreElements()) {
+                name = headerNames.nextElement();
+                // TODO we should consider the situation of multi header values
+                value = request.getHeader(name);
+                map.put(name, value);
+            }
+        }
+            break;
+        case SCOPE_COOKIE: {
+            map = new HashMap<>();
+            HttpServletRequest request = getRequest();
+            Cookie[] cookies = request.getCookies();
+            for (Cookie cookie : cookies) {
+                map.put(cookie.getName(), cookie);
+            }
+        }
             break;
         case SCOPE_QUERYPARAM_ALIAS:
             map = super.getMapForScope(SCOPE_QUERYPARAM);
