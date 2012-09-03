@@ -30,12 +30,13 @@ public abstract class UrlMappingRuleHolder {
 
     private final static int DEFAULT_PRIORITY = 1000;
 
-    private List<MappingRule> sortedRuleList = null;
+    private volatile List<MappingRule> sortedRuleList = null;
 
     protected List<MappingRule> getSortedRuleList() {
         if (sortedRuleList != null) {
             return sortedRuleList;
         }
+        // TODO it seem that there is a DCL problem
         // Maybe we do not need to set the sortedRuleList as volatile
         // but I am not sure that. Anyway, I do not want a lock on the field
         synchronized (this) {
