@@ -26,21 +26,6 @@ import org.jsoupit.template.transformer.Transformer;
  */
 public class RenderUtil {
 
-    private final static String CurrentRenderingElementKey = RenderUtil.class.getName() + "##-CurrentRenderingElementKey";
-
-    public final static String findAttrFromRenderingElement(String attrName) {
-        Context context = Context.getCurrentThreadContext();
-        Element elem = context.getData(CurrentRenderingElementKey);
-        String value = null;
-        while (value == null && elem != null) {
-            if (elem.hasAttr(attrName)) {
-                value = elem.attr(attrName);
-            }
-            elem = elem.parent();
-        }
-        return value;
-    }
-
     public final static void applySnippets(Element elem) throws SnippetNotResovlableException, SnippetInvokeException {
         List<Element> snippetList = new ArrayList<>(elem.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR +
                 "[" +
@@ -52,12 +37,12 @@ public class RenderUtil {
         Configuration conf = context.getConfiguration();
         SnippetInvoker invoker = conf.getSnippetInvoker();
         for (Element element : snippetList) {
-            context.setData(CurrentRenderingElementKey, element);
+            context.setCurrentRenderingElement(element);
             renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             renderer = invoker.invoke(renderDeclaration);
             apply(element, renderer);
             element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_FINISHED, "true");
-            context.setData(CurrentRenderingElementKey, null);
+            context.setCurrentRenderingElement(null);
         }
         if (snippetList.size() > 0) {
             applySnippets(elem);

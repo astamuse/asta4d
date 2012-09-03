@@ -1,6 +1,5 @@
 package org.jsoupit.web;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,15 +21,11 @@ public class WebApplicationContext extends Context {
 
     public final static String SCOPE_SESSION = "session";
 
-    public final static String SCOPE_GLOBAL = "global";
-
     private final static String SAVEKEY_REQUEST = WebApplicationContext.class.getName() + "##SAVEKEY-REQUEST";
 
     private final static String SAVEKEY_RESPONSE = WebApplicationContext.class.getName() + "##SAVEKEY-RESPONSE";
 
-    private final static String SAVEKEY_DATAMAP = WebApplicationContext.class.getName() + "##SAVEKEY-DATAMAP-";
-
-    private final static ConcurrentHashMap<String, Object> GlobalDataMap = new ConcurrentHashMap<>();
+    private final static String SESSIONKEY_DATAMAP = WebApplicationContext.class.getName() + "##SESSIONKEY_DATAMAP";
 
     public HttpServletRequest getRequest() {
         return this.getData(SAVEKEY_REQUEST);
@@ -48,64 +43,34 @@ public class WebApplicationContext extends Context {
         this.setData(SAVEKEY_RESPONSE, response);
     }
 
-    private Map<String, Object> getDataMapFromContext(String scope) {
-        String storeKey = SAVEKEY_DATAMAP + scope;
-        Map<String, Object> map = getData(storeKey);
-        if (map == null) {
-            map = new HashMap<>();
-            setData(storeKey, map);
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Map<String, Object> acquireMapForScope(String scope) {
+        Map<String, Object> map = null;
+        switch (scope) {
+        case SCOPE_SESSION:
+            HttpSession session = getRequest().getSession(true);
+            Map<String, Object> dataMap = (Map<String, Object>) session.getAttribute(SESSIONKEY_DATAMAP);
+            if (dataMap == null) {
+                // TODO I think there would be a visibility problem across
+                // threads, so we must fix it at sometime.
+                synchronized (SESSIONKEY_DATAMAP) {
+                    dataMap = new ConcurrentHashMap<>();
+                    session.setAttribute(SESSIONKEY_DATAMAP, dataMap);
+                }
+            }
+            map = dataMap;
+            break;
+        case SCOPE_QUERYPARAM_ALIAS:
+            map = super.getMapForScope(SCOPE_QUERYPARAM);
+            break;
+        case SCOPE_REQUEST:
+        case SCOPE_QUERYPARAM:
+        case SCOPE_PATHVAR:
+        default:
+            map = super.acquireMapForScope(scope);
         }
         return map;
-    }
-
-    public void setData(String scope, String key, Object obj) {
-        switch (scope) {
-        case SCOPE_REQUEST:
-            setData(key, obj);
-            break;
-        case SCOPE_PATHVAR:
-            getDataMapFromContext(SCOPE_PATHVAR).put(key, obj);
-            break;
-        case SCOPE_QUERYPARAM_ALIAS:
-        case SCOPE_QUERYPARAM:
-            getDataMapFromContext(SCOPE_QUERYPARAM).put(key, obj);
-            break;
-        case SCOPE_SESSION:
-            HttpSession session = getRequest().getSession(true);
-            session.setAttribute(key, obj);
-            break;
-        case SCOPE_GLOBAL:
-            GlobalDataMap.put(key, obj);
-            break;
-        default:
-            setData(key, obj);
-        }
-    }
-
-    public Object getData(String scope, String key) {
-        Object data = null;
-        switch (scope) {
-        case SCOPE_REQUEST:
-            data = getData(key);
-            break;
-        case SCOPE_PATHVAR:
-            data = getDataMapFromContext(SCOPE_PATHVAR).get(key);
-            break;
-        case SCOPE_QUERYPARAM_ALIAS:
-        case SCOPE_QUERYPARAM:
-            data = getDataMapFromContext(SCOPE_QUERYPARAM).get(key);
-            break;
-        case SCOPE_SESSION:
-            HttpSession session = getRequest().getSession(true);
-            data = session.getAttribute(key);
-            break;
-        case SCOPE_GLOBAL:
-            data = GlobalDataMap.get(key);
-            break;
-        default:
-            data = getData(key);
-        }
-        return data;
     }
 
 }

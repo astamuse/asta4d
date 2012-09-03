@@ -2,16 +2,29 @@ package org.jsoupit.template;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.jsoup.nodes.Element;
 
 public class Context {
 
+    public final static String SCOPE_GLOBAL = "global";
+
+    public final static String SCOPE_DEFAULT = "default";
+
+    public final static String SCOPE_ATTR = "attr";
+
     private final static ThreadLocal<Context> instanceHolder = new ThreadLocal<>();
+
+    private final static Map<String, Object> globalMap = new ConcurrentHashMap<>();
+
+    private Element currentRenderingElement = null;
 
     private Configuration configuration;
 
     // this map is not thought to be used in multi threads since the instance of
     // Context is thread single.
-    private Map<String, Object> dataMap = new HashMap<>();
+    private Map<String, Map<String, Object>> scopeMap = new HashMap<>();
 
     // private List
 
@@ -31,28 +44,81 @@ public class Context {
         this.configuration = configuration;
     }
 
-    /*
-     * private String buildKeyForClass(Class<?> cls) { // magic numbers to avoid
-     * conflicts return "#14345345#-class-" + cls.getName() + "#234354352#"; }
-     * 
-     * public void setData(Class<?> cls, Object data) {
-     * setData(buildKeyForClass(cls), data); }
-     * 
-     * public <T> T getData(Class<T> cls) { return
-     * getData(buildKeyForClass(cls)); }
-     */
+    public void setCurrentRenderingElement(Element elem) {
+        currentRenderingElement = elem;
+    }
+
+    public Element getCurrentRenderingElement() {
+        return currentRenderingElement;
+    }
 
     public void setData(String key, Object data) {
+        setData(SCOPE_DEFAULT, data);
+    }
+
+    public void setData(String scope, String key, Object data) {
+        Map<String, Object> dataMap = getMapForScope(scope);
         dataMap.put(key, data);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T getData(String key) {
-        return (T) dataMap.get(key);
+        return getData(SCOPE_DEFAULT, key);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getData(String scope, String key) {
+        if (scope.equals(SCOPE_ATTR)) {
+            return (T) retrieveElementAttr(key);
+        } else {
+            Map<String, Object> dataMap = getMapForScope(scope);
+            return (T) dataMap.get(key);
+        }
+    }
+
+    private String retrieveElementAttr(String key) {
+        Element elem = currentRenderingElement;
+        String value = null;
+        while (value == null && elem != null) {
+            if (elem.hasAttr(key)) {
+                value = elem.attr(key);
+            }
+            elem = elem.parent();
+        }
+        return value;
+    }
+
+    protected final Map<String, Object> getMapForScope(String scope) {
+        Map<String, Object> dataMap = scopeMap.get(scope);
+        if (dataMap == null) {
+            dataMap = acquireMapForScope(scope);
+            if (dataMap == null) {
+                dataMap = new HashMap<>();
+            }
+            scopeMap.put(scope, dataMap);
+        }
+        return dataMap;
+    }
+
+    /**
+     * sub class can override this method for custom scope map instance
+     * 
+     * @param scope
+     * @return
+     */
+    protected Map<String, Object> acquireMapForScope(String scope) {
+        Map<String, Object> map = null;
+        switch (scope) {
+        case SCOPE_GLOBAL:
+            map = globalMap;
+            break;
+        default:
+            map = new HashMap<>();
+        }
+        return map;
     }
 
     public void clearSavedData() {
-        dataMap.clear();
+        scopeMap.clear();
     }
 
 }
