@@ -140,11 +140,8 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
     }
 
     protected Object getData(String scope, String name) {
-        if (scope == null || !scope.equals("context")) {
-            return null;
-        }
         Context context = Context.getCurrentThreadContext();
-        return context.getData(name);
+        return context.getData(scope, name);
     }
 
     private List<Object> getCachedSnippetInstanceList() {
@@ -158,7 +155,9 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
     }
 
     private AutoWireTarget getTarget(SnippetInfo snippetInfo, Object instance) {
-        boolean cacheEnable = Context.getCurrentThreadContext().getConfiguration().isCacheEnable();
+        boolean cacheEnable = Context.getCurrentThreadContext()
+                .getConfiguration()
+                .isCacheEnable();
         AutoWireTarget target = null;
         if (cacheEnable) {
             target = TargetCache.get(snippetInfo);
@@ -188,7 +187,8 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
 
                 boolean isGet = false;
                 boolean isSet = false;
-                if (cd.value().isEmpty()) {
+                if (cd.value()
+                        .isEmpty()) {
                     String name = method.getName();
                     if (name.startsWith("set")) {
                         name = name.substring(3);
@@ -238,7 +238,8 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
         String objCls = Object.class.getName();
         Field[] flds;
         FieldInfo fi;
-        while (!cls.getName().equals(objCls)) {
+        while (!cls.getName()
+                .equals(objCls)) {
             flds = cls.getDeclaredFields();
             for (Field field : flds) {
                 if (field.isAnnotationPresent(ContextData.class)) {
@@ -246,7 +247,8 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
                     fi.field = field;
                     fi.type = field.getType();
                     cd = field.getAnnotation(ContextData.class);
-                    if (cd.value().isEmpty()) {
+                    if (cd.value()
+                            .isEmpty()) {
                         fi.name = field.getName();
                     } else {
                         fi.name = cd.value();
@@ -264,7 +266,8 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
 
     protected ContextDataConvertor getConvertor(Class<?> srcType, Class<?> targetType) {
         for (ContextDataConvertor convertor : convertorList) {
-            if (convertor.getSourceType().isAssignableFrom(srcType) && targetType.isAssignableFrom(convertor.getTargetType())) {
+            if (convertor.getSourceType()
+                    .isAssignableFrom(srcType) && targetType.isAssignableFrom(convertor.getTargetType())) {
                 return convertor;
             }
         }
