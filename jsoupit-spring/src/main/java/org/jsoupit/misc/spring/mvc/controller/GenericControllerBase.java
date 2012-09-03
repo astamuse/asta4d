@@ -1,7 +1,9 @@
 package org.jsoupit.misc.spring.mvc.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,16 +38,16 @@ public abstract class GenericControllerBase extends UrlMappingRuleHolder {
     }
 
     @RequestMapping(value = "/**")
-    public String doService(Model model, HttpServletRequest request) throws IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException {
+    public String doService(Model model, HttpServletRequest request) throws Exception {
         ExtractedUriInfo info = extractURI(request);
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         processPathVar(context, info.params, info.rule.getPathVarRewritter());
         return invokeController(context, info.rule.getController());
     }
 
-    private ExtractedUriInfo extractURI(HttpServletRequest request) {
-        String uri = request.getRequestURI();
+    private ExtractedUriInfo extractURI(HttpServletRequest request) throws UnsupportedEncodingException {
+        // TODO maybe we need to judge the encoding via header info?
+        String uri = URLDecoder.decode(request.getRequestURI(), "UTF-8");
         String contextPath = request.getContextPath();
         uri = uri.substring(contextPath.length());
 
