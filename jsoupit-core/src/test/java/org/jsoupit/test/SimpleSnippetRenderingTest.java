@@ -5,9 +5,8 @@ import java.io.IOException;
 import org.jsoupit.template.render.Renderer;
 import org.jsoupit.test.infra.BaseTest;
 import org.jsoupit.test.infra.SimpleCase;
-import org.junit.Test;
 
-public class SimpleSnippetRendering extends BaseTest {
+public class SimpleSnippetRenderingTest extends BaseTest {
 
     public static class TagEmbed {
         public Renderer render() {
@@ -15,12 +14,10 @@ public class SimpleSnippetRendering extends BaseTest {
         }
     }
 
-    @Test
     public void testTagEmbed() throws IOException {
         new SimpleCase("SimpleSnippet_TagEmbed.html");
     }
 
-    @Test
     public void testSnippetTag() throws IOException {
         new SimpleCase("SimpleSnippet_SnippetTag.html");
     }

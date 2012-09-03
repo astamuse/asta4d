@@ -3,9 +3,11 @@ package org.jsoupit.test.infra;
 import org.jsoupit.template.ClasspathTemplateResolver;
 import org.jsoupit.template.Configuration;
 import org.jsoupit.template.Context;
-import org.junit.After;
-import org.junit.Before;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
+@Test
 public class BaseTest {
     private final static Configuration configuration = new Configuration() {
         {
@@ -13,8 +15,9 @@ public class BaseTest {
         }
     };
 
-    @Before
+    @BeforeMethod
     public void initContext() {
+        System.out.println("initContext");
         Context context = Context.getCurrentThreadContext();
         if (context == null) {
             context = new Context();
@@ -24,9 +27,11 @@ public class BaseTest {
         context.clearSavedData();
     }
 
-    @After
+    @AfterMethod
     public void clearContext() {
-        Context.getCurrentThreadContext().clearSavedData();
+        System.out.println("clearContext");
+        Context.getCurrentThreadContext()
+                .clearSavedData();
     }
 
 }
