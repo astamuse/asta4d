@@ -1,0 +1,1 @@
+mvn %1 test -DskipTests=true -Pjetty-run
