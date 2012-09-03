@@ -132,7 +132,7 @@ public class RenderUtil {
         List<Node> childrenNodes = new ArrayList<>(elem.childNodes());
         for (Node node : childrenNodes) {
             node.remove();
-            elem.after(node);
+            elem.before(node);
         }
     }
 }
