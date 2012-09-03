@@ -17,7 +17,6 @@ public class BaseTest {
 
     @BeforeMethod
     public void initContext() {
-        System.out.println("initContext");
         Context context = Context.getCurrentThreadContext();
         if (context == null) {
             context = new Context();
@@ -29,7 +28,6 @@ public class BaseTest {
 
     @AfterMethod
     public void clearContext() {
-        System.out.println("clearContext");
         Context.getCurrentThreadContext()
                 .clearSavedData();
     }
