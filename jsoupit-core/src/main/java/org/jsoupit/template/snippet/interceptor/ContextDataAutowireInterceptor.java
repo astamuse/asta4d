@@ -10,20 +10,8 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
 
     private final static String InstanceCacheKey = ContextDataAutowireInterceptor.class + "##InstanceCacheKey##";
 
-    // TODO reverse wire to Context
     @Override
     public void beforeSnippet(SnippetExecutionHolder execution) throws SnippetInvokeException {
-        // instance.getClass().get
-        /*
-        List<Object> cachedInstanceList = getCachedSnippetInstanceList();
-        boolean found = false;
-        for (Object object : cachedInstanceList) {
-            found = object == instance;
-            if (found)
-                break;
-        }
-        */
-        // TODO reverse
 
         try {
             Context context = Context.getCurrentThreadContext();
@@ -31,8 +19,11 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
             // it means that we need an instance injection and a reverse
             // injection
             if (lastSnippetInstance != execution.getInstance()) {
-                // TODO need a reverse injection
+                if (lastSnippetInstance != null) {
+                    InjectUtil.setContextDataFromInstance(lastSnippetInstance);
+                }
                 InjectUtil.injectToInstance(execution.getInstance());
+                context.setData(InstanceCacheKey, execution.getInstance());
             }
 
             Object[] params = InjectUtil.getMethodInjectParams(execution.getMethod());

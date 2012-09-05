@@ -63,7 +63,8 @@ public class InjectUtil {
     }
 
     private static class InstanceWireTarget {
-        List<FieldInfo> fieldList = new ArrayList<>();
+        List<FieldInfo> setFieldList = new ArrayList<>();
+        List<FieldInfo> getFieldList = new ArrayList<>();
         List<MethodInfo> setMethodList = new ArrayList<>();
         List<MethodInfo> getMethodList = new ArrayList<>();
     }
@@ -76,11 +77,12 @@ public class InjectUtil {
 
     public final static void injectToInstance(Object instance) throws DataOperationException {
         try {
-            InstanceWireTarget target = getInstanceTarget(instance);
+
             Context context = Context.getCurrentThreadContext();
+            InstanceWireTarget target = getInstanceTarget(instance);
             ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
             Object value;
-            for (FieldInfo fi : target.fieldList) {
+            for (FieldInfo fi : target.setFieldList) {
                 value = dataFinder.findDataInContext(context, fi.scope, fi.name, fi.type);
                 FieldUtils.writeField(fi.field, instance, value, true);
             }
@@ -93,7 +95,33 @@ public class InjectUtil {
                 mi.method.invoke(instance, value);
             }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new DataOperationException("Exception when inject value to instance of " + instance.getClass().toString());
+            throw new DataOperationException("Exception when inject value to instance of " + instance.getClass().toString(), e);
+        }
+    }
+
+    /**
+     * at present, we only reversely inject values which marked as request scope
+     * 
+     * @param instance
+     * @throws DataOperationException
+     */
+    public final static void setContextDataFromInstance(Object instance) throws DataOperationException {
+        try {
+            Context context = Context.getCurrentThreadContext();
+            InstanceWireTarget target = getInstanceTarget(instance);
+            Object value;
+            for (FieldInfo fi : target.setFieldList) {
+                value = FieldUtils.readField(fi.field, instance, true);
+                context.setData(fi.scope, fi.name, value);
+            }
+
+            for (MethodInfo mi : target.setMethodList) {
+                value = mi.method.invoke(instance);
+                context.setData(mi.scope, mi.name, value);
+            }
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            String msg = String.format("Exception when inject value from instance of [%s] to Context.", instance.getClass().toString());
+            throw new DataOperationException(msg, e);
         }
     }
 
@@ -114,6 +142,8 @@ public class InjectUtil {
     }
 
     private final static InstanceWireTarget createInstanceTarget(Object instance) {
+        List<String> reverseTargetScopes = Context.getCurrentThreadContext().getConfiguration().getReverseInjectableScopes();
+
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();
         ContextData cd;
@@ -154,18 +184,28 @@ public class InjectUtil {
 
                 } else {
                     mi.name = cd.value();
-                    if (method.getParameterTypes().length == 0) {
+                    // TODO throw a exception if name is empty
+
+                    int typeLength = method.getParameterTypes().length;
+                    if (typeLength == 0) {
                         isGet = true;
-                    } else {
+                    } else if (typeLength == 1) {
                         isSet = true;
+                    } else {
+                        // TODO what we should do?
                     }
                 }
                 mi.scope = cd.scope();
 
                 if (isGet) {
-                    mi.type = method.getReturnType();
-                    mi.fixForPrimitiveType();
-                    target.getMethodList.add(mi);
+                    // only if the reverse value is explicitly set to true and
+                    // the scope is contained in the allowing reverse injection
+                    // list
+                    if (cd.reverse() && reverseTargetScopes.contains(mi.scope)) {
+                        mi.type = method.getReturnType();
+                        mi.fixForPrimitiveType();
+                        target.getMethodList.add(mi);
+                    }
                 }
 
                 if (isSet) {
@@ -195,7 +235,12 @@ public class InjectUtil {
                     }
                     fi.scope = cd.scope();
                     fi.fixForPrimitiveType();
-                    target.fieldList.add(fi);
+                    target.setFieldList.add(fi);
+
+                    if (cd.reverse() && reverseTargetScopes.contains(fi.scope)) {
+                        target.getFieldList.add(fi);
+                    }
+
                 }
             }
             cls = cls.getSuperclass();

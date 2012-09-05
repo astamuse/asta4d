@@ -13,6 +13,6 @@ public @interface ContextData {
 
     String scope() default "";
 
-    boolean reflect() default false;
+    boolean reverse() default false;
 
 }

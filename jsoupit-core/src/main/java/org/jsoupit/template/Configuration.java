@@ -1,5 +1,8 @@
 package org.jsoupit.template;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.jsoupit.template.data.ContextDataFinder;
 import org.jsoupit.template.data.DefaultContextDataFinder;
 import org.jsoupit.template.snippet.DefaultSnippetInvoker;
@@ -20,6 +23,11 @@ public class Configuration {
     private SnippetExtractor snippetExtractor = new DefaultSnippetExtractor();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
+
+    /**
+     * at present, this item is used as a global setting
+     */
+    private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
     private boolean cacheEnable = true;
 
@@ -61,6 +69,14 @@ public class Configuration {
 
     public void setContextDataFinder(ContextDataFinder contextDataFinder) {
         this.contextDataFinder = contextDataFinder;
+    }
+
+    public List<String> getReverseInjectableScopes() {
+        return reverseInjectableScopes;
+    }
+
+    public void setReverseInjectableScopes(List<String> reverseInjectableScopes) {
+        this.reverseInjectableScopes = reverseInjectableScopes;
     }
 
     public boolean isCacheEnable() {
