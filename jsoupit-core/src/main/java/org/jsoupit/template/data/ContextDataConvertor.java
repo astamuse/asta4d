@@ -1,4 +1,4 @@
-package org.jsoupit.template.snippet.interceptor;
+package org.jsoupit.template.data;
 
 public interface ContextDataConvertor {
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoupit.template.snippet.DefaultSnippetInvoker;
+import org.jsoupit.template.snippet.interceptor.ContextDataAutowireInterceptor;
 import org.jsoupit.template.snippet.interceptor.SnippetInterceptor;
 
 public class WebApplicationSnippetInvoker extends DefaultSnippetInvoker {
@@ -16,7 +17,7 @@ public class WebApplicationSnippetInvoker extends DefaultSnippetInvoker {
     public void setSnippetInterceptorList(List<SnippetInterceptor> snippetInterceptorList) {
         List<SnippetInterceptor> list = new ArrayList<>(snippetInterceptorList);
         // TODO iterate to confirm if there is already an autowire interceptor
-        list.add(new WebApplicationAutowireInterceptor());
+        list.add(new ContextDataAutowireInterceptor());
         super.setSnippetInterceptorList(list);
     }
 

@@ -1,5 +1,7 @@
 package org.jsoupit.template;
 
+import org.jsoupit.template.data.ContextDataFinder;
+import org.jsoupit.template.data.DefaultContextDataFinder;
 import org.jsoupit.template.snippet.DefaultSnippetInvoker;
 import org.jsoupit.template.snippet.SnippetInvoker;
 import org.jsoupit.template.snippet.extract.DefaultSnippetExtractor;
@@ -16,6 +18,8 @@ public class Configuration {
     private SnippetResolver snippetResolver = new DefaultSnippetResolver();
 
     private SnippetExtractor snippetExtractor = new DefaultSnippetExtractor();
+
+    private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
     private boolean cacheEnable = true;
 
@@ -49,6 +53,14 @@ public class Configuration {
 
     public void setSnippetExtractor(SnippetExtractor snippetExtractor) {
         this.snippetExtractor = snippetExtractor;
+    }
+
+    public ContextDataFinder getContextDataFinder() {
+        return contextDataFinder;
+    }
+
+    public void setContextDataFinder(ContextDataFinder contextDataFinder) {
+        this.contextDataFinder = contextDataFinder;
     }
 
     public boolean isCacheEnable() {

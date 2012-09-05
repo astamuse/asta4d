@@ -1,15 +1,23 @@
 package org.jsoupit.template.snippet;
 
-public class SnippetInfo {
+public class SnippetDeclarationInfo {
 
     private String snippetName;
 
     private String snippetHandler;
 
-    public SnippetInfo(String snippetName, String snippetHandler) {
+    private int _hashcode;
+
+    public SnippetDeclarationInfo(String snippetName, String snippetHandler) {
         super();
         this.snippetName = snippetName;
         this.snippetHandler = snippetHandler;
+
+        final int prime = 31;
+        _hashcode = 1;
+        _hashcode = prime * _hashcode + ((snippetHandler == null) ? 0 : snippetHandler.hashCode());
+        _hashcode = prime * _hashcode + ((snippetName == null) ? 0 : snippetName.hashCode());
+
     }
 
     public String getSnippetName() {
@@ -22,12 +30,7 @@ public class SnippetInfo {
 
     @Override
     public int hashCode() {
-        // TODO cal it in constructor
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((snippetHandler == null) ? 0 : snippetHandler.hashCode());
-        result = prime * result + ((snippetName == null) ? 0 : snippetName.hashCode());
-        return result;
+        return _hashcode;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class SnippetInfo {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        SnippetInfo other = (SnippetInfo) obj;
+        SnippetDeclarationInfo other = (SnippetDeclarationInfo) obj;
         if (snippetHandler == null) {
             if (other.snippetHandler != null)
                 return false;

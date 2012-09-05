@@ -1,7 +1,7 @@
 package org.jsoupit.template.snippet.extract;
 
-import org.jsoupit.template.snippet.SnippetInfo;
+import org.jsoupit.template.snippet.SnippetDeclarationInfo;
 
 public interface SnippetExtractor {
-    public SnippetInfo extract(String renderDeclaration);
+    public SnippetDeclarationInfo extract(String renderDeclaration);
 }

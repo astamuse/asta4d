@@ -53,7 +53,7 @@ public class Context {
     }
 
     public void setData(String key, Object data) {
-        setData(SCOPE_DEFAULT, data);
+        setData(SCOPE_DEFAULT, key, data);
     }
 
     public void setData(String scope, String key, Object data) {

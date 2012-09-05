@@ -95,6 +95,8 @@ public class WebApplicationContext extends Context {
             map = super.getMapForScope(SCOPE_QUERYPARAM);
             break;
         case SCOPE_REQUEST:
+            map = super.getMapForScope(SCOPE_DEFAULT);
+            break;
         case SCOPE_QUERYPARAM:
         case SCOPE_PATHVAR:
         default:

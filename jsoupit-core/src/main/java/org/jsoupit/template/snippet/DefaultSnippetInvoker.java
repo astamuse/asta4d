@@ -14,7 +14,7 @@ import org.jsoupit.template.snippet.resolve.SnippetResolver;
 
 public class DefaultSnippetInvoker implements SnippetInvoker {
 
-    private final static ConcurrentHashMap<SnippetInfo, Method> methodCache = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<SnippetDeclarationInfo, Method> methodCache = new ConcurrentHashMap<>();
 
     private List<SnippetInterceptor> snippetInterceptorList = null;
 
@@ -28,7 +28,7 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         Configuration conf = Context.getCurrentThreadContext().getConfiguration();
 
         SnippetExtractor extractor = conf.getSnippetExtractor();
-        SnippetInfo info = extractor.extract(renderDeclaration);
+        SnippetDeclarationInfo info = extractor.extract(renderDeclaration);
 
         SnippetResolver resolver = conf.getSnippetResolver();
         Object instance = resolver.findSnippet(info.getSnippetName());
@@ -36,31 +36,43 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         Method method = getSnippetMethod(info, instance);
 
         try {
-            InterceptorResult iresult = beforeSnippet(info, instance, method);
-            if (iresult.renderer == null) {
-                iresult.renderer = (Renderer) method.invoke(instance);
+
+            SnippetExecutionHolder execution = new SnippetExecutionHolder(info, instance, method, null, null);
+
+            SnippetInterceptor lastInterceptor = beforeSnippet(execution);
+            if (execution.getExecuteResult() == null) {
+                Object[] params = execution.getParams();
+                if (params == null) {
+                    execution.setExecuteResult((Renderer) method.invoke(execution.getInstance()));
+                } else {
+                    execution.setExecuteResult((Renderer) method.invoke(execution.getInstance(), params));
+                }
+
             }
-            afterSnippet(iresult, info, instance, method);
-            return iresult.renderer;
+            afterSnippet(lastInterceptor, info, execution);
+            return execution.getExecuteResult();
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new SnippetNotResovlableException(e);
+            throw new SnippetInvokeException(e);
         }
     }
 
-    protected InterceptorResult beforeSnippet(SnippetInfo info, Object instance, Method method) throws SnippetInvokeException {
-        InterceptorResult iresult = new InterceptorResult();
+    protected SnippetInterceptor beforeSnippet(SnippetExecutionHolder execution) throws SnippetInvokeException {
+        SnippetInterceptor lastInterceptor = null;
         if (snippetInterceptorList == null)
-            return iresult;
+            return lastInterceptor;
         for (SnippetInterceptor interceptor : snippetInterceptorList) {
-            iresult.renderer = interceptor.beforeSnippet(info, instance, method);
-            iresult.finalInterceptor = interceptor;
-            if (iresult.renderer != null)
+            // TODO how about a exception in before snippet?
+            interceptor.beforeSnippet(execution);
+            lastInterceptor = interceptor;
+            if (execution.getExecuteResult() != null) {
                 break;
+            }
         }
-        return iresult;
+        return lastInterceptor;
     }
 
-    protected void afterSnippet(InterceptorResult iresult, SnippetInfo info, Object instance, Method method) throws SnippetInvokeException {
+    protected void afterSnippet(SnippetInterceptor lastInterceptor, SnippetDeclarationInfo info, SnippetExecutionHolder execution)
+            throws SnippetInvokeException {
         if (snippetInterceptorList == null)
             return;
         SnippetInterceptor interceptor = null;
@@ -68,16 +80,16 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         for (int i = snippetInterceptorList.size() - 1; i >= 0; i--) {
             interceptor = snippetInterceptorList.get(i);
             if (!foundStoppedPoint) {
-                foundStoppedPoint = interceptor == iresult.finalInterceptor;
+                foundStoppedPoint = interceptor == lastInterceptor;
             }
             if (foundStoppedPoint) {
-                interceptor.afterSnippet(info, instance, method);
+                interceptor.afterSnippet(execution);
             }
 
         }
     }
 
-    protected Method getSnippetMethod(SnippetInfo info, Object snippetInstance) throws SnippetNotResovlableException {
+    protected Method getSnippetMethod(SnippetDeclarationInfo info, Object snippetInstance) throws SnippetNotResovlableException {
         Method m = methodCache.get(info);
         if (m == null) {
             m = findSnippetMethod(snippetInstance, info.getSnippetHandler());
@@ -94,9 +106,7 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         Method[] methodList = snippetInstance.getClass().getMethods();
         Class<?> rendererCls = Renderer.class;
         for (Method method : methodList) {
-            if (method.getName().equals(methodName) &&
-                    method.getParameterTypes().length == 0 &&
-                    rendererCls.isAssignableFrom(method.getReturnType())) {
+            if (method.getName().equals(methodName) && rendererCls.isAssignableFrom(method.getReturnType())) {
                 return method;
             }
         }
