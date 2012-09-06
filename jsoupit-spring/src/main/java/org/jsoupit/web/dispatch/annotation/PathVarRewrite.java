@@ -1,4 +1,4 @@
-package org.jsoupit.misc.spring.mvc.controller.annotation;
+package org.jsoupit.web.dispatch.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface SubController {
-
+public @interface PathVarRewrite {
 }

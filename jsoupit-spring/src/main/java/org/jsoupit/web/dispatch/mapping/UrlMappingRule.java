@@ -1,8 +1,8 @@
-package org.jsoupit.misc.spring.mvc.controller;
+package org.jsoupit.web.dispatch.mapping;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 
-public class MappingRule {
+public class UrlMappingRule {
 
     private int seq;
 
@@ -14,16 +14,16 @@ public class MappingRule {
 
     private Object pathVarRewritter;
 
-    private Object controller;
+    private Object handler;
 
-    public MappingRule(int seq, RequestMethod method, String sourceUrl, int priority, Object pathVarRewritter, Object controller) {
+    public UrlMappingRule(int seq, RequestMethod method, String sourceUrl, int priority, Object pathVarRewritter, Object handler) {
         super();
         this.seq = seq;
         this.method = method;
         this.sourceUrl = sourceUrl;
         this.priority = priority;
         this.pathVarRewritter = pathVarRewritter;
-        this.controller = controller;
+        this.handler = handler;
     }
 
     public int getSeq() {
@@ -66,12 +66,12 @@ public class MappingRule {
         this.pathVarRewritter = pathVarRewritter;
     }
 
-    public Object getController() {
-        return controller;
+    public Object getHandler() {
+        return handler;
     }
 
-    public void setController(Object controller) {
-        this.controller = controller;
+    public void setHandler(Object controller) {
+        this.handler = handler;
     }
 
 }

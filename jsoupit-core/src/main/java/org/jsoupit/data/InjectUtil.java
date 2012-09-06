@@ -250,6 +250,12 @@ public class InjectUtil {
     }
 
     public final static Object[] getMethodInjectParams(Method method) {
+        Context context = Context.getCurrentThreadContext();
+        ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
+        return getMethodInjectParams(method, dataFinder);
+    }
+
+    public final static Object[] getMethodInjectParams(Method method, ContextDataFinder dataFinder) {
         List<TargetInfo> targetList = getMethodTarget(method);
         Object[] params = new Object[targetList.size()];
         if (params.length == 0) {
@@ -257,7 +263,6 @@ public class InjectUtil {
         }
 
         Context context = Context.getCurrentThreadContext();
-        ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
 
         TargetInfo target;
 
