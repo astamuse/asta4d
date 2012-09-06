@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.jsoupit.template.Page;
+import org.jsoupit.Page;
 
 public class WebPage extends Page {
 

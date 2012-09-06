@@ -3,7 +3,7 @@ package org.jsoupit.misc.spring.mvc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jsoupit.template.Context;
+import org.jsoupit.Context;
 import org.jsoupit.web.WebApplicationContext;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

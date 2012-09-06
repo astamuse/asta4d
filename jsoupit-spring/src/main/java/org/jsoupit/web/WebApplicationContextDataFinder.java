@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.jsoupit.template.Context;
-import org.jsoupit.template.data.DefaultContextDataFinder;
+import org.jsoupit.Context;
+import org.jsoupit.data.DefaultContextDataFinder;
 
 public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
 

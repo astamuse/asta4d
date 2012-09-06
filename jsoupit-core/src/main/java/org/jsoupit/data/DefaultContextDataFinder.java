@@ -1,11 +1,11 @@
-package org.jsoupit.template.data;
+package org.jsoupit.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoupit.template.Context;
-import org.jsoupit.template.data.convertor.String2Int;
+import org.jsoupit.Context;
+import org.jsoupit.data.convertor.String2Int;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
 

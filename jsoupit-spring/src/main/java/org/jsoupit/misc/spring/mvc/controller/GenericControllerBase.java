@@ -12,9 +12,9 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jsoupit.Context;
 import org.jsoupit.misc.spring.mvc.controller.annotation.PathVarRewrite;
 import org.jsoupit.misc.spring.mvc.controller.annotation.SubController;
-import org.jsoupit.template.Context;
 import org.jsoupit.web.WebApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,4 +1,4 @@
-package org.jsoupit.template.data;
+package org.jsoupit.data;
 
 public class DataOperationException extends Exception {
 

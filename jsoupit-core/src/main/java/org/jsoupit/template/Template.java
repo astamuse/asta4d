@@ -11,6 +11,8 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoupit.Configuration;
+import org.jsoupit.Context;
 import org.jsoupit.template.extnode.ExtNodeConstants;
 import org.jsoupit.template.extnode.GroupNode;
 import org.jsoupit.template.extnode.SnippetNode;

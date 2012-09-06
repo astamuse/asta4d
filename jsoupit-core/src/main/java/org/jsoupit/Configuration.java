@@ -1,10 +1,12 @@
-package org.jsoupit.template;
+package org.jsoupit;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.jsoupit.template.data.ContextDataFinder;
-import org.jsoupit.template.data.DefaultContextDataFinder;
+import org.jsoupit.data.ContextDataFinder;
+import org.jsoupit.data.DefaultContextDataFinder;
+import org.jsoupit.template.FileTemplateResolver;
+import org.jsoupit.template.TemplateResolver;
 import org.jsoupit.template.snippet.DefaultSnippetInvoker;
 import org.jsoupit.template.snippet.SnippetInvoker;
 import org.jsoupit.template.snippet.extract.DefaultSnippetExtractor;

@@ -1,8 +1,8 @@
 package org.jsoupit.template.snippet.interceptor;
 
-import org.jsoupit.template.Context;
-import org.jsoupit.template.data.DataOperationException;
-import org.jsoupit.template.data.InjectUtil;
+import org.jsoupit.Context;
+import org.jsoupit.data.DataOperationException;
+import org.jsoupit.data.InjectUtil;
 import org.jsoupit.template.snippet.SnippetExecutionHolder;
 import org.jsoupit.template.snippet.SnippetInvokeException;
 

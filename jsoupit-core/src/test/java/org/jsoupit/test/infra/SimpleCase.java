@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoupit.template.Page;
+import org.jsoupit.Page;
 import org.testng.Assert;
 
 public class SimpleCase {

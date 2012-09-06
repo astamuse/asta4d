@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.jsoupit.template.Context;
+import org.jsoupit.Context;
 
 public class WebApplicationContext extends Context {
 

@@ -1,6 +1,6 @@
-package org.jsoupit.template.data.convertor;
+package org.jsoupit.data.convertor;
 
-import org.jsoupit.template.data.ContextDataConvertor;
+import org.jsoupit.data.ContextDataConvertor;
 
 public class String2Int implements ContextDataConvertor {
 

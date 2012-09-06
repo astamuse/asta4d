@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jsoupit.Configuration;
+import org.jsoupit.Context;
+
 //TODO internationalization and exception of template not found
 public abstract class TemplateResolver {
 

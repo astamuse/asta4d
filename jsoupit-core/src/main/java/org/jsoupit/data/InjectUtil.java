@@ -1,4 +1,4 @@
-package org.jsoupit.template.data;
+package org.jsoupit.data;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.jsoupit.template.Context;
-import org.jsoupit.template.data.annotation.ContextData;
+import org.jsoupit.Context;
+import org.jsoupit.data.annotation.ContextData;
 
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;

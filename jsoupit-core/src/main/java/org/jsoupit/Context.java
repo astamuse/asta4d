@@ -1,4 +1,4 @@
-package org.jsoupit.template;
+package org.jsoupit;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jsoupit.template.Context;
+import org.jsoupit.Context;
 import org.jsoupit.template.snippet.SnippetNotResovlableException;
 
 public class DefaultSnippetResolver implements SnippetResolver {

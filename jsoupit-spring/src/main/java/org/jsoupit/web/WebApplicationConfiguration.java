@@ -3,7 +3,7 @@ package org.jsoupit.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoupit.template.Configuration;
+import org.jsoupit.Configuration;
 
 public class WebApplicationConfiguration extends Configuration {
 

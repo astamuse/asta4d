@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.jsoupit.template.Configuration;
-import org.jsoupit.template.Context;
+import org.jsoupit.Configuration;
+import org.jsoupit.Context;
 import org.jsoupit.template.render.Renderer;
 import org.jsoupit.template.snippet.extract.SnippetExtractor;
 import org.jsoupit.template.snippet.interceptor.SnippetInterceptor;

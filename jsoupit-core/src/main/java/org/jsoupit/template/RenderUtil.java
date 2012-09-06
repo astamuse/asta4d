@@ -8,6 +8,8 @@ import java.util.ListIterator;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.jsoupit.Configuration;
+import org.jsoupit.Context;
 import org.jsoupit.template.extnode.ExtNodeConstants;
 import org.jsoupit.template.render.GoThroughRenderer;
 import org.jsoupit.template.render.Renderer;

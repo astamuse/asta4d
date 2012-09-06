@@ -1,10 +1,13 @@
-package org.jsoupit.template;
+package org.jsoupit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jsoup.nodes.Document;
+import org.jsoupit.template.RenderUtil;
+import org.jsoupit.template.Template;
+import org.jsoupit.template.TemplateResolver;
 import org.jsoupit.template.render.Renderer;
 
 public class Page {

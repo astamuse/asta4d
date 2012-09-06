@@ -1,8 +1,8 @@
 package org.jsoupit.test.infra;
 
+import org.jsoupit.Configuration;
+import org.jsoupit.Context;
 import org.jsoupit.template.ClasspathTemplateResolver;
-import org.jsoupit.template.Configuration;
-import org.jsoupit.template.Context;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
