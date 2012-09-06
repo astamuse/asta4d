@@ -11,8 +11,10 @@ public class WebApplicationTemplateResolver extends TemplateResolver {
     private ServletContext servletContext;
 
     // TODO implement base path and suffix
+    @SuppressWarnings("unused")
     private String basePath = "";
 
+    @SuppressWarnings("unused")
     private String suffix = "";
 
     public WebApplicationTemplateResolver() {

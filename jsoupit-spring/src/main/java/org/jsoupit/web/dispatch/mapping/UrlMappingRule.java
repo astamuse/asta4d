@@ -70,7 +70,7 @@ public class UrlMappingRule {
         return handler;
     }
 
-    public void setHandler(Object controller) {
+    public void setHandler(Object handler) {
         this.handler = handler;
     }
 

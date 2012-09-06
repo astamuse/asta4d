@@ -19,6 +19,7 @@ public class SpringManagedSnippetResolver implements SnippetResolver, Applicatio
         }
     }
 
+    @SuppressWarnings("static-access")
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.applicationContext = context;

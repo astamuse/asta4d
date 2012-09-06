@@ -12,8 +12,10 @@ import org.springframework.web.servlet.View;
 
 public class JsoupitView implements View {
 
+    @SuppressWarnings("unused")
     private String path = "";
 
+    @SuppressWarnings("unused")
     private Locale locale = Locale.getDefault();
 
     private WebPage page = null;

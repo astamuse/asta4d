@@ -35,10 +35,6 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
 
     }
 
-    private void fillMethodParams(SnippetExecutionHolder execution) {
-
-    }
-
     @Override
     public void afterSnippet(SnippetExecutionHolder execution) {
         // TODO reverse wiring

@@ -117,9 +117,9 @@ public class Template {
 
     private void processSnippet() {
         // find nodes emebed with snippet attribute
-        List<Element> embedSnippets = new ArrayList(doc.select("[" + ExtNodeConstants.SNIPPET_NODE_ATTR_NAME + "]"));
+        List<Element> embedSnippets = new ArrayList<>(doc.select("[" + ExtNodeConstants.SNIPPET_NODE_ATTR_NAME + "]"));
         // Element
-        Node parent;
+        // Node parent;
         SnippetNode fakedSnippetNode;
         String render;
         for (Element element : embedSnippets) {
