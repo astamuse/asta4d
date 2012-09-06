@@ -1,8 +1,8 @@
-package org.jsoupit.data.convertor;
+package org.jsoupit.data.adapter;
 
-import org.jsoupit.data.ContextDataConvertor;
+import org.jsoupit.data.ContextDataAdapter;
 
-public class String2Int implements ContextDataConvertor {
+public class String2Int implements ContextDataAdapter {
 
     @Override
     public Class<?> getSourceType() {

@@ -5,19 +5,19 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoupit.Context;
-import org.jsoupit.data.convertor.String2Int;
+import org.jsoupit.data.adapter.String2Int;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
 
-    private List<ContextDataConvertor> convertorList = getDefaultConvertorList();
+    private List<ContextDataAdapter> dataAapterList = getDefaultDataAdapterList();
 
     private List<String> dataSearchScopeOrder = getDefaultScopeOrder();
 
-    private final static List<ContextDataConvertor> getDefaultConvertorList() {
+    private final static List<ContextDataAdapter> getDefaultDataAdapterList() {
         // TODO perhaps we can implement an mechanism to automatically retrieve
-        // all possible convertors via annotation check on all loaded classes.
+        // all possible adapters via annotation check on all loaded classes.
         // Anyway, it is not necessary.
-        List<ContextDataConvertor> defaultList = new ArrayList<>();
+        List<ContextDataAdapter> defaultList = new ArrayList<>();
         defaultList.add(new String2Int());
         return defaultList;
     }
@@ -30,14 +30,14 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         return list;
     }
 
-    public List<ContextDataConvertor> getConvertorList() {
-        return convertorList;
+    public List<ContextDataAdapter> getDataAdapterList() {
+        return dataAapterList;
     }
 
-    public void setConvertorList(List<ContextDataConvertor> convertorList) {
-        List<ContextDataConvertor> list = new ArrayList<>(convertorList);
-        list.addAll(getDefaultConvertorList());
-        this.convertorList = list;
+    public void setDataAapterList(List<ContextDataAdapter> dataAapterList) {
+        List<ContextDataAdapter> list = new ArrayList<>(dataAapterList);
+        list.addAll(getDefaultDataAdapterList());
+        this.dataAapterList = list;
     }
 
     public List<String> getDataSearchScopeOrder() {
@@ -65,12 +65,12 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             return data;
         }
 
-        ContextDataConvertor convertor = getConvertor(data.getClass(), type);
-        if (convertor == null) {
+        ContextDataAdapter adapter = getAdapter(data.getClass(), type);
+        if (adapter == null) {
             // TODO what to do?
             return null;
         } else {
-            return convertor.convert(data);
+            return adapter.convert(data);
         }
 
     }
@@ -87,12 +87,11 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
     }
 
-    private ContextDataConvertor getConvertor(Class<?> srcType, Class<?> targetType) {
+    private ContextDataAdapter getAdapter(Class<?> srcType, Class<?> targetType) {
         // TODO need a cache
-        for (ContextDataConvertor convertor : convertorList) {
-            if (convertor.getSourceType()
-                    .isAssignableFrom(srcType) && targetType.isAssignableFrom(convertor.getTargetType())) {
-                return convertor;
+        for (ContextDataAdapter adapter : dataAapterList) {
+            if (adapter.getSourceType().isAssignableFrom(srcType) && targetType.isAssignableFrom(adapter.getTargetType())) {
+                return adapter;
             }
         }
         return null;

@@ -1,6 +1,6 @@
 package org.jsoupit.data;
 
-public interface ContextDataConvertor {
+public interface ContextDataAdapter {
 
     public Class<?> getSourceType();
 
