@@ -9,12 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-
 /**
  * Here we are going to implement a view first mechanism of view resolving. We
  * need a url mapping algorithm too.
- * 
- * @author xzer
  * 
  */
 public class JsoupitFilter implements Filter {
@@ -25,9 +22,7 @@ public class JsoupitFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse resp,
-            FilterChain chain) throws IOException, ServletException {
-        new MyTestPage().output(resp.getOutputStream());
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
 
     }
 
