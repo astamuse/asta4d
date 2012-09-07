@@ -1,9 +1,9 @@
 package org.jsoupit.template.transformer;
 
 import org.jsoup.nodes.Element;
-import org.jsoupit.template.RenderUtil;
 import org.jsoupit.template.extnode.GroupNode;
 import org.jsoupit.template.render.Renderer;
+import org.jsoupit.template.util.RenderUtil;
 
 public class RendererTransformer extends Transformer<Renderer> {
 

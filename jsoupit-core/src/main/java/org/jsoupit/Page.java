@@ -1,20 +1,20 @@
 package org.jsoupit;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jsoup.nodes.Document;
-import org.jsoupit.template.RenderUtil;
 import org.jsoupit.template.Template;
+import org.jsoupit.template.TemplateException;
 import org.jsoupit.template.TemplateResolver;
 import org.jsoupit.template.render.Renderer;
+import org.jsoupit.template.util.RenderUtil;
 
 public class Page {
 
     protected Template template;
 
-    public Page(String path) throws IOException {
+    public Page(String path) throws TemplateException {
         Configuration conf = Context.getCurrentThreadContext().getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
         template = templateResolver.findTemplate(path);

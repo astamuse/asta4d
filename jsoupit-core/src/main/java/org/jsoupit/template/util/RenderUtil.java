@@ -1,15 +1,17 @@
-package org.jsoupit.template;
+package org.jsoupit.template.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.jsoupit.Configuration;
 import org.jsoupit.Context;
+import org.jsoupit.template.TemplateException;
 import org.jsoupit.template.extnode.ExtNodeConstants;
 import org.jsoupit.template.render.GoThroughRenderer;
 import org.jsoupit.template.render.Renderer;
@@ -26,36 +28,76 @@ import org.jsoupit.template.transformer.Transformer;
  * @author e-ryu
  * 
  */
+// TODO as quick implementation, I think it is necessary to rewrite the whole
+// class.
 public class RenderUtil {
 
-    public final static void applySnippets(Element elem) throws SnippetNotResovlableException, SnippetInvokeException {
-        List<Element> snippetList = new ArrayList<>(elem.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR +
-                "[" +
-                ExtNodeConstants.SNIPPET_NODE_ATTR_FINISHED +
-                "=false]"));
+    public final static void applySnippets(Element elem) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
+        Document doc = elem.ownerDocument();
+        // we believe the doc would not be null, but if at somewhere a
+        // hung element is passed, it will be a problem.
+        if (doc == null) {
+            throw new SnippetInvokeException("A hung element without owner document cannot be applied to execute snippets.");
+        }
+        String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
+                ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
+        List<Element> snippetList = new ArrayList<>(elem.select(selector));
+
+        int snippetListCount = snippetList.size();
+
         String renderDeclaration;
         Renderer renderer;
         Context context = Context.getCurrentThreadContext();
         Configuration conf = context.getConfiguration();
         SnippetInvoker invoker = conf.getSnippetInvoker();
+        String blockingId;
+        Element parentSnippet;
         for (Element element : snippetList) {
+            // if parent snippet has not been executed, the current snippet will
+            // not be executed too. And empty block id means no parent snippet
+            // needed to be aware
+            blockingId = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK);
+            if (!blockingId.isEmpty()) {
+
+                parentSnippet = doc.select(SelectorUtil.id(blockingId)).get(0);
+                if (!parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(
+                        ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
+                    continue;
+                }
+            }
+
             context.setCurrentRenderingElement(element);
             renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             renderer = invoker.invoke(renderDeclaration);
             apply(element, renderer);
-            element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_FINISHED, "true");
+            element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
             context.setCurrentRenderingElement(null);
         }
-        if (snippetList.size() > 0) {
-            applySnippets(elem);
-        }
-    }
 
-    public final static void apply(Node target, Renderer renderer) {
-        if (target instanceof Element) {
-            apply((Element) target, renderer);
-        } else {
-            // do nothing
+        // load embed nodes which parents blocking parents has finished
+        List<Element> embedNodeList = elem.select(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR);
+        int embedNodeListCount = embedNodeList.size();
+        Iterator<Element> embedNodeIterator = embedNodeList.iterator();
+        Element embed;
+        Element embedContent;
+        while (embedNodeIterator.hasNext()) {
+            embed = embedNodeIterator.next();
+            blockingId = embed.attr(ExtNodeConstants.EMBED_NODE_ATTR_BLOCK);
+            if (!blockingId.isEmpty()) {
+                parentSnippet = doc.select(SelectorUtil.id(blockingId)).get(0);
+                if (!parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(
+                        ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
+                    continue;
+                }
+            }
+            embedContent = TemplateUtil.getEmbedNodeContent(embed);
+            embed.before(embedContent);
+            embed.remove();
+        }
+
+        if ((snippetListCount + embedNodeListCount) > 0) {
+            TemplateUtil.regulateElement(elem);
+            applySnippets(elem);
         }
     }
 
@@ -88,10 +130,8 @@ public class RenderUtil {
     }
 
     public final static void applyClearAction(Element target) {
-        String removeSnippetSelector = ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR +
-                "[" +
-                ExtNodeConstants.SNIPPET_NODE_ATTR_FINISHED +
-                "=true]";
+        String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
+                ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
 
         removeJsoupitNodes(target, removeSnippetSelector, true);
         removeJsoupitNodes(target, ExtNodeConstants.CLEAR_NODE_TAG_SELECTOR, false);

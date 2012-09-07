@@ -1,6 +1,5 @@
 package org.jsoupit.template;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +11,7 @@ public abstract class TemplateResolver {
 
     protected final static ConcurrentHashMap<String, Template> templateMap = new ConcurrentHashMap<String, Template>();
 
-    public Template findTemplate(String path) throws IOException {
+    public Template findTemplate(String path) throws TemplateException {
         try {
             Configuration conf = Context.getCurrentThreadContext().getConfiguration();
             if (conf.isCacheEnable()) {
@@ -29,7 +28,7 @@ public abstract class TemplateResolver {
                 return new Template(path, loadTemplate(path));
             }
         } catch (Exception e) {
-            throw new IOException(path + " resolve error", e);
+            throw new TemplateException(path + " resolve error", e);
         }
     }
 

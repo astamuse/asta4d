@@ -1,11 +1,11 @@
 package org.jsoupit.web;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.jsoupit.Page;
+import org.jsoupit.template.TemplateException;
 
 public class WebPage extends Page {
 
@@ -13,7 +13,7 @@ public class WebPage extends Page {
 
     protected String contentType;
 
-    public WebPage(String path, Locale locale) throws IOException {
+    public WebPage(String path, Locale locale) throws TemplateException {
         super(path);
         Document doc = template.getDocumentClone();
         Elements elems = doc.select("meta[http-equiv=Content-Type]");

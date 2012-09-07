@@ -1,12 +1,12 @@
 package org.jsoupit.misc.spring.mvc;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoupit.template.TemplateException;
 import org.jsoupit.web.WebPage;
 import org.springframework.web.servlet.View;
 
@@ -27,9 +27,8 @@ public class JsoupitView implements View {
         // TODO handle page not found
         try {
             this.page = new WebPage(path, locale);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
         }
     }
 

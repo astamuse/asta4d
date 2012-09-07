@@ -9,7 +9,7 @@ public class SnippetNode extends ExtNode {
 
     public SnippetNode() {
         super(ExtNodeConstants.SNIPPET_NODE_TAG);
-        this.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_FINISHED, "false");
+        this.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
     }
 
 }

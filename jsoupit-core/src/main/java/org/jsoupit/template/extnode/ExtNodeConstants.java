@@ -41,6 +41,7 @@ public class ExtNodeConstants {
     public final static String EMBED_NODE_TAG = buildTag(EMBED_NODE_NAME);
     public final static String EMBED_NODE_TAG_SELECTOR = buildTagSelector(EMBED_NODE_NAME);
     public final static String EMBED_NODE_ATTR_TARGET = "target";
+    public final static String EMBED_NODE_ATTR_BLOCK = "block";
 
     public final static String SNIPPET_NODE_NAME = "snippet";
     public final static String SNIPPET_NODE_TAG = buildTag(SNIPPET_NODE_NAME);
@@ -49,7 +50,13 @@ public class ExtNodeConstants {
 
     public final static String SNIPPET_NODE_ATTR_NAME = SNIPPET_NODE_NAME;
     public final static String SNIPPET_NODE_ATTR_NAME_SELECTOR = SNIPPET_NODE_NAME;
-    public final static String SNIPPET_NODE_ATTR_FINISHED = "snippet_finished";
+
+    public final static String SNIPPET_NODE_ATTR_STATUS = "status";
+    public final static String SNIPPET_NODE_ATTR_STATUS_WAITING = "waiting";
+    public final static String SNIPPET_NODE_ATTR_STATUS_READY = "ready";
+    public final static String SNIPPET_NODE_ATTR_STATUS_FINISHED = "finished";
+
+    public final static String SNIPPET_NODE_ATTR_BLOCK = "block";
 
     public final static String CLEAR_NODE_NAME = "ClearNode";
     public final static String CLEAR_NODE_TAG = buildTag(CLEAR_NODE_NAME);
