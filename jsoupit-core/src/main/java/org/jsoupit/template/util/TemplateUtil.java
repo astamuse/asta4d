@@ -46,8 +46,7 @@ public class TemplateUtil {
 
         /*
          * set all the nodes without status attribute or with an illegal status 
-         * value to ready unless the node has a unfinished parent snippet, a
-         * child node of unfinished snippet will always be waiting status
+         * value to ready 
          */
 
         // first, we regulate the snippets to legal status
@@ -58,7 +57,6 @@ public class TemplateUtil {
             if (sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS)) {
                 status = sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS);
                 switch (status) {
-                case ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_WAITING:
                 case ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY:
                 case ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED:
                     // do nothing;

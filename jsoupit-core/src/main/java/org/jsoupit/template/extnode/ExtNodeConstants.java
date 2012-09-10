@@ -52,7 +52,7 @@ public class ExtNodeConstants {
     public final static String SNIPPET_NODE_ATTR_NAME_SELECTOR = SNIPPET_NODE_NAME;
 
     public final static String SNIPPET_NODE_ATTR_STATUS = "status";
-    public final static String SNIPPET_NODE_ATTR_STATUS_WAITING = "waiting";
+    // public final static String SNIPPET_NODE_ATTR_STATUS_WAITING = "waiting";
     public final static String SNIPPET_NODE_ATTR_STATUS_READY = "ready";
     public final static String SNIPPET_NODE_ATTR_STATUS_FINISHED = "finished";
 
