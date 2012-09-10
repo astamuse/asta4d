@@ -1,7 +1,5 @@
 package org.jsoupit.test.infra;
 
-import java.io.IOException;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoupit.Page;
@@ -9,7 +7,7 @@ import org.testng.Assert;
 
 public class SimpleCase {
 
-    public SimpleCase(String templateFileName) throws IOException {
+    public SimpleCase(String templateFileName) {
         Page originPage = null;
         Page resultPage = null;
         try {

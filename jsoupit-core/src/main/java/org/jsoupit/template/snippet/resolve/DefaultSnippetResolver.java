@@ -27,11 +27,34 @@ public class DefaultSnippetResolver implements SnippetResolver {
     protected Object retrieveInstance(String snippetName) throws SnippetNotResovlableException {
         // TODO support base package
         try {
-            Class<?> cls = Class.forName(snippetName);
+            Class<?> cls = findClass(snippetName, -1);
             return cls.newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw new SnippetNotResovlableException(String.format("Snippet [%s] not found.", snippetName), e);
+            throw new SnippetNotResovlableException(String.format("Snippet [%s] resolve failed.", snippetName), e);
         }
+    }
+
+    private Class<?> findClass(String snippetName, int searchIndex) throws ClassNotFoundException {
+        String searchName;
+        if (searchIndex < 0) {
+            searchName = snippetName;
+        } else if (searchIndex >= searchPathList.size()) {
+            throw new ClassNotFoundException("Can not found class for snippet name:" + snippetName);
+        } else {
+            String path = searchPathList.get(searchIndex);
+            searchName = path;
+            if (!path.endsWith(".")) {
+                searchName += ".";
+            }
+            searchName += snippetName;
+        }
+        try {
+            Class<?> clz = Class.forName(searchName);
+            return clz;
+        } catch (ClassNotFoundException e) {
+            return findClass(snippetName, searchIndex + 1);
+        }
+
     }
 
     public List<String> getSearchPathList() {

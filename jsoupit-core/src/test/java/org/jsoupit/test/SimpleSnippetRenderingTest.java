@@ -1,7 +1,5 @@
 package org.jsoupit.test;
 
-import java.io.IOException;
-
 import org.jsoupit.template.render.Renderer;
 import org.jsoupit.test.infra.BaseTest;
 import org.jsoupit.test.infra.SimpleCase;
@@ -14,11 +12,15 @@ public class SimpleSnippetRenderingTest extends BaseTest {
         }
     }
 
-    public void testTagEmbed() throws IOException {
+    public void testTagEmbed() {
         new SimpleCase("SimpleSnippet_TagEmbed.html");
     }
 
-    public void testSnippetTag() throws IOException {
+    public void testSnippetTag() {
         new SimpleCase("SimpleSnippet_SnippetTag.html");
+    }
+
+    public void testBasePackageSnippetSearch() {
+        new SimpleCase("SimpleSnippet_BasePackage.html");
     }
 }
