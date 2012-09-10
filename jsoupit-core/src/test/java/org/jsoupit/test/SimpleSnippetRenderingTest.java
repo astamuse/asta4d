@@ -7,6 +7,12 @@ import org.jsoupit.test.infra.SimpleCase;
 public class SimpleSnippetRenderingTest extends BaseTest {
 
     public static class TagEmbed {
+        public Renderer render(String type) {
+            return Renderer.create("span", type);
+        }
+    }
+
+    public static class SnippetTag {
         public Renderer render() {
             return Renderer.create("span", "wow");
         }

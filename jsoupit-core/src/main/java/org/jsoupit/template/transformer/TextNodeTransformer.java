@@ -9,6 +9,7 @@ public class TextNodeTransformer extends Transformer<String> {
     }
 
     private static String fixContent(String content) {
+        // TODO what to do when null?
         return content == null ? "##NULL##" : content;
     }
 
