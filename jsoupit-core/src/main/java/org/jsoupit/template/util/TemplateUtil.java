@@ -24,7 +24,9 @@ public class TemplateUtil {
     private final static void regulateSnippets(Element elem) {
 
         // find nodes emebed with snippet attribute
-        String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_NAME);
+        String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+        snippetSelector = SelectorUtil.not(snippetSelector, ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
+
         List<Element> embedSnippets = new ArrayList<>(elem.select(snippetSelector));
         // Element
         // Node parent;
@@ -37,10 +39,10 @@ public class TemplateUtil {
             element.remove();
             fakedSnippetNode.appendChild(element);
 
-            render = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_NAME);
-            element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_NAME);
-            fakedSnippetNode.copyAttributes(element);
+            render = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+            element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER, render);
+            fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE, ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE);
         }
 
         /*
@@ -48,11 +50,12 @@ public class TemplateUtil {
          * value to ready 
          */
 
-        // first, we regulate the snippets to legal status
+        // first, we regulate the snippets to legal form
         List<Element> snippetNodes = elem.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
         String status;
         String id;
         for (Element sn : snippetNodes) {
+            // regulate status
             if (sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS)) {
                 status = sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS);
                 switch (status) {
@@ -66,9 +69,24 @@ public class TemplateUtil {
             } else {
                 sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
             }
+            // regulate id
             if (!sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID)) {
                 id = "sn-" + IdGenerator.createId();
                 sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID, id);
+            }
+            // regulate type
+            if (!sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE)) {
+                sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE, ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_USERDEFINE);
+            }
+            switch (sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE)) {
+            case ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE:
+            case ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_USERDEFINE:
+                // do nothing;
+                break;
+            default:
+                // we do not allow snippet node has user customized type
+                // attribute
+                sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE, ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_USERDEFINE);
             }
         }
 
