@@ -10,13 +10,6 @@ public class WebApplicationTemplateResolver extends TemplateResolver {
 
     private ServletContext servletContext;
 
-    // TODO implement base path and suffix
-    @SuppressWarnings("unused")
-    private String basePath = "";
-
-    @SuppressWarnings("unused")
-    private String suffix = "";
-
     public WebApplicationTemplateResolver() {
         super();
     }
@@ -35,7 +28,7 @@ public class WebApplicationTemplateResolver extends TemplateResolver {
     }
 
     @Override
-    protected InputStream loadTemplate(String path) {
+    protected InputStream loadResource(String path) {
         // TODO test whether it can work well in an unpacked war deployment
         return servletContext.getResourceAsStream(path);
     }

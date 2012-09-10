@@ -49,7 +49,8 @@ public class ExtNodeConstants {
     public final static String SNIPPET_NODE_ATTR_RENDER = "render";
 
     public final static String SNIPPET_NODE_ATTR_NAME = SNIPPET_NODE_NAME;
-    public final static String SNIPPET_NODE_ATTR_NAME_SELECTOR = SNIPPET_NODE_NAME;
+
+    public final static String SNIPPET_NODE_ATTR_REFID = "refid";
 
     public final static String SNIPPET_NODE_ATTR_STATUS = "status";
     // public final static String SNIPPET_NODE_ATTR_STATUS_WAITING = "waiting";

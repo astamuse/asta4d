@@ -2,6 +2,7 @@ package org.jsoupit.template.snippet;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,6 +10,7 @@ import org.jsoupit.Configuration;
 import org.jsoupit.Context;
 import org.jsoupit.template.render.Renderer;
 import org.jsoupit.template.snippet.extract.SnippetExtractor;
+import org.jsoupit.template.snippet.interceptor.ContextDataAutowireInterceptor;
 import org.jsoupit.template.snippet.interceptor.SnippetInterceptor;
 import org.jsoupit.template.snippet.resolve.SnippetResolver;
 
@@ -16,7 +18,7 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
 
     private final static ConcurrentHashMap<SnippetDeclarationInfo, Method> methodCache = new ConcurrentHashMap<>();
 
-    private List<SnippetInterceptor> snippetInterceptorList = null;
+    private List<SnippetInterceptor> snippetInterceptorList = getDefaultSnippetInterceptorList();
 
     protected static class InterceptorResult {
         Renderer renderer = null;
@@ -58,8 +60,6 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
 
     protected SnippetInterceptor beforeSnippet(SnippetExecutionHolder execution) throws SnippetInvokeException {
         SnippetInterceptor lastInterceptor = null;
-        if (snippetInterceptorList == null)
-            return lastInterceptor;
         for (SnippetInterceptor interceptor : snippetInterceptorList) {
             // TODO how about a exception in before snippet?
             interceptor.beforeSnippet(execution);
@@ -73,8 +73,6 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
 
     protected void afterSnippet(SnippetInterceptor lastInterceptor, SnippetDeclarationInfo info, SnippetExecutionHolder execution)
             throws SnippetInvokeException {
-        if (snippetInterceptorList == null)
-            return;
         SnippetInterceptor interceptor = null;
         boolean foundStoppedPoint = false;
         for (int i = snippetInterceptorList.size() - 1; i >= 0; i--) {
@@ -113,12 +111,22 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         return null;
     }
 
+    protected List<SnippetInterceptor> getDefaultSnippetInterceptorList() {
+        List<SnippetInterceptor> list = new ArrayList<>();
+        list.add(new ContextDataAutowireInterceptor());
+        return list;
+    }
+
     public List<SnippetInterceptor> getSnippetInterceptorList() {
         return snippetInterceptorList;
     }
 
     public void setSnippetInterceptorList(List<SnippetInterceptor> snippetInterceptorList) {
-        this.snippetInterceptorList = snippetInterceptorList;
+        this.snippetInterceptorList.clear();
+        this.snippetInterceptorList.addAll(getDefaultSnippetInterceptorList());
+        if (snippetInterceptorList != null) {
+            this.snippetInterceptorList.addAll(snippetInterceptorList);
+        }
     }
 
 }

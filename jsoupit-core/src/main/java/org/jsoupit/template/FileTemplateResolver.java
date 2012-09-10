@@ -6,20 +6,13 @@ import java.io.InputStream;
 
 public class FileTemplateResolver extends TemplateResolver {
 
-    private String baseFolder = "";
-
     @Override
-    protected InputStream loadTemplate(String path) {
-        String templatePath = baseFolder + "/" + path;
+    protected InputStream loadResource(String path) {
         try {
-            return (new FileInputStream(templatePath));
+            return (new FileInputStream(path));
         } catch (FileNotFoundException e) {
-            // TODO debug exception
             return null;
         }
     }
 
-    public void setBaseFolder(String baseFolder) {
-        this.baseFolder = baseFolder;
-    }
 }

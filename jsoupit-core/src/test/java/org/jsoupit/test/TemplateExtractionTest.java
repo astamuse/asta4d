@@ -12,4 +12,8 @@ public class TemplateExtractionTest extends BaseTest {
     public void loadTempateWithEmbed() {
         new SimpleCase("TemplateWithEmbed.html");
     }
+
+    public void loadTempateWithEmbedBaseFolder() {
+        new SimpleCase("TemplateWithEmbedBaseFolder.html");
+    }
 }

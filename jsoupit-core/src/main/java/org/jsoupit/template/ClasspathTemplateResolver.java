@@ -12,12 +12,8 @@ import java.io.InputStream;
 public class ClasspathTemplateResolver extends TemplateResolver {
 
     @Override
-    public InputStream loadTemplate(String path) {
+    public InputStream loadResource(String path) {
         return this.getClass().getResourceAsStream(path);
-    }
-
-    public void setBasePackage() {
-        // TODO implement it
     }
 
 }

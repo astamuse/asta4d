@@ -15,12 +15,15 @@ import org.testng.annotations.Test;
 public class BaseTest {
     private final static Configuration configuration = new Configuration() {
         {
-            this.setTemplateResolver(new ClasspathTemplateResolver());
+            ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
+            List<String> templateBaseFolders = Arrays.asList("/org/jsoupit/test/templates");
+            templateResolver.setSearchPathList(templateBaseFolders);
+            this.setTemplateResolver(templateResolver);
 
-            DefaultSnippetResolver resolver = new DefaultSnippetResolver();
+            DefaultSnippetResolver snippetResolver = new DefaultSnippetResolver();
             List<String> snippetBasePackages = Arrays.asList("org.jsoupit.test");
-            resolver.setSearchPathList(snippetBasePackages);
-            this.setSnippetResolver(resolver);
+            snippetResolver.setSearchPathList(snippetBasePackages);
+            this.setSnippetResolver(snippetResolver);
         }
     };
 

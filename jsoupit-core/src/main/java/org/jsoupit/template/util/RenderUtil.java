@@ -50,20 +50,11 @@ public class RenderUtil {
         Context context = Context.getCurrentThreadContext();
         Configuration conf = context.getConfiguration();
         SnippetInvoker invoker = conf.getSnippetInvoker();
-        String blockingId;
-        Element parentSnippet;
         for (Element element : snippetList) {
             // if parent snippet has not been executed, the current snippet will
-            // not be executed too. And empty block id means no parent snippet
-            // needed to be aware
-            blockingId = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK);
-            if (!blockingId.isEmpty()) {
-
-                parentSnippet = doc.select(SelectorUtil.id(blockingId)).get(0);
-                if (!parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(
-                        ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
-                    continue;
-                }
+            // not be executed too.
+            if (isBlockedByParentSnippet(doc, element)) {
+                continue;
             }
 
             context.setCurrentRenderingElement(element);
@@ -82,13 +73,8 @@ public class RenderUtil {
         Element embedContent;
         while (embedNodeIterator.hasNext()) {
             embed = embedNodeIterator.next();
-            blockingId = embed.attr(ExtNodeConstants.EMBED_NODE_ATTR_BLOCK);
-            if (!blockingId.isEmpty()) {
-                parentSnippet = doc.select(SelectorUtil.id(blockingId)).get(0);
-                if (!parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(
-                        ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
-                    continue;
-                }
+            if (isBlockedByParentSnippet(doc, embed)) {
+                continue;
             }
             embedContent = TemplateUtil.getEmbedNodeContent(embed);
             embed.before(embedContent);
@@ -99,6 +85,26 @@ public class RenderUtil {
             TemplateUtil.regulateElement(elem);
             applySnippets(elem);
         }
+    }
+
+    private final static boolean isBlockedByParentSnippet(Document doc, Element elem) {
+        boolean isBlocked;
+        String blockingId = elem.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK);
+        if (blockingId.isEmpty()) {
+            // empty block id means there is no parent snippet that need to be
+            // aware
+            isBlocked = false;
+        } else {
+            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_REFID,
+                    blockingId);
+            Element parentSnippet = doc.select(parentSelector).get(0);
+            if (parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
+                isBlocked = false;
+            } else {
+                isBlocked = true;
+            }
+        }
+        return isBlocked;
     }
 
     public final static void apply(Element target, Renderer renderer) {

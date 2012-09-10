@@ -67,9 +67,9 @@ public class TemplateUtil {
             } else {
                 sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
             }
-            if (!sn.hasAttr("id")) {
+            if (!sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID)) {
                 id = "sn-" + IdGenerator.createId();
-                sn.attr("id", id);
+                sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID, id);
             }
         }
 
@@ -96,7 +96,7 @@ public class TemplateUtil {
             blockingParentId = "";
             while (searchElem != null) {
                 if (searchElem.tagName().equals(ExtNodeConstants.SNIPPET_NODE_TAG)) {
-                    blockingParentId = searchElem.id();
+                    blockingParentId = searchElem.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID);
                     break;
                 } else {
                     searchElem = searchElem.parent();
