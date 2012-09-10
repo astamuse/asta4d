@@ -2,14 +2,9 @@
 <head>
 </head>
 <body>
-<jsoupit:embed"/>
-
+<jsoupit:snippet render="AdvancedSnippetTest$TestSnippet:nestedSnippet_outer">
 <p id="pv"></p>
-
-<jsoupit:snippet id="inner" render="AdvancedSnippetTest$TestSnippet:nestedSnippet_inner" value="123">
-<div id="pv"></div>
-</jsoupit:snippet>
-
+<jsoupit:embed target="/AdvancedSnippet_nestedEmbed_include.html" value="3"/>
 </jsoupit:snippet>
 </body>
 </html>

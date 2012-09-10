@@ -10,7 +10,7 @@ public class ElementTransformer extends Transformer<Element> {
 
     @Override
     protected Element transform(Element elem, Element content) {
-        return content;
+        return content.clone();
     }
 
 }

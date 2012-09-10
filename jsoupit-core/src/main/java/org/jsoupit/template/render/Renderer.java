@@ -48,6 +48,11 @@ public class Renderer {
         return transformerList;
     }
 
+    @Override
+    public String toString() {
+        return "selector:" + selector;
+    }
+
     public Renderer getNext() {
         return next;
     }

@@ -42,26 +42,44 @@ public class RenderUtil {
         String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
                 ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
         List<Element> snippetList = new ArrayList<>(elem.select(selector));
-
         int snippetListCount = snippetList.size();
+        for (int i = snippetListCount - 1; i >= 0; i--) {
+            // if parent snippet has not been executed, the current snippet will
+            // not be executed too.
+            if (isBlockedByParentSnippet(doc, snippetList.get(i))) {
+                snippetList.remove(i);
+            }
+        }
 
         String renderDeclaration;
         Renderer renderer;
         Context context = Context.getCurrentThreadContext();
         Configuration conf = context.getConfiguration();
         SnippetInvoker invoker = conf.getSnippetInvoker();
-        for (Element element : snippetList) {
-            // if parent snippet has not been executed, the current snippet will
-            // not be executed too.
-            if (isBlockedByParentSnippet(doc, element)) {
-                continue;
-            }
 
+        String refId;
+        for (Element element : snippetList) {
             context.setCurrentRenderingElement(element);
             renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             renderer = invoker.invoke(renderDeclaration);
+            refId = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID);
             apply(element, renderer);
-            element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
+            if (element.ownerDocument() == null) {
+                // it means this snippet element is replaced by a element
+                // completely
+                String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_REFID,
+                        refId);
+                Elements elems = doc.select(reSelector);
+                if (elems.size() > 0) {
+                    element = elems.get(0);
+                } else {
+                    element = null;
+                }
+            }
+
+            if (element != null) {
+                element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
+            }
             context.setCurrentRenderingElement(null);
         }
 
@@ -108,6 +126,7 @@ public class RenderUtil {
     }
 
     public final static void apply(Element target, Renderer renderer) {
+        Document doc = target.ownerDocument();
         Renderer currentRenderer = renderer;
         String selector;
         ListIterator<Element> elemIterator;

@@ -16,6 +16,10 @@ public class AdvancedSnippetTest extends BaseTest {
         public Renderer nestedSnippet_inner(String value) {
             return Renderer.create("#pv", value);
         }
+
+        public Renderer nestedEmbed(String value) {
+            return Renderer.create("#kv", value);
+        }
     }
 
     public AdvancedSnippetTest() {
@@ -26,7 +30,7 @@ public class AdvancedSnippetTest extends BaseTest {
     }
 
     public void testNestedEmbed() {
-
+        // new SimpleCase("AdvancedSnippet_nestedEmbed.html");
     }
 
     public void testDynamicSnippet() {

@@ -6,14 +6,13 @@ import java.util.List;
 
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
+import org.jsoup.select.Elements;
 import org.jsoupit.Configuration;
 import org.jsoupit.Context;
 import org.jsoupit.template.Template;
 import org.jsoupit.template.TemplateException;
 import org.jsoupit.template.TemplateResolver;
 import org.jsoupit.template.extnode.ExtNodeConstants;
-import org.jsoupit.template.extnode.GroupNode;
 import org.jsoupit.template.extnode.SnippetNode;
 
 public class TemplateUtil {
@@ -123,21 +122,17 @@ public class TemplateUtil {
             throw new TemplateException(message);
         }
 
+        Elements children = embedTarget.getDocumentClone().body().children();
+        Element wrappingNode = HtmlUtil.wrapElementsToSingleNode(children);
+
         // copy all the attrs to the wrapping group node
-        Element groupNode = new GroupNode();
         Iterator<Attribute> attrs = elem.attributes().iterator();
         Attribute attr;
         while (attrs.hasNext()) {
             attr = attrs.next();
-            groupNode.attr(attr.getKey(), attr.getValue());
+            wrappingNode.attr(attr.getKey(), attr.getValue());
         }
 
-        Element body = embedTarget.getDocumentClone().body();
-        List<Node> children = new ArrayList<Node>(body.childNodes());
-        for (Node node : children) {
-            node.remove();
-            groupNode.appendChild(node);
-        }
-        return groupNode;
+        return wrappingNode;
     }
 }
