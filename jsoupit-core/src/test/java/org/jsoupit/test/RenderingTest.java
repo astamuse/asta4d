@@ -45,6 +45,10 @@ public class RenderingTest extends BaseTest {
         // TODO
     }
 
+    public void testRecursiveRendering() {
+        // TODO
+    }
+
     public void testListElementRendering() {
         // TODO
     }
@@ -57,7 +61,7 @@ public class RenderingTest extends BaseTest {
         // TODO
     }
 
-    public void testRecursiveRendering() {
+    public void testListRecursiveRendering() {
         // TODO
     }
 
