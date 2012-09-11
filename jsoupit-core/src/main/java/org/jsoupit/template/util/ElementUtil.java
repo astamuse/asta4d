@@ -6,19 +6,27 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 import org.jsoupit.template.extnode.GroupNode;
 
-public class HtmlUtil {
+public class ElementUtil {
 
-    public HtmlUtil() {
+    public ElementUtil() {
     }
 
-    public final static Elements parseHTML(String html) {
+    public final static Element text(String text) {
+        TextNode node = new TextNode(text, "");
+        Element wrap = new GroupNode();
+        wrap.appendChild(node);
+        return wrap;
+    }
+
+    public final static Elements parse(String html) {
         return Jsoup.parseBodyFragment(html).select("body");
     }
 
-    public final static Element parseHTMLAsSingleElement(String html) {
+    public final static Element parseAsSingle(String html) {
         Elements elems = Jsoup.parseBodyFragment(html).body().children();
         if (elems.size() == 1) {
             return elems.first();

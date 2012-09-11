@@ -1,6 +1,10 @@
 package org.jsoupit.test;
 
+import org.jsoup.nodes.Element;
+import org.jsoupit.template.extnode.SnippetNode;
+import org.jsoupit.template.render.ChildReplacer;
 import org.jsoupit.template.render.Renderer;
+import org.jsoupit.template.util.ElementUtil;
 import org.jsoupit.test.infra.BaseTest;
 import org.jsoupit.test.infra.SimpleCase;
 
@@ -20,6 +24,17 @@ public class AdvancedSnippetTest extends BaseTest {
         public Renderer nestedEmbed(String value) {
             return Renderer.create("#kv", value);
         }
+
+        public Renderer dynamicSnippetOuter() {
+            final Element subSnippet = new SnippetNode("AdvancedSnippetTest$TestSnippet:dynamicSnippetSub");
+            Renderer render = Renderer.create("#pv", new ChildReplacer(subSnippet));
+            return render;
+        }
+
+        public Renderer dynamicSnippetSub() {
+            Renderer render = Renderer.create("*", ElementUtil.text("ff"));
+            return render;
+        }
     }
 
     public AdvancedSnippetTest() {
@@ -34,7 +49,7 @@ public class AdvancedSnippetTest extends BaseTest {
     }
 
     public void testDynamicSnippet() {
-
+        new SimpleCase("AdvancedSnippet_dynamicSnippet.html");
     }
 
     public void testDynamicEmbed() {

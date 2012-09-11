@@ -141,7 +141,7 @@ public class TemplateUtil {
         }
 
         Elements children = embedTarget.getDocumentClone().body().children();
-        Element wrappingNode = HtmlUtil.wrapElementsToSingleNode(children);
+        Element wrappingNode = ElementUtil.wrapElementsToSingleNode(children);
 
         // copy all the attrs to the wrapping group node
         Iterator<Attribute> attrs = elem.attributes().iterator();
