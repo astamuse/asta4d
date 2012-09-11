@@ -30,7 +30,7 @@ public class AdvancedSnippetTest extends BaseTest {
     }
 
     public void testNestedEmbed() {
-        // new SimpleCase("AdvancedSnippet_nestedEmbed.html");
+        new SimpleCase("AdvancedSnippet_nestedEmbed.html");
     }
 
     public void testDynamicSnippet() {
