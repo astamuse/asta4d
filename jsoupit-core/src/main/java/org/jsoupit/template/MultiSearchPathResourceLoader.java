@@ -3,15 +3,15 @@ package org.jsoupit.template;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class MultiSearchPathSupport<T> {
+public abstract class MultiSearchPathResourceLoader<T> {
 
     private List<String> searchPathList = new ArrayList<>();
 
-    public MultiSearchPathSupport() {
+    public MultiSearchPathResourceLoader() {
         // TODO Auto-generated constructor stub
     }
 
-    protected T searchResource(String name, String pathSeparator) {
+    public T searchResource(String name, String pathSeparator) {
         return searchResource(name, pathSeparator, -1);
     }
 
@@ -23,10 +23,16 @@ public abstract class MultiSearchPathSupport<T> {
             return null;
         } else {
             String searchPath = searchPathList.get(index);
-            if (!searchPath.endsWith(pathSeparator)) {
-                searchPath += pathSeparator;
+            boolean pathWithSeparator = searchPath.endsWith(pathSeparator);
+            boolean nameWithSeparator = name.startsWith(pathSeparator);
+            if (pathWithSeparator && nameWithSeparator) {
+                searchName = searchPath + name.substring(1);
+            } else if (pathWithSeparator || nameWithSeparator) {
+                searchName = searchPath + name;
+            } else { // nether has
+                searchName = searchPath + pathSeparator + name;
             }
-            searchName = searchPath + name;
+
         }
         T result = loadResource(searchName);
         if (result == null) {

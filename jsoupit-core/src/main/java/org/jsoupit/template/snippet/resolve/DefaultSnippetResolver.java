@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jsoupit.Context;
-import org.jsoupit.template.MultiSearchPathSupport;
+import org.jsoupit.template.MultiSearchPathResourceLoader;
 import org.jsoupit.template.snippet.SnippetNotResovlableException;
 
-public class DefaultSnippetResolver extends MultiSearchPathSupport<Class<?>> implements SnippetResolver {
+public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Class<?>> implements SnippetResolver {
 
     private final static String MapCacheKey = DefaultSnippetResolver.class.getName() + "##MapCacheKey";
 

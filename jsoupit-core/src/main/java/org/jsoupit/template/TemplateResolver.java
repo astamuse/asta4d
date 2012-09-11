@@ -7,7 +7,7 @@ import org.jsoupit.Configuration;
 import org.jsoupit.Context;
 
 //TODO internationalization and exception of template not found
-public abstract class TemplateResolver extends MultiSearchPathSupport<InputStream> {
+public abstract class TemplateResolver extends MultiSearchPathResourceLoader<InputStream> {
 
     protected final static ConcurrentHashMap<String, Template> templateMap = new ConcurrentHashMap<String, Template>();
 
