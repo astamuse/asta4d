@@ -121,6 +121,7 @@ public class RenderUtil {
         } else {
             String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_REFID,
                     blockingId);
+            // TODO perhaps it does not exists.
             Element parentSnippet = doc.select(parentSelector).get(0);
             if (parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
                 isBlocked = false;

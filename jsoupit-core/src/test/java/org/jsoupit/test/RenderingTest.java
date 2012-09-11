@@ -1,6 +1,8 @@
 package org.jsoupit.test;
 
 import org.jsoup.nodes.Element;
+import org.jsoupit.template.render.ChildReplacer;
+import org.jsoupit.template.render.GoThroughRenderer;
 import org.jsoupit.template.render.Renderer;
 import org.jsoupit.template.util.ElementUtil;
 import org.jsoupit.test.infra.BaseTest;
@@ -8,10 +10,29 @@ import org.jsoupit.test.infra.SimpleCase;
 
 public class RenderingTest extends BaseTest {
 
-    public static class ElementRendering {
-        public Renderer replaceElement() {
+    public static class TestRender {
+        public Renderer elementRendering() {
             Element elem = ElementUtil.parseAsSingle("<div>i am a danymic element</div>");
             return Renderer.create("*", elem);
+        }
+
+        public Renderer textRendering() {
+            Renderer renderer = Renderer.create("div#test", "Prometheus");
+            renderer.add("#testspace", "I love this game!");
+            renderer.add("#testnbsp", new ChildReplacer(ElementUtil.parseAsSingle("<span>three space here(&nbsp;&nbsp;&nbsp;)</span>")));
+            renderer.add("#testgreatermark", "3 > 2 or 3 < 2, it's a question.");
+            return renderer;
+        }
+
+        public Renderer normalAttrSetting() {
+            Renderer renderer = new GoThroughRenderer();
+            renderer.add("#testadd", "+v", "2");
+            renderer.add("#testaddexisted", "+v", "2");
+            renderer.add("#testremovebynull", "v", null);
+            renderer.add("#testremovebyminus", "-v", "");
+            renderer.add("#testremovebyaddnull", "+v", null);
+            renderer.add("#testset", "v", "2");
+            return renderer;
         }
     }
 
@@ -20,12 +41,11 @@ public class RenderingTest extends BaseTest {
     }
 
     public void testTextRendering() {
-        // TODO append text under a node
+        new SimpleCase("Rendering_textRendering.html");
     }
 
     public void testNormalAttrSetting() {
-        // TODO
-        // add attr, remove attr, set attr
+        new SimpleCase("Rendering_normalAttrSetting.html");
     }
 
     public void testClassAttrSetting() {

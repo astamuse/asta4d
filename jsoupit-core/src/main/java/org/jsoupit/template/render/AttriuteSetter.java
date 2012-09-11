@@ -34,7 +34,7 @@ public class AttriuteSetter implements ElementSetter {
         } else {
             if (attr.startsWith("-")) {
                 this.actionType = ActionType.REMOVE;
-                this.attrName = attr;
+                this.attrName = attr.substring(1);
             } else {
                 if (attr.startsWith("+")) {
                     this.attrName = attr.substring(1);
