@@ -3,9 +3,10 @@ package org.jsoupit.test;
 import org.jsoup.nodes.Element;
 import org.jsoupit.template.render.Renderer;
 import org.jsoupit.template.util.ElementUtil;
+import org.jsoupit.test.infra.BaseTest;
 import org.jsoupit.test.infra.SimpleCase;
 
-public class RenderingTest {
+public class RenderingTest extends BaseTest {
 
     public static class ElementRendering {
         public Renderer replaceElement() {
@@ -18,8 +19,46 @@ public class RenderingTest {
         new SimpleCase("Rendering_elementRendering.html");
     }
 
-    // TODO test
-    /* 1. replace node for text (not add text inner)
-     * 2. use "* *" to append node inner (maybe we do not support)
-     */
+    public void testTextRendering() {
+        // TODO append text under a node
+    }
+
+    public void testNormalAttrSetting() {
+        // TODO
+        // add attr, remove attr, set attr
+    }
+
+    public void testClassAttrSetting() {
+        // TODO
+        // add class, remove class, set class
+    }
+
+    public void testElementSetter() {
+        // TODO customized element operation
+    }
+
+    public void testClearNode() {
+        // TODO ClearNode and ClearRenderer
+    }
+
+    public void testChildReplacing() {
+        // TODO
+    }
+
+    public void testListElementRendering() {
+        // TODO
+    }
+
+    public void testListTextRendering() {
+        // TODO
+    }
+
+    public void testListChildReplacing() {
+        // TODO
+    }
+
+    public void testRecursiveRendering() {
+        // TODO
+    }
+
 }

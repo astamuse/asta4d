@@ -33,16 +33,16 @@ public class TemplateUtil {
         SnippetNode fakedSnippetNode;
         String render;
         for (Element element : embedSnippets) {
-            fakedSnippetNode = new SnippetNode();
-            // fakedSnippetNode
+
+            render = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+            fakedSnippetNode = new SnippetNode(render);
+            fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE, ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE);
+
+            // move the original node under the faked node
             element.after(fakedSnippetNode);
             element.remove();
             fakedSnippetNode.appendChild(element);
-
-            render = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
-            fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER, render);
-            fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE, ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE);
         }
 
         /*
