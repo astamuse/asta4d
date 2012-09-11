@@ -80,28 +80,18 @@ public class Context {
         Element elem = currentRenderingElement;
         String value = null;
         while (value == null && elem != null) {
-            value = findAttr(elem, key);
-            elem = elem.parent();
-        }
-        return value;
-    }
-
-    private String findAttr(Element elem, String attr) {
-        String value = null;
-        if (elem.tagName().equals(ExtNodeConstants.SNIPPET_NODE_TAG)) {
-            String type = elem.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE);
-            if (type.equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
-                // for a faked snippet node, we will try to retrieve the
-                // attribute values from its directive single child node
-                Element realTarget = elem.children().first();
-                // It is possible that this real target is still a faked
-                // snippet, so we recursive call findAttr
-                value = findAttr(realTarget, attr);
-            } else if (elem.hasAttr(attr)) {
-                value = elem.attr(attr);
+            // for a faked snippet node, we will just jump over it
+            if (elem.tagName().equals(ExtNodeConstants.SNIPPET_NODE_TAG)) {
+                String type = elem.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE);
+                if (type.equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
+                    elem = elem.parent();
+                    continue;
+                }
             }
-        } else if (elem.hasAttr(attr)) {
-            value = elem.attr(attr);
+            if (elem.hasAttr(key)) {
+                value = elem.attr(key);
+            }
+            elem = elem.parent();
         }
         return value;
     }

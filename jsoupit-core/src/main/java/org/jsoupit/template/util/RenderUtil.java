@@ -58,12 +58,18 @@ public class RenderUtil {
         SnippetInvoker invoker = conf.getSnippetInvoker();
 
         String refId;
+        Element renderTarget;
         for (Element element : snippetList) {
-            context.setCurrentRenderingElement(element);
+            if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
+                renderTarget = element.children().first();
+            } else {
+                renderTarget = element;
+            }
+            context.setCurrentRenderingElement(renderTarget);
             renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             renderer = invoker.invoke(renderDeclaration);
             refId = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID);
-            apply(element, renderer);
+            apply(renderTarget, renderer);
             if (element.ownerDocument() == null) {
                 // it means this snippet element is replaced by a element
                 // completely
