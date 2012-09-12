@@ -1,7 +1,7 @@
 package com.astamuse.asta4d.test;
 
 
-import com.astamuse.asta4d.template.render.Renderer;
+import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.infra.BaseTest;
 import com.astamuse.asta4d.test.infra.SimpleCase;
 

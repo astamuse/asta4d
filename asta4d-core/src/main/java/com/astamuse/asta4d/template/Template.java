@@ -11,8 +11,8 @@ import org.jsoup.parser.Parser;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.template.extnode.ExtNodeConstants;
-import com.astamuse.asta4d.template.util.TemplateUtil;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.util.TemplateUtil;
 
 public class Template {
 

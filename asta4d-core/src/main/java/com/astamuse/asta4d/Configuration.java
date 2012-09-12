@@ -5,14 +5,14 @@ import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
+import com.astamuse.asta4d.snippet.SnippetInvoker;
+import com.astamuse.asta4d.snippet.extract.DefaultSnippetExtractor;
+import com.astamuse.asta4d.snippet.extract.SnippetExtractor;
+import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
+import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 import com.astamuse.asta4d.template.FileTemplateResolver;
 import com.astamuse.asta4d.template.TemplateResolver;
-import com.astamuse.asta4d.template.snippet.DefaultSnippetInvoker;
-import com.astamuse.asta4d.template.snippet.SnippetInvoker;
-import com.astamuse.asta4d.template.snippet.extract.DefaultSnippetExtractor;
-import com.astamuse.asta4d.template.snippet.extract.SnippetExtractor;
-import com.astamuse.asta4d.template.snippet.resolve.DefaultSnippetResolver;
-import com.astamuse.asta4d.template.snippet.resolve.SnippetResolver;
 
 public class Configuration {
 

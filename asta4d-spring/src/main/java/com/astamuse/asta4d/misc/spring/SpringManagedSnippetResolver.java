@@ -4,8 +4,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.astamuse.asta4d.template.snippet.SnippetNotResovlableException;
-import com.astamuse.asta4d.template.snippet.resolve.SnippetResolver;
+import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
+import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 
 public class SpringManagedSnippetResolver implements SnippetResolver, ApplicationContextAware {
 

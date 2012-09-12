@@ -2,13 +2,13 @@ package com.astamuse.asta4d.test;
 
 import org.jsoup.nodes.Element;
 
-import com.astamuse.asta4d.template.extnode.EmbedNode;
-import com.astamuse.asta4d.template.extnode.SnippetNode;
-import com.astamuse.asta4d.template.render.ChildReplacer;
-import com.astamuse.asta4d.template.render.Renderer;
-import com.astamuse.asta4d.template.util.ElementUtil;
+import com.astamuse.asta4d.extnode.EmbedNode;
+import com.astamuse.asta4d.extnode.SnippetNode;
+import com.astamuse.asta4d.render.ChildReplacer;
+import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.infra.BaseTest;
 import com.astamuse.asta4d.test.infra.SimpleCase;
+import com.astamuse.asta4d.util.ElementUtil;
 
 public class AdvancedSnippetTest extends BaseTest {
 

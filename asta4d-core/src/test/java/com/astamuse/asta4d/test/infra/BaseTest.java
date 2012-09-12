@@ -9,8 +9,8 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
 import com.astamuse.asta4d.template.ClasspathTemplateResolver;
-import com.astamuse.asta4d.template.snippet.resolve.DefaultSnippetResolver;
 
 @Test
 public class BaseTest {

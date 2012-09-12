@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jsoup.nodes.Element;
 
-import com.astamuse.asta4d.template.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 public class Context {
 

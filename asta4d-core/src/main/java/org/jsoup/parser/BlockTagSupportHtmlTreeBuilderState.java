@@ -12,7 +12,7 @@ import org.jsoup.nodes.DocumentType;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 
-import com.astamuse.asta4d.template.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 /**
  * The Tree Builder's current state. Each state embodies the processing for the

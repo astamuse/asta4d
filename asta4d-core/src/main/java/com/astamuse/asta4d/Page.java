@@ -5,11 +5,11 @@ import java.io.OutputStream;
 
 import org.jsoup.nodes.Document;
 
+import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateResolver;
-import com.astamuse.asta4d.template.render.Renderer;
-import com.astamuse.asta4d.template.util.RenderUtil;
+import com.astamuse.asta4d.util.RenderUtil;
 
 public class Page {
 
