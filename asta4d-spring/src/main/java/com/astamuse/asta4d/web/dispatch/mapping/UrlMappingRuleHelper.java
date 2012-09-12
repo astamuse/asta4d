@@ -49,8 +49,8 @@ public class UrlMappingRuleHelper {
         return sortedRuleList;
     }
 
-    public void add(RequestMethod method, String sourceUrl, int priority, Object pathvarRewritter, Object subController) {
-        urlRules.add(new UrlMappingRule(seq++, method, sourceUrl, priority, pathvarRewritter, subController));
+    public void add(RequestMethod method, String sourceUrl, int priority, Object pathvarRewritter, Object hanlder) {
+        urlRules.add(new UrlMappingRule(seq++, method, sourceUrl, priority, pathvarRewritter, hanlder));
     }
 
     // default to get
