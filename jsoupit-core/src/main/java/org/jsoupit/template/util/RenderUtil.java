@@ -32,16 +32,13 @@ import org.jsoupit.template.transformer.Transformer;
 // class.
 public class RenderUtil {
 
-    public final static void applySnippets(Element elem) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
-        Document doc = elem.ownerDocument();
-        // we believe the doc would not be null, but if at somewhere a
-        // hung element is passed, it will be a problem.
+    public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
         if (doc == null) {
-            throw new SnippetInvokeException("A hung element without owner document cannot be applied to execute snippets.");
+            return;
         }
         String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
                 ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
-        List<Element> snippetList = new ArrayList<>(elem.select(selector));
+        List<Element> snippetList = new ArrayList<>(doc.select(selector));
         int snippetListCount = snippetList.size();
         for (int i = snippetListCount - 1; i >= 0; i--) {
             // if parent snippet has not been executed, the current snippet will
@@ -90,7 +87,7 @@ public class RenderUtil {
         }
 
         // load embed nodes which parents blocking parents has finished
-        List<Element> embedNodeList = elem.select(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR);
+        List<Element> embedNodeList = doc.select(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR);
         int embedNodeListCount = embedNodeList.size();
         Iterator<Element> embedNodeIterator = embedNodeList.iterator();
         Element embed;
@@ -101,13 +98,14 @@ public class RenderUtil {
                 continue;
             }
             embedContent = TemplateUtil.getEmbedNodeContent(embed);
+            TemplateUtil.mergeBlock(doc, embedContent);
             embed.before(embedContent);
             embed.remove();
         }
 
         if ((snippetListCount + embedNodeListCount) > 0) {
-            TemplateUtil.regulateElement(elem);
-            applySnippets(elem);
+            TemplateUtil.regulateElement(doc);
+            applySnippets(doc);
         }
     }
 

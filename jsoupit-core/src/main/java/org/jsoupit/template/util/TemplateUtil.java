@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.jsoupit.Configuration;
 import org.jsoupit.Context;
@@ -13,6 +16,7 @@ import org.jsoupit.template.Template;
 import org.jsoupit.template.TemplateException;
 import org.jsoupit.template.TemplateResolver;
 import org.jsoupit.template.extnode.ExtNodeConstants;
+import org.jsoupit.template.extnode.GroupNode;
 import org.jsoupit.template.extnode.SnippetNode;
 
 public class TemplateUtil {
@@ -140,8 +144,27 @@ public class TemplateUtil {
             throw new TemplateException(message);
         }
 
-        Elements children = embedTarget.getDocumentClone().body().children();
-        Element wrappingNode = ElementUtil.wrapElementsToSingleNode(children);
+        Document embedDoc = embedTarget.getDocumentClone();
+        /*
+                Elements children = embedDoc.body().children();
+                Element wrappingNode = ElementUtil.wrapElementsToSingleNode(children);
+        */
+        Element wrappingNode = new GroupNode();
+        // retrieve all the blocks that misincluded into head
+        Element head = embedDoc.head();
+        Elements headChildren = head.children();
+        List<Node> tempList = new ArrayList<>();
+        String tagName;
+        for (Element child : headChildren) {
+            if (StringUtil.in(child.tagName(), "script", "link", ExtNodeConstants.BLOCK_NODE_TAG)) {
+                child.remove();
+                wrappingNode.appendChild(child);
+            }
+        }
+
+        Element body = embedDoc.body();
+        Elements bodyChildren = body.children();
+        ElementUtil.appendNodes(wrappingNode, new ArrayList<Node>(bodyChildren));
 
         // copy all the attrs to the wrapping group node
         Iterator<Attribute> attrs = elem.attributes().iterator();
@@ -152,5 +175,54 @@ public class TemplateUtil {
         }
 
         return wrappingNode;
+    }
+
+    public final static void mergeBlock(Document doc, Element content) {
+        Iterator<Element> blockIterator = content.select(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR).iterator();
+        Element block, targetBlock;
+        String blockTarget, blockType;
+        List<Node> childNodes;
+        while (blockIterator.hasNext()) {
+            block = blockIterator.next();
+            if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE)) {
+                blockType = ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE;
+            } else if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_APPEND)) {
+                blockType = ExtNodeConstants.BLOCK_NODE_ATTR_APPEND;
+            } else if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_INSERT)) {
+                blockType = ExtNodeConstants.BLOCK_NODE_ATTR_INSERT;
+            } else {
+                // TODO log out warning
+                continue;
+            }
+
+            blockTarget = block.attr(blockType);
+            if (blockTarget == null || blockTarget.isEmpty()) {
+                // TODO log out warning
+                continue;
+            }
+            targetBlock = doc.select(SelectorUtil.id(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, blockTarget)).first();
+            if (targetBlock == null) {
+                // TODO log out warning
+                continue;
+            }
+            childNodes = new ArrayList<>(block.childNodes());
+            ElementUtil.safeEmpty(block);
+            switch (blockType) {
+            case ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE:
+                targetBlock.empty();
+                ElementUtil.appendNodes(targetBlock, childNodes);
+                break;
+            case ExtNodeConstants.BLOCK_NODE_ATTR_APPEND:
+                ElementUtil.appendNodes(targetBlock, childNodes);
+                break;
+            case ExtNodeConstants.BLOCK_NODE_ATTR_INSERT:
+                List<Node> originNodes = new ArrayList<>(targetBlock.childNodes());
+                ElementUtil.safeEmpty(targetBlock);
+                ElementUtil.appendNodes(targetBlock, childNodes);
+                ElementUtil.appendNodes(targetBlock, originNodes);
+                break;
+            }
+            block.remove();
+        }
     }
 }

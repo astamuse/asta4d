@@ -1,0 +1,22 @@
+<jsoupit:extension parent="/TemplateWithExtension_Parent.html">
+
+<jsoupit:block append="myheadforappend">
+<script src="appendscript">
+aaa
+</script>
+</jsoupit:block>
+
+<jsoupit:block insert="myheadforinsert">
+<script src="insertscript">
+iii
+</script>
+</jsoupit:block>
+
+<jsoupit:block override="mybody">
+override body
+
+<jsoupit:embed target="/TemplateWithExtensionAndEmbedMerge_Embed.html"></jsoupit:embed>
+
+</jsoupit:block>
+
+</jsoupit:extension>
