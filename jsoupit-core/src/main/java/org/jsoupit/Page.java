@@ -26,7 +26,7 @@ public class Page {
         if (renderer != null) {
             RenderUtil.apply(doc, renderer);
         }
-        RenderUtil.applyClearAction(doc);
+        RenderUtil.applyClearAction(doc, true);
         out.write(doc.outerHtml().getBytes("utf-8"));
     }
 

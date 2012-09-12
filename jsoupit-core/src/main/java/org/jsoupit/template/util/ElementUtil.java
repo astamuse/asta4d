@@ -44,4 +44,23 @@ public class ElementUtil {
         }
         return groupNode;
     }
+
+    /**
+     * there is a bug in jsoup, so we implement a safe empty by ourselves.
+     * https://github.com/jhy/jsoup/issues/239
+     * 
+     * @param node
+     */
+    public final static void safeEmpty(Node node) {
+        List<Node> children = new ArrayList<>(node.childNodes());
+        for (Node child : children) {
+            child.remove();
+        }
+    }
+
+    public final static void appendNodes(Element parent, List<Node> children) {
+        for (Node node : children) {
+            parent.appendChild(node);
+        }
+    }
 }

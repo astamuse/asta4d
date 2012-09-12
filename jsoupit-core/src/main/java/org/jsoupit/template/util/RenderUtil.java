@@ -161,11 +161,16 @@ public class RenderUtil {
         }// while currentRenderer.next
     }
 
-    public final static void applyClearAction(Element target) {
-        String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
-                ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
+    public final static void applyClearAction(Element target, boolean forFinalClean) {
+        if (forFinalClean) {
+            String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
+                    ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
+            // TODO check if there are unfinished snippet left.
+            removeJsoupitNodes(target, removeSnippetSelector, true);
 
-        removeJsoupitNodes(target, removeSnippetSelector, true);
+            removeJsoupitNodes(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
+
+        }
         removeJsoupitNodes(target, ExtNodeConstants.CLEAR_NODE_TAG_SELECTOR, false);
         removeJsoupitNodes(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
 

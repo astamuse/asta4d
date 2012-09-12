@@ -2,15 +2,21 @@ package org.jsoupit.template;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.BlockTagSupportHtmlTreeBuilder;
+import org.jsoup.parser.Parser;
 import org.jsoupit.Configuration;
 import org.jsoupit.Context;
 import org.jsoupit.template.extnode.ExtNodeConstants;
-import org.jsoupit.template.util.RenderUtil;
+import org.jsoupit.template.util.ElementUtil;
+import org.jsoupit.template.util.SelectorUtil;
 import org.jsoupit.template.util.TemplateUtil;
 
 public class Template {
@@ -29,7 +35,8 @@ public class Template {
     public Template(String path, InputStream input) throws TemplateException {
         try {
             this.path = path;
-            this.doc = Jsoup.parse(input, "UTF-8", "");
+            this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
+            // this.doc = Jsoup.parse(input, "UTF-8", "");
             initDocument();
         } catch (IOException e) {
             throw new TemplateException(e);
@@ -38,39 +45,67 @@ public class Template {
 
     private void initDocument() throws TemplateException {
         // find inject
-        processInjection();
+        processExtension();
         TemplateUtil.regulateElement(doc);
     }
 
-    private void processInjection() throws TemplateException {
-        Element injection = doc.select(ExtNodeConstants.INJECT_NODE_TAG_SELECTOR).first();
-        if (injection != null) {
-            String target = injection.attr(ExtNodeConstants.INJECT_NODE_ATTR_TARGET);
-            if (target == null || target.isEmpty()) {
-                throw new RuntimeException("You must specify target of a injection");
+    private void processExtension() throws TemplateException {
+        Element extension = doc.select(ExtNodeConstants.EXTENSION_NODE_TAG_SELECTOR).first();
+        if (extension != null) {
+            String parentPath = extension.attr(ExtNodeConstants.EXTENSION_NODE_ATTR_PARENT);
+            if (parentPath == null || parentPath.isEmpty()) {
+                throw new RuntimeException("You must specify the parent of an extension");
             }
             Configuration conf = Context.getCurrentThreadContext().getConfiguration();
-            Template parent = conf.getTemplateResolver().findTemplate(target);
+            Template parent = conf.getTemplateResolver().findTemplate(parentPath);
             Document parentDoc = parent.getDocumentClone();
-            Iterator<Element> blockIterator = injection.select(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR).iterator();
-            Element block, targetDock;
-            String blockTarget;
-            String targetDockSelector = ExtNodeConstants.DOCK_NODE_TAG_SELECTOR + "[" + ExtNodeConstants.DOCK_NODE_ATTR_NAME + "=%s]";
+            Iterator<Element> blockIterator = extension.select(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR).iterator();
+            Element block, targetBlock;
+            String blockTarget, blockType;
+            List<Node> childNodes;
             while (blockIterator.hasNext()) {
                 block = blockIterator.next();
-                blockTarget = block.attr(ExtNodeConstants.BLOCK_NODE_ATTR_TARGET);
-                if (blockTarget == null || blockTarget.isEmpty()) {
-                    continue;
-                }
-                targetDock = parentDoc.select(String.format(targetDockSelector, blockTarget)).first();
-                if (targetDock == null) {
+                if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE)) {
+                    blockType = ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE;
+                } else if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_APPEND)) {
+                    blockType = ExtNodeConstants.BLOCK_NODE_ATTR_APPEND;
+                } else if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_INSERT)) {
+                    blockType = ExtNodeConstants.BLOCK_NODE_ATTR_INSERT;
+                } else {
+                    // TODO log out warning
                     continue;
                 }
 
-                targetDock.replaceWith(block);
+                blockTarget = block.attr(blockType);
+                if (blockTarget == null || blockTarget.isEmpty()) {
+                    // TODO log out warning
+                    continue;
+                }
+                targetBlock = parentDoc.select(SelectorUtil.id(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, blockTarget)).first();
+                if (targetBlock == null) {
+                    // TODO log out warning
+                    continue;
+                }
+                childNodes = new ArrayList<>(block.childNodes());
+                ElementUtil.safeEmpty(block);
+                switch (blockType) {
+                case ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE:
+                    targetBlock.empty();
+                    ElementUtil.appendNodes(targetBlock, childNodes);
+                    break;
+                case ExtNodeConstants.BLOCK_NODE_ATTR_APPEND:
+                    ElementUtil.appendNodes(targetBlock, childNodes);
+                    break;
+                case ExtNodeConstants.BLOCK_NODE_ATTR_INSERT:
+                    List<Node> originNodes = new ArrayList<>(targetBlock.childNodes());
+                    ElementUtil.safeEmpty(targetBlock);
+                    ElementUtil.appendNodes(targetBlock, childNodes);
+                    ElementUtil.appendNodes(targetBlock, originNodes);
+                    break;
+                }
+
+                // targetDock.replaceWith(block);
             }
-            RenderUtil.removeJsoupitNodes(parentDoc, ExtNodeConstants.DOCK_NODE_TAG_SELECTOR, false);
-            RenderUtil.removeJsoupitNodes(parentDoc, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
             doc = parentDoc;
         }
     }

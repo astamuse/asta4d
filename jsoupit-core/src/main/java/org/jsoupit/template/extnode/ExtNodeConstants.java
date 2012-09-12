@@ -22,20 +22,17 @@ public class ExtNodeConstants {
         return "." + ID_PREFIX + "-" + name;
     }
 
-    public final static String DOCK_NODE_NAME = "dock";
-    public final static String DOCK_NODE_TAG = buildTag(DOCK_NODE_NAME);
-    public final static String DOCK_NODE_TAG_SELECTOR = buildTagSelector(DOCK_NODE_NAME);
-    public final static String DOCK_NODE_ATTR_NAME = "name";
-
     public final static String BLOCK_NODE_NAME = "block";
     public final static String BLOCK_NODE_TAG = buildTag(BLOCK_NODE_NAME);
     public final static String BLOCK_NODE_TAG_SELECTOR = buildTagSelector(BLOCK_NODE_NAME);
-    public final static String BLOCK_NODE_ATTR_TARGET = "dock";
+    public final static String BLOCK_NODE_ATTR_OVERRIDE = "override";
+    public final static String BLOCK_NODE_ATTR_APPEND = "append";
+    public final static String BLOCK_NODE_ATTR_INSERT = "insert";
 
-    public final static String INJECT_NODE_NAME = "inject";
-    public final static String INJECT_NODE_TAG = buildTag(INJECT_NODE_NAME);
-    public final static String INJECT_NODE_TAG_SELECTOR = buildTagSelector(INJECT_NODE_NAME);
-    public final static String INJECT_NODE_ATTR_TARGET = "target";
+    public final static String EXTENSION_NODE_NAME = "extension";
+    public final static String EXTENSION_NODE_TAG = buildTag(EXTENSION_NODE_NAME);
+    public final static String EXTENSION_NODE_TAG_SELECTOR = buildTagSelector(EXTENSION_NODE_NAME);
+    public final static String EXTENSION_NODE_ATTR_PARENT = "parent";
 
     public final static String EMBED_NODE_NAME = "embed";
     public final static String EMBED_NODE_TAG = buildTag(EMBED_NODE_NAME);
