@@ -26,12 +26,14 @@ public class Configuration {
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
+    private boolean cacheEnable = true;
+
     /**
-     * at present, this item is used as a global setting
+     * at present, the following items are regarded as global settings
      */
     private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
-    private boolean cacheEnable = true;
+    private String tagNameSpace = "afd";
 
     public TemplateResolver getTemplateResolver() {
         return templateResolver;
@@ -73,6 +75,14 @@ public class Configuration {
         this.contextDataFinder = contextDataFinder;
     }
 
+    public boolean isCacheEnable() {
+        return cacheEnable;
+    }
+
+    public void setCacheEnable(boolean cacheEnable) {
+        this.cacheEnable = cacheEnable;
+    }
+
     public List<String> getReverseInjectableScopes() {
         return reverseInjectableScopes;
     }
@@ -81,12 +91,12 @@ public class Configuration {
         this.reverseInjectableScopes = reverseInjectableScopes;
     }
 
-    public boolean isCacheEnable() {
-        return cacheEnable;
+    public String getTagNameSpace() {
+        return tagNameSpace;
     }
 
-    public void setCacheEnable(boolean cacheEnable) {
-        this.cacheEnable = cacheEnable;
+    public void setTagNameSpace(String tagNameSpace) {
+        this.tagNameSpace = tagNameSpace;
     }
 
 }

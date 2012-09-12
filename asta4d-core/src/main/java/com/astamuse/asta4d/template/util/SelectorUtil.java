@@ -46,4 +46,8 @@ public class SelectorUtil {
         sb.append("#").append(id);
         return sb.toString();
     }
+
+    public final static String tag(String tag) {
+        return tag.replace(':', '|');
+    }
 }
