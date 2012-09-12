@@ -9,11 +9,11 @@
   </parent>
   
   <groupId>com.astamuse</groupId>
-  <artifactId>jsoupit-spring</artifactId>
+  <artifactId>asta4d-spring</artifactId>
   <version>0.1</version>
   <packaging>jar</packaging>
 
-  <name>com.astamuse.jsoupit-sprin</name>
+  <name>com.astamuse.asta4d-spring</name>
   <url></url>
 
   <repositories>
@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>com.astamuse</groupId>
-      <artifactId>jsoupit-core</artifactId>
+      <artifactId>asta4d-core</artifactId>
       <version>0.1</version>
     </dependency>
     
