@@ -11,8 +11,8 @@
   <url>http://eureika2013.astamuse.com</url>
 
     <modules>
-        <module>jsoupit-core</module>
-        <module>jsoupit-spring</module>
+        <module>asta4d-core</module>
+        <module>asta4d-spring</module>
         <module>eureika-web</module>
     </modules>  
   
