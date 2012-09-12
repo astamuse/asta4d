@@ -1,0 +1,48 @@
+package com.astamuse.asta4d.test.infra;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.template.ClasspathTemplateResolver;
+import com.astamuse.asta4d.template.snippet.resolve.DefaultSnippetResolver;
+
+@Test
+public class BaseTest {
+    private final static Configuration configuration = new Configuration() {
+        {
+            ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
+            List<String> templateBaseFolders = Arrays.asList("/com/astamuse/asta4d/test/templates");
+            templateResolver.setSearchPathList(templateBaseFolders);
+            this.setTemplateResolver(templateResolver);
+
+            DefaultSnippetResolver snippetResolver = new DefaultSnippetResolver();
+            List<String> snippetBasePackages = Arrays.asList("com.astamuse.asta4d.test");
+            snippetResolver.setSearchPathList(snippetBasePackages);
+            this.setSnippetResolver(snippetResolver);
+        }
+    };
+
+    @BeforeMethod
+    public void initContext() {
+        Context context = Context.getCurrentThreadContext();
+        if (context == null) {
+            context = new Context();
+            context.setConfiguration(configuration);
+            Context.setCurrentThreadContext(context);
+
+        }
+        context.clearSavedData();
+    }
+
+    @AfterMethod
+    public void clearContext() {
+        Context.getCurrentThreadContext().clearSavedData();
+    }
+
+}

@@ -1,0 +1,22 @@
+<a4d:extension parent="/TemplateWithExtension_Parent.html">
+
+<a4d:block append="myheadforappend">
+<script src="appendscript">
+aaa
+</script>
+</a4d:block>
+
+<a4d:block insert="myheadforinsert">
+<script src="insertscript">
+iii
+</script>
+</a4d:block>
+
+<a4d:block override="mybody">
+override body
+
+<a4d:embed target="/TemplateWithExtensionAndEmbedMerge_Embed.html"></a4d:embed>
+
+</a4d:block>
+
+</a4d:extension>
