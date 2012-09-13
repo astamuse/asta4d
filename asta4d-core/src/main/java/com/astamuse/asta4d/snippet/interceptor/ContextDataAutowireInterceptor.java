@@ -11,7 +11,7 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
     private final static String InstanceCacheKey = ContextDataAutowireInterceptor.class + "##InstanceCacheKey##";
 
     @Override
-    public void beforeSnippet(SnippetExecutionHolder execution) throws SnippetInvokeException {
+    public boolean beforeProcess(SnippetExecutionHolder execution) throws Exception {
 
         try {
             Context context = Context.getCurrentThreadContext();
@@ -28,7 +28,7 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
 
             Object[] params = InjectUtil.getMethodInjectParams(execution.getMethod());
             execution.setParams(params);
-
+            return true;
         } catch (DataOperationException e) {
             throw new SnippetInvokeException(e);
         }
@@ -36,8 +36,7 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
     }
 
     @Override
-    public void afterSnippet(SnippetExecutionHolder execution) {
-        // TODO reverse wiring
+    public void afterProcess(SnippetExecutionHolder execution, Exception ex) throws Exception {
 
     }
 

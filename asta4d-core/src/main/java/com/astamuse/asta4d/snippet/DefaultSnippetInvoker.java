@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.snippet;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.interceptor.Executor;
+import com.astamuse.asta4d.interceptor.InterceptorUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.extract.SnippetExtractor;
 import com.astamuse.asta4d.snippet.interceptor.ContextDataAutowireInterceptor;
@@ -37,54 +38,29 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
 
         Method method = getSnippetMethod(info, instance);
 
-        try {
-
-            SnippetExecutionHolder execution = new SnippetExecutionHolder(info, instance, method, null, null);
-
-            SnippetInterceptor lastInterceptor = beforeSnippet(execution);
-            if (execution.getExecuteResult() == null) {
-                Object[] params = execution.getParams();
+        SnippetExecutionHolder execution = new SnippetExecutionHolder(info, instance, method, null, null);
+        Executor<SnippetExecutionHolder> executor = new Executor<SnippetExecutionHolder>() {
+            @Override
+            public void execute(SnippetExecutionHolder executionHolder) throws Exception {
+                Object instance = executionHolder.getInstance();
+                Method method = executionHolder.getMethod();
+                Object[] params = executionHolder.getParams();
                 if (params == null) {
-                    execution.setExecuteResult((Renderer) method.invoke(execution.getInstance()));
+                    executionHolder.setExecuteResult((Renderer) method.invoke(instance));
                 } else {
-                    execution.setExecuteResult((Renderer) method.invoke(execution.getInstance(), params));
+                    executionHolder.setExecuteResult((Renderer) method.invoke(instance, params));
                 }
-
             }
-            afterSnippet(lastInterceptor, info, execution);
+        };
+        try {
+            InterceptorUtil.executeWithInterceptors(execution, snippetInterceptorList, executor);
             return execution.getExecuteResult();
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            throw new SnippetInvokeException(e);
+        } catch (SnippetInvokeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new SnippetInvokeException(ex);
         }
-    }
 
-    protected SnippetInterceptor beforeSnippet(SnippetExecutionHolder execution) throws SnippetInvokeException {
-        SnippetInterceptor lastInterceptor = null;
-        for (SnippetInterceptor interceptor : snippetInterceptorList) {
-            // TODO how about a exception in before snippet?
-            interceptor.beforeSnippet(execution);
-            lastInterceptor = interceptor;
-            if (execution.getExecuteResult() != null) {
-                break;
-            }
-        }
-        return lastInterceptor;
-    }
-
-    protected void afterSnippet(SnippetInterceptor lastInterceptor, SnippetDeclarationInfo info, SnippetExecutionHolder execution)
-            throws SnippetInvokeException {
-        SnippetInterceptor interceptor = null;
-        boolean foundStoppedPoint = false;
-        for (int i = snippetInterceptorList.size() - 1; i >= 0; i--) {
-            interceptor = snippetInterceptorList.get(i);
-            if (!foundStoppedPoint) {
-                foundStoppedPoint = interceptor == lastInterceptor;
-            }
-            if (foundStoppedPoint) {
-                interceptor.afterSnippet(execution);
-            }
-
-        }
     }
 
     protected Method getSnippetMethod(SnippetDeclarationInfo info, Object snippetInstance) throws SnippetNotResovlableException {
