@@ -13,10 +13,9 @@ public class SnippetDeclarationInfo {
         this.snippetName = snippetName;
         this.snippetHandler = snippetHandler;
 
-        final int prime = 31;
-        _hashcode = 1;
-        _hashcode = prime * _hashcode + ((snippetHandler == null) ? 0 : snippetHandler.hashCode());
-        _hashcode = prime * _hashcode + ((snippetName == null) ? 0 : snippetName.hashCode());
+        _hashcode = 0;
+        _hashcode += snippetHandler == null ? 0 : snippetHandler.hashCode();
+        _hashcode += snippetName == null ? 0 : snippetName.hashCode();
 
     }
 

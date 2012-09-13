@@ -8,7 +8,6 @@ public abstract class MultiSearchPathResourceLoader<T> {
     private List<String> searchPathList = new ArrayList<>();
 
     public MultiSearchPathResourceLoader() {
-        // TODO Auto-generated constructor stub
     }
 
     public T searchResource(String name, String pathSeparator) {

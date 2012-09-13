@@ -1,29 +1,30 @@
 package com.astamuse.asta4d.misc.spring;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
-import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
+import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
 
-public class SpringManagedSnippetResolver implements SnippetResolver, ApplicationContextAware {
+public class SpringManagedSnippetResolver extends DefaultSnippetResolver implements ApplicationContextAware {
 
-    private static ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
-    @Override
-    public Object findSnippet(String snippetName) throws SnippetNotResovlableException {
-        try {
-            return applicationContext.getBean(snippetName);
-        } catch (Exception ex) {
-            throw new SnippetNotResovlableException(String.format("snippet [%s] not found", snippetName), ex);
-        }
-    }
-
-    @SuppressWarnings("static-access")
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.applicationContext = context;
+    }
+
+    @Override
+    protected Object loadResource(String name) {
+        try {
+            return applicationContext.getBean(name);
+        } catch (NoSuchBeanDefinitionException e) {
+            return null;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
 }

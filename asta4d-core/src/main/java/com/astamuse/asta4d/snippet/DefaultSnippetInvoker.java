@@ -3,7 +3,6 @@ package com.astamuse.asta4d.snippet;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
@@ -17,8 +16,6 @@ import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 
 public class DefaultSnippetInvoker implements SnippetInvoker {
 
-    private final static ConcurrentHashMap<SnippetDeclarationInfo, Method> methodCache = new ConcurrentHashMap<>();
-
     private List<SnippetInterceptor> snippetInterceptorList = getDefaultSnippetInterceptorList();
 
     protected static class InterceptorResult {
@@ -31,14 +28,12 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         Configuration conf = Context.getCurrentThreadContext().getConfiguration();
 
         SnippetExtractor extractor = conf.getSnippetExtractor();
-        SnippetDeclarationInfo info = extractor.extract(renderDeclaration);
+        SnippetDeclarationInfo declaration = extractor.extract(renderDeclaration);
 
         SnippetResolver resolver = conf.getSnippetResolver();
-        Object instance = resolver.findSnippet(info.getSnippetName());
+        SnippetExcecutionInfo exeInfo = resolver.resloveSnippet(declaration);
 
-        Method method = getSnippetMethod(info, instance);
-
-        SnippetExecutionHolder execution = new SnippetExecutionHolder(info, instance, method, null, null);
+        SnippetExecutionHolder execution = new SnippetExecutionHolder(declaration, exeInfo.getInstance(), exeInfo.getMethod(), null, null);
         Executor<SnippetExecutionHolder> executor = new Executor<SnippetExecutionHolder>() {
             @Override
             public void execute(SnippetExecutionHolder executionHolder) throws Exception {
@@ -61,30 +56,6 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
             throw new SnippetInvokeException(ex);
         }
 
-    }
-
-    protected Method getSnippetMethod(SnippetDeclarationInfo info, Object snippetInstance) throws SnippetNotResovlableException {
-        Method m = methodCache.get(info);
-        if (m == null) {
-            m = findSnippetMethod(snippetInstance, info.getSnippetHandler());
-            if (m == null) {
-                throw new SnippetNotResovlableException("Snippet cannot be resolved for " + info);
-            }
-            // we do not mind that the exited method instance would be overrode
-            methodCache.put(info, m);
-        }
-        return m;
-    }
-
-    protected Method findSnippetMethod(Object snippetInstance, String methodName) {
-        Method[] methodList = snippetInstance.getClass().getMethods();
-        Class<?> rendererCls = Renderer.class;
-        for (Method method : methodList) {
-            if (method.getName().equals(methodName) && rendererCls.isAssignableFrom(method.getReturnType())) {
-                return method;
-            }
-        }
-        return null;
     }
 
     protected List<SnippetInterceptor> getDefaultSnippetInterceptorList() {
