@@ -1,5 +1,5 @@
 package com.astamuse.asta4d.render;
 
-public interface ListConvertor<S, T> {
+public interface DataConvertor<S, T> {
     public T convert(S obj);
 }

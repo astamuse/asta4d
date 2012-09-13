@@ -86,4 +86,9 @@ public class RenderingTest extends BaseTest {
         // TODO
     }
 
+    public void testRendererAddOperation() {
+        // TODO it should act correctly even though we do not add renderer to
+        // the first created render
+    }
+
 }

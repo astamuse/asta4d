@@ -132,14 +132,14 @@ public class RenderUtil {
     }
 
     public final static void apply(Element target, Renderer renderer) {
-        Document doc = target.ownerDocument();
-        Renderer currentRenderer = renderer;
         String selector;
         ListIterator<Element> elemIterator;
         Element elem;
-        while (currentRenderer != null) {
+        Iterator<Renderer> rendererIterator = renderer.iterator();
+        Renderer currentRenderer = null;
+        while (rendererIterator.hasNext()) {
+            currentRenderer = rendererIterator.next();
             if (currentRenderer instanceof GoThroughRenderer) {
-                currentRenderer = currentRenderer.getNext();
                 continue;
             }
 
@@ -156,8 +156,7 @@ public class RenderUtil {
                 }// for
                 elem.remove();
             }// while elemIterator
-            currentRenderer = currentRenderer.getNext();
-        }// while currentRenderer.next
+        }// while rendererIterator next
     }
 
     public final static void applyClearAction(Element target, boolean forFinalClean) {

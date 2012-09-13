@@ -1,6 +1,7 @@
 package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
@@ -13,13 +14,13 @@ import com.astamuse.asta4d.transformer.Transformer;
 
 public class Renderer {
 
+    // private in
+
     private String selector;
 
     private List<Transformer<?>> transformerList;
 
-    private Renderer next;
-
-    private Renderer head;
+    private List<Renderer> chain;
 
     /*
      * public Renderer(){ selector = ""; transformerList = new
@@ -27,18 +28,20 @@ public class Renderer {
      */
 
     public Renderer(String selector, Transformer<?> transformer) {
-        this.selector = selector;
-        this.transformerList = new ArrayList<Transformer<?>>(1);
-        transformerList.add(transformer);
-        next = null;
-        head = this;
+        List<Transformer<?>> list = new ArrayList<>();
+        list.add(transformer);
+        init(selector, list);
     }
 
     public Renderer(String selector, List<Transformer<?>> transformerList) {
+        init(selector, transformerList);
+    }
+
+    public void init(String selector, List<Transformer<?>> transformerList) {
         this.selector = selector;
         this.transformerList = transformerList;
-        next = null;
-        head = this;
+        chain = new ArrayList<>();
+        chain.add(this);
     }
 
     public String getSelector() {
@@ -54,21 +57,16 @@ public class Renderer {
         return "selector:" + selector;
     }
 
-    public Renderer getNext() {
-        return next;
+    public Iterator<Renderer> iterator() {
+        return this.chain.iterator();
     }
 
     public Renderer add(Renderer renderer) {
-        Renderer addPoint = this;
-        while (addPoint.next != null) {
-            addPoint = addPoint.next;
+        this.chain.addAll(renderer.chain);
+        for (Renderer r : renderer.chain) {
+            r.chain = this.chain;
         }
-        addPoint.next = renderer;
-        renderer.head = addPoint.head;
-        // should return the top in the chain
-        // TODO we should rewrite the add logic and RenderUtil should always try
-        // to get the head
-        return head;
+        return renderer;
     }
 
     public Renderer add(String selector, long value) {
@@ -99,7 +97,7 @@ public class Renderer {
         return add(create(selector, setter));
     }
 
-    public <S, T> Renderer add(String selector, List<S> list, ListConvertor<S, T> convertor) {
+    public <S, T> Renderer add(String selector, List<S> list, DataConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
 
@@ -135,7 +133,7 @@ public class Renderer {
         return new Renderer(selector, new ElementSetterTransformer(setter));
     }
 
-    public final static <S, T> Renderer create(String selector, List<S> list, ListConvertor<S, T> convertor) {
+    public final static <S, T> Renderer create(String selector, List<S> list, DataConvertor<S, T> convertor) {
         List<T> newList = new ArrayList<>();
         for (S obj : list) {
             newList.add(convertor.convert(obj));
