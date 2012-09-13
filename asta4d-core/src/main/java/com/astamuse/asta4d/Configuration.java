@@ -1,10 +1,12 @@
 package com.astamuse.asta4d;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
 import com.astamuse.asta4d.snippet.extract.DefaultSnippetExtractor;
@@ -23,6 +25,8 @@ public class Configuration {
     private SnippetResolver snippetResolver = new DefaultSnippetResolver();
 
     private SnippetExtractor snippetExtractor = new DefaultSnippetExtractor();
+
+    private List<PageInterceptor> pageInterceptorList = new ArrayList<>();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
@@ -65,6 +69,14 @@ public class Configuration {
 
     public void setSnippetExtractor(SnippetExtractor snippetExtractor) {
         this.snippetExtractor = snippetExtractor;
+    }
+
+    public List<PageInterceptor> getPageInterceptorList() {
+        return pageInterceptorList;
+    }
+
+    public void setPageInterceptorList(List<PageInterceptor> pageInterceptorList) {
+        this.pageInterceptorList = pageInterceptorList;
     }
 
     public ContextDataFinder getContextDataFinder() {

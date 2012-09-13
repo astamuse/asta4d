@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.interceptor.Executor;
-import com.astamuse.asta4d.interceptor.InterceptorUtil;
+import com.astamuse.asta4d.interceptor.base.Executor;
+import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.extract.SnippetExtractor;
 import com.astamuse.asta4d.snippet.interceptor.ContextDataAutowireInterceptor;

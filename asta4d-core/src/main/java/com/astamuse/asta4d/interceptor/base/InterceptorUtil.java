@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.interceptor;
+package com.astamuse.asta4d.interceptor.base;
 
 import java.util.ArrayList;
 import java.util.List;

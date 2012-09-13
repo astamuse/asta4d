@@ -4,7 +4,7 @@ import com.astamuse.asta4d.render.Renderer;
 
 public interface PageInterceptor {
 
-    public Renderer beforePageRendering();
+    public boolean prePageRendering(Renderer renderer);
 
-    public Renderer afterPageRendering();
+    public void postPageRendering(Renderer renderer);
 }
