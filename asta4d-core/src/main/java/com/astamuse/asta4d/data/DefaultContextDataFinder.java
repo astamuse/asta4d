@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.adapter.String2Int;
+import com.astamuse.asta4d.data.builtin.String2Int;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
 

@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.data.adapter;
+package com.astamuse.asta4d.data.builtin;
 
 import com.astamuse.asta4d.data.DataConvertor;
 
