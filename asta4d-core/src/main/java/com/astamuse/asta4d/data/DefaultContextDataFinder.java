@@ -17,7 +17,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
 
     private final static List<DataConvertor<?, ?>> getDefaultDataConvertorList() {
         // TODO perhaps we can implement an mechanism to automatically retrieve
-        // all possible adapters via annotation check on all loaded classes.
+        // all possible convertors via annotation check on all loaded classes.
         // Anyway, it is not necessary.
         List<DataConvertor<?, ?>> defaultList = new ArrayList<>();
         defaultList.add(new String2Int());
@@ -36,7 +36,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         return dataConvertorList;
     }
 
-    public void setDataAapterList(List<DataConvertor<?, ?>> dataConvertorList) {
+    public void setDataConvertorList(List<DataConvertor<?, ?>> dataConvertorList) {
         List<DataConvertor<?, ?>> list = new ArrayList<>(dataConvertorList);
         list.addAll(getDefaultDataConvertorList());
         this.dataConvertorList = list;
