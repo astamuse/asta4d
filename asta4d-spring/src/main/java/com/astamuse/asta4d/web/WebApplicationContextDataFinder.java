@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
@@ -25,11 +26,13 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
 
     @Override
     public Object findDataInContext(Context context, String scope, String name, Class<?> type) {
+        // TODO class equals is not reliable
         if (type.equals(HttpServletRequest.class)) {
             return ((WebApplicationContext) context).getRequest();
+        } else if (type.equals(HttpServletResponse.class)) {
+            return ((WebApplicationContext) context).getResponse();
         } else {
             return super.findDataInContext(context, scope, name, type);
         }
     }
-
 }
