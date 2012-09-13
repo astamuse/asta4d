@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.transformer.ElementTransformer;
 import com.astamuse.asta4d.transformer.RendererTransformer;

@@ -1,5 +1,6 @@
 package com.astamuse.asta4d.data;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,15 +11,15 @@ import com.astamuse.asta4d.data.adapter.String2Int;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
 
-    private List<ContextDataAdapter> dataAapterList = getDefaultDataAdapterList();
+    private List<DataConvertor<?, ?>> dataConvertorList = getDefaultDataConvertorList();
 
     private List<String> dataSearchScopeOrder = getDefaultScopeOrder();
 
-    private final static List<ContextDataAdapter> getDefaultDataAdapterList() {
+    private final static List<DataConvertor<?, ?>> getDefaultDataConvertorList() {
         // TODO perhaps we can implement an mechanism to automatically retrieve
         // all possible adapters via annotation check on all loaded classes.
         // Anyway, it is not necessary.
-        List<ContextDataAdapter> defaultList = new ArrayList<>();
+        List<DataConvertor<?, ?>> defaultList = new ArrayList<>();
         defaultList.add(new String2Int());
         return defaultList;
     }
@@ -31,14 +32,14 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         return list;
     }
 
-    public List<ContextDataAdapter> getDataAdapterList() {
-        return dataAapterList;
+    public List<DataConvertor<?, ?>> getDataConvertorList() {
+        return dataConvertorList;
     }
 
-    public void setDataAapterList(List<ContextDataAdapter> dataAapterList) {
-        List<ContextDataAdapter> list = new ArrayList<>(dataAapterList);
-        list.addAll(getDefaultDataAdapterList());
-        this.dataAapterList = list;
+    public void setDataAapterList(List<DataConvertor<?, ?>> dataConvertorList) {
+        List<DataConvertor<?, ?>> list = new ArrayList<>(dataConvertorList);
+        list.addAll(getDefaultDataConvertorList());
+        this.dataConvertorList = list;
     }
 
     public List<String> getDataSearchScopeOrder() {
@@ -49,6 +50,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         this.dataSearchScopeOrder = dataSearchScopeOrder;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Object findDataInContext(Context context, String scope, String name, Class<?> type) {
         Object data = null;
@@ -66,12 +68,12 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             return data;
         }
 
-        ContextDataAdapter adapter = getAdapter(data.getClass(), type);
-        if (adapter == null) {
+        DataConvertor convertor = getConvertor(data.getClass(), type);
+        if (convertor == null) {
             // TODO what to do?
             return null;
         } else {
-            return adapter.convert(data);
+            return convertor.convert(data);
         }
 
     }
@@ -88,12 +90,21 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
     }
 
-    private ContextDataAdapter getAdapter(Class<?> srcType, Class<?> targetType) {
+    private DataConvertor<?, ?> getConvertor(Class<?> srcType, Class<?> targetType) {
         // TODO need a cache
-        for (ContextDataAdapter adapter : dataAapterList) {
-            if (adapter.getSourceType().isAssignableFrom(srcType) && targetType.isAssignableFrom(adapter.getTargetType())) {
-                return adapter;
+        try {
+            Class<?> convertorSrcType, convertorTargetType;
+            Method method;
+            for (DataConvertor<?, ?> convertor : dataConvertorList) {
+                method = convertor.getClass().getMethod("convert");
+                convertorSrcType = method.getParameterTypes()[0];
+                convertorTargetType = method.getReturnType();
+                if (convertorSrcType.isAssignableFrom(srcType) && targetType.isAssignableFrom(convertorTargetType)) {
+                    return convertor;
+                }
             }
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }
