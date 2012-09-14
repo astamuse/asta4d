@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <bookinfo>
+    <title>Asta4D Framework user guide</title>
+
+    <productname>Asta4D Framework</productname>
+
+    <releaseinfo>0.1</releaseinfo>
+
+    <authorgroup>
+      <author>
+        <firstname>rui</firstname>
+
+        <surname>liu</surname>
+      </author>
+    </authorgroup>
+  </bookinfo>
+
+  <!-- front matter -->
+
+  <toc></toc>
+
+  <part id="asta4d-introduction">
+    <title>Overview of Asta4D Framework</title>
+
+    <partintro id="asta4d-core-intro">
+      <para>asta4d is a lift like framework with Java.</para>
+    </partintro>
+  </part>
+  
+</book>
