@@ -115,23 +115,31 @@ public class RenderUtil {
         String blockingId = elem.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK);
         if (blockingId.isEmpty()) {
             // empty block id means there is no parent snippet that need to be
-            // aware
+            // aware. if the original block is from a embed template, it means
+            // that all of the parent snippets have been finished or this
+            // element would not be imported now.
             isBlocked = false;
         } else {
             String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_REFID,
                     blockingId);
-            // TODO perhaps it does not exists.
-            Element parentSnippet = doc.select(parentSelector).get(0);
-            if (parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
+            Elements parentSnippetSearch = doc.select(parentSelector);
+            if (parentSnippetSearch.isEmpty()) {
                 isBlocked = false;
             } else {
-                isBlocked = true;
+                Element parentSnippet = parentSnippetSearch.first();
+                if (parentSnippet.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS)
+                        .equals(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED)) {
+                    isBlocked = false;
+                } else {
+                    isBlocked = true;
+                }
             }
         }
         return isBlocked;
     }
 
     public final static void apply(Element target, Renderer renderer) {
+        // TODO we should write current rendering element here!!!
         String selector;
         ListIterator<Element> elemIterator;
         Element elem;

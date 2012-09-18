@@ -10,8 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
@@ -19,8 +17,6 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 
 public class InjectUtil {
-
-    private final static Logger logger = LoggerFactory.getLogger(InjectUtil.class);
 
     private static class TargetInfo {
         String name;
@@ -196,9 +192,8 @@ public class InjectUtil {
                         isSet = true;
                     } else {
                         String msg = String.format(
-                                "Only one parameter is allowed on a method declared with ContextData annoataion.({0}:{1})", cls.getName(),
+                                "Only one parameter is allowed on a method declared with ContextData annoataion.(%s:%s)", cls.getName(),
                                 mi.name);
-                        logger.error(msg);
                         throw new DataOperationException(msg);
                     }
                 }

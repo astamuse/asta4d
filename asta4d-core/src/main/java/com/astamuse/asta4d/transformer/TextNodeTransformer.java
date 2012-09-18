@@ -1,16 +1,27 @@
 package com.astamuse.asta4d.transformer;
 
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TextNodeTransformer extends Transformer<String> {
+
+    private final static Logger logger = LoggerFactory.getLogger(TextNodeTransformer.class);
 
     public TextNodeTransformer(String content) {
         super(fixContent(content));
     }
 
-    private static String fixContent(String content) {
-        // TODO what to do when null?
-        return content == null ? "##NULL##" : content;
+    private final static String fixContent(String content) {
+        if (content == null) {
+            String msg = "Trying to render a null String";
+            // we want to get a information of where the null is passed, so we
+            // create a exception to get the calling stacks
+            Exception ex = new RuntimeException(msg);
+            logger.warn(msg, ex);
+        }
+
+        return content == null ? "" : content;
     }
 
     @Override

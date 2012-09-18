@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.builtin.String2Int;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
-
-    private final static Logger logger = LoggerFactory.getLogger(DefaultContextDataFinder.class);
 
     private List<DataConvertor<?, ?>> dataConvertorList = getDefaultDataConvertorList();
 
@@ -74,9 +70,8 @@ public class DefaultContextDataFinder implements ContextDataFinder {
 
         DataConvertor convertor = getConvertor(data.getClass(), type);
         if (convertor == null) {
-            String msg = String.format("Could not find appropriate data convertor for from type {0} to type {1}",
-                    data.getClass().getName(), type.getName());
-            logger.error(msg);
+            String msg = String.format("Could not find appropriate data convertor for from type {} to type {}", data.getClass().getName(),
+                    type.getName());
             throw new DataOperationException(msg);
         } else {
             return convertor.convert(data);

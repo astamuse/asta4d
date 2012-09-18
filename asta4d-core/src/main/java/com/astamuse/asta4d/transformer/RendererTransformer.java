@@ -19,6 +19,7 @@ public class RendererTransformer extends Transformer<Renderer> {
         GroupNode wrapper = new GroupNode();
         wrapper.appendChild(result);
 
+        // TODO we should pass the original cloned element!!!
         RenderUtil.apply(wrapper, content);
 
         return wrapper;

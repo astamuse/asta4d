@@ -37,7 +37,6 @@ public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Object
     }
 
     protected Object createInstance(String snippetName) throws SnippetNotResovlableException {
-        // TODO support base package
         try {
             Object instance = super.searchResource(snippetName, ".");
             if (instance == null) {

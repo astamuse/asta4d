@@ -3,7 +3,12 @@ package com.astamuse.asta4d.template;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class MultiSearchPathResourceLoader<T> {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private List<String> searchPathList = new ArrayList<>();
 
@@ -19,6 +24,7 @@ public abstract class MultiSearchPathResourceLoader<T> {
         if (index < 0) {
             searchName = name;
         } else if (index >= searchPathList.size()) {
+            logger.debug("Did not find any associated resource for name {}", name);
             return null;
         } else {
             String searchPath = searchPathList.get(index);
@@ -33,8 +39,10 @@ public abstract class MultiSearchPathResourceLoader<T> {
             }
 
         }
+        logger.debug("try load resource for {}", searchName);
         T result = loadResource(searchName);
         if (result == null) {
+            logger.debug("load resource for {} failed", searchName);
             return searchResource(name, pathSeparator, index + 1);
         } else {
             return result;

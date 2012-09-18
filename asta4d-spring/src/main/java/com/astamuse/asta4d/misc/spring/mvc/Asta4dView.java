@@ -25,7 +25,8 @@ public class Asta4dView implements View {
         super();
         this.path = path;
         this.locale = locale;
-        // TODO handle page not found
+        // TODO handle page not found (rewrite it for internationalization and
+        // negotiation view)
         try {
             this.page = new WebPage(path, locale);
         } catch (TemplateException e) {
@@ -41,7 +42,6 @@ public class Asta4dView implements View {
     @Override
     public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         // TODO should we merge the model data?
-        // TODO post rendering
         page.output(response.getOutputStream());
     }
 

@@ -198,20 +198,20 @@ public class TemplateUtil {
                 blockType = ExtNodeConstants.BLOCK_NODE_ATTR_INSERT;
             } else {
                 // TODO I want a approach to logging out template file path here
-                logger.warn("The block does not declare its action correctlly.[{0}]", block.toString());
+                logger.warn("The block does not declare its action correctlly.[{}]", block.toString());
                 continue;
             }
 
             blockTarget = block.attr(blockType);
             if (blockTarget == null || blockTarget.isEmpty()) {
                 // TODO I want a approach to logging out template file path here
-                logger.warn("The block does not declare its target action correctlly.[{0}]", block.toString());
+                logger.warn("The block does not declare its target action correctlly.[{}]", block.toString());
                 continue;
             }
             targetBlock = doc.select(SelectorUtil.id(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, blockTarget)).first();
             if (targetBlock == null) {
                 // TODO I want a approach to logging out template file path here
-                logger.warn("The block declares a not existed target block.[{0}]", block.toString());
+                logger.warn("The block declares a not existed target block.[{}]", block.toString());
                 continue;
             }
             childNodes = new ArrayList<>(block.childNodes());
