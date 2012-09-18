@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
 
 public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
@@ -25,7 +26,7 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
     }
 
     @Override
-    public Object findDataInContext(Context context, String scope, String name, Class<?> type) {
+    public Object findDataInContext(Context context, String scope, String name, Class<?> type) throws DataOperationException {
         // TODO class equals is not reliable
         if (type.equals(HttpServletRequest.class)) {
             return ((WebApplicationContext) context).getRequest();

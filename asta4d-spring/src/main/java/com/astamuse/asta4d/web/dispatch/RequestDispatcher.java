@@ -9,9 +9,12 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextDataFinder;
+import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.annotation.PathVarRewrite;
@@ -20,6 +23,8 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class RequestDispatcher {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private DispatcherRuleExtractor ruleExtractor;
 
@@ -60,7 +65,7 @@ public class RequestDispatcher {
     }
 
     private void processPathVar(WebApplicationContext context, Map<String, String> pathVarMap, Object pathVarRewritter)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, DataOperationException {
         writePathVarToContext(context, pathVarMap);
         if (pathVarRewritter != null) {
             Method[] methodList = pathVarRewritter.getClass().getMethods();
@@ -112,7 +117,8 @@ public class RequestDispatcher {
         }
     }
 
-    private String invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException {
+    private String invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException,
+            DataOperationException {
         Method[] methodList = handler.getClass().getMethods();
         Method m = null;
         for (Method method : methodList) {
@@ -123,7 +129,9 @@ public class RequestDispatcher {
         }
 
         if (m == null) {
-            throw new InvocationTargetException(new RuntimeException("Request handler method not found:" + handler.getClass().getName()));
+            String msg = String.format("Request handler method not found:" + handler.getClass().getName());
+            logger.error(msg);
+            throw new InvocationTargetException(new RuntimeException(msg));
         }
 
         Object[] params = InjectUtil.getMethodInjectParams(m);

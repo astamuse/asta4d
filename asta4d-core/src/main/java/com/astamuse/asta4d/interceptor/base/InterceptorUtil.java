@@ -3,7 +3,12 @@ package com.astamuse.asta4d.interceptor.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class InterceptorUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(InterceptorUtil.class);
 
     private final static class ExecutorWrapping<H> implements GenericInterceptor<H> {
 
@@ -83,7 +88,7 @@ public class InterceptorUtil {
                 try {
                     interceptor.afterProcess(execution, eh);
                 } catch (Exception afterEx) {
-                    // TODO log error
+                    logger.warn("There is an exception occured in after process of interceptors.", afterEx);
                 }
             }
         }

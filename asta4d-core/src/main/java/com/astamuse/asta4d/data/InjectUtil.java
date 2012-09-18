@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
@@ -17,6 +19,9 @@ import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 
 public class InjectUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(InjectUtil.class);
+
     private static class TargetInfo {
         String name;
         String scope;
@@ -125,7 +130,7 @@ public class InjectUtil {
         }
     }
 
-    private final static InstanceWireTarget getInstanceTarget(Object instance) {
+    private final static InstanceWireTarget getInstanceTarget(Object instance) throws DataOperationException {
         boolean cacheEnable = Context.getCurrentThreadContext().getConfiguration().isCacheEnable();
         InstanceWireTarget target = null;
         if (cacheEnable) {
@@ -141,7 +146,7 @@ public class InjectUtil {
         return target;
     }
 
-    private final static InstanceWireTarget createInstanceTarget(Object instance) {
+    private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException {
         List<String> reverseTargetScopes = Context.getCurrentThreadContext().getConfiguration().getReverseInjectableScopes();
 
         InstanceWireTarget target = new InstanceWireTarget();
@@ -160,7 +165,7 @@ public class InjectUtil {
 
                 boolean isGet = false;
                 boolean isSet = false;
-                if (cd.value().isEmpty()) {
+                if (StringUtils.isEmpty(cd.name())) {
                     String name = method.getName();
                     if (name.startsWith("set")) {
                         name = name.substring(3);
@@ -183,16 +188,18 @@ public class InjectUtil {
                     mi.name = new String(cs);
 
                 } else {
-                    mi.name = cd.value();
-                    // TODO throw a exception if name is empty
-
+                    mi.name = cd.name();
                     int typeLength = method.getParameterTypes().length;
                     if (typeLength == 0) {
                         isGet = true;
                     } else if (typeLength == 1) {
                         isSet = true;
                     } else {
-                        // TODO what we should do?
+                        String msg = String.format(
+                                "Only one parameter is allowed on a method declared with ContextData annoataion.({0}:{1})", cls.getName(),
+                                mi.name);
+                        logger.error(msg);
+                        throw new DataOperationException(msg);
                     }
                 }
                 mi.scope = cd.scope();
@@ -228,10 +235,10 @@ public class InjectUtil {
                     fi.field = field;
                     fi.type = field.getType();
                     cd = field.getAnnotation(ContextData.class);
-                    if (cd.value().isEmpty()) {
+                    if (StringUtils.isEmpty(cd.name())) {
                         fi.name = field.getName();
                     } else {
-                        fi.name = cd.value();
+                        fi.name = cd.name();
                     }
                     fi.scope = cd.scope();
                     fi.fixForPrimitiveType();
@@ -249,13 +256,13 @@ public class InjectUtil {
         return target;
     }
 
-    public final static Object[] getMethodInjectParams(Method method) {
+    public final static Object[] getMethodInjectParams(Method method) throws DataOperationException {
         Context context = Context.getCurrentThreadContext();
         ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
         return getMethodInjectParams(method, dataFinder);
     }
 
-    public final static Object[] getMethodInjectParams(Method method, ContextDataFinder dataFinder) {
+    public final static Object[] getMethodInjectParams(Method method, ContextDataFinder dataFinder) throws DataOperationException {
         List<TargetInfo> targetList = getMethodTarget(method);
         Object[] params = new Object[targetList.size()];
         if (params.length == 0) {
@@ -302,7 +309,7 @@ public class InjectUtil {
         for (int i = 0; i < types.length; i++) {
             target = new TargetInfo();
             cd = findAnnotation(annotations[i]);
-            target.name = cd == null ? "" : cd.value();
+            target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
             if (StringUtils.isEmpty(target.name)) {
                 target.name = parameterNames[i];

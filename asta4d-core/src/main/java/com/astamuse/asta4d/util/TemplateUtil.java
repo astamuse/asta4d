@@ -10,6 +10,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
@@ -21,6 +23,9 @@ import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateResolver;
 
 public class TemplateUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
+
     public final static void regulateElement(Element elem) {
         regulateSnippets(elem);
         regulateEmbed(elem);
@@ -192,18 +197,21 @@ public class TemplateUtil {
             } else if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_INSERT)) {
                 blockType = ExtNodeConstants.BLOCK_NODE_ATTR_INSERT;
             } else {
-                // TODO log out warning
+                // TODO I want a approach to logging out template file path here
+                logger.warn("The block does not declare its action correctlly.[{0}]", block.toString());
                 continue;
             }
 
             blockTarget = block.attr(blockType);
             if (blockTarget == null || blockTarget.isEmpty()) {
-                // TODO log out warning
+                // TODO I want a approach to logging out template file path here
+                logger.warn("The block does not declare its target action correctlly.[{0}]", block.toString());
                 continue;
             }
             targetBlock = doc.select(SelectorUtil.id(ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, blockTarget)).first();
             if (targetBlock == null) {
-                // TODO log out warning
+                // TODO I want a approach to logging out template file path here
+                logger.warn("The block declares a not existed target block.[{0}]", block.toString());
                 continue;
             }
             childNodes = new ArrayList<>(block.childNodes());

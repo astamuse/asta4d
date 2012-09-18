@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface ContextData {
 
-    String value() default "";
+    String name() default "";
 
     String scope() default "";
 
