@@ -23,13 +23,15 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Inp
                 Template t = templateMap.get(path);
                 if (t == null) {
                     logger.info("Initializing template " + path);
-                    t = new Template(path, searchResource(path, "/"));
+                    InputStream input = searchResource(path, "/");
+                    if (input == null) {
+                        String msg = String.format("Template %s not found.", path);
+                        throw new TemplateException(msg);
+                    }
+                    t = new Template(path, input);
                     Template pre = templateMap.putIfAbsent(path, t);
                     if (pre != null) {
                         t = pre;
-                    } else {
-                        String msg = String.format("Template %s not found.", path);
-                        throw new TemplateException(msg);
                     }
                 }
                 return t;

@@ -33,8 +33,9 @@ public class Template {
             this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
             // this.doc = Jsoup.parse(input, "UTF-8", "");
             initDocument();
-        } catch (IOException e) {
-            throw new TemplateException(e);
+        } catch (Exception e) {
+            String msg = String.format("Template %s initialize failed.", path);
+            throw new TemplateException(msg, e);
         }
     }
 
