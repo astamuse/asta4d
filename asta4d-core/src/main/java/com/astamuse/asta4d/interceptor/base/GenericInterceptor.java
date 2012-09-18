@@ -5,5 +5,5 @@ public interface GenericInterceptor<H> {
 
     public boolean beforeProcess(H executionHolder) throws Exception;
 
-    public void afterProcess(H executionHolder, Exception ex) throws Exception;
+    public void afterProcess(H executionHolder, ExceptionHandler exceptionHandler);
 }

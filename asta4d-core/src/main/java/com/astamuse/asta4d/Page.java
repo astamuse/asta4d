@@ -8,6 +8,7 @@ import java.util.List;
 import org.jsoup.nodes.Document;
 
 import com.astamuse.asta4d.interceptor.PageInterceptor;
+import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.GenericInterceptor;
 import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
@@ -39,8 +40,8 @@ public class Page {
         }
 
         @Override
-        public void afterProcess(Document doc, Exception ex) throws Exception {
-            if (ex != null) {
+        public void afterProcess(Document doc, ExceptionHandler exceptionHandler) {
+            if (exceptionHandler.getException() != null) {
                 return;
             }
             Renderer renderer = new GoThroughRenderer();

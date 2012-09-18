@@ -3,6 +3,7 @@ package com.astamuse.asta4d.snippet.interceptor;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectUtil;
+import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.snippet.SnippetExecutionHolder;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 
@@ -36,7 +37,7 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
     }
 
     @Override
-    public void afterProcess(SnippetExecutionHolder execution, Exception ex) throws Exception {
+    public void afterProcess(SnippetExecutionHolder execution, ExceptionHandler exceptionHandler) {
 
     }
 

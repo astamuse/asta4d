@@ -20,7 +20,7 @@ public class InterceptorUtil {
         }
 
         @Override
-        public void afterProcess(H exectionHolder, Exception ex) throws Exception {
+        public void afterProcess(H exectionHolder, ExceptionHandler ex) {
         }
     }
 
@@ -49,9 +49,12 @@ public class InterceptorUtil {
         } catch (Exception ex) {
             executeException = ex;
         }
-        afterProcess(lastInterceptor, executionHolder, runList, executeException);
-        if (executeException != null) {
-            throw executeException;
+        ExceptionHandler eh = new ExceptionHandler(executeException);
+        afterProcess(lastInterceptor, executionHolder, runList, eh);
+        // if the passed exception has not been cleared, we will throw it
+        // anyway.
+        if (eh.getException() != null) {
+            throw eh.getException();
         }
 
     }
@@ -68,7 +71,7 @@ public class InterceptorUtil {
     }
 
     private final static <H> void afterProcess(GenericInterceptor<H> lastInterceptor, H execution,
-            List<GenericInterceptor<H>> interceptorList, Exception ex) {
+            List<GenericInterceptor<H>> interceptorList, ExceptionHandler eh) {
         GenericInterceptor<H> interceptor = null;
         boolean foundStoppedPoint = false;
         for (int i = interceptorList.size() - 1; i >= 0; i--) {
@@ -78,7 +81,7 @@ public class InterceptorUtil {
             }
             if (foundStoppedPoint) {
                 try {
-                    interceptor.afterProcess(execution, ex);
+                    interceptor.afterProcess(execution, eh);
                 } catch (Exception afterEx) {
                     // TODO log error
                 }
