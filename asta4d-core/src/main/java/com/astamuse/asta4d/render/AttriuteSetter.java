@@ -70,4 +70,9 @@ public class AttriuteSetter implements ElementSetter {
         }
     }
 
+    @Override
+    public String toString() {
+        return actionType + " attribute " + attrName + " for value [" + attrValue + "]";
+    }
+
 }

@@ -139,7 +139,6 @@ public class RenderUtil {
     }
 
     public final static void apply(Element target, Renderer renderer) {
-        // TODO we should write current rendering element here!!!
         String selector;
         ListIterator<Element> elemIterator;
         Element elem;
@@ -152,6 +151,7 @@ public class RenderUtil {
             }
 
             selector = currentRenderer.getSelector();
+
             Elements targets = target.select(selector);
             elemIterator = targets.listIterator();
             while (elemIterator.hasNext()) {
@@ -163,10 +163,51 @@ public class RenderUtil {
                     elem.before(resultNode);
                 }// for
                 elem.remove();
+
+                // there is a "select all" or "select first" selector
+                if (elem == target) {
+                    System.out.println("---");
+                }
+
             }// while elemIterator
         }// while rendererIterator next
     }
 
+    /*
+        private final static void apply(Element target, Iterator<Renderer> rendererIterator) {
+
+            if (!rendererIterator.hasNext()) {
+                return;
+            }
+
+            Renderer currentRenderer = rendererIterator.next();
+
+            if (currentRenderer instanceof GoThroughRenderer) {
+                // apply();
+            }
+
+            selector = currentRenderer.getSelector();
+
+            Elements targets = target.select(selector);
+            elemIterator = targets.listIterator();
+            while (elemIterator.hasNext()) {
+                elem = elemIterator.next();
+                List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
+                Node resultNode;
+                for (Transformer<?> transformer : transformerList) {
+                    resultNode = transformer.invoke(elem);
+                    elem.before(resultNode);
+                }// for
+                elem.remove();
+
+                // there is a "select all" or "select first" selector
+                if (elem == target) {
+                    System.out.println("---");
+                }
+
+            }// while elemIterator
+        }
+    */
     public final static void applyClearAction(Element target, boolean forFinalClean) {
         if (forFinalClean) {
             String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,

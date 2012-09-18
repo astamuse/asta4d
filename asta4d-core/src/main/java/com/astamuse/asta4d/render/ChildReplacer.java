@@ -16,4 +16,10 @@ public class ChildReplacer implements ElementSetter {
         elem.appendChild(newChild);
     }
 
+    @Override
+    public String toString() {
+        String s = "replace the children to:{\n" + newChild.toString() + "\n}";
+        return s;
+    }
+
 }

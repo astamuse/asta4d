@@ -9,4 +9,8 @@ public class ClearRenderer extends Renderer {
         super("*:eq(0)", new ElementTransformer(new ClearNode()));
     }
 
+    @Override
+    public String toString() {
+        return "ClearRenderer";
+    }
 }

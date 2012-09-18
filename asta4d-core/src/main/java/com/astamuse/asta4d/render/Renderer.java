@@ -55,7 +55,7 @@ public class Renderer {
 
     @Override
     public String toString() {
-        return "selector:" + selector;
+        return "\n\"" + selector + "\"#>\n{" + this.transformerList + "}\n\n";
     }
 
     public Iterator<Renderer> iterator() {
@@ -94,6 +94,10 @@ public class Renderer {
         return add(create(selector, renderer));
     }
 
+    public Renderer add(String selector, DebugRenderer debugger) {
+        return add(create(selector, debugger));
+    }
+
     public Renderer add(String selector, ElementSetter setter) {
         return add(create(selector, setter));
     }
@@ -128,6 +132,11 @@ public class Renderer {
 
     public final static Renderer create(String selector, Renderer renderer) {
         return new Renderer(selector, new RendererTransformer(renderer));
+    }
+
+    public final static Renderer create(String selector, DebugRenderer debugger) {
+        Renderer r = DebugRenderer.logger.isDebugEnabled() ? debugger : new GoThroughRenderer();
+        return new Renderer(selector, new RendererTransformer(r));
     }
 
     public final static Renderer create(String selector, ElementSetter setter) {

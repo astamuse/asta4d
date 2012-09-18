@@ -18,4 +18,9 @@ public class GoThroughRenderer extends Renderer {
         super(ExtNodeConstants.GOTHROGH_NODE_TAG, new ElementSetterTransformer(DoNothingSetter));
     }
 
+    @Override
+    public String toString() {
+        return "GoThroughRenderer";
+    }
+
 }

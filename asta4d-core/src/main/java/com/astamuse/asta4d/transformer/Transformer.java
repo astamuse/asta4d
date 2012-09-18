@@ -15,4 +15,9 @@ public abstract class Transformer<T> {
     }
 
     protected abstract Element transform(Element elem, T content);
+
+    @Override
+    public String toString() {
+        return "[" + this.content.toString() + "]";
+    }
 }
