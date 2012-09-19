@@ -1,7 +1,7 @@
 package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
@@ -58,8 +58,8 @@ public class Renderer {
         return "\n\"" + selector + "\"#>\n{" + this.transformerList + "}\n\n";
     }
 
-    public Iterator<Renderer> iterator() {
-        return this.chain.iterator();
+    public List<Renderer> asUnmodifiableList() {
+        return Collections.unmodifiableList(new ArrayList<>(this.chain));
     }
 
     public Renderer add(Renderer renderer) {

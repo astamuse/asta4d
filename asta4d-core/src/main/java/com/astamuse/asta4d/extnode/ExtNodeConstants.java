@@ -34,7 +34,7 @@ public class ExtNodeConstants {
     public final static String SNIPPET_NODE_TAG_SELECTOR = SelectorUtil.tag(SNIPPET_NODE_TAG);
     public final static String SNIPPET_NODE_ATTR_RENDER = "render";
 
-    public final static String SNIPPET_NODE_ATTR_REFID = "refid";
+    public final static String ATTR_REFID = "afdRefId";
 
     public final static String SNIPPET_NODE_ATTR_TYPE = "type";
     public final static String SNIPPET_NODE_ATTR_TYPE_USERDEFINE = "userdefine";

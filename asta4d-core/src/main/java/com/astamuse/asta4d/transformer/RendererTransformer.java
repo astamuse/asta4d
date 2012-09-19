@@ -15,12 +15,12 @@ public class RendererTransformer extends Transformer<Renderer> {
     @Override
     protected Element transform(Element elem, Renderer content) {
         Element result = elem.clone();
-        // TODO there are something that should be rewritten
+
+        // add a dummy parent so that the result element can be replaced by the
+        // sub renderer.
         GroupNode wrapper = new GroupNode();
         wrapper.appendChild(result);
-
-        // TODO we should pass the original cloned element!!!
-        RenderUtil.apply(wrapper, content);
+        RenderUtil.apply(result, content);
 
         return wrapper;
     }

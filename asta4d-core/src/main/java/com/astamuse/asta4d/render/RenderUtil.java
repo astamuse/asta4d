@@ -3,7 +3,6 @@ package com.astamuse.asta4d.render;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -66,13 +65,12 @@ public class RenderUtil {
             context.setCurrentRenderingElement(renderTarget);
             renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
             renderer = invoker.invoke(renderDeclaration);
-            refId = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_REFID);
+            refId = element.attr(ExtNodeConstants.ATTR_REFID);
             apply(renderTarget, renderer);
             if (element.ownerDocument() == null) {
                 // it means this snippet element is replaced by a element
                 // completely
-                String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_REFID,
-                        refId);
+                String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_REFID, refId);
                 Elements elems = doc.select(reSelector);
                 if (elems.size() > 0) {
                     element = elems.get(0);
@@ -120,8 +118,7 @@ public class RenderUtil {
             // element would not be imported now.
             isBlocked = false;
         } else {
-            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_REFID,
-                    blockingId);
+            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_REFID, blockingId);
             Elements parentSnippetSearch = doc.select(parentSelector);
             if (parentSnippetSearch.isEmpty()) {
                 isBlocked = false;
@@ -139,75 +136,59 @@ public class RenderUtil {
     }
 
     public final static void apply(Element target, Renderer renderer) {
-        String selector;
-        ListIterator<Element> elemIterator;
-        Element elem;
-        Iterator<Renderer> rendererIterator = renderer.iterator();
-        Renderer currentRenderer = null;
-        while (rendererIterator.hasNext()) {
-            currentRenderer = rendererIterator.next();
-            if (currentRenderer instanceof GoThroughRenderer) {
-                continue;
-            }
-
-            selector = currentRenderer.getSelector();
-
-            Elements targets = target.select(selector);
-            elemIterator = targets.listIterator();
-            while (elemIterator.hasNext()) {
-                elem = elemIterator.next();
-                List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
-                Node resultNode;
-                for (Transformer<?> transformer : transformerList) {
-                    resultNode = transformer.invoke(elem);
-                    elem.before(resultNode);
-                }// for
-                elem.remove();
-
-                // there is a "select all" or "select first" selector
-                if (elem == target) {
-                    System.out.println("---");
-                }
-
-            }// while elemIterator
-        }// while rendererIterator next
+        List<Renderer> rendererList = renderer.asUnmodifiableList();
+        int count = rendererList.size();
+        if (count == 0) {
+            return;
+        }
+        apply(target, rendererList, 0, count);
     }
 
-    /*
-        private final static void apply(Element target, Iterator<Renderer> rendererIterator) {
+    private final static void apply(Element target, List<Renderer> rendererList, int startIndex, int count) {
 
-            if (!rendererIterator.hasNext()) {
-                return;
-            }
-
-            Renderer currentRenderer = rendererIterator.next();
-
-            if (currentRenderer instanceof GoThroughRenderer) {
-                // apply();
-            }
-
-            selector = currentRenderer.getSelector();
-
-            Elements targets = target.select(selector);
-            elemIterator = targets.listIterator();
-            while (elemIterator.hasNext()) {
-                elem = elemIterator.next();
-                List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
-                Node resultNode;
-                for (Transformer<?> transformer : transformerList) {
-                    resultNode = transformer.invoke(elem);
-                    elem.before(resultNode);
-                }// for
-                elem.remove();
-
-                // there is a "select all" or "select first" selector
-                if (elem == target) {
-                    System.out.println("---");
-                }
-
-            }// while elemIterator
+        if (startIndex >= count) {
+            return;
         }
-    */
+
+        Renderer currentRenderer = rendererList.get(startIndex);
+
+        if (currentRenderer instanceof GoThroughRenderer) {
+            apply(target, rendererList, startIndex + 1, count);
+            return;
+        }
+
+        String selector = currentRenderer.getSelector();
+
+        List<Element> elemList = new ArrayList<>(target.select(selector));
+        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
+
+        Element delayedElement = null;
+        Element resultNode;
+        for (Element elem : elemList) {
+            if (elem == target) {
+                delayedElement = elem;
+                continue;
+            }
+            for (Transformer<?> transformer : transformerList) {
+                resultNode = transformer.invoke(elem);
+                elem.before(resultNode);
+            }// for transformer
+            elem.remove();
+        }// for element
+         // apply(resultNode, rendererList, startIndex + 1);
+        if (delayedElement == null) {
+            apply(target, rendererList, startIndex + 1, count);
+        } else {
+            for (Transformer<?> transformer : transformerList) {
+                resultNode = transformer.invoke(delayedElement);
+                delayedElement.before(resultNode);
+                apply(resultNode, rendererList, startIndex + 1, count);
+            }// for transformer
+            delayedElement.remove();
+        }
+
+    }
+
     public final static void applyClearAction(Element target, boolean forFinalClean) {
         if (forFinalClean) {
             String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
