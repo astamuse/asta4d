@@ -15,13 +15,13 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 @Controller
 public abstract class GenericControllerBase implements ApplicationContextAware {
 
-    protected ApplicationContext beanCtx;
+    private ApplicationContext beanCtx;
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
     private void init() {
         UrlMappingRuleHelper rules = new UrlMappingRuleHelper();
-        initUrlMappingRules(rules);
+        initUrlMappingRules(beanCtx, rules);
         dispatcher.setRuleExtractor(new AntPathRuleExtractor());
         dispatcher.setRuleList(rules.getSortedRuleList());
     }
@@ -40,5 +40,5 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         init();
     }
 
-    protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);
+    protected abstract void initUrlMappingRules(ApplicationContext beanCtx, UrlMappingRuleHelper rules);
 }
