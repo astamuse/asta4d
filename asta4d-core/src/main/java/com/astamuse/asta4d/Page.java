@@ -32,11 +32,9 @@ public class Page {
         @Override
         public boolean beforeProcess(Document doc) throws Exception {
             Renderer renderer = new GoThroughRenderer();
-            boolean result = interceptor.prePageRendering(renderer);
-            if (result) {
-                RenderUtil.apply(doc, renderer);
-            }
-            return result;
+            interceptor.prePageRendering(renderer);
+            RenderUtil.apply(doc, renderer);
+            return true;
         }
 
         @Override
