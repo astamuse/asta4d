@@ -94,10 +94,6 @@ public class Renderer {
         return add(create(selector, renderer));
     }
 
-    public Renderer add(String selector, DebugRenderer debugger) {
-        return add(create(selector, debugger));
-    }
-
     public Renderer add(String selector, ElementSetter setter) {
         return add(create(selector, setter));
     }
@@ -108,6 +104,14 @@ public class Renderer {
 
     public Renderer add(String selector, List<?> list) {
         return add(create(selector, list));
+    }
+
+    public Renderer add(String selector, DebugRenderer debugger) {
+        return add(create(selector, debugger));
+    }
+
+    public Renderer addDebugger() {
+        return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer()) : this;
     }
 
     public final static Renderer create(String selector, long value) {

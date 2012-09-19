@@ -8,10 +8,12 @@ import com.astamuse.asta4d.transformer.ElementSetterTransformer;
 
 public class DebugRenderer extends Renderer {
 
+    private final static String CurrentNodeSelector = "DebugRenderer-CurrentNodeSelector";
+
     final static Logger logger = LoggerFactory.getLogger(DebugRenderer.class);
 
     public DebugRenderer() {
-        super("*:eq(0)", new ElementSetterTransformer(new ElementSetter() {
+        super(CurrentNodeSelector, new ElementSetterTransformer(new ElementSetter() {
             @Override
             public void set(Element elem) {
                 logger.debug(elem.toString());

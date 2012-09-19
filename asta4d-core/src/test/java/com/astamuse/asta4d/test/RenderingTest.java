@@ -15,7 +15,7 @@ public class RenderingTest extends BaseTest {
         public Renderer elementRendering() {
             Element elem = ElementUtil.parseAsSingle("<div>i am a danymic element</div>");
             Renderer render = Renderer.create("*", elem);
-            // render.add("*:eq(0)", new DebugRenderer());
+            render.addDebugger();
             return render;
         }
 

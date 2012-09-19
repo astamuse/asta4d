@@ -11,18 +11,20 @@ public class SimpleCase {
     public SimpleCase(String templateFileName) {
         Page originPage = null;
         Page resultPage = null;
+        String ostr = null;
+        String rstr = null;
         try {
             originPage = new Page("/com/astamuse/asta4d/test/templates/" + templateFileName);
             resultPage = new Page("/com/astamuse/asta4d/test/confirms/" + templateFileName);
 
-            String ostr = revert2comparableString(originPage);
-            String rstr = revert2comparableString(resultPage);
+            ostr = revert2comparableString(originPage);
+            rstr = revert2comparableString(resultPage);
 
             Assert.assertEquals(ostr, rstr);
 
         } catch (Throwable t) {
-            output(templateFileName + ":rendering result", originPage);
-            output(templateFileName + ":expected result", resultPage);
+            output(templateFileName + ":rendering result", ostr);
+            output(templateFileName + ":expected result", rstr);
             throw new RuntimeException("verify failed", t);
         }
     }
@@ -33,12 +35,12 @@ public class SimpleCase {
         return doc.outerHtml();
     }
 
-    private void output(String title, Page page) {
+    private void output(String title, String page) {
         System.out.println(String.format("===============%s===================", title));
         if (page == null) {
             System.out.println("##null##");
         } else {
-            System.out.println(page.output());
+            System.out.println(page);
         }
         System.out.println("===============================================================");
     }

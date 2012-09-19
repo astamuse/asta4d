@@ -159,6 +159,12 @@ public class RenderUtil {
 
         String selector = currentRenderer.getSelector();
 
+        if (currentRenderer instanceof DebugRenderer) {
+            currentRenderer.getTransformerList().get(0).invoke(target);
+            apply(target, rendererList, startIndex + 1, count);
+            return;
+        }
+
         List<Element> elemList = new ArrayList<>(target.select(selector));
         List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
 
