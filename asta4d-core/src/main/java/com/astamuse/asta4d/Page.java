@@ -13,11 +13,11 @@ import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.GenericInterceptor;
 import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
 import com.astamuse.asta4d.render.GoThroughRenderer;
+import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateResolver;
-import com.astamuse.asta4d.util.RenderUtil;
 
 public class Page {
 

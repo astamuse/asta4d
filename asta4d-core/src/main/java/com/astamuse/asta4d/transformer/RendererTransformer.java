@@ -3,8 +3,8 @@ package com.astamuse.asta4d.transformer;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.extnode.GroupNode;
+import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.util.RenderUtil;
 
 public class RendererTransformer extends Transformer<Renderer> {
 

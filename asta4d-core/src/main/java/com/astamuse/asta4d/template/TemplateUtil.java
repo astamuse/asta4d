@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.template;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,9 +18,9 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.extnode.GroupNode;
 import com.astamuse.asta4d.extnode.SnippetNode;
-import com.astamuse.asta4d.template.Template;
-import com.astamuse.asta4d.template.TemplateException;
-import com.astamuse.asta4d.template.TemplateResolver;
+import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.IdGenerator;
+import com.astamuse.asta4d.util.SelectorUtil;
 
 public class TemplateUtil {
 

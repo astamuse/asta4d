@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,13 +13,13 @@ import org.jsoup.select.Elements;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
-import com.astamuse.asta4d.render.GoThroughRenderer;
-import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.transformer.Transformer;
+import com.astamuse.asta4d.util.SelectorUtil;
 
 /**
  * 
