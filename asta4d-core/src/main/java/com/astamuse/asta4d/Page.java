@@ -59,6 +59,9 @@ public class Page {
 
     }
 
+    private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper.buildList(Context
+            .getCurrentThreadContext().getConfiguration().getPageInterceptorList());
+
     protected Template template;
 
     public Page(String path) throws TemplateException {
@@ -68,12 +71,9 @@ public class Page {
     }
 
     public void output(OutputStream out) throws Exception {
-        List<PageInterceptor> interceptorList = Context.getCurrentThreadContext().getConfiguration().getPageInterceptorList();
-        List<PageInterceptorWrapper> wrapperList = PageInterceptorWrapper.buildList(interceptorList);
-
         Document doc = template.getDocumentClone();
 
-        InterceptorUtil.executeWithInterceptors(doc, wrapperList, new Executor<Document>() {
+        InterceptorUtil.executeWithInterceptors(doc, WrapperPageInterceptorList, new Executor<Document>() {
             @Override
             public void execute(Document doc) throws Exception {
                 RenderUtil.applySnippets(doc);
