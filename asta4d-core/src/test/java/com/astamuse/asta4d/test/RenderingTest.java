@@ -58,6 +58,12 @@ public class RenderingTest extends BaseTest {
             render.addDebugger();
             return render;
         }
+
+        public Renderer childReplacing() {
+            Element elem = ElementUtil.parseAsSingle("<div>i am a danymic element</div>");
+            Renderer render = Renderer.create("span", new ChildReplacer(elem));
+            return render;
+        }
     }
 
     public void testElementRendering() {
@@ -87,7 +93,7 @@ public class RenderingTest extends BaseTest {
     }
 
     public void testChildReplacing() {
-        // TODO
+        new SimpleCase("Rendering_childReplacing.html");
     }
 
     public void testRecursiveRendering() {
