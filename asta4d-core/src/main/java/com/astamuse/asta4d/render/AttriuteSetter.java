@@ -49,7 +49,7 @@ public class AttriuteSetter implements ElementSetter {
             }
         }
 
-        this.attrValue = value;
+        this.attrValue = value == null ? "null" : value;
     }
 
     @Override
