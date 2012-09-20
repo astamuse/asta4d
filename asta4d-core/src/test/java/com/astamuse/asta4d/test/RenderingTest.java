@@ -123,6 +123,15 @@ public class RenderingTest extends BaseTest {
             });
             return renderer;
         }
+
+        public Renderer addOperation() {
+            Renderer r1 = Renderer.create("#s1", "r-1");
+            Renderer r2 = Renderer.create("#s2", "r-2");
+            Renderer r3 = Renderer.create("#s3", "r-3");
+            r1.add(r2);
+            r2.add(r3);
+            return r2;
+        }
     }
 
     public void testElementRendering() {
@@ -176,8 +185,9 @@ public class RenderingTest extends BaseTest {
     }
 
     public void testRendererAddOperation() {
-        // TODO it should act correctly even though we do not add renderer to
-        // the first created render
+        // it should act correctly even though we do not add renderer to
+        // the first created render and do not return the head renderer
+        new SimpleCase("Rendering_addOperation.html");
     }
 
 }
