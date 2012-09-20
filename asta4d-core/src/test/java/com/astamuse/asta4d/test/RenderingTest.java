@@ -3,6 +3,7 @@ package com.astamuse.asta4d.test;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.render.ChildReplacer;
+import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.infra.BaseTest;
@@ -48,6 +49,17 @@ public class RenderingTest extends BaseTest {
             renderer.add("#testset", "class", "b");
             return renderer;
         }
+
+        public Renderer elementSetter() {
+            Renderer render = Renderer.create("#xx", new ElementSetter() {
+                @Override
+                public void set(Element elem) {
+                    elem.empty();
+                }
+            });
+
+            return render;
+        }
     }
 
     public void testElementRendering() {
@@ -66,10 +78,12 @@ public class RenderingTest extends BaseTest {
         new SimpleCase("Rendering_classAttrSetting.html");
     }
 
-    public void testElementSetter() {
-        // TODO customized element operation
-    }
-
+    /*
+        we do not need to test Element setter because there are several renderers extending from it.
+        public void testElementSetter() {
+            new SimpleCase("Rendering_elementSetter.html");
+        }
+    */
     public void testClearNode() {
         // TODO ClearNode and ClearRenderer
     }
