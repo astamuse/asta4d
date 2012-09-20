@@ -37,6 +37,17 @@ public class RenderingTest extends BaseTest {
             renderer.add("#testset", "v", "2");
             return renderer;
         }
+
+        public Renderer classAttrSetting() {
+            Renderer renderer = new GoThroughRenderer();
+            renderer.add("#testadd", "class", "a");
+            renderer.add("#testaddexisted", "+class", "b");
+            renderer.add("#testremovebynull", "class", null);
+            renderer.add("#testremovebyminus", "-class", "b");
+            renderer.add("#testremovebyaddnull", "+class", null);
+            renderer.add("#testset", "class", "b");
+            return renderer;
+        }
     }
 
     public void testElementRendering() {
@@ -52,8 +63,7 @@ public class RenderingTest extends BaseTest {
     }
 
     public void testClassAttrSetting() {
-        // TODO
-        // add class, remove class, set class
+        new SimpleCase("Rendering_classAttrSetting.html");
     }
 
     public void testElementSetter() {

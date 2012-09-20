@@ -15,9 +15,9 @@ public class SimpleCase {
         String rstr = null;
         try {
             originPage = new Page("/com/astamuse/asta4d/test/templates/" + templateFileName);
-            resultPage = new Page("/com/astamuse/asta4d/test/confirms/" + templateFileName);
-
             ostr = revert2comparableString(originPage);
+
+            resultPage = new Page("/com/astamuse/asta4d/test/confirms/" + templateFileName);
             rstr = revert2comparableString(resultPage);
 
             Assert.assertEquals(ostr, rstr);
