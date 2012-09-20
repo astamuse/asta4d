@@ -37,6 +37,8 @@ public class Configuration {
      */
     private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
+    private List<String> clearNodeClasses = new ArrayList<>();
+
     private String tagNameSpace = "afd";
 
     public TemplateResolver getTemplateResolver() {
@@ -101,6 +103,14 @@ public class Configuration {
 
     public void setReverseInjectableScopes(List<String> reverseInjectableScopes) {
         this.reverseInjectableScopes = reverseInjectableScopes;
+    }
+
+    public List<String> getClearNodeClasses() {
+        return clearNodeClasses;
+    }
+
+    public void setClearNodeClasses(List<String> clearNodeClasses) {
+        this.clearNodeClasses = clearNodeClasses;
     }
 
     public String getTagNameSpace() {

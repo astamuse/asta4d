@@ -2,8 +2,8 @@ package com.astamuse.asta4d.test;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.extnode.ClearNode;
 import com.astamuse.asta4d.render.ChildReplacer;
-import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.infra.BaseTest;
@@ -50,14 +50,8 @@ public class RenderingTest extends BaseTest {
             return renderer;
         }
 
-        public Renderer elementSetter() {
-            Renderer render = Renderer.create("#xx", new ElementSetter() {
-                @Override
-                public void set(Element elem) {
-                    elem.empty();
-                }
-            });
-
+        public Renderer clearNode() {
+            Renderer render = Renderer.create("[afd:clear=true]", new ClearNode());
             return render;
         }
     }
@@ -85,7 +79,7 @@ public class RenderingTest extends BaseTest {
         }
     */
     public void testClearNode() {
-        // TODO ClearNode and ClearRenderer
+        // new SimpleCase("Rendering_clearNode.html");
     }
 
     public void testChildReplacing() {

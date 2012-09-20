@@ -34,7 +34,7 @@ public class TemplateUtil {
     private final static void regulateSnippets(Element elem) {
 
         // find nodes emebed with snippet attribute
-        String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+        String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
         snippetSelector = SelectorUtil.not(snippetSelector, ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
 
         List<Element> embedSnippets = new ArrayList<>(elem.select(snippetSelector));
@@ -44,7 +44,7 @@ public class TemplateUtil {
         String render;
         for (Element element : embedSnippets) {
 
-            render = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+            render = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
             fakedSnippetNode = new SnippetNode(render);
             fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE, ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE);
 
@@ -52,7 +52,7 @@ public class TemplateUtil {
             element.after(fakedSnippetNode);
             element.remove();
             fakedSnippetNode.appendChild(element);
-            element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+            element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
         }
 
         /*
