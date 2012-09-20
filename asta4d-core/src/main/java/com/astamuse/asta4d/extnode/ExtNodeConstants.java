@@ -36,8 +36,6 @@ public class ExtNodeConstants {
     public final static String SNIPPET_NODE_ATTR_RENDER = "render";
     public final static String SNIPPET_NODE_ATTR_RENDER_WITH_NS = addNS(SNIPPET_NODE_ATTR_RENDER);
 
-    public final static String ATTR_REFID = "afdRefId";
-
     public final static String SNIPPET_NODE_ATTR_TYPE = "type";
     public final static String SNIPPET_NODE_ATTR_TYPE_USERDEFINE = "userdefine";
     public final static String SNIPPET_NODE_ATTR_TYPE_FAKE = "fake";
@@ -48,11 +46,10 @@ public class ExtNodeConstants {
 
     public final static String SNIPPET_NODE_ATTR_BLOCK = "block";
 
-    public final static String CLEAR_NODE_NAME = "ClearNode";
-    public final static String CLEAR_NODE_TAG = addNS(CLEAR_NODE_NAME);
-    public final static String CLEAR_NODE_TAG_SELECTOR = SelectorUtil.tag(CLEAR_NODE_TAG);
+    public final static String ATTR_REFID = "afdRefId";
 
-    public final static String GOTHROGH_NODE_TAG = addNS("GoThroughNode");
+    public final static String ATTR_CLEAR = "clear";
+    public final static String ATTR_CLEAR_WITH_NS = addNS(ATTR_CLEAR);
 
     public final static String GROUP_NODE_NAME = "GroupNode";
     public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);

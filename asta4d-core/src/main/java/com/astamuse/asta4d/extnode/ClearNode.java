@@ -1,9 +1,10 @@
 package com.astamuse.asta4d.extnode;
 
-public class ClearNode extends ExtNode {
+public class ClearNode extends GroupNode {
 
     public ClearNode() {
-        super(ExtNodeConstants.CLEAR_NODE_TAG);
+        super();
+        this.attr(ExtNodeConstants.ATTR_CLEAR);
     }
 
 }

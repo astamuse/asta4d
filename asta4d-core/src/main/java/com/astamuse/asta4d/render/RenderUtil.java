@@ -210,7 +210,10 @@ public class RenderUtil {
             removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
 
         }
-        removeNodesBySelector(target, ExtNodeConstants.CLEAR_NODE_TAG_SELECTOR, false);
+
+        removeNodesBySelector(target,
+                SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR_WITH_NS, null), false);
+        removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
         removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
 
     }

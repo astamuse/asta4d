@@ -51,7 +51,7 @@ public class RenderingTest extends BaseTest {
         }
 
         public Renderer clearNode() {
-            Renderer render = Renderer.create("[afd:clear=true]", new ClearNode());
+            Renderer render = Renderer.create("#byClearNode", new ClearNode());
             return render;
         }
     }
@@ -79,7 +79,7 @@ public class RenderingTest extends BaseTest {
         }
     */
     public void testClearNode() {
-        // new SimpleCase("Rendering_clearNode.html");
+        new SimpleCase("Rendering_clearNode.html");
     }
 
     public void testChildReplacing() {
