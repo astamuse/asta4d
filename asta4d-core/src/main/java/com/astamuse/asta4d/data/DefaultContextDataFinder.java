@@ -7,7 +7,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.data.builtin.String2Bool;
 import com.astamuse.asta4d.data.builtin.String2Int;
+import com.astamuse.asta4d.data.builtin.String2Long;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
 
@@ -20,7 +22,9 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         // all possible convertors via annotation check on all loaded classes.
         // Anyway, it is not necessary.
         List<DataConvertor<?, ?>> defaultList = new ArrayList<>();
+        defaultList.add(new String2Long());
         defaultList.add(new String2Int());
+        defaultList.add(new String2Bool());
         return defaultList;
     }
 

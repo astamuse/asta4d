@@ -78,8 +78,28 @@ public class Renderer {
         return add(create(selector, value));
     }
 
+    public Renderer add(String selector, boolean value) {
+        return add(create(selector, value));
+    }
+
     public Renderer add(String selector, String value) {
         return add(create(selector, value));
+    }
+
+    public Renderer add(String selector, String attr, long value) {
+        return add(create(selector, attr, value));
+    }
+
+    public Renderer add(String selector, String attr, int value) {
+        return add(create(selector, attr, value));
+    }
+
+    public Renderer add(String selector, String attr, boolean value) {
+        return add(create(selector, attr, value));
+    }
+
+    public Renderer add(String selector, String attr, Object value) {
+        return add(create(selector, attr, value));
     }
 
     public Renderer add(String selector, String attr, String value) {
@@ -122,8 +142,29 @@ public class Renderer {
         return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
     }
 
+    public final static Renderer create(String selector, boolean value) {
+        return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
+    }
+
     public final static Renderer create(String selector, String value) {
         return new Renderer(selector, new TextNodeTransformer(value));
+    }
+
+    public final static Renderer create(String selector, String attr, long value) {
+        return create(selector, attr, String.valueOf(value));
+    }
+
+    public final static Renderer create(String selector, String attr, int value) {
+        return create(selector, attr, String.valueOf(value));
+    }
+
+    public final static Renderer create(String selector, String attr, boolean value) {
+        return create(selector, attr, String.valueOf(value));
+    }
+
+    public final static Renderer create(String selector, String attr, Object value) {
+        // TODO convert object to a data reference
+        return create(selector, attr, String.valueOf(value));
     }
 
     public final static Renderer create(String selector, String attr, String value) {
@@ -170,9 +211,7 @@ public class Renderer {
             } else {
                 transformer = new TextNodeTransformer(obj.toString());
             }
-            if (transformer != null) {
-                transformerList.add(transformer);
-            }
+            transformerList.add(transformer);
         }
         return new Renderer(selector, transformerList);
     }
