@@ -4,7 +4,7 @@ public class ClearNode extends GroupNode {
 
     public ClearNode() {
         super();
-        this.attr(ExtNodeConstants.ATTR_CLEAR);
+        this.attr(ExtNodeConstants.ATTR_CLEAR, "");
     }
 
 }

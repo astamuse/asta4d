@@ -4,6 +4,7 @@ import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.extnode.ClearNode;
 import com.astamuse.asta4d.render.ChildReplacer;
+import com.astamuse.asta4d.render.ClearRenderer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.infra.BaseTest;
@@ -52,6 +53,9 @@ public class RenderingTest extends BaseTest {
 
         public Renderer clearNode() {
             Renderer render = Renderer.create("#byClearNode", new ClearNode());
+            render.addDebugger();
+            render.add("#byClearRenderer", new ClearRenderer());
+            render.addDebugger();
             return render;
         }
     }

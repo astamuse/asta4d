@@ -1,12 +1,11 @@
 package com.astamuse.asta4d.render;
 
-import com.astamuse.asta4d.extnode.ClearNode;
-import com.astamuse.asta4d.transformer.ElementTransformer;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
-public class ClearRenderer extends Renderer {
+public class ClearRenderer extends AttriuteSetter {
 
     public ClearRenderer() {
-        super("*:eq(0)", new ElementTransformer(new ClearNode()));
+        super(ExtNodeConstants.ATTR_CLEAR_WITH_NS, "");
     }
 
     @Override

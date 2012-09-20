@@ -142,6 +142,7 @@ public class RenderUtil {
         if (count == 0) {
             return;
         }
+        applyClearAction(target, false);
         apply(target, rendererList, 0, count);
     }
 
@@ -186,7 +187,10 @@ public class RenderUtil {
             }// for transformer
             elem.remove();
         }// for element
-         // apply(resultNode, rendererList, startIndex + 1);
+
+        // if the root element is one of the process targets, we can not apply
+        // the left renderers to original element because it will be replaced by
+        // a new element even it is not necessary.
         if (delayedElement == null) {
             apply(target, rendererList, startIndex + 1, count);
         } else {
@@ -206,7 +210,6 @@ public class RenderUtil {
                     ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
             // TODO check if there are unfinished snippet left.
             removeNodesBySelector(target, removeSnippetSelector, true);
-
             removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
 
         }
