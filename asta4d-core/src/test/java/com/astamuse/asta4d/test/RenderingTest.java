@@ -1,7 +1,12 @@
 package com.astamuse.asta4d.test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.extnode.ClearNode;
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
@@ -68,6 +73,56 @@ public class RenderingTest extends BaseTest {
             Renderer divRender = Renderer.create("#d1", spanRender);
             return divRender;
         }
+
+        public Renderer listTextRendering() {
+            List<String> list = Arrays.asList("a", "b", "c");
+            Renderer renderer = Renderer.create("div#test", list);
+            return renderer;
+        }
+
+        public Renderer listElementRendering() {
+            List<Element> list = new ArrayList<>();
+            for (int i = 0; i <= 3; i++) {
+                Element elem = ElementUtil.parseAsSingle("<span>BBB:" + i + "</span>");
+                list.add(elem);
+            }
+            Renderer renderer = Renderer.create("div#test", list);
+            return renderer;
+        }
+
+        public Renderer listChildReplacing() {
+            List<Element> list = new ArrayList<>();
+            for (int i = 0; i <= 3; i++) {
+                Element elem = ElementUtil.parseAsSingle("<strong>BBB:" + i + "</strong>");
+                list.add(elem);
+            }
+            Renderer renderer = Renderer.create("div#test", list, new DataConvertor<Element, ChildReplacer>() {
+                @Override
+                public ChildReplacer convert(Element obj) {
+                    return new ChildReplacer(obj);
+                }
+            });
+            return renderer;
+        }
+
+        public Renderer listRecursiveRendering() {
+            List<String[]> list = new ArrayList<>();
+            for (int i = 0; i <= 3; i++) {
+                String[] sa = { "aa-" + i, "bb-" + i };
+                list.add(sa);
+            }
+            Renderer renderer = Renderer.create("div#test", list, new DataConvertor<String[], Renderer>() {
+
+                @Override
+                public Renderer convert(String[] obj) {
+                    Renderer r = Renderer.create("#s1", obj[0]);
+                    r.add("#s2", obj[1]);
+                    return r;
+                }
+
+            });
+            return renderer;
+        }
     }
 
     public void testElementRendering() {
@@ -105,19 +160,19 @@ public class RenderingTest extends BaseTest {
     }
 
     public void testListElementRendering() {
-        // TODO
+        new SimpleCase("Rendering_listElementRendering.html");
     }
 
     public void testListTextRendering() {
-        // TODO
+        new SimpleCase("Rendering_listTextRendering.html");
     }
 
     public void testListChildReplacing() {
-        // TODO
+        new SimpleCase("Rendering_listChildReplacing.html");
     }
 
     public void testListRecursiveRendering() {
-        // TODO
+        new SimpleCase("Rendering_listRecursiveRendering.html");
     }
 
     public void testRendererAddOperation() {
