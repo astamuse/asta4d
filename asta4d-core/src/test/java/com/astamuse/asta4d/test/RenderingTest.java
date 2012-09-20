@@ -62,6 +62,12 @@ public class RenderingTest extends BaseTest {
             Renderer render = Renderer.create("span", new ChildReplacer(elem));
             return render;
         }
+
+        public Renderer recursiveRendering() {
+            Renderer spanRender = Renderer.create("span#s1", "wow!");
+            Renderer divRender = Renderer.create("#d1", spanRender);
+            return divRender;
+        }
     }
 
     public void testElementRendering() {
@@ -95,7 +101,7 @@ public class RenderingTest extends BaseTest {
     }
 
     public void testRecursiveRendering() {
-        // TODO
+        new SimpleCase("Rendering_recursiveRendering.html");
     }
 
     public void testListElementRendering() {
