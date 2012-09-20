@@ -1,6 +1,7 @@
 package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -170,6 +171,10 @@ public class RenderUtil {
 
         Element delayedElement = null;
         Element resultNode;
+        // TODO we suppose that the element is listed as the order from parent
+        // to children, so we reverse it. Perhaps we need a real order process
+        // to ensure the wanted order.
+        Collections.reverse(elemList);
         for (Element elem : elemList) {
             if (elem == target) {
                 delayedElement = elem;
