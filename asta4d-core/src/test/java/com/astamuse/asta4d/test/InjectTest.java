@@ -27,6 +27,14 @@ public class InjectTest extends BaseTest {
             render.add("#gv-value", gv);
             return render;
         }
+
+        public Renderer methodNameSearch(@ContextData(name = "av-r") String av, @ContextData(name = "cv-r") String cv,
+                @ContextData(name = "gv-r") String gv) {
+            Renderer render = Renderer.create("#av-value", av);
+            render.add("#cv-value", cv);
+            render.add("#gv-value", gv);
+            return render;
+        }
     }
 
     public void testMethodDefaultSearch() {
@@ -47,5 +55,14 @@ public class InjectTest extends BaseTest {
         context.setData(Context.SCOPE_DEFAULT, "gv", "gv-value at context");
         context.setData(Context.SCOPE_GLOBAL, "gv", "gv-value at global");
         new SimpleCase("Inject_testMethodScopeSearch.html");
+    }
+
+    public void testMethodNameSearch() {
+        Context context = Context.getCurrentThreadContext();
+        context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value");
+        context.setData(Context.SCOPE_DEFAULT, "cv-r", "cv-value for name replace");
+        context.setData(Context.SCOPE_GLOBAL, "gv-r", "gv-value for name replace");
+        context.setData(Context.SCOPE_GLOBAL, "gv", "gv-value");
+        new SimpleCase("Inject_testMethodNameSearch.html");
     }
 }
