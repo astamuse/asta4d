@@ -48,6 +48,10 @@ public class InjectUtil {
                     type = Long.class;
                     defaultValue = new Long(0L);
                     break;
+                case "boolean":
+                    type = Boolean.class;
+                    defaultValue = new Boolean(false);
+                    break;
                 }
             } else {
                 defaultValue = null;
