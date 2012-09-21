@@ -184,7 +184,7 @@ public class InjectUtil {
                         case 1:
                             isSet = true;
                         default:
-                            String msg = String.format("Method [%s] can not be treated as a getter or setter method.",
+                            String msg = String.format("Method [%s]:[%s] can not be treated as a getter or setter method.", cls.getName(),
                                     method.toGenericString());
                             throw new DataOperationException(msg);
                         }
