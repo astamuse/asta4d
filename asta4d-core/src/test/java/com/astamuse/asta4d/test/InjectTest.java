@@ -120,6 +120,26 @@ public class InjectTest extends BaseTest {
 
     }
 
+    public static class InstanceTypeConvertorRender {
+
+        @ContextData
+        private int intvalue;
+
+        @ContextData
+        private long longvalue;
+
+        @ContextData
+        private boolean boolvalue;
+
+        public Renderer render() {
+            Renderer render = Renderer.create("#intvalue", intvalue);
+            render.add("#longvalue", longvalue);
+            render.add("#boolvalue", boolvalue);
+            return render;
+        }
+
+    }
+
     public static class ReverseRenderFirst {
 
         @ContextData(scope = ReverseInjectableScope, reverse = true)
@@ -202,6 +222,14 @@ public class InjectTest extends BaseTest {
         context.setData(Context.SCOPE_GLOBAL, "gv", "gv-value");
         context.setData(Context.SCOPE_GLOBAL, "gv-r", "gv-value for name replace");
         new SimpleCase("Inject_testInstanceNameSearch.html");
+    }
+
+    public void testInstanceTypeConvertor() {
+        Context context = Context.getCurrentThreadContext();
+        context.setData(Context.SCOPE_DEFAULT, "intvalue", "111");
+        context.setData(Context.SCOPE_DEFAULT, "longvalue", "555");
+        context.setData(Context.SCOPE_DEFAULT, "boolvalue", "true");
+        new SimpleCase("Inject_testInstanceTypeConvertor.html");
     }
 
     public void testReverseInjection() {
