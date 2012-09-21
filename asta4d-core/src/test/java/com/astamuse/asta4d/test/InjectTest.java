@@ -63,6 +63,31 @@ public class InjectTest extends BaseTest {
 
     }
 
+    public static class InstaneScopeSearchRender {
+
+        @ContextData(scope = Context.SCOPE_GLOBAL)
+        private String cv;
+
+        private String gv;
+
+        public Renderer render() {
+            Renderer render = new GoThroughRenderer();
+            render.add("#cv-value", cv);
+            render.add("#gv-value", gv);
+            return render;
+        }
+
+        public String getGv() {
+            return gv;
+        }
+
+        @ContextData(scope = Context.SCOPE_GLOBAL)
+        public void setGv(String gv) {
+            this.gv = gv;
+        }
+
+    }
+
     public void testMethodDefaultSearch() {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "pv", "pv-value at context");
@@ -102,13 +127,11 @@ public class InjectTest extends BaseTest {
 
     public void testInstanceScopeSearch() {
         Context context = Context.getCurrentThreadContext();
-        context.setData(Context.SCOPE_DEFAULT, "av", "av-value at context");
-        context.setData(Context.SCOPE_DEFAULT, "pv", "pv-value at context");
         context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value at context");
         context.setData(Context.SCOPE_GLOBAL, "cv", "cv-value at global");
         context.setData(Context.SCOPE_DEFAULT, "gv", "gv-value at context");
         context.setData(Context.SCOPE_GLOBAL, "gv", "gv-value at global");
-        // new SimpleCase("Inject_testMethodScopeSearch.html");
+        new SimpleCase("Inject_testInstanceScopeSearch.html");
     }
 
     public void testInstanceNameSearch() {
