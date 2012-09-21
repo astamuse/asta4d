@@ -113,6 +113,27 @@ public class InjectTest extends BaseTest {
 
     }
 
+    public static class ReverseRenderFirst {
+
+        @ContextData(scope = ReverseInjectableScope, reverse = true)
+        private String reverseValue;
+
+        public Renderer render() {
+            reverseValue = "set by frist";
+            return new GoThroughRenderer();
+        }
+    }
+
+    public static class ReverseRenderSecond {
+
+        @ContextData(scope = ReverseInjectableScope)
+        private String reverseValue;
+
+        public Renderer render() {
+            return Renderer.create("*", reverseValue);
+        }
+    }
+
     public void testMethodDefaultSearch() {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "pv", "pv-value at context");
@@ -166,5 +187,9 @@ public class InjectTest extends BaseTest {
         context.setData(Context.SCOPE_GLOBAL, "gv", "gv-value");
         context.setData(Context.SCOPE_GLOBAL, "gv-r", "gv-value for name replace");
         new SimpleCase("Inject_testInstanceNameSearch.html");
+    }
+
+    public void testReverseInjection() {
+        new SimpleCase("Inject_testReverseInjection.html");
     }
 }
