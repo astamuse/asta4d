@@ -36,6 +36,13 @@ public class InjectTest extends BaseTest {
             render.add("#gv-value", gv);
             return render;
         }
+
+        public Renderer methodTypeConvertor(int intvalue, long longvalue, boolean boolvalue) {
+            Renderer render = Renderer.create("#intvalue", intvalue);
+            render.add("#longvalue", longvalue);
+            render.add("#boolvalue", boolvalue);
+            return render;
+        }
     }
 
     public static class InstaneDefaultSearchRender {
@@ -161,6 +168,14 @@ public class InjectTest extends BaseTest {
         context.setData(Context.SCOPE_GLOBAL, "gv-r", "gv-value for name replace");
         context.setData(Context.SCOPE_GLOBAL, "gv", "gv-value");
         new SimpleCase("Inject_testMethodNameSearch.html");
+    }
+
+    public void testMethodTypeConvertor() {
+        Context context = Context.getCurrentThreadContext();
+        context.setData(Context.SCOPE_DEFAULT, "intvalue", "222");
+        context.setData(Context.SCOPE_DEFAULT, "longvalue", "333");
+        context.setData(Context.SCOPE_DEFAULT, "boolvalue", "false");
+        new SimpleCase("Inject_testMethodTypeConvertor.html");
     }
 
     public void testInstanceDefaultSearch() {

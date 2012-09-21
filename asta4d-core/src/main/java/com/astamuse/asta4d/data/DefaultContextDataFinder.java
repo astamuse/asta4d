@@ -101,17 +101,29 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             Class<?> convertorSrcType, convertorTargetType;
             Method method;
             for (DataConvertor<?, ?> convertor : dataConvertorList) {
-                method = convertor.getClass().getMethod("convert");
+                method = findConvertMethod(convertor);
                 convertorSrcType = method.getParameterTypes()[0];
                 convertorTargetType = method.getReturnType();
                 if (convertorSrcType.isAssignableFrom(srcType) && targetType.isAssignableFrom(convertorTargetType)) {
                     return convertor;
                 }
             }
-        } catch (NoSuchMethodException | SecurityException e) {
+        } catch (SecurityException e) {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    private Method findConvertMethod(DataConvertor<?, ?> convertor) {
+        Method[] methods = convertor.getClass().getMethods();
+        Method rtnMethod = null;
+        for (Method m : methods) {
+            if (m.getName().equals("convert") && !m.isBridge()) {
+                rtnMethod = m;
+                break;
+            }
+        }
+        return rtnMethod;
     }
 
 }
