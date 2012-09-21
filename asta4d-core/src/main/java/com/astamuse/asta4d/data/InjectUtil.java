@@ -115,12 +115,12 @@ public class InjectUtil {
             Context context = Context.getCurrentThreadContext();
             InstanceWireTarget target = getInstanceTarget(instance);
             Object value;
-            for (FieldInfo fi : target.setFieldList) {
+            for (FieldInfo fi : target.getFieldList) {
                 value = FieldUtils.readField(fi.field, instance, true);
                 context.setData(fi.scope, fi.name, value);
             }
 
-            for (MethodInfo mi : target.setMethodList) {
+            for (MethodInfo mi : target.getMethodList) {
                 value = mi.method.invoke(instance);
                 context.setData(mi.scope, mi.name, value);
             }
@@ -177,10 +177,16 @@ public class InjectUtil {
                         name = name.substring(2);
                         isSet = true;
                     } else {
-                        if (method.getParameterTypes().length == 0) {
+
+                        switch (method.getParameterTypes().length) {
+                        case 0:
                             isGet = true;
-                        } else {
+                        case 1:
                             isSet = true;
+                        default:
+                            String msg = String.format("Method [%s] can not be treated as a getter or setter method.",
+                                    method.toGenericString());
+                            throw new DataOperationException(msg);
                         }
                     }
                     char[] cs = name.toCharArray();
