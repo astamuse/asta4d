@@ -21,17 +21,13 @@ public class Asta4dView implements View {
 
     private WebPage page = null;
 
-    public Asta4dView(String path, Locale locale) {
+    public Asta4dView(String path, Locale locale) throws TemplateException {
         super();
         this.path = path;
         this.locale = locale;
         // TODO handle page not found (rewrite it for internationalization and
         // negotiation view)
-        try {
-            this.page = new WebPage(path, locale);
-        } catch (TemplateException e) {
-            throw new RuntimeException(e);
-        }
+        this.page = new WebPage(path, locale);
     }
 
     @Override
