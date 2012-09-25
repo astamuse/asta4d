@@ -29,8 +29,6 @@ import com.astamuse.asta4d.util.SelectorUtil;
  * @author e-ryu
  * 
  */
-// TODO as quick implementation, I think it is necessary to rewrite the whole
-// class.
 public class RenderUtil {
 
     public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
