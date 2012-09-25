@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -21,6 +22,9 @@ import com.astamuse.asta4d.web.dispatch.annotation.PathVarRewrite;
 import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.view.Asta4dView;
+import com.astamuse.asta4d.web.view.RedirectView;
+import com.astamuse.asta4d.web.view.WebPageView;
 
 public class RequestDispatcher {
 
@@ -50,7 +54,7 @@ public class RequestDispatcher {
         this.ruleList = ruleList;
     }
 
-    public String handleRequest(HttpServletRequest request) throws Exception {
+    public Asta4dView handleRequest(HttpServletRequest request, Locale locale) throws Exception {
         // TODO should we handle the exceptions?
 
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
@@ -58,7 +62,7 @@ public class RequestDispatcher {
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         UrlMappingRule rule = result.getRule();
         processPathVar(context, result.getPathVarMap(), rule.getPathVarRewritter());
-        return invokeHandler(rule.getHandler());
+        return invokeHandler(rule.getHandler(), locale);
 
         // return null;
 
@@ -117,7 +121,7 @@ public class RequestDispatcher {
         }
     }
 
-    private String invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException,
+    private Asta4dView invokeHandler(Object handler, Locale locale) throws InvocationTargetException, IllegalAccessException,
             DataOperationException {
         Method[] methodList = handler.getClass().getMethods();
         Method m = null;
@@ -139,7 +143,11 @@ public class RequestDispatcher {
             params = new Object[0];
         }
         Object result = m.invoke(handler, params);
-        return result.toString();
+        if (result instanceof String) {
+            return new WebPageView((String) result, locale);
+        } else if (result instanceof RedirectView) {
+            return ((RedirectView) result);
+        }
+        throw new UnsupportedOperationException("Result Type:" + result.getClass().getName());
     }
-
 }

@@ -11,7 +11,7 @@ import org.springframework.web.servlet.View;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.WebPage;
 
-public class Asta4dView implements View {
+public class SpringWebPageView implements View {
 
     @SuppressWarnings("unused")
     private String path = "";
@@ -21,7 +21,7 @@ public class Asta4dView implements View {
 
     private WebPage page = null;
 
-    public Asta4dView(String path, Locale locale) throws TemplateException {
+    public SpringWebPageView(String path, Locale locale) throws TemplateException {
         super();
         this.path = path;
         this.locale = locale;
