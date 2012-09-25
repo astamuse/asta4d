@@ -7,24 +7,24 @@ public class SnippetInvokeException extends Exception {
      */
     private static final long serialVersionUID = 115458825987835218L;
 
-    public SnippetInvokeException() {
-        super();
+    public SnippetInvokeException(SnippetDeclarationInfo declaration, String msg) {
+        super(createMsg(declaration, msg));
     }
 
-    public SnippetInvokeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public SnippetInvokeException(SnippetDeclarationInfo declaration) {
+        super(createMsg(declaration, null));
     }
 
-    public SnippetInvokeException(String message, Throwable cause) {
-        super(message, cause);
+    public SnippetInvokeException(SnippetDeclarationInfo declaration, Throwable cause) {
+        super(createMsg(declaration, null), cause);
     }
 
-    public SnippetInvokeException(String message) {
-        super(message);
+    public SnippetInvokeException(SnippetDeclarationInfo declaration, String msg, Throwable cause) {
+        super(createMsg(declaration, msg), cause);
     }
 
-    public SnippetInvokeException(Throwable cause) {
-        super(cause);
+    private static String createMsg(SnippetDeclarationInfo declaration, String msg) {
+        return "error occured when execute snippet " + declaration.toString() + (msg == null ? "" : " detail:" + msg);
     }
 
 }

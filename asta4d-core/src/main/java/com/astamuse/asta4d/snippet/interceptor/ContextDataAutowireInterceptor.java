@@ -31,7 +31,7 @@ public class ContextDataAutowireInterceptor implements SnippetInterceptor {
             execution.setParams(params);
             return true;
         } catch (DataOperationException e) {
-            throw new SnippetInvokeException(e);
+            throw new SnippetInvokeException(execution.getDeclarationInfo(), e);
         }
 
     }

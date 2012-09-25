@@ -2,6 +2,7 @@ package com.astamuse.asta4d.snippet;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
@@ -53,7 +54,8 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         } catch (SnippetInvokeException ex) {
             throw ex;
         } catch (Exception ex) {
-            throw new SnippetInvokeException(ex);
+            String msg = "execute with params:" + Arrays.asList(execution.getParams());
+            throw new SnippetInvokeException(declaration, msg, ex);
         }
 
     }
