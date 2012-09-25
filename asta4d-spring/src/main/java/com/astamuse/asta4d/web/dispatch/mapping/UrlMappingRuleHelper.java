@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -27,7 +28,7 @@ public class UrlMappingRuleHelper {
 
     private List<UrlMappingRule> urlRules = new ArrayList<>();
 
-    private int seq = 0;
+    private AtomicInteger seq = new AtomicInteger();
 
     public final static int DEFAULT_PRIORITY = 1000;
 
@@ -50,7 +51,7 @@ public class UrlMappingRuleHelper {
     }
 
     public void add(RequestMethod method, String sourceUrl, int priority, Object pathvarRewritter, Object hanlder) {
-        urlRules.add(new UrlMappingRule(seq++, method, sourceUrl, priority, pathvarRewritter, hanlder));
+        urlRules.add(new UrlMappingRule(seq.incrementAndGet(), method, sourceUrl, priority, pathvarRewritter, hanlder));
     }
 
     // default to get
