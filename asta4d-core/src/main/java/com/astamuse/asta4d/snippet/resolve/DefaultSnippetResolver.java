@@ -10,7 +10,7 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.SnippetDeclarationInfo;
 import com.astamuse.asta4d.snippet.SnippetExcecutionInfo;
 import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
-import com.astamuse.asta4d.template.MultiSearchPathResourceLoader;
+import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
 
 public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Object> implements SnippetResolver {
 
@@ -64,18 +64,16 @@ public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Object
     }
 
     protected Method retrieveMethod(SnippetDeclarationInfo declaration) throws SnippetNotResovlableException {
-        Method m = MethodCache.get(declaration);
+        Method m = Context.getCurrentThreadContext().getConfiguration().isCacheEnable() ? MethodCache.get(declaration) : null;
         if (m == null) {
             Object instance = retrieveInstance(declaration);
             m = findSnippetMethod(instance, declaration.getSnippetHandler());
             if (m == null) {
                 throw new SnippetNotResovlableException("Snippet handler cannot be resolved for " + declaration);
             }
-            if (Context.getCurrentThreadContext().getConfiguration().isCacheEnable()) {
-                // we do not mind that the exited method instance would be
-                // overrode
-                MethodCache.put(declaration, m);
-            }
+            // we do not mind that the exited method instance would be
+            // overrode in multi-threads environment
+            MethodCache.put(declaration, m);
         }
         return m;
     }

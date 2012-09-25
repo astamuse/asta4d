@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
 
 //TODO internationalization
 public abstract class TemplateResolver extends MultiSearchPathResourceLoader<InputStream> {
@@ -19,25 +20,21 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Inp
     public Template findTemplate(String path) throws TemplateException {
         try {
             Configuration conf = Context.getCurrentThreadContext().getConfiguration();
-            if (conf.isCacheEnable()) {
-                Template t = templateMap.get(path);
-                if (t == null) {
-                    logger.info("Initializing template " + path);
-                    InputStream input = searchResource(path, "/");
-                    if (input == null) {
-                        String msg = String.format("Template %s not found.", path);
-                        throw new TemplateException(msg);
-                    }
-                    t = new Template(path, input);
-                    Template pre = templateMap.putIfAbsent(path, t);
-                    if (pre != null) {
-                        t = pre;
-                    }
+            Template t = conf.isCacheEnable() ? templateMap.get(path) : null;
+            if (t == null) {
+                logger.info("Initializing template " + path);
+                InputStream input = searchResource(path, "/");
+                if (input == null) {
+                    String msg = String.format("Template %s not found.", path);
+                    throw new TemplateException(msg);
                 }
-                return t;
-            } else {
-                return new Template(path, searchResource(path, "/"));
+                t = new Template(path, input);
+                Template pre = templateMap.putIfAbsent(path, t);
+                if (pre != null) {
+                    t = pre;
+                }
             }
+            return t;
         } catch (Exception e) {
             throw new TemplateException(path + " resolve error", e);
         }
