@@ -126,8 +126,8 @@ public class Renderer {
         return add(create(selector, list));
     }
 
-    public Renderer add(String selector, DebugRenderer debugger) {
-        return add(create(selector, debugger));
+    public Renderer addDebugger(String selector) {
+        return DebugRenderer.logger.isDebugEnabled() ? add(create(selector, new DebugRenderer())) : this;
     }
 
     public Renderer addDebugger() {
@@ -177,11 +177,6 @@ public class Renderer {
 
     public final static Renderer create(String selector, Renderer renderer) {
         return new Renderer(selector, new RendererTransformer(renderer));
-    }
-
-    public final static Renderer create(String selector, DebugRenderer debugger) {
-        Renderer r = DebugRenderer.logger.isDebugEnabled() ? debugger : new GoThroughRenderer();
-        return new Renderer(selector, new RendererTransformer(r));
     }
 
     public final static Renderer create(String selector, ElementSetter setter) {
