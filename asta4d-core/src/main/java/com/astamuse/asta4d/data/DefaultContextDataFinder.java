@@ -3,6 +3,7 @@ package com.astamuse.asta4d.data;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +13,8 @@ import com.astamuse.asta4d.data.builtin.String2Int;
 import com.astamuse.asta4d.data.builtin.String2Long;
 
 public class DefaultContextDataFinder implements ContextDataFinder {
+
+    private ConcurrentHashMap<String, DataConvertor<?, ?>> dataConvertorCache = new ConcurrentHashMap<>();
 
     private List<DataConvertor<?, ?>> dataConvertorList = getDefaultDataConvertorList();
 
@@ -96,22 +99,30 @@ public class DefaultContextDataFinder implements ContextDataFinder {
     }
 
     private DataConvertor<?, ?> getConvertor(Class<?> srcType, Class<?> targetType) {
-        // TODO need a cache
         try {
-            Class<?> convertorSrcType, convertorTargetType;
-            Method method;
-            for (DataConvertor<?, ?> convertor : dataConvertorList) {
-                method = findConvertMethod(convertor);
-                convertorSrcType = method.getParameterTypes()[0];
-                convertorTargetType = method.getReturnType();
-                if (convertorSrcType.isAssignableFrom(srcType) && targetType.isAssignableFrom(convertorTargetType)) {
-                    return convertor;
+            String cachekey = targetType.getName() + "<=" + srcType.getName();
+            DataConvertor<?, ?> convertor = null;
+            if (Context.getCurrentThreadContext().getConfiguration().isCacheEnable()) {
+                convertor = dataConvertorCache.get(cachekey);
+            }
+            if (convertor == null) {
+                Class<?> convertorSrcType, convertorTargetType;
+                Method method;
+                for (DataConvertor<?, ?> dc : dataConvertorList) {
+                    method = findConvertMethod(dc);
+                    convertorSrcType = method.getParameterTypes()[0];
+                    convertorTargetType = method.getReturnType();
+                    if (convertorSrcType.isAssignableFrom(srcType) && targetType.isAssignableFrom(convertorTargetType)) {
+                        convertor = dc;
+                        dataConvertorCache.put(cachekey, dc);
+                        break;
+                    }
                 }
             }
+            return convertor;
         } catch (SecurityException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     private Method findConvertMethod(DataConvertor<?, ?> convertor) {
