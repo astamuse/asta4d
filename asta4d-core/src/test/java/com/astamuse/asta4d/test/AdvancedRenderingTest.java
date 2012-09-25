@@ -32,7 +32,7 @@ public class AdvancedRenderingTest extends BaseTest {
     }
 
     public AdvancedRenderingTest() {
-        // TODO Auto-generated constructor stub
+
     }
 
     public void testContinualSelectAll() {
