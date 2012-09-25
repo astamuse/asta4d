@@ -32,6 +32,8 @@ public class Configuration {
 
     private boolean cacheEnable = true;
 
+    private boolean skipSnippetExecution = false;
+
     /**
      * at present, the following items are regarded as global settings
      */
@@ -95,6 +97,14 @@ public class Configuration {
 
     public void setCacheEnable(boolean cacheEnable) {
         this.cacheEnable = cacheEnable;
+    }
+
+    public boolean isSkipSnippetExecution() {
+        return skipSnippetExecution;
+    }
+
+    public void setSkipSnippetExecution(boolean skipSnippetExecution) {
+        this.skipSnippetExecution = skipSnippetExecution;
     }
 
     public List<String> getReverseInjectableScopes() {

@@ -56,25 +56,27 @@ public class RenderUtil {
         String refId;
         Element renderTarget;
         for (Element element : snippetList) {
-            if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
-                renderTarget = element.children().first();
-            } else {
-                renderTarget = element;
-            }
-            context.setCurrentRenderingElement(renderTarget);
-            renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
-            renderer = invoker.invoke(renderDeclaration);
-            refId = element.attr(ExtNodeConstants.ATTR_REFID);
-            apply(renderTarget, renderer);
-            if (element.ownerDocument() == null) {
-                // it means this snippet element is replaced by a element
-                // completely
-                String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_REFID, refId);
-                Elements elems = doc.select(reSelector);
-                if (elems.size() > 0) {
-                    element = elems.get(0);
+            if (!conf.isSkipSnippetExecution()) {
+                if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
+                    renderTarget = element.children().first();
                 } else {
-                    element = null;
+                    renderTarget = element;
+                }
+                context.setCurrentRenderingElement(renderTarget);
+                renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+                renderer = invoker.invoke(renderDeclaration);
+                refId = element.attr(ExtNodeConstants.ATTR_REFID);
+                apply(renderTarget, renderer);
+                if (element.ownerDocument() == null) {
+                    // it means this snippet element is replaced by a element
+                    // completely
+                    String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_REFID, refId);
+                    Elements elems = doc.select(reSelector);
+                    if (elems.size() > 0) {
+                        element = elems.get(0);
+                    } else {
+                        element = null;
+                    }
                 }
             }
 
