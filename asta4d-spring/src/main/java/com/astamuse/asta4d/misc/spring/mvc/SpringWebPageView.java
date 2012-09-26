@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.misc.spring.mvc;
 
-import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,18 +15,14 @@ public class SpringWebPageView implements View {
     @SuppressWarnings("unused")
     private String path = "";
 
-    @SuppressWarnings("unused")
-    private Locale locale = Locale.getDefault();
-
     private WebPage page = null;
 
-    public SpringWebPageView(String path, Locale locale) throws TemplateException {
+    public SpringWebPageView(String path) throws TemplateException {
         super();
         this.path = path;
-        this.locale = locale;
         // TODO handle page not found (rewrite it for internationalization and
         // negotiation view)
-        this.page = new WebPage(path, locale);
+        this.page = new WebPage(path);
     }
 
     @Override

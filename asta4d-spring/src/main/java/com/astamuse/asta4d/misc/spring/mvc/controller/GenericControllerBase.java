@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.misc.spring.mvc.controller;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.BeansException;
@@ -9,7 +7,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 
 import com.astamuse.asta4d.misc.spring.mvc.SpringWebPageView;
@@ -37,7 +34,7 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
 
     @RequestMapping(value = "/**")
     public View doService(HttpServletRequest request) throws Exception {
-        Asta4dView view = dispatcher.handleRequest(request, getLocale(request));
+        Asta4dView view = dispatcher.handleRequest(request);
         return convertSpringView(view);
     }
 
@@ -52,15 +49,10 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
 
     protected abstract void initUrlMappingRules(ApplicationContext beanCtx, UrlMappingRuleHelper rules);
 
-    private Locale getLocale(HttpServletRequest request) {
-        LocaleResolver localeResolver = beanCtx.getBean("localeResolver", LocaleResolver.class);
-        return localeResolver.resolveLocale(request);
-    }
-
     private View convertSpringView(Asta4dView view) throws TemplateException {
         if (view instanceof WebPageView) {
             WebPageView pageView = (WebPageView) view;
-            return new SpringWebPageView(pageView.getPath(), pageView.getLocale());
+            return new SpringWebPageView(pageView.getPath());
         }
         if (view instanceof RedirectView) {
             RedirectView redirectView = (RedirectView) view;

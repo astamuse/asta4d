@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.web;
 
-import java.util.Locale;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -14,7 +12,7 @@ public class WebPage extends Page {
 
     protected String contentType;
 
-    public WebPage(String path, Locale locale) throws TemplateException {
+    public WebPage(String path) throws TemplateException {
         super(path);
         Document doc = template.getDocumentClone();
         Elements elems = doc.select("meta[http-equiv=Content-Type]");

@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -54,7 +53,7 @@ public class RequestDispatcher {
         this.ruleList = ruleList;
     }
 
-    public Asta4dView handleRequest(HttpServletRequest request, Locale locale) throws Exception {
+    public Asta4dView handleRequest(HttpServletRequest request) throws Exception {
         // TODO should we handle the exceptions?
 
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
@@ -62,7 +61,7 @@ public class RequestDispatcher {
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         UrlMappingRule rule = result.getRule();
         processPathVar(context, result.getPathVarMap(), rule.getPathVarRewritter());
-        return invokeHandler(rule.getHandler(), locale);
+        return invokeHandler(rule.getHandler());
 
         // return null;
 
@@ -121,8 +120,7 @@ public class RequestDispatcher {
         }
     }
 
-    private Asta4dView invokeHandler(Object handler, Locale locale) throws InvocationTargetException, IllegalAccessException,
-            DataOperationException {
+    private Asta4dView invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, DataOperationException {
         Method[] methodList = handler.getClass().getMethods();
         Method m = null;
         for (Method method : methodList) {
@@ -144,7 +142,7 @@ public class RequestDispatcher {
         }
         Object result = m.invoke(handler, params);
         if (result instanceof String) {
-            return new WebPageView((String) result, locale);
+            return new WebPageView((String) result);
         } else if (result instanceof RedirectView) {
             return ((RedirectView) result);
         }
