@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.transformer.ElementTransformer;
@@ -127,7 +128,7 @@ public class Renderer {
      * @param selector
      *            a css selector
      * @param value
-     *            a int value that will be treated as a String
+     *            an int value that will be treated as a String
      * @return the created renderer for chain calling
      */
     public Renderer add(String selector, int value) {
@@ -148,12 +149,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for text by given parameter and add it to the current
-     * renderer.
-     * <p>
-     * All child nodes of the target element specified by selector will be
-     * emptied and the given String value will be rendered as a single text node
-     * of the target element.
+     * Create a renderer for text rendering by given parameter and add it to the
+     * current renderer. See {@link #create(String, String)}.
      * 
      * @param selector
      *            a css selector
@@ -188,7 +185,7 @@ public class Renderer {
      * @param attr
      *            the attribute name to set
      * @param value
-     *            a int value that will be treated as a String value
+     *            an int value that will be treated as a String value
      * @return the created renderer for chain calling
      */
     public Renderer add(String selector, String attr, int value) {
@@ -212,11 +209,7 @@ public class Renderer {
 
     /**
      * Create a renderer for attribute setting by given parameter and add it to
-     * the current renderer.
-     * <p>
-     * 
-     * An additional character of "+" or "-" can be used as a prefix of
-     * attribute name. See detail at {@link AttriuteSetter}.
+     * the current renderer. See {@link #create(String, String, String)}.
      * 
      * @param selector
      *            a css selector
@@ -232,12 +225,7 @@ public class Renderer {
 
     /**
      * Create a renderer for attribute setting by given parameter and add it to
-     * the current renderer.
-     * <p>
-     * 
-     * An additional character of "+" or "-" can be used as a prefix of
-     * attribute name. There is also a special logic for an instance with
-     * arbitrary type. See detail at {@link AttriuteSetter}.
+     * the current renderer. See {@link #create(String, String, Object)}.
      * 
      * @param selector
      *            a css selector
@@ -253,10 +241,7 @@ public class Renderer {
 
     /**
      * Create a renderer for element rendering by given parameter and add it to
-     * the current renderer.
-     * <p>
-     * The target element specified by the selector will be completely replaced
-     * by the given element.
+     * the current renderer. See {@link #create(String, Element)}.
      * 
      * @param selector
      *            a css selector
@@ -270,11 +255,7 @@ public class Renderer {
 
     /**
      * Create a renderer for element setting by given parameter and add it to
-     * the current renderer.
-     * <p>
-     * The target element that specified by the given selector will not be
-     * replaced and will be passed to the given {@link ElementSetter} as a
-     * parameter.
+     * the current renderer. See {@link #create(String, ElementSetter)}.
      * 
      * @param selector
      *            a css selector
@@ -288,10 +269,7 @@ public class Renderer {
 
     /**
      * Create a renderer for recursive renderer rendering by given parameter and
-     * add it to the current renderer.
-     * <p>
-     * The given renderer will be applied to element that specified by the given
-     * selector.
+     * add it to the current renderer. See {@link #create(String, Renderer)}.
      * 
      * @param selector
      *            a css selector
@@ -303,78 +281,260 @@ public class Renderer {
         return add(create(selector, renderer));
     }
 
+    /**
+     * Create a renderer for list rendering by given parameter and add it to the
+     * current renderer. See {@link #create(String, List)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list that can contain all the types that supported by the
+     *            non-list add methods of Renderer.
+     * @return the created renderer for chain calling
+     */
     public Renderer add(String selector, List<?> list) {
         return add(create(selector, list));
     }
 
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link DataConvertor} and add it to the current renderer. See
+     * {@link #create(String, List)}.
+     * 
+     * @param selector
+     * @param list
+     * @param convertor
+     * @return the created renderer for chain calling
+     */
     public <S, T> Renderer add(String selector, List<S> list, DataConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
 
+    /**
+     * add a {@link DebugRenderer} to the current Renderer and when this
+     * renderer is applied, the target element specified by the given selector
+     * will be output by logger.
+     * 
+     * @param selector
+     *            a css selector
+     * @return the created renderer or the current renderer for chain calling
+     */
     public Renderer addDebugger(String selector) {
         return DebugRenderer.logger.isDebugEnabled() ? add(create(selector, new DebugRenderer())) : this;
     }
 
+    /**
+     * add a {@link DebugRenderer} to the current Renderer and when this
+     * renderer is applied, the current rendering element (see
+     * {@link Context#setCurrentRenderingElement(Element)}) will be output by
+     * logger.
+     * 
+     * @return the created renderer or the current renderer for chain calling
+     */
     public Renderer addDebugger() {
         return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer()) : this;
     }
 
+    /**
+     * See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a long value that will be treated as a String
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, long value) {
         return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
     }
 
+    /**
+     * See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            an int value that will be treated as a String
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, int value) {
         return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
     }
 
+    /**
+     * See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a boolean value that will be treated as a String
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, boolean value) {
         return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
     }
 
+    /**
+     * Create a renderer for text by given parameter.
+     * <p>
+     * All child nodes of the target element specified by selector will be
+     * emptied and the given String value will be rendered as a single text node
+     * of the target element.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a String value that will be rendered
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, String value) {
         return new Renderer(selector, new TextNodeTransformer(value));
     }
 
+    /**
+     * See {@link #create(String, String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param attr
+     *            the attribute name to set
+     * @param value
+     *            a long value that will be treated as a String value
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, String attr, long value) {
         return create(selector, attr, String.valueOf(value));
     }
 
+    /**
+     * See {@link #create(String, String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param attr
+     *            the attribute name to set
+     * @param value
+     *            an int value that will be treated as a String value
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, String attr, int value) {
         return create(selector, attr, String.valueOf(value));
     }
 
+    /**
+     * See {@link #create(String, String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param attr
+     *            the attribute name to set
+     * @param value
+     *            a boolean value that will be treated as a String value
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, String attr, boolean value) {
         return create(selector, attr, String.valueOf(value));
     }
 
-    public final static Renderer create(String selector, String attr, Object value) {
-        return create(selector, new AttriuteSetter(attr, value));
-    }
-
+    /**
+     * Create a renderer for attribute setting by given parameter.
+     * <p>
+     * An additional character of "+" or "-" can be used as a prefix of
+     * attribute name. See detail at {@link AttriuteSetter}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param attr
+     *            the attribute name to set
+     * @param value
+     *            a String value that will be treated as the attribute value
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, String attr, String value) {
         return create(selector, new AttriuteSetter(attr, value));
     }
 
+    /**
+     * Create a renderer for attribute setting by given parameter.
+     * <p>
+     * An additional character of "+" or "-" can be used as a prefix of
+     * attribute name. There is also a special logic for an instance with
+     * arbitrary type. See detail at {@link AttriuteSetter}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param attr
+     *            the attribute name to set
+     * @param value
+     *            a Object value that will be treated as the attribute value
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, String attr, Object value) {
+        return create(selector, new AttriuteSetter(attr, value));
+    }
+
+    /**
+     * Create a renderer for element rendering by given parameter.
+     * <p>
+     * The target element specified by the selector will be completely replaced
+     * by the given element.
+     * 
+     * @param selector
+     *            a css selector
+     * @param elem
+     *            a element that to be rendered
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, Element elem) {
         return new Renderer(selector, new ElementTransformer(elem));
     }
 
-    public final static Renderer create(String selector, Renderer renderer) {
-        return new Renderer(selector, new RendererTransformer(renderer));
-    }
-
+    /**
+     * Create a renderer for element setting by given parameter.
+     * <p>
+     * The target element specified by the given selector will not be replaced
+     * and will be passed to the given {@link ElementSetter} as a parameter.
+     * 
+     * @param selector
+     *            a css selector
+     * @param setter
+     *            an ElementSetter
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, ElementSetter setter) {
         return new Renderer(selector, new ElementSetterTransformer(setter));
     }
 
-    public final static <S, T> Renderer create(String selector, List<S> list, DataConvertor<S, T> convertor) {
-        List<T> newList = new ArrayList<>();
-        for (S obj : list) {
-            newList.add(convertor.convert(obj));
-        }
-        return create(selector, newList);
+    /**
+     * Create a renderer for recursive renderer rendering by given parameter.
+     * <p>
+     * The given renderer will be applied to element specified by the given
+     * selector.
+     * 
+     * @param selector
+     *            a css selector
+     * @param renderer
+     *            a renderer
+     * @return the created renderer for chain calling
+     */
+    public final static Renderer create(String selector, Renderer renderer) {
+        return new Renderer(selector, new RendererTransformer(renderer));
     }
 
+    /**
+     * Create a renderer for list rendering by given parameter.
+     * <p>
+     * The target Element specified by the given selector will be duplicated
+     * times as the count of the given list and the contents of the list will be
+     * applied to the target Element too.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list that can contain all the types supported by the
+     *            non-list add methods of Renderer
+     * @return the created renderer
+     */
     public final static Renderer create(String selector, List<?> list) {
         List<Transformer<?>> transformerList = new ArrayList<Transformer<?>>(list.size());
         Transformer<?> transformer;
@@ -393,5 +553,27 @@ public class Renderer {
             transformerList.add(transformer);
         }
         return new Renderer(selector, transformerList);
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link DataConvertor}. See {@link #create(String, List)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list with arbitrary type data
+     * @param convertor
+     *            a convertor that can convert the arbitrary types of the list
+     *            data to the types supported by the non-list create methods of
+     *            Renderer
+     * @return the created renderer
+     */
+    public final static <S, T> Renderer create(String selector, List<S> list, DataConvertor<S, T> convertor) {
+        List<T> newList = new ArrayList<>();
+        for (S obj : list) {
+            newList.add(convertor.convert(obj));
+        }
+        return create(selector, newList);
     }
 }
