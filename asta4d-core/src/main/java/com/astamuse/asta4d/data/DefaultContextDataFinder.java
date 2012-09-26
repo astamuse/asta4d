@@ -12,6 +12,14 @@ import com.astamuse.asta4d.data.builtin.String2Bool;
 import com.astamuse.asta4d.data.builtin.String2Int;
 import com.astamuse.asta4d.data.builtin.String2Long;
 
+/**
+ * A default implementation of {@link ContextDataFinder}. It will search data in
+ * a given order and try to apply predefined {@link ContextDataFinder} list to
+ * convert data to appropriate type.
+ * 
+ * @author e-ryu
+ * 
+ */
 public class DefaultContextDataFinder implements ContextDataFinder {
 
     private ConcurrentHashMap<String, DataConvertor<?, ?>> dataConvertorCache = new ConcurrentHashMap<>();
