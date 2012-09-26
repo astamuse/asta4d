@@ -18,21 +18,21 @@ public class AttriuteSetter implements ElementSetter {
             @Override
             protected void configure(Element elem, String attrName, Object attrValue) {
                 if (attrValue instanceof String) {
-                    elem.removeAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                    elem.removeAttr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName);
                     elem.attr(attrName, attrValue.toString());
                 } else {
                     String dataRefId = attrName + "_" + IdGenerator.createId();
                     Context context = Context.getCurrentThreadContext();
                     context.setData(Context.SCOPE_EXT_ATTR, dataRefId, attrValue);
                     elem.removeAttr(attrName);
-                    elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName, dataRefId);
+                    elem.attr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName, dataRefId);
                 }
             }
         },
         REMOVE {
             @Override
             protected void configure(Element elem, String attrName, Object attrValue) {
-                elem.removeAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                elem.removeAttr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName);
                 elem.removeAttr(attrName);
             }
         },
@@ -91,7 +91,8 @@ public class AttriuteSetter implements ElementSetter {
         this.attrValue = value == null ? "null" : value;
         if (actionType == ActionType.ADDCLASS || actionType == ActionType.REMOVECLASS) {
             if (!(attrValue instanceof String)) {
-                throw new IllegalArgumentException("unexpected value type : " + attrValue.getClass().getName());
+                throw new IllegalArgumentException("Only String type is allowed in class setting but found unexpected value type : " +
+                        attrValue.getClass().getName());
             }
         }
     }

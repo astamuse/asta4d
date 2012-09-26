@@ -46,15 +46,16 @@ public class ExtNodeConstants {
 
     public final static String SNIPPET_NODE_ATTR_BLOCK = "block";
 
+    public final static String GROUP_NODE_NAME = "GroupNode";
+    public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);
+    public final static String GROUP_NODE_TAG_SELECTOR = SelectorUtil.tag(GROUP_NODE_TAG);
+
     public final static String ATTR_REFID = "afdRefId";
 
     public final static String ATTR_CLEAR = "clear";
     public final static String ATTR_CLEAR_WITH_NS = addNS(ATTR_CLEAR);
 
-    public final static String GROUP_NODE_NAME = "GroupNode";
-    public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);
-    public final static String GROUP_NODE_TAG_SELECTOR = SelectorUtil.tag(GROUP_NODE_TAG);
+    public final static String ATTR_DATAREF_PREFIX = "dataref-";
+    public final static String ATTR_DATAREF_PREFIX_WITH_NS = addNS(ATTR_DATAREF_PREFIX);
 
-    public final static String DATAREF_ATTR_PREFIX = "dataref-";
-    public final static String DATAREF_ATTR_PREFIX_WITH_NS = addNS(DATAREF_ATTR_PREFIX);
 }

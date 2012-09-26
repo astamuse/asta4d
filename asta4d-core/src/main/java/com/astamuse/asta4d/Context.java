@@ -80,6 +80,7 @@ public class Context {
     }
 
     private Object retrieveElementAttr(String key) {
+        String dataRef = ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + key;
         Element elem = currentRenderingElement;
         Object value = null;
         while (value == null && elem != null) {
@@ -91,8 +92,8 @@ public class Context {
                     continue;
                 }
             }
-            if (elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + key)) {
-                String id = elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + key);
+            if (elem.hasAttr(dataRef)) {
+                String id = elem.attr(dataRef);
                 value = getData(SCOPE_EXT_ATTR, id);
             } else if (elem.hasAttr(key)) {
                 value = elem.attr(key);
