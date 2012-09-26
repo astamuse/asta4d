@@ -538,7 +538,9 @@ public class Renderer {
         List<Transformer<?>> transformerList = new ArrayList<Transformer<?>>(list.size());
         Transformer<?> transformer;
         for (Object obj : list) {
-            if (obj instanceof ElementSetter) {
+            if (obj instanceof String) {
+                transformer = new ElementSetterTransformer(new TextSetter(obj.toString()));
+            } else if (obj instanceof ElementSetter) {
                 transformer = new ElementSetterTransformer((ElementSetter) obj);
             } else if (obj instanceof Renderer) {
                 transformer = new RendererTransformer((Renderer) obj);
