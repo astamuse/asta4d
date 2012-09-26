@@ -11,7 +11,6 @@ import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.transformer.ElementTransformer;
 import com.astamuse.asta4d.transformer.RendererTransformer;
-import com.astamuse.asta4d.transformer.TextNodeTransformer;
 import com.astamuse.asta4d.transformer.Transformer;
 
 /**
@@ -345,7 +344,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, long value) {
-        return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
+        return create(selector, String.valueOf(value));
     }
 
     /**
@@ -358,7 +357,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, int value) {
-        return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
+        return create(selector, String.valueOf(value));
     }
 
     /**
@@ -371,7 +370,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, boolean value) {
-        return new Renderer(selector, new TextNodeTransformer(String.valueOf(value)));
+        return create(selector, String.valueOf(value));
     }
 
     /**
@@ -388,7 +387,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, String value) {
-        return new Renderer(selector, new TextNodeTransformer(value));
+        return create(selector, new TextSetter(value));
     }
 
     /**
@@ -539,16 +538,14 @@ public class Renderer {
         List<Transformer<?>> transformerList = new ArrayList<Transformer<?>>(list.size());
         Transformer<?> transformer;
         for (Object obj : list) {
-            if (obj instanceof String) {
-                transformer = new TextNodeTransformer(obj.toString());
+            if (obj instanceof ElementSetter) {
+                transformer = new ElementSetterTransformer((ElementSetter) obj);
             } else if (obj instanceof Renderer) {
                 transformer = new RendererTransformer((Renderer) obj);
-            } else if (obj instanceof ElementSetter) {
-                transformer = new ElementSetterTransformer((ElementSetter) obj);
             } else if (obj instanceof Element) {
                 transformer = new ElementTransformer((Element) obj);
             } else {
-                transformer = new TextNodeTransformer(obj.toString());
+                transformer = new ElementSetterTransformer(new TextSetter(obj.toString()));
             }
             transformerList.add(transformer);
         }
