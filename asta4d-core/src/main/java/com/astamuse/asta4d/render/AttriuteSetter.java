@@ -1,6 +1,12 @@
 package com.astamuse.asta4d.render;
 
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.util.IdGenerator;
 
 /**
  * 
@@ -9,17 +15,69 @@ import org.jsoup.nodes.Element;
  */
 public class AttriuteSetter implements ElementSetter {
 
+    private final static Logger logger = LoggerFactory.getLogger(AttriuteSetter.class);
+
     private static enum ActionType {
-        SET, REMOVE, ADDCLASS, REMOVECLASS
+        SET {
+            @Override
+            protected void configure(Element elem, String attrName, Object attrValue) {
+                if (attrValue instanceof String) {
+                    elem.attr(attrName, (String) attrValue);
+                } else {
+                    if (elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName)) {
+                        String orgValue = elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                        logger.warn(String.format("override existed attribute(%s=\"%s\") for setting %s", attrName, orgValue, attrValue
+                                .getClass().getName()));
+                    }
+                    String dataRefId = attrName + "_" + IdGenerator.createId();
+                    Context context = Context.getCurrentThreadContext();
+                    context.setData(Context.SCOPE_EXT_ATTR, dataRefId, attrValue);
+                    elem.removeAttr(attrName);
+                    elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName, dataRefId);
+                }
+            }
+        },
+        REMOVE {
+            @Override
+            protected void configure(Element elem, String attrName, Object attrValue) {
+                boolean existAttr = elem.hasAttr(attrName);
+                boolean existDataRefAttr = elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                if (!existAttr && existDataRefAttr) {
+                    elem.removeAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                } else {
+                    elem.removeAttr(attrName);
+                }
+            }
+        },
+        ADDCLASS {
+            @Override
+            protected void configure(Element elem, String attrName, Object attrValue) {
+                if (!(attrValue instanceof String)) {
+                    throw new IllegalArgumentException("unexpected value type : " + attrValue.getClass().getName());
+                }
+                elem.addClass((String) attrValue);
+            }
+        },
+        REMOVECLASS {
+            @Override
+            protected void configure(Element elem, String attrName, Object attrValue) {
+                if (!(attrValue instanceof String)) {
+                    throw new IllegalArgumentException("unexpected value type : " + attrValue.getClass().getName());
+                }
+                elem.removeClass((String) attrValue);
+            }
+        };
+
+        protected abstract void configure(Element elem, String attrName, Object attrValue);
     }
 
     private String attrName;
 
-    private String attrValue;
+    private Object attrValue;
 
     private ActionType actionType;
 
-    public AttriuteSetter(String attr, String value) {
+    public AttriuteSetter(String attr, Object value) {
         super();
         if (attr.equalsIgnoreCase("+class")) {
             this.actionType = ActionType.ADDCLASS;
@@ -54,20 +112,7 @@ public class AttriuteSetter implements ElementSetter {
 
     @Override
     public void set(Element elem) {
-        switch (actionType) {
-        case SET:
-            elem.attr(attrName, attrValue);
-            break;
-        case REMOVE:
-            elem.removeAttr(attrName);
-            break;
-        case ADDCLASS:
-            elem.addClass(attrValue);
-            break;
-        case REMOVECLASS:
-            elem.removeClass(attrValue);
-            break;
-        }
+        actionType.configure(elem, attrName, attrValue);
     }
 
     @Override

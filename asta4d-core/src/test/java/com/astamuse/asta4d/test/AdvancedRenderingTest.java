@@ -1,6 +1,10 @@
 package com.astamuse.asta4d.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jsoup.nodes.Element;
+import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
@@ -29,14 +33,38 @@ public class AdvancedRenderingTest extends BaseTest {
 
             return render;
         }
+
+        public Renderer setAnyTypeOuter(int count) {
+            Renderer render = new GoThroughRenderer();
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                list.add("listParam" + i);
+            }
+            render.add("#outerDiv", "outerValue");
+            render.add("#inner", "outerList", list);
+            render.add("#outer", "-count", null);
+            return render;
+        }
+
+        public Renderer setAnyTypeInner(List<String> outerList) {
+            Renderer render = new GoThroughRenderer();
+            render.add("#innerList > li", outerList);
+            render.add("#inner", "-outerList", null);
+            return render;
+        }
     }
 
     public AdvancedRenderingTest() {
 
     }
 
+    @Test
     public void testContinualSelectAll() {
         new SimpleCase("AdvancedRendering_continualSelectAll.html");
     }
 
+    @Test
+    public void testDataRef() {
+        new SimpleCase("AdvancedRendering_dataRef.html");
+    }
 }

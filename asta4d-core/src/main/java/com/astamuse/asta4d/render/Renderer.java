@@ -163,8 +163,7 @@ public class Renderer {
     }
 
     public final static Renderer create(String selector, String attr, Object value) {
-        // TODO convert object to a data reference
-        return create(selector, attr, String.valueOf(value));
+        return create(selector, new AttriuteSetter(attr, value));
     }
 
     public final static Renderer create(String selector, String attr, String value) {

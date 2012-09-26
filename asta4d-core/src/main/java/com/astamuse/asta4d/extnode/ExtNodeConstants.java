@@ -55,4 +55,6 @@ public class ExtNodeConstants {
     public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);
     public final static String GROUP_NODE_TAG_SELECTOR = SelectorUtil.tag(GROUP_NODE_TAG);
 
+    public final static String DATAREF_ATTR_PREFIX = "dataref-";
+    public final static String DATAREF_ATTR_PREFIX_WITH_NS = addNS(DATAREF_ATTR_PREFIX);
 }

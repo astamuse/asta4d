@@ -16,6 +16,8 @@ public class Context {
 
     public final static String SCOPE_ATTR = "attr";
 
+    public final static String SCOPE_EXT_ATTR = "ext_attr";
+
     private final static ThreadLocal<Context> instanceHolder = new ThreadLocal<>();
 
     private final static Map<String, Object> globalMap = new ConcurrentHashMap<>();
@@ -77,9 +79,9 @@ public class Context {
         }
     }
 
-    private String retrieveElementAttr(String key) {
+    private Object retrieveElementAttr(String key) {
         Element elem = currentRenderingElement;
-        String value = null;
+        Object value = null;
         while (value == null && elem != null) {
             // for a faked snippet node, we will just jump over it
             if (elem.tagName().equals(ExtNodeConstants.SNIPPET_NODE_TAG)) {
@@ -89,7 +91,11 @@ public class Context {
                     continue;
                 }
             }
-            if (elem.hasAttr(key)) {
+            if (elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + key)) {
+                String id = elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + key);
+                value = getData(SCOPE_EXT_ATTR, id);
+            }
+            if (value == null && elem.hasAttr(key)) {
                 value = elem.attr(key);
             }
             elem = elem.parent();
