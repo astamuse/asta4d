@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
@@ -12,6 +14,7 @@ import com.astamuse.asta4d.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.transformer.ElementTransformer;
 import com.astamuse.asta4d.transformer.RendererTransformer;
 import com.astamuse.asta4d.transformer.Transformer;
+import com.astamuse.asta4d.util.Asta4DWarningException;
 
 /**
  * A renderer is for describing rendering actions.
@@ -26,7 +29,7 @@ import com.astamuse.asta4d.transformer.Transformer;
  */
 public class Renderer {
 
-    // private in
+    private final static Logger logger = LoggerFactory.getLogger(Renderer.class);
 
     private String selector;
 
@@ -547,6 +550,9 @@ public class Renderer {
             } else if (obj instanceof Element) {
                 transformer = new ElementTransformer((Element) obj);
             } else {
+                String msg = "There is a unsupported type in list:" + obj.getClass().getName();
+                Asta4DWarningException awe = new Asta4DWarningException(msg);
+                logger.warn(msg, awe);
                 transformer = new ElementSetterTransformer(new TextSetter(obj.toString()));
             }
             transformerList.add(transformer);
