@@ -10,14 +10,33 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
+import com.astamuse.asta4d.util.Asta4DWarningException;
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 
+/**
+ * This class is a function holder to supply functionalities about data
+ * injection
+ * 
+ * @author e-ryu
+ * 
+ */
 public class InjectUtil {
 
+    private final static Logger logger = LoggerFactory.getLogger(InjectUtil.class);
+
+    /**
+     * A class that present the injectable target information
+     * 
+     * @author e-ryu
+     * 
+     */
     private static class TargetInfo {
         String name;
         String scope;
@@ -25,6 +44,7 @@ public class InjectUtil {
         Object defaultValue;
 
         void fixForPrimitiveType() {
+            // convert primitive types to their box types
             if (type.isPrimitive()) {
                 String name = type.getName();
                 switch (name) {
@@ -80,6 +100,13 @@ public class InjectUtil {
 
     private final static Paranamer paranamer = new AdaptiveParanamer();
 
+    /**
+     * Set the value of all the fields marked by {@link ContextData} of the
+     * given instance.
+     * 
+     * @param instance
+     * @throws DataOperationException
+     */
     public final static void injectToInstance(Object instance) throws DataOperationException {
         try {
 
@@ -105,7 +132,11 @@ public class InjectUtil {
     }
 
     /**
-     * at present, we only reversely inject values which marked as request scope
+     * Retrieve values from fields marked as reverse injectable of given
+     * instance.
+     * 
+     * There are only limited scopes can be marked as injectable. See
+     * {@link Configuration#setReverseInjectableScopes(List)}.
      * 
      * @param instance
      * @throws DataOperationException
@@ -152,6 +183,9 @@ public class InjectUtil {
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();
         ContextData cd;
+
+        // at first, retrieve methods information
+
         // TODO we should use class name to confirm contextdata annotation
         // because they are possibly from different class loader. The problem is
         // whether it is a problem?
@@ -181,8 +215,10 @@ public class InjectUtil {
                         switch (method.getParameterTypes().length) {
                         case 0:
                             isGet = true;
+                            break;
                         case 1:
                             isSet = true;
+                            break;
                         default:
                             String msg = String.format("Method [%s]:[%s] can not be treated as a getter or setter method.", cls.getName(),
                                     method.toGenericString());
@@ -213,10 +249,18 @@ public class InjectUtil {
                     // only if the reverse value is explicitly set to true and
                     // the scope is contained in the allowing reverse injection
                     // list
-                    if (cd.reverse() && reverseTargetScopes.contains(mi.scope)) {
-                        mi.type = method.getReturnType();
-                        mi.fixForPrimitiveType();
-                        target.getMethodList.add(mi);
+                    if (cd.reverse()) {
+                        if (reverseTargetScopes.contains(mi.scope)) {
+                            mi.type = method.getReturnType();
+                            mi.fixForPrimitiveType();
+                            target.getMethodList.add(mi);
+                        } else {
+                            String msg = String.format(
+                                    "Only scope in [%s] can be marked as reverse injectable but found scope as %s (%s:%s).",
+                                    reverseTargetScopes.toString(), mi.scope, cls.getName(), mi.name);
+                            Asta4DWarningException awe = new Asta4DWarningException(msg);
+                            logger.warn(msg, awe);
+                        }
                     }
                 }
 
@@ -229,6 +273,7 @@ public class InjectUtil {
             }
         }
 
+        // then retrieve fields information
         String objCls = Object.class.getName();
         Field[] flds;
         FieldInfo fi;
@@ -249,8 +294,16 @@ public class InjectUtil {
                     fi.fixForPrimitiveType();
                     target.setFieldList.add(fi);
 
-                    if (cd.reverse() && reverseTargetScopes.contains(fi.scope)) {
-                        target.getFieldList.add(fi);
+                    if (cd.reverse()) {
+                        if (reverseTargetScopes.contains(fi.scope)) {
+                            target.getFieldList.add(fi);
+                        } else {
+                            String msg = String.format(
+                                    "Only scope in [%s] can be marked as reverse injectable but found scope as %s (%s:%s).",
+                                    reverseTargetScopes.toString(), fi.scope, cls.getName(), fi.name);
+                            Asta4DWarningException awe = new Asta4DWarningException(msg);
+                            logger.warn(msg, awe);
+                        }
                     }
 
                 }
@@ -261,12 +314,32 @@ public class InjectUtil {
         return target;
     }
 
+    /**
+     * Retrieve value from {@link Context} for given Method by configured
+     * {@link ContextDataFinder}
+     * 
+     * @param method
+     *            given method
+     * @return Retrieved values
+     * @throws DataOperationException
+     */
     public final static Object[] getMethodInjectParams(Method method) throws DataOperationException {
         Context context = Context.getCurrentThreadContext();
         ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
         return getMethodInjectParams(method, dataFinder);
     }
 
+    /**
+     * Retrieve value from {@link Context} for given Method by given
+     * {@link ContextDataFinder}
+     * 
+     * @param method
+     *            given method
+     * @param dataFinder
+     *            given ContextDataFinder
+     * @return Retrieved values
+     * @throws DataOperationException
+     */
     public final static Object[] getMethodInjectParams(Method method, ContextDataFinder dataFinder) throws DataOperationException {
         List<TargetInfo> targetList = getMethodTarget(method);
         Object[] params = new Object[targetList.size()];

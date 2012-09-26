@@ -14,8 +14,8 @@ import com.astamuse.asta4d.data.builtin.String2Long;
 
 /**
  * A default implementation of {@link ContextDataFinder}. It will search data in
- * a given order and try to apply predefined {@link ContextDataFinder} list to
- * convert data to appropriate type.
+ * a given order (if scope is not specified) and try to apply predefined
+ * {@link ContextDataFinder} list to convert data to appropriate type.
  * 
  * @author e-ryu
  * 
@@ -29,9 +29,6 @@ public class DefaultContextDataFinder implements ContextDataFinder {
     private List<String> dataSearchScopeOrder = getDefaultScopeOrder();
 
     private final static List<DataConvertor<?, ?>> getDefaultDataConvertorList() {
-        // TODO perhaps we can implement an mechanism to automatically retrieve
-        // all possible convertors via annotation check on all loaded classes.
-        // Anyway, it is not necessary.
         List<DataConvertor<?, ?>> defaultList = new ArrayList<>();
         defaultList.add(new String2Long());
         defaultList.add(new String2Int());
