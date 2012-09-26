@@ -15,8 +15,6 @@ import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 public class Template {
 
-    private String path;
-
     private Document doc;
 
     /**
@@ -28,7 +26,6 @@ public class Template {
      */
     public Template(String path, InputStream input) throws TemplateException {
         try {
-            this.path = path;
             this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
             // this.doc = Jsoup.parse(input, "UTF-8", "");
             initDocument();
@@ -57,10 +54,6 @@ public class Template {
             TemplateUtil.mergeBlock(parentDoc, extension);
             doc = parentDoc;
         }
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public Document getDocumentClone() {

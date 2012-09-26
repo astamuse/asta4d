@@ -1,6 +1,7 @@
 package com.astamuse.asta4d;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,6 +18,8 @@ public class Context {
     public final static String SCOPE_ATTR = "attr";
 
     public final static String SCOPE_EXT_ATTR = "ext_attr";
+
+    public final static String KEY_CURRENT_LOCALE = "current_locale";
 
     private final static ThreadLocal<Context> instanceHolder = new ThreadLocal<>();
 
@@ -77,6 +80,18 @@ public class Context {
             Map<String, Object> dataMap = getMapForScope(scope);
             return (T) dataMap.get(key);
         }
+    }
+
+    public Locale getCurrentLocale() {
+        Locale currentLocale = getData(KEY_CURRENT_LOCALE);
+        if (currentLocale != null) {
+            return currentLocale;
+        }
+        return Locale.getDefault();
+    }
+
+    public void setCurrentLocale(Locale locale) {
+        setData(KEY_CURRENT_LOCALE, locale);
     }
 
     private Object retrieveElementAttr(String key) {
