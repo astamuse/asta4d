@@ -94,8 +94,7 @@ public class Context {
             if (elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + key)) {
                 String id = elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + key);
                 value = getData(SCOPE_EXT_ATTR, id);
-            }
-            if (value == null && elem.hasAttr(key)) {
+            } else if (elem.hasAttr(key)) {
                 value = elem.attr(key);
             }
             elem = elem.parent();

@@ -1,8 +1,6 @@
 package com.astamuse.asta4d.render;
 
 import org.jsoup.nodes.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
@@ -15,20 +13,14 @@ import com.astamuse.asta4d.util.IdGenerator;
  */
 public class AttriuteSetter implements ElementSetter {
 
-    private final static Logger logger = LoggerFactory.getLogger(AttriuteSetter.class);
-
     private static enum ActionType {
         SET {
             @Override
             protected void configure(Element elem, String attrName, Object attrValue) {
                 if (attrValue instanceof String) {
-                    elem.attr(attrName, (String) attrValue);
+                    elem.removeAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                    elem.attr(attrName, attrValue.toString());
                 } else {
-                    if (elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName)) {
-                        String orgValue = elem.attr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
-                        logger.warn(String.format("override existed attribute(%s=\"%s\") for setting %s", attrName, orgValue, attrValue
-                                .getClass().getName()));
-                    }
                     String dataRefId = attrName + "_" + IdGenerator.createId();
                     Context context = Context.getCurrentThreadContext();
                     context.setData(Context.SCOPE_EXT_ATTR, dataRefId, attrValue);
@@ -40,31 +32,20 @@ public class AttriuteSetter implements ElementSetter {
         REMOVE {
             @Override
             protected void configure(Element elem, String attrName, Object attrValue) {
-                boolean existAttr = elem.hasAttr(attrName);
-                boolean existDataRefAttr = elem.hasAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
-                if (!existAttr && existDataRefAttr) {
-                    elem.removeAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
-                } else {
-                    elem.removeAttr(attrName);
-                }
+                elem.removeAttr(ExtNodeConstants.DATAREF_ATTR_PREFIX_WITH_NS + attrName);
+                elem.removeAttr(attrName);
             }
         },
         ADDCLASS {
             @Override
             protected void configure(Element elem, String attrName, Object attrValue) {
-                if (!(attrValue instanceof String)) {
-                    throw new IllegalArgumentException("unexpected value type : " + attrValue.getClass().getName());
-                }
-                elem.addClass((String) attrValue);
+                elem.addClass(attrValue.toString());
             }
         },
         REMOVECLASS {
             @Override
             protected void configure(Element elem, String attrName, Object attrValue) {
-                if (!(attrValue instanceof String)) {
-                    throw new IllegalArgumentException("unexpected value type : " + attrValue.getClass().getName());
-                }
-                elem.removeClass((String) attrValue);
+                elem.removeClass(attrValue.toString());
             }
         };
 
@@ -108,6 +89,11 @@ public class AttriuteSetter implements ElementSetter {
         }
 
         this.attrValue = value == null ? "null" : value;
+        if (actionType == ActionType.ADDCLASS || actionType == ActionType.REMOVECLASS) {
+            if (!(attrValue instanceof String)) {
+                throw new IllegalArgumentException("unexpected value type : " + attrValue.getClass().getName());
+            }
+        }
     }
 
     @Override
