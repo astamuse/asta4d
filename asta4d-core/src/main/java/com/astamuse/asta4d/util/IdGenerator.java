@@ -34,7 +34,7 @@ public class IdGenerator {
         public long newTime() {
             // since the current milliseconds is less than 40 bit, we think this
             // operation is safe
-            long cur = System.currentTimeMillis() << 2;
+            long cur = System.currentTimeMillis() << 7;
             if (cur > lastTime) {
                 lastTime = cur;
             } else {
