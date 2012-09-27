@@ -98,6 +98,17 @@ public class WebApplicationContext extends Context {
             map = super.getMapForScope(SCOPE_DEFAULT);
             break;
         case SCOPE_QUERYPARAM:
+            map = new HashMap<>();
+            HttpServletRequest request = getRequest();
+            Enumeration<String> paramNames = request.getParameterNames();
+            while (paramNames.hasMoreElements()) {
+                String name = paramNames.nextElement();
+                // TODO we should consider the situation of multi parameter
+                // values
+                String value = request.getParameter(name);
+                map.put(name, value);
+            }
+            break;
         case SCOPE_PATHVAR:
         default:
             map = super.acquireMapForScope(scope);
