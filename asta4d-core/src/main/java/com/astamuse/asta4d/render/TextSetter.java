@@ -6,12 +6,25 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.util.Asta4DWarningException;
 
+/**
+ * A TextSetter will empty the target element at first, then add a new text node
+ * to the target element
+ * 
+ * @author e-ryu
+ * 
+ */
 public class TextSetter implements ElementSetter {
 
     private final static Logger logger = LoggerFactory.getLogger(TextSetter.class);
 
     private String text;
 
+    /**
+     * Constructor
+     * 
+     * @param text
+     *            the text wanted to be rendered
+     */
     public TextSetter(String text) {
         this.text = fixContent(text);
     }

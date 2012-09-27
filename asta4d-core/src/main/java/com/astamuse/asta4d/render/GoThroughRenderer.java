@@ -5,6 +5,8 @@ import org.jsoup.nodes.Element;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 
 /**
+ * This Renderer will do nothing, the Rendering process will jump over a render
+ * if it is a GoThroughRenderer.
  * 
  * @author e-ryu
  * 
