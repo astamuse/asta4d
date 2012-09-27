@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
-import com.astamuse.asta4d.transformer.ElementSetterTransformer;
-import com.astamuse.asta4d.transformer.ElementTransformer;
-import com.astamuse.asta4d.transformer.RendererTransformer;
-import com.astamuse.asta4d.transformer.Transformer;
+import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
+import com.astamuse.asta4d.render.transformer.ElementTransformer;
+import com.astamuse.asta4d.render.transformer.RendererTransformer;
+import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.util.Asta4DWarningException;
 
 /**

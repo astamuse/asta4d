@@ -4,7 +4,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.transformer.ElementSetterTransformer;
+import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 
 public class DebugRenderer extends Renderer {
 
