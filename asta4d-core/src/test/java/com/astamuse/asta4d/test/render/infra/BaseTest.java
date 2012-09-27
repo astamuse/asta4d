@@ -20,12 +20,12 @@ public class BaseTest {
     private final static Configuration configuration = new Configuration() {
         {
             ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
-            List<String> templateBaseFolders = Arrays.asList("/com/astamuse/asta4d/test/templates");
+            List<String> templateBaseFolders = Arrays.asList("/com/astamuse/asta4d/test/render/templates");
             templateResolver.setSearchPathList(templateBaseFolders);
             this.setTemplateResolver(templateResolver);
 
             DefaultSnippetResolver snippetResolver = new DefaultSnippetResolver();
-            List<String> snippetBasePackages = Arrays.asList("com.astamuse.asta4d.test");
+            List<String> snippetBasePackages = Arrays.asList("com.astamuse.asta4d.test.render");
             snippetResolver.setSearchPathList(snippetBasePackages);
             this.setSnippetResolver(snippetResolver);
 
