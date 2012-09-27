@@ -7,6 +7,12 @@ import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
+/**
+ * A node used for extending purpose.
+ * 
+ * @author e-ryu
+ * 
+ */
 public class ExtNode extends Element {
 
     public ExtNode(String tag) {
