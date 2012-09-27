@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.test.infra;
+package com.astamuse.asta4d.test.render.infra;
 
 import java.io.BufferedReader;
 import java.io.IOException;
