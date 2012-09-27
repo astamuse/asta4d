@@ -43,6 +43,8 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Inp
                 }
                 return t;
             }
+            // TODO mayby we should return a null? So that caller can identify
+            // the situation of template load error or template not found.
             throw new TemplateException(String.format("Template %s not found.", path));
         } catch (Exception e) {
             throw new TemplateException(path + " resolve error", e);

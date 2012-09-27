@@ -49,7 +49,7 @@ public class Template {
         if (extension != null) {
             String parentPath = extension.attr(ExtNodeConstants.EXTENSION_NODE_ATTR_PARENT);
             if (parentPath == null || parentPath.isEmpty()) {
-                throw new RuntimeException("You must specify the parent of an extension");
+                throw new TemplateException(String.format("You must specify the parent of an extension (%s).", this.path));
             }
             Configuration conf = Context.getCurrentThreadContext().getConfiguration();
             Template parent = conf.getTemplateResolver().findTemplate(parentPath);
