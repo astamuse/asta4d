@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.web;
 
-import java.io.InputStream;
-
 import javax.servlet.ServletContext;
 
 import com.astamuse.asta4d.template.TemplateResolver;
@@ -28,9 +26,9 @@ public class WebApplicationTemplateResolver extends TemplateResolver {
     }
 
     @Override
-    protected InputStream loadResource(String path) {
+    protected TemplateInfo loadResource(String path) {
         // TODO test whether it can work well in an unpacked war deployment
-        return servletContext.getResourceAsStream(path);
+        return createTemplateInfo(path, servletContext.getResourceAsStream(path));
     }
 
 }
