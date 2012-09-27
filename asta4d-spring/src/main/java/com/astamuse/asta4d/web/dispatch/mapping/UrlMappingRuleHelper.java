@@ -67,6 +67,11 @@ public class UrlMappingRuleHelper {
         add(sourceUrl, targetPath, null);
     }
 
+    // TODO readjust argument
+    public void add(RequestMethod method, String sourceUrl, String targetPath) {
+        add(method, sourceUrl, DEFAULT_PRIORITY, null, new DefaultHandler(targetPath));
+    }
+
     // for other method such as post
     public void add(RequestMethod method, String sourceUrl, Object hanlder) {
         add(method, sourceUrl, DEFAULT_PRIORITY, null, hanlder);
