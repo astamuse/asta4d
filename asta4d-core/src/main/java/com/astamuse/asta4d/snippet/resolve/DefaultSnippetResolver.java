@@ -38,7 +38,7 @@ public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Object
 
     protected Object createInstance(String snippetName) throws SnippetNotResovlableException {
         try {
-            Object instance = super.searchResource(snippetName, ".");
+            Object instance = super.searchResource(".", snippetName);
             if (instance == null) {
                 throw new ClassNotFoundException("Can not found class for snippet name:" + snippetName);
             }

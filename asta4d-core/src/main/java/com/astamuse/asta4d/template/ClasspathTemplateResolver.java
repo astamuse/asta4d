@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.template;
 
-import java.io.InputStream;
 
 /**
  * This template resolver is mostly used by test. However if you'd like to put
@@ -12,8 +11,8 @@ import java.io.InputStream;
 public class ClasspathTemplateResolver extends TemplateResolver {
 
     @Override
-    public InputStream loadResource(String path) {
-        return this.getClass().getResourceAsStream(path);
+    public TemplateInfo loadResource(String path) {
+        return createTemplateInfo(path, this.getClass().getResourceAsStream(path));
     }
 
 }
