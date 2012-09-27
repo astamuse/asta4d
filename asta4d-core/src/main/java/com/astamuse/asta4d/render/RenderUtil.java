@@ -172,7 +172,13 @@ public class RenderUtil {
         apply(target, rendererList, 0, count);
     }
 
+    // TODO since this method is called recursively, we need do a test to find
+    // out the threshold of render list size that will cause a
+    // StackOverflowError.
     private final static void apply(Element target, List<Renderer> rendererList, int startIndex, int count) {
+
+        // The renderer list have to be applied recursively because the
+        // transformer will always return a new Element clone.
 
         if (startIndex >= count) {
             return;
@@ -216,7 +222,8 @@ public class RenderUtil {
 
         // if the root element is one of the process targets, we can not apply
         // the left renderers to original element because it will be replaced by
-        // a new element even it is not necessary.
+        // a new element even it is not necessary (that is how Transformer
+        // works).
         if (delayedElement == null) {
             apply(target, rendererList, startIndex + 1, count);
         } else {

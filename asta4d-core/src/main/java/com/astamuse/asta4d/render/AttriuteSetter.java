@@ -7,6 +7,33 @@ import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.util.IdGenerator;
 
 /**
+ * An AttributeSetter is used to set attribute value of an element. The
+ * specified attribute name can be a plain text representing the target
+ * attribute, and it can also be prefixed by an additional character: + or -.
+ * <p>
+ * There are several cases about how AttributeSetter perform its action by
+ * different attribute name and value.<br>
+ * 
+ * <li>new AttriuteSetter("+class", value): call addClass(value) on target
+ * Element, null value will be treated as "null".
+ * 
+ * <li>new AttriuteSetter("-class", value): call removeClass(value) on target
+ * Element, null value will be treated as "null".
+ * 
+ * <li>new AttriuteSetter("class", value): call attr("class", value) on target
+ * Element if value is not null, for a null value, removeAttr("class") will be
+ * called.
+ * 
+ * <li>new AttriuteSetter("anyattr", value): call attr("anyattr", value) on
+ * target Element if value is not null, for a null value, removeAttr("anyattr")
+ * will be called.
+ * 
+ * <li>new AttriuteSetter("+anyattr", value): call attr("anyattr", value) on
+ * target Element if value is not null, for a null value, removeAttr("anyattr")
+ * will be called.
+ * 
+ * <li>new AttriuteSetter("-anyattr", value): call removeAttr("anyattr") on
+ * target Element.
  * 
  * @author e-ryu
  * 
@@ -58,18 +85,30 @@ public class AttriuteSetter implements ElementSetter {
 
     private ActionType actionType;
 
+    /**
+     * Constructor
+     * 
+     * @param attr
+     *            attribute name
+     * @param value
+     *            attribute value
+     */
     public AttriuteSetter(String attr, Object value) {
         super();
         if (attr.equalsIgnoreCase("+class")) {
             this.actionType = ActionType.ADDCLASS;
             this.attrName = "class";
         } else if (attr.equalsIgnoreCase("-class")) {
+            this.actionType = ActionType.REMOVECLASS;
+            this.attrName = "class";
+        } else if (attr.equalsIgnoreCase("class")) {
             if (value == null) {
                 this.actionType = ActionType.REMOVE;
+                this.attrName = "class";
             } else {
-                this.actionType = ActionType.REMOVECLASS;
+                this.actionType = ActionType.SET;
+                this.attrName = "class";
             }
-            this.attrName = "class";
         } else {
             if (attr.startsWith("-")) {
                 this.actionType = ActionType.REMOVE;
