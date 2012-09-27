@@ -19,13 +19,13 @@ public class Context {
 
     public final static String SCOPE_EXT_ATTR = "ext_attr";
 
-    public final static String KEY_CURRENT_LOCALE = "current_locale";
+    private final static String KEY_CURRENT_LOCALE = "current_locale";
+
+    private final static String KEY_CURRENT_RENDERING_ELEMENT = "current_rendering_element";
 
     private final static ThreadLocal<Context> instanceHolder = new ThreadLocal<>();
 
     private final static Map<String, Object> globalMap = new ConcurrentHashMap<>();
-
-    private Element currentRenderingElement = null;
 
     private Configuration configuration;
 
@@ -52,11 +52,11 @@ public class Context {
     }
 
     public void setCurrentRenderingElement(Element elem) {
-        currentRenderingElement = elem;
+        setData(KEY_CURRENT_RENDERING_ELEMENT, elem);
     }
 
     public Element getCurrentRenderingElement() {
-        return currentRenderingElement;
+        return getData(KEY_CURRENT_RENDERING_ELEMENT);
     }
 
     public void setData(String key, Object data) {
@@ -96,7 +96,7 @@ public class Context {
 
     private Object retrieveElementAttr(String key) {
         String dataRef = ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + key;
-        Element elem = currentRenderingElement;
+        Element elem = getCurrentRenderingElement();
         Object value = null;
         while (value == null && elem != null) {
             // for a faked snippet node, we will just jump over it

@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import com.astamuse.asta4d.Configuration;
@@ -19,6 +18,7 @@ import com.astamuse.asta4d.snippet.SnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateUtil;
+import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 /**
@@ -31,6 +31,21 @@ import com.astamuse.asta4d.util.SelectorUtil;
  */
 public class RenderUtil {
 
+    /**
+     * Find out all the snippet in the passed Document and execute them. The
+     * Containing embed tag of the passed Document will be exactly mixed in here
+     * too. <br>
+     * Recursively contained snippets will be executed from outside to inside,
+     * thus the inner snippets will not be executed until all of their outer
+     * snippets are finished. Also, the dynamically created snippets and embed
+     * tags will comply with this rule too.
+     * 
+     * @param doc
+     *            the Document to apply snippets
+     * @throws SnippetNotResovlableException
+     * @throws SnippetInvokeException
+     * @throws TemplateException
+     */
     public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
         if (doc == null) {
             return;
@@ -57,6 +72,9 @@ public class RenderUtil {
         Element renderTarget;
         for (Element element : snippetList) {
             if (!conf.isSkipSnippetExecution()) {
+                // for a faked snippet node which is created by template
+                // analyzing process, the render target element should be its
+                // child.
                 if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
                     renderTarget = element.children().first();
                 } else {
@@ -86,7 +104,7 @@ public class RenderUtil {
             context.setCurrentRenderingElement(null);
         }
 
-        // load embed nodes which parents blocking parents has finished
+        // load embed nodes which blocking parents has finished
         List<Element> embedNodeList = doc.select(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR);
         int embedNodeListCount = embedNodeList.size();
         Iterator<Element> embedNodeIterator = embedNodeList.iterator();
@@ -136,6 +154,14 @@ public class RenderUtil {
         return isBlocked;
     }
 
+    /**
+     * Apply given renderer to the given element.
+     * 
+     * @param target
+     *            applying target element
+     * @param renderer
+     *            a renderer for applying
+     */
     public final static void apply(Element target, Renderer renderer) {
         List<Renderer> rendererList = renderer.asUnmodifiableList();
         int count = rendererList.size();
@@ -204,44 +230,29 @@ public class RenderUtil {
 
     }
 
+    /**
+     * Clear the redundant elements which are usually created by
+     * snippet/renderer applying.If the forFinalClean is true, all the finished
+     * snippet tags will be removed too.
+     * 
+     * @param target
+     * @param forFinalClean
+     */
     public final static void applyClearAction(Element target, boolean forFinalClean) {
         if (forFinalClean) {
             String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
                     ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
             // TODO check if there are unfinished snippet left.
-            removeNodesBySelector(target, removeSnippetSelector, true);
-            removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
+            ElementUtil.removeNodesBySelector(target, removeSnippetSelector, true);
+            ElementUtil.removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
 
         }
 
-        removeNodesBySelector(target,
+        ElementUtil.removeNodesBySelector(target,
                 SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR_WITH_NS, null), false);
-        removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
-        removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
+        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
+        ElementUtil.removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
 
     }
 
-    public final static void removeNodesBySelector(Element target, String selector, boolean pullupChildren) {
-        Elements removeNodes = target.select(selector);
-        Iterator<Element> it = removeNodes.iterator();
-        Element rm;
-        while (it.hasNext()) {
-            rm = it.next();
-            if (rm.ownerDocument() == null) {
-                continue;
-            }
-            if (pullupChildren) {
-                pullupChildren(rm);
-            }
-            rm.remove();
-        }
-    }
-
-    public final static void pullupChildren(Element elem) {
-        List<Node> childrenNodes = new ArrayList<>(elem.childNodes());
-        for (Node node : childrenNodes) {
-            node.remove();
-            elem.before(node);
-        }
-    }
 }

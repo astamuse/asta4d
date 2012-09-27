@@ -1,6 +1,7 @@
 package com.astamuse.asta4d.util;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -62,6 +63,30 @@ public class ElementUtil {
     public final static void appendNodes(Element parent, List<Node> children) {
         for (Node node : children) {
             parent.appendChild(node);
+        }
+    }
+
+    public final static void removeNodesBySelector(Element target, String selector, boolean pullupChildren) {
+        Elements removeNodes = target.select(selector);
+        Iterator<Element> it = removeNodes.iterator();
+        Element rm;
+        while (it.hasNext()) {
+            rm = it.next();
+            if (rm.ownerDocument() == null) {
+                continue;
+            }
+            if (pullupChildren) {
+                pullupChildren(rm);
+            }
+            rm.remove();
+        }
+    }
+
+    public final static void pullupChildren(Element elem) {
+        List<Node> childrenNodes = new ArrayList<>(elem.childNodes());
+        for (Node node : childrenNodes) {
+            node.remove();
+            elem.before(node);
         }
     }
 }

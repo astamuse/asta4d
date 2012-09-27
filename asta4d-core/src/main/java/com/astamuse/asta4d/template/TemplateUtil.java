@@ -150,6 +150,8 @@ public class TemplateUtil {
             throw new TemplateException(message);
         }
 
+        // TODO all of the following process should be merged into template
+        // analyze process and be cached.
         Document embedDoc = embedTarget.getDocumentClone();
         /*
                 Elements children = embedDoc.body().children();
