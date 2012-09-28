@@ -1,29 +1,43 @@
 package com.astamuse.asta4d.web.dispatch.mapping;
 
-import org.springframework.web.bind.annotation.RequestMethod;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.astamuse.asta4d.web.dispatch.HttpMethod;
 
 public class UrlMappingRule {
 
     private int seq;
 
-    private RequestMethod method;
+    private HttpMethod method;
 
-    private String sourceUrl;
+    private String sourcePath;
+
+    private String defaultTargetPath;
+
+    private List<Object> handlerList = new ArrayList<>();
+
+    private Map<String, Object> extraVarMap = new HashMap<String, Object>();
 
     private int priority;
 
-    private Object pathVarRewritter;
-
-    private Object handler;
-
-    public UrlMappingRule(int seq, RequestMethod method, String sourceUrl, int priority, Object pathVarRewritter, Object handler) {
+    public UrlMappingRule(int seq, HttpMethod method, String sourcePath, String defaultTargetPath, List<Object> handlerList, int priority) {
         super();
         this.seq = seq;
         this.method = method;
-        this.sourceUrl = sourceUrl;
+        this.sourcePath = sourcePath;
+        this.defaultTargetPath = defaultTargetPath;
+        if (handlerList != null) {
+            this.handlerList.addAll(handlerList);
+        }
         this.priority = priority;
-        this.pathVarRewritter = pathVarRewritter;
-        this.handler = handler;
+    }
+
+    public UrlMappingRule() {
+        super();
+        // do nothing
     }
 
     public int getSeq() {
@@ -34,20 +48,44 @@ public class UrlMappingRule {
         this.seq = seq;
     }
 
-    public RequestMethod getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
-    public void setMethod(RequestMethod method) {
+    public void setMethod(HttpMethod method) {
         this.method = method;
     }
 
-    public String getSourceUrl() {
-        return sourceUrl;
+    public String getSourcePath() {
+        return sourcePath;
     }
 
-    public void setSourceUrl(String sourceUrl) {
-        this.sourceUrl = sourceUrl;
+    public void setSourcePath(String sourcePath) {
+        this.sourcePath = sourcePath;
+    }
+
+    public String getDefaultTargetPath() {
+        return defaultTargetPath;
+    }
+
+    public void setDefaultTargetPath(String defaultTargetPath) {
+        this.defaultTargetPath = defaultTargetPath;
+    }
+
+    public List<Object> getHandlerList() {
+        return handlerList;
+    }
+
+    public void setHandlerList(List<Object> handlerList) {
+        this.handlerList = handlerList;
+    }
+
+    public Map<String, Object> getExtraVarMap() {
+        return extraVarMap;
+    }
+
+    public void setExtraVarMap(Map<String, Object> extraVarMap) {
+        this.extraVarMap = extraVarMap;
     }
 
     public int getPriority() {
@@ -56,22 +94,6 @@ public class UrlMappingRule {
 
     public void setPriority(int priority) {
         this.priority = priority;
-    }
-
-    public Object getPathVarRewritter() {
-        return pathVarRewritter;
-    }
-
-    public void setPathVarRewritter(Object pathVarRewritter) {
-        this.pathVarRewritter = pathVarRewritter;
-    }
-
-    public Object getHandler() {
-        return handler;
-    }
-
-    public void setHandler(Object handler) {
-        this.handler = handler;
     }
 
 }

@@ -13,11 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.annotation.PathVarRewrite;
 import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
@@ -26,6 +24,8 @@ import com.astamuse.asta4d.web.view.RedirectView;
 import com.astamuse.asta4d.web.view.WebPageView;
 
 public class RequestDispatcher {
+
+    public final static String KEY_CURRENT_RULE = RequestDispatcher.class.getName() + "##KEY_CURRENT_RULE";
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -59,56 +59,11 @@ public class RequestDispatcher {
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
         // TODO if not found result, we should return 404
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
-        UrlMappingRule rule = result.getRule();
-        processPathVar(context, result.getPathVarMap(), rule.getPathVarRewritter());
-        return invokeHandler(rule.getHandler());
+        context.setData(KEY_CURRENT_RULE, result.getRule());
 
-        // return null;
+        writePathVarToContext(context, result.getPathVarMap());
+        return invokeHandler(result.getRule().getHandlerList());
 
-    }
-
-    private void processPathVar(WebApplicationContext context, Map<String, String> pathVarMap, Object pathVarRewritter)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, DataOperationException {
-        writePathVarToContext(context, pathVarMap);
-        if (pathVarRewritter != null) {
-            Method[] methodList = pathVarRewritter.getClass().getMethods();
-            for (Method method : methodList) {
-                if (isPathVarRewriteMethod(method)) {
-                    final Map<String, String> varMap = pathVarMap;
-                    // only search values in pathVarMap
-                    Object[] params = InjectUtil.getMethodInjectParams(method, new ContextDataFinder() {
-                        @Override
-                        public Object findDataInContext(Context context, String scope, String name, Class<?> type) {
-                            return varMap.get(name);
-                        }
-                    });
-                    if (params == null) {
-                        params = new Object[0];
-                    }
-                    @SuppressWarnings("unchecked")
-                    Map<String, String> rewriteMap = (Map<String, String>) method.invoke(pathVarRewritter, params);
-                    writePathVarToContext(context, rewriteMap);
-                    break;
-                }
-            }
-        }
-
-    }
-
-    private boolean isPathVarRewriteMethod(Method method) {
-        boolean is = true;
-        if (method.isAnnotationPresent(PathVarRewrite.class) && Map.class.isAssignableFrom(method.getReturnType())) {
-            Class<?>[] paramTypes = method.getParameterTypes();
-            for (Class<?> clz : paramTypes) {
-                if (!clz.equals(String.class)) {
-                    is = false;
-                    break;
-                }
-            }
-        } else {
-            is = false;
-        }
-        return is;
     }
 
     private void writePathVarToContext(WebApplicationContext context, Map<String, String> pathVarMap) {
@@ -118,6 +73,23 @@ public class RequestDispatcher {
             entry = it.next();
             context.setData(WebApplicationContext.SCOPE_PATHVAR, entry.getKey(), entry.getValue());
         }
+    }
+
+    private Asta4dView invokeHandler(List<Object> handlerList) throws InvocationTargetException, IllegalAccessException,
+            DataOperationException {
+        // TODO we need a cache here
+        Asta4dView view = null;
+        for (Object handler : handlerList) {
+            if (handler instanceof RequestHandlerAdapter) {
+                view = invokeHandler(((RequestHandlerAdapter) handler).asRequestHandler());
+            } else {
+                view = invokeHandler(handler);
+            }
+            if (view != null) {
+                break;
+            }
+        }
+        return view;
     }
 
     private Asta4dView invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, DataOperationException {
@@ -131,6 +103,7 @@ public class RequestDispatcher {
         }
 
         if (m == null) {
+            // TODO maybe we can return a null?
             String msg = String.format("Request handler method not found:" + handler.getClass().getName());
             logger.error(msg);
             throw new InvocationTargetException(new RuntimeException(msg));
@@ -141,7 +114,9 @@ public class RequestDispatcher {
             params = new Object[0];
         }
         Object result = m.invoke(handler, params);
-        if (result instanceof String) {
+        if (result == null) {
+            return null;
+        } else if (result instanceof String) {
             return new WebPageView((String) result);
         } else if (result instanceof RedirectView) {
             return ((RedirectView) result);

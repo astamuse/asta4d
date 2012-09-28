@@ -9,9 +9,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
+import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
@@ -25,20 +25,23 @@ public class AntPathRuleExtractor implements DispatcherRuleExtractor {
             String contextPath = request.getContextPath();
             uri = uri.substring(contextPath.length());
 
-            RequestMethod method = RequestMethod.valueOf(request.getMethod());
+            String method = request.getMethod().toUpperCase();
 
             UrlMappingResult mappingResult = null;
-            String srcUrl;
+            String srcPath;
+            HttpMethod ruleMethod;
             for (UrlMappingRule rule : ruleList) {
-                // TODO we need support all method matching
-                if (method != rule.getMethod()) {
-                    continue;
+                ruleMethod = rule.getMethod();
+                if (ruleMethod != null) {
+                    if (!ruleMethod.toString().equals(method)) {
+                        continue;
+                    }
                 }
-                srcUrl = rule.getSourceUrl();
-                if (pathMatcher.match(srcUrl, uri)) {
+                srcPath = rule.getSourcePath();
+                if (pathMatcher.match(srcPath, uri)) {
                     mappingResult = new UrlMappingResult();
                     Map<String, String> pathVarMap = new HashMap<>();
-                    pathVarMap.putAll(pathMatcher.extractUriTemplateVariables(srcUrl, uri));
+                    pathVarMap.putAll(pathMatcher.extractUriTemplateVariables(srcPath, uri));
                     mappingResult.setPathVarMap(pathVarMap);
                     mappingResult.setRule(rule);
                     break;
