@@ -40,7 +40,7 @@ public class AntPathRuleExtractor implements DispatcherRuleExtractor {
                 srcPath = rule.getSourcePath();
                 if (pathMatcher.match(srcPath, uri)) {
                     mappingResult = new UrlMappingResult();
-                    Map<String, String> pathVarMap = new HashMap<>();
+                    Map<String, Object> pathVarMap = new HashMap<>();
                     pathVarMap.putAll(pathMatcher.extractUriTemplateVariables(srcPath, uri));
                     mappingResult.setPathVarMap(pathVarMap);
                     mappingResult.setRule(rule);

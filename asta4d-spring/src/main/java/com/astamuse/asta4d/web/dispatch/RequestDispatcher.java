@@ -59,16 +59,18 @@ public class RequestDispatcher {
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
         // TODO if not found result, we should return 404
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
-        context.setData(KEY_CURRENT_RULE, result.getRule());
-
         writePathVarToContext(context, result.getPathVarMap());
+
+        UrlMappingRule rule = result.getRule();
+        context.setData(KEY_CURRENT_RULE, rule);
+        writePathVarToContext(context, rule.getExtraVarMap());
         return invokeHandler(result.getRule().getHandlerList());
 
     }
 
-    private void writePathVarToContext(WebApplicationContext context, Map<String, String> pathVarMap) {
-        Iterator<Entry<String, String>> it = pathVarMap.entrySet().iterator();
-        Entry<String, String> entry;
+    private void writePathVarToContext(WebApplicationContext context, Map<String, Object> pathVarMap) {
+        Iterator<Entry<String, Object>> it = pathVarMap.entrySet().iterator();
+        Entry<String, Object> entry;
         while (it.hasNext()) {
             entry = it.next();
             context.setData(WebApplicationContext.SCOPE_PATHVAR, entry.getKey(), entry.getValue());

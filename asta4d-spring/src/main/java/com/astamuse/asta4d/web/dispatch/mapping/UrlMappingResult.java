@@ -6,13 +6,13 @@ public class UrlMappingResult {
 
     private UrlMappingRule rule;
 
-    private Map<String, String> pathVarMap;
+    private Map<String, Object> pathVarMap;
 
     public UrlMappingResult() {
         //
     }
 
-    public UrlMappingResult(UrlMappingRule rule, Map<String, String> pathVarMap) {
+    public UrlMappingResult(UrlMappingRule rule, Map<String, Object> pathVarMap) {
         super();
         this.rule = rule;
         this.pathVarMap = pathVarMap;
@@ -26,11 +26,11 @@ public class UrlMappingResult {
         this.rule = rule;
     }
 
-    public Map<String, String> getPathVarMap() {
+    public Map<String, Object> getPathVarMap() {
         return pathVarMap;
     }
 
-    public void setPathVarMap(Map<String, String> pathVarMap) {
+    public void setPathVarMap(Map<String, Object> pathVarMap) {
         this.pathVarMap = pathVarMap;
     }
 
