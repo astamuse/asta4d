@@ -2,6 +2,8 @@ package com.astamuse.asta4d.misc.spring.mvc.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -88,6 +90,8 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         }
     }
 
+    private final static Logger logger = LoggerFactory.getLogger(GenericControllerBase.class);
+
     private ApplicationContext beanCtx = null;
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
@@ -98,6 +102,7 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         initUrlMappingRules(helper);
         dispatcher.setRuleExtractor(new AntPathRuleExtractor());
         dispatcher.setRuleList(helper.getSortedRuleList());
+        logger.info("url mapping rules are initialized.");
     }
 
     @RequestMapping(value = "/**")
