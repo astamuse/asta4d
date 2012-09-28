@@ -25,41 +25,63 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
 
     private final static class SpringManagedRequestHandlerBuilder implements RequestHandlerBuilder {
 
-        private GenericControllerBase genericController;
+        private ApplicationContext beanCtx;
 
-        SpringManagedRequestHandlerBuilder(GenericControllerBase genericController) {
-            this.genericController = genericController;
+        SpringManagedRequestHandlerBuilder(ApplicationContext beanCtx) {
+            this.beanCtx = beanCtx;
         }
 
         @Override
         public Object createRequestHandler(Object declaration) {
-            return new SpringManagedRequestHandlerAdapter(genericController, declaration);
+
+            if (declaration instanceof Class) {
+                Class<?> beanCls = (Class<?>) declaration;
+                String[] names = beanCtx.getBeanNamesForType(beanCls);
+                boolean beanExist = false;
+                for (String name : names) {
+                    if (beanCtx.containsBean(name)) {
+                        beanExist = true;
+                        break;
+                    }
+                }
+                if (beanExist) {
+                    return new SpringManagedRequestHandlerAdapter(beanCtx, beanCls, null);
+                } else {
+                    return null;
+                }
+            } else if (declaration instanceof String) {
+                String beanId = declaration.toString();
+                if (beanCtx.containsBean(beanId)) {
+                    return new SpringManagedRequestHandlerAdapter(beanCtx, null, beanId);
+                } else {
+                    return null;
+                }
+            }
+            return null;
+
         }
     }
 
     private final static class SpringManagedRequestHandlerAdapter implements RequestHandlerAdapter {
 
-        private GenericControllerBase genericController;
+        private ApplicationContext beanCtx;
 
         private Class<?> beanCls = null;
 
         private String beanId = null;
 
-        SpringManagedRequestHandlerAdapter(GenericControllerBase genericController, Object declaration) {
-            this.genericController = genericController;
-            if (declaration instanceof Class) {
-                beanCls = (Class<?>) declaration;
-            } else if (declaration instanceof String) {
-                beanId = declaration.toString();
-            }
+        SpringManagedRequestHandlerAdapter(ApplicationContext beanCtx, Class<?> beanCls, String beanId) {
+            this.beanCtx = beanCtx;
+            this.beanCls = beanCls;
+            this.beanId = beanId;
         }
 
         @Override
         public Object asRequestHandler() {
             if (beanCls != null) {
-                return genericController.beanCtx.getBean(beanCls);
+                return beanCtx.getBean(beanCls);
             } else if (beanId != null) {
-                return genericController.beanCtx.getBean(beanId);
+                return beanCtx.getBean(beanId);
             } else {
                 return null;
             }
@@ -70,9 +92,9 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
-    public GenericControllerBase() {
+    public void init() {
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        helper.addRequestHandlerBuilder(new SpringManagedRequestHandlerBuilder(this));
+        helper.addRequestHandlerBuilder(new SpringManagedRequestHandlerBuilder(beanCtx));
         initUrlMappingRules(helper);
         dispatcher.setRuleExtractor(new AntPathRuleExtractor());
         dispatcher.setRuleList(helper.getSortedRuleList());
@@ -87,6 +109,11 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.beanCtx = context;
+        // we have to inovke init here because the
+        // SpringManagedRequestHandlerBuilder need to call application context.
+        // And there is no matter that dispatcher is initialized in multi times,
+        // so we do not apply a lock here.
+        init();
     }
 
     protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);

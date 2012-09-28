@@ -38,8 +38,8 @@ public class HandyUrlMappingRule extends UrlMappingRule {
         return this;
     }
 
-    public HandyUrlMappingRule redirect() {
-        return handler(redirectHandler);
+    public void redirect() {
+        handler(redirectHandler);
     }
 
     public HandyUrlMappingRule var(String key, Object value) {
