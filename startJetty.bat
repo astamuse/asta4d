@@ -1,1 +1,1 @@
-mvn %1 test -DskipTests=true -Pjetty-run
+mvn %1 test -DskipTests=true -Deureika.debug=true -Pjetty-run
