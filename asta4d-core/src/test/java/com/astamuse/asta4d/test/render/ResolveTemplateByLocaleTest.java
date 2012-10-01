@@ -2,7 +2,6 @@ package com.astamuse.asta4d.test.render;
 
 import java.util.Locale;
 
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
@@ -10,13 +9,6 @@ import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 
 public class ResolveTemplateByLocaleTest extends BaseTest {
-
-    @AfterMethod
-    public void clearCurrentLocale() {
-        // TODO When we work out multithreaded rendering, this code have to
-        // readjust.
-        Context.getCurrentThreadContext().setCurrentLocale(null);
-    }
 
     @Test
     public void currentLocaleJaJP() {
