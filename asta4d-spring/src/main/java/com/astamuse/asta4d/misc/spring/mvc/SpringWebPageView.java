@@ -1,12 +1,14 @@
 package com.astamuse.asta4d.misc.spring.mvc;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.View;
 
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.WebPage;
 
@@ -32,7 +34,10 @@ public class SpringWebPageView implements View {
 
     @Override
     public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // TODO should we merge the model data?
+        Context context = Context.getCurrentThreadContext();
+        for (Entry<String, ?> entry : model.entrySet()) {
+            context.setData(entry.getKey(), entry.getValue());
+        }
         page.output(response.getOutputStream());
     }
 
