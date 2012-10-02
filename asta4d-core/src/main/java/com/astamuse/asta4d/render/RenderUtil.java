@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +14,8 @@ import org.jsoup.select.Elements;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.render.concurrent.ConcurrentRenderHelper;
+import com.astamuse.asta4d.render.concurrent.FutureRendererHolder;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -50,23 +54,27 @@ public class RenderUtil {
         if (doc == null) {
             return;
         }
+        // retrieve ready snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
                 ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
         List<Element> snippetList = new ArrayList<>(doc.select(selector));
-        int snippetListCount = snippetList.size();
-        for (int i = snippetListCount - 1; i >= 0; i--) {
+        int readySnippetCount = snippetList.size();
+        int blockedSnippetCount = 0;
+        for (int i = readySnippetCount - 1; i >= 0; i--) {
             // if parent snippet has not been executed, the current snippet will
             // not be executed too.
             if (isBlockedByParentSnippet(doc, snippetList.get(i))) {
                 snippetList.remove(i);
+                blockedSnippetCount++;
             }
         }
+        readySnippetCount = readySnippetCount - blockedSnippetCount;
 
         String renderDeclaration;
         Renderer renderer;
         Context context = Context.getCurrentThreadContext();
         Configuration conf = context.getConfiguration();
-        SnippetInvoker invoker = conf.getSnippetInvoker();
+        final SnippetInvoker invoker = conf.getSnippetInvoker();
 
         String refId;
         Element renderTarget;
@@ -82,26 +90,27 @@ public class RenderUtil {
                 }
                 context.setCurrentRenderingElement(renderTarget);
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
-                renderer = invoker.invoke(renderDeclaration);
                 refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
-                apply(renderTarget, renderer);
-                if (element.ownerDocument() == null) {
-                    // it means this snippet element is replaced by a element
-                    // completely
-                    String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF, refId);
-                    Elements elems = doc.select(reSelector);
-                    if (elems.size() > 0) {
-                        element = elems.get(0);
-                    } else {
-                        element = null;
-                    }
+                if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL)) {
+                    ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context);
+                    final Context newContext = context.clone();
+                    final String declaration = renderDeclaration;
+                    crHelper.submitWithContext(newContext, refId, new Callable<Renderer>() {
+                        @Override
+                        public Renderer call() throws Exception {
+                            return invoker.invoke(declaration);
+                        }
+                    });
+                    element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_WAITING);
+                } else {
+                    renderer = invoker.invoke(renderDeclaration);
+                    applySnippetResultToElement(doc, refId, element, renderTarget, renderer);
                 }
-            }
-
-            if (element != null) {
+                context.setCurrentRenderingElement(null);
+            } else {// if skip snippet
                 element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
             }
-            context.setCurrentRenderingElement(null);
+
         }
 
         // load embed nodes which blocking parents has finished
@@ -121,9 +130,50 @@ public class RenderUtil {
             embed.remove();
         }
 
-        if ((snippetListCount + embedNodeListCount) > 0) {
+        if ((readySnippetCount + embedNodeListCount) > 0) {
             TemplateUtil.regulateElement(doc);
             applySnippets(doc);
+        } else {
+            ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context);
+            if (crHelper.hasUnCompletedTask()) {
+                try {
+                    FutureRendererHolder holder = crHelper.take();
+                    String ref = holder.getSnippetRefId();
+                    String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF,
+                            ref);
+                    Element element = doc.select(reSelector).get(0);// must have
+                    Element target;
+                    if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
+                        target = element.children().first();
+                    } else {
+                        target = element;
+                    }
+                    applySnippetResultToElement(doc, ref, element, target, holder.getRenderer());
+                    applySnippets(doc);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new SnippetInvokeException("Concurrent snippet invocation failed.", e);
+                }
+            }
+        }
+    }
+
+    private final static void applySnippetResultToElement(Document doc, String snippetRefId, Element snippetElement, Element renderTarget,
+            Renderer renderer) {
+        apply(renderTarget, renderer);
+        if (snippetElement.ownerDocument() == null) {
+            // it means this snippet element is replaced by a
+            // element completely
+            String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF,
+                    snippetRefId);
+            Elements elems = doc.select(reSelector);
+            if (elems.size() > 0) {
+                snippetElement = elems.get(0);
+            } else {
+                snippetElement = null;
+            }
+        }
+        if (snippetElement != null) {
+            snippetElement.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
         }
     }
 
@@ -137,7 +187,8 @@ public class RenderUtil {
             // element would not be imported now.
             isBlocked = false;
         } else {
-            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF, blockingId);
+            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF,
+                    blockingId);
             Elements parentSnippetSearch = doc.select(parentSelector);
             if (parentSnippetSearch.isEmpty()) {
                 isBlocked = false;

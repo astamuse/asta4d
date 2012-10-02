@@ -9,8 +9,8 @@ import java.util.concurrent.Future;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.concurrent.ParallelDataConvertor;
 import com.astamuse.asta4d.data.DataConvertor;
+import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;

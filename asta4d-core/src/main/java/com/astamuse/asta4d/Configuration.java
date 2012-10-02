@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import com.astamuse.asta4d.concurrent.ExecutorServiceFactory;
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
@@ -17,6 +16,7 @@ import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
 import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 import com.astamuse.asta4d.template.FileTemplateResolver;
 import com.astamuse.asta4d.template.TemplateResolver;
+import com.astamuse.asta4d.util.ExecutorServiceFactory;
 
 public class Configuration {
 

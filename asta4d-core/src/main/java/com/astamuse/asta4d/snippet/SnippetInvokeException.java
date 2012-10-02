@@ -7,6 +7,10 @@ public class SnippetInvokeException extends Exception {
      */
     private static final long serialVersionUID = 115458825987835218L;
 
+    public SnippetInvokeException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
     public SnippetInvokeException(SnippetDeclarationInfo declaration, String msg) {
         super(createMsg(declaration, msg));
     }

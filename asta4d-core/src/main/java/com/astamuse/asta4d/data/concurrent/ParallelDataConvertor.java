@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.concurrent;
+package com.astamuse.asta4d.data.concurrent;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;

@@ -1,5 +1,6 @@
 package com.astamuse.asta4d.web;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class WebApplicationContext extends Context {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Map<String, Object> acquireMapForScope(String scope) {
+    protected Map<String, Object> createMapForScope(String scope) {
         Map<String, Object> map = null;
         switch (scope) {
         case SCOPE_SESSION:
@@ -82,6 +83,7 @@ public class WebApplicationContext extends Context {
                 value = request.getHeader(name);
                 map.put(name, value);
             }
+            map = Collections.unmodifiableMap(map);
         }
             break;
         case SCOPE_COOKIE: {
@@ -91,13 +93,14 @@ public class WebApplicationContext extends Context {
             for (Cookie cookie : cookies) {
                 map.put(cookie.getName(), cookie);
             }
+            map = Collections.unmodifiableMap(map);
         }
             break;
         case SCOPE_QUERYPARAM_ALIAS:
-            map = super.getMapForScope(SCOPE_QUERYPARAM);
+            map = super.acquireMapForScope(SCOPE_QUERYPARAM);
             break;
         case SCOPE_REQUEST:
-            map = super.getMapForScope(SCOPE_DEFAULT);
+            map = super.acquireMapForScope(SCOPE_DEFAULT);
             break;
         case SCOPE_QUERYPARAM:
             map = new HashMap<>();
@@ -110,10 +113,32 @@ public class WebApplicationContext extends Context {
                 String value = request.getParameter(name);
                 map.put(name, value);
             }
+            map = Collections.unmodifiableMap(map);
             break;
         case SCOPE_PATHVAR:
         default:
-            map = super.acquireMapForScope(scope);
+            map = super.createMapForScope(scope);
+        }
+        return map;
+    }
+
+    public Context clone() {
+        Context newCtx = new WebApplicationContext();
+        newCtx.setConfiguration(this.getConfiguration());
+        copyScopesTo(newCtx);
+        return newCtx;
+    }
+
+    protected Map<String, Object> getScopeDataMapCopy(String scope) {
+        Map<String, Object> map;
+        switch (scope) {
+        case SCOPE_HEADER:
+        case SCOPE_COOKIE:
+        case SCOPE_QUERYPARAM:
+            map = acquireMapForScope(scope);
+            break;
+        default:
+            map = super.getScopeDataMapCopy(scope);
         }
         return map;
     }

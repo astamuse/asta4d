@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.concurrent;
+package com.astamuse.asta4d.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;

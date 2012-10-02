@@ -7,7 +7,7 @@ public class TimeCalculator {
         run.run();
         long end = System.currentTimeMillis();
         long period = end - begin;
-        assert period < time : "Execution is expected less than " + time + "ms";
+        assert period < time : "Execution is expected less than " + time + "ms but it takes " + period + "ms";
     }
 
 }

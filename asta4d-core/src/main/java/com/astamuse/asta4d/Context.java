@@ -3,6 +3,7 @@ package com.astamuse.asta4d;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jsoup.nodes.Element;
@@ -64,7 +65,7 @@ public class Context {
     }
 
     public void setData(String scope, String key, Object data) {
-        Map<String, Object> dataMap = getMapForScope(scope);
+        Map<String, Object> dataMap = acquireMapForScope(scope);
         dataMap.put(key, data);
     }
 
@@ -77,7 +78,7 @@ public class Context {
         if (scope.equals(SCOPE_ATTR)) {
             return (T) retrieveElementAttr(key);
         } else {
-            Map<String, Object> dataMap = getMapForScope(scope);
+            Map<String, Object> dataMap = acquireMapForScope(scope);
             return (T) dataMap.get(key);
         }
     }
@@ -118,10 +119,10 @@ public class Context {
         return value;
     }
 
-    protected final Map<String, Object> getMapForScope(String scope) {
+    protected final Map<String, Object> acquireMapForScope(String scope) {
         Map<String, Object> dataMap = scopeMap.get(scope);
         if (dataMap == null) {
-            dataMap = acquireMapForScope(scope);
+            dataMap = createMapForScope(scope);
             if (dataMap == null) {
                 dataMap = new HashMap<>();
             }
@@ -136,7 +137,7 @@ public class Context {
      * @param scope
      * @return
      */
-    protected Map<String, Object> acquireMapForScope(String scope) {
+    protected Map<String, Object> createMapForScope(String scope) {
         Map<String, Object> map = null;
         switch (scope) {
         case SCOPE_GLOBAL:
@@ -150,6 +151,44 @@ public class Context {
 
     public void clearSavedData() {
         scopeMap.clear();
+    }
+
+    public Context clone() {
+        Context newCtx = new Context();
+        newCtx.configuration = configuration;
+        copyScopesTo(newCtx);
+        return newCtx;
+    }
+
+    protected void copyScopesTo(Context newCtx) {
+        for (String scope : scopeMap.keySet()) {
+            newCtx.scopeMap.put(scope, getScopeDataMapCopy(scope));
+        }
+    }
+
+    protected Map<String, Object> getScopeDataMapCopy(String scope) {
+        Map<String, Object> map = acquireMapForScope(scope);
+        return new HashMap<>(map);
+    }
+
+    public final static void with(Context context, Runnable runner) {
+        Context oldContext = Context.getCurrentThreadContext();
+        try {
+            Context.setCurrentThreadContext(context);
+            runner.run();
+        } finally {
+            Context.setCurrentThreadContext(oldContext);
+        }
+    }
+
+    public final static <T> T with(Context context, Callable<T> caller) throws Exception {
+        Context oldContext = Context.getCurrentThreadContext();
+        try {
+            Context.setCurrentThreadContext(context);
+            return caller.call();
+        } finally {
+            Context.setCurrentThreadContext(oldContext);
+        }
     }
 
 }

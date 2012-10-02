@@ -26,6 +26,7 @@ public class ExtNodeConstants {
     public final static String EMBED_NODE_NAME = "embed";
     public final static String EMBED_NODE_TAG = addNS(EMBED_NODE_NAME);
     public final static String EMBED_NODE_TAG_SELECTOR = SelectorUtil.tag(EMBED_NODE_TAG);
+
     public final static String EMBED_NODE_ATTR_TARGET = "target";
     public final static String EMBED_NODE_ATTR_BLOCK = "block";
 
@@ -36,12 +37,16 @@ public class ExtNodeConstants {
     public final static String SNIPPET_NODE_ATTR_RENDER = "render";
     public final static String SNIPPET_NODE_ATTR_RENDER_WITH_NS = addNS(SNIPPET_NODE_ATTR_RENDER);
 
+    public final static String SNIPPET_NODE_ATTR_PARALLEL = "parallel";
+    public final static String SNIPPET_NODE_ATTR_PARALLEL_WITH_NS = addNS(SNIPPET_NODE_ATTR_PARALLEL);
+
     public final static String SNIPPET_NODE_ATTR_TYPE = "type";
     public final static String SNIPPET_NODE_ATTR_TYPE_USERDEFINE = "userdefine";
     public final static String SNIPPET_NODE_ATTR_TYPE_FAKE = "fake";
 
     public final static String SNIPPET_NODE_ATTR_STATUS = "status";
     public final static String SNIPPET_NODE_ATTR_STATUS_READY = "ready";
+    public final static String SNIPPET_NODE_ATTR_STATUS_WAITING = "waiting";
     public final static String SNIPPET_NODE_ATTR_STATUS_FINISHED = "finished";
 
     public final static String SNIPPET_NODE_ATTR_BLOCK = "block";

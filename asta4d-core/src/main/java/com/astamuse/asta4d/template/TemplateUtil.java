@@ -53,6 +53,12 @@ public class TemplateUtil {
             element.remove();
             fakedSnippetNode.appendChild(element);
             element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
+
+            // set parallel type
+            if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL_WITH_NS)) {
+                fakedSnippetNode.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL, "");
+                element.removeAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL_WITH_NS);
+            }
         }
 
         /*
@@ -70,6 +76,7 @@ public class TemplateUtil {
                 status = sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS);
                 switch (status) {
                 case ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY:
+                case ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_WAITING:
                 case ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED:
                     // do nothing;
                     break;
