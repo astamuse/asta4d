@@ -17,6 +17,7 @@ import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerAdapter;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerBuilder;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.util.RedirectUtil;
 import com.astamuse.asta4d.web.view.Asta4dView;
 import com.astamuse.asta4d.web.view.RedirectView;
 import com.astamuse.asta4d.web.view.WebPageView;
@@ -130,8 +131,8 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         }
         if (view instanceof RedirectView) {
             RedirectView redirectView = (RedirectView) view;
-            return new org.springframework.web.servlet.view.RedirectView(redirectView.getUrl(), redirectView.isContextRelative(),
-                    redirectView.isHttp10Compatible(), redirectView.isExposeModelAttributes());
+            String url = RedirectUtil.setFlashScopeData(redirectView.getUrl(), redirectView.getFlashScopeData());
+            return new org.springframework.web.servlet.view.RedirectView(url);
         }
         throw new UnsupportedOperationException("View Type:" + view.getClass().getName());
     }

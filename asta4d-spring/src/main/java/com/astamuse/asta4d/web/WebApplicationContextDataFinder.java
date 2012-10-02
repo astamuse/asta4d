@@ -17,6 +17,7 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
         dataScopeOrder.add(WebApplicationContext.SCOPE_ATTR);
         dataScopeOrder.add(WebApplicationContext.SCOPE_PATHVAR);
         dataScopeOrder.add(WebApplicationContext.SCOPE_QUERYPARAM);
+        dataScopeOrder.add(WebApplicationContext.SCOPE_FLASH);
         dataScopeOrder.add(WebApplicationContext.SCOPE_COOKIE);
         dataScopeOrder.add(WebApplicationContext.SCOPE_HEADER);
         dataScopeOrder.add(WebApplicationContext.SCOPE_REQUEST);

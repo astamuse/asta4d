@@ -1,48 +1,36 @@
 package com.astamuse.asta4d.web.view;
 
+import java.util.Collections;
+import java.util.Map;
+
+import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.web.WebApplicationContext;
+
 public class RedirectView implements Asta4dView {
 
     private final String url;
 
-    // TODO determine whether the required parameters
-    private final boolean contextRelative;
-
-    private final boolean http10Compatible;
-
-    private final boolean exposeModelAttributes;
+    private final Map<String, Object> flashScopeData;
 
     public RedirectView(String url) {
-        this(url, false);
+        this(url, Collections.<String, Object> emptyMap());
     }
 
-    public RedirectView(String url, boolean contextRelative) {
-        this(url, contextRelative, true);
-    }
-
-    public RedirectView(String url, boolean contextRelative, boolean http10Compatible) {
-        this(url, contextRelative, http10Compatible, true);
-    }
-
-    public RedirectView(String url, boolean contextRelative, boolean http10Compatible, boolean exposeModelAttributes) {
-        this.url = url;
-        this.contextRelative = contextRelative;
-        this.http10Compatible = http10Compatible;
-        this.exposeModelAttributes = exposeModelAttributes;
+    public RedirectView(String url, Map<String, Object> flashScopeData) {
+        if (url.startsWith("/")) {
+            WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
+            this.url = context.getRequest().getContextPath() + url;
+        } else {
+            this.url = url;
+        }
+        this.flashScopeData = flashScopeData;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public boolean isContextRelative() {
-        return contextRelative;
-    }
-
-    public boolean isHttp10Compatible() {
-        return http10Compatible;
-    }
-
-    public boolean isExposeModelAttributes() {
-        return exposeModelAttributes;
+    public Map<String, Object> getFlashScopeData() {
+        return Collections.unmodifiableMap(flashScopeData);
     }
 }

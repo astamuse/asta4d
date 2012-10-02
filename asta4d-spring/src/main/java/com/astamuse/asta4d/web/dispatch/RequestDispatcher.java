@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.util.RedirectUtil;
 import com.astamuse.asta4d.web.view.Asta4dView;
 import com.astamuse.asta4d.web.view.RedirectView;
 import com.astamuse.asta4d.web.view.WebPageView;
@@ -64,6 +66,7 @@ public class RequestDispatcher {
         UrlMappingRule rule = result.getRule();
         context.setData(KEY_CURRENT_RULE, rule);
         writePathVarToContext(context, rule.getExtraVarMap());
+        retrieveFlashScopeData(request);
         return invokeHandler(result.getRule().getHandlerList());
 
     }
@@ -75,6 +78,14 @@ public class RequestDispatcher {
             entry = it.next();
             context.setData(WebApplicationContext.SCOPE_PATHVAR, entry.getKey(), entry.getValue());
         }
+    }
+
+    private void retrieveFlashScopeData(HttpServletRequest request) {
+        String flashScopeId = request.getParameter(RedirectUtil.KEY_FLASH_SCOPE_ID);
+        if (StringUtils.isEmpty(flashScopeId)) {
+            return;
+        }
+        RedirectUtil.getFlashScopeData(flashScopeId);
     }
 
     private Asta4dView invokeHandler(List<Object> handlerList) throws InvocationTargetException, IllegalAccessException,

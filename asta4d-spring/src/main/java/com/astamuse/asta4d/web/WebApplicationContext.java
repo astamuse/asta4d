@@ -28,6 +28,8 @@ public class WebApplicationContext extends Context {
 
     public final static String SCOPE_COOKIE = "cookie";
 
+    public final static String SCOPE_FLASH = "flash";
+
     private final static String SAVEKEY_REQUEST = WebApplicationContext.class.getName() + "##SAVEKEY-REQUEST";
 
     private final static String SAVEKEY_RESPONSE = WebApplicationContext.class.getName() + "##SAVEKEY-RESPONSE";
