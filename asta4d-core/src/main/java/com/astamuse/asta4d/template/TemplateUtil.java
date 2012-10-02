@@ -80,9 +80,9 @@ public class TemplateUtil {
                 sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
             }
             // regulate id
-            if (!sn.hasAttr(ExtNodeConstants.ATTR_REFID)) {
+            if (!sn.hasAttr(ExtNodeConstants.ATTR_SNIPPET_REF)) {
                 id = "sn-" + IdGenerator.createId();
-                sn.attr(ExtNodeConstants.ATTR_REFID, id);
+                sn.attr(ExtNodeConstants.ATTR_SNIPPET_REF, id);
             }
             // regulate type
             if (!sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE)) {
@@ -123,7 +123,7 @@ public class TemplateUtil {
             blockingParentId = "";
             while (searchElem != null) {
                 if (searchElem.tagName().equals(ExtNodeConstants.SNIPPET_NODE_TAG)) {
-                    blockingParentId = searchElem.attr(ExtNodeConstants.ATTR_REFID);
+                    blockingParentId = searchElem.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
                     break;
                 } else {
                     searchElem = searchElem.parent();

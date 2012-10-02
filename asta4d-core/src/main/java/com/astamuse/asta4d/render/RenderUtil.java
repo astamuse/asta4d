@@ -83,12 +83,12 @@ public class RenderUtil {
                 context.setCurrentRenderingElement(renderTarget);
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
                 renderer = invoker.invoke(renderDeclaration);
-                refId = element.attr(ExtNodeConstants.ATTR_REFID);
+                refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
                 apply(renderTarget, renderer);
                 if (element.ownerDocument() == null) {
                     // it means this snippet element is replaced by a element
                     // completely
-                    String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_REFID, refId);
+                    String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF, refId);
                     Elements elems = doc.select(reSelector);
                     if (elems.size() > 0) {
                         element = elems.get(0);
@@ -137,7 +137,7 @@ public class RenderUtil {
             // element would not be imported now.
             isBlocked = false;
         } else {
-            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_REFID, blockingId);
+            String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF, blockingId);
             Elements parentSnippetSearch = doc.select(parentSelector);
             if (parentSnippetSearch.isEmpty()) {
                 isBlocked = false;

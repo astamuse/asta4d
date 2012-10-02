@@ -3,18 +3,19 @@ package com.astamuse.asta4d.render;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import org.jsoup.nodes.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.concurrent.ParallelDataConvertor;
 import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
-import com.astamuse.asta4d.util.Asta4DWarningException;
+import com.astamuse.asta4d.render.transformer.TransformerFactory;
 
 /**
  * A renderer is for describing rendering actions.
@@ -28,8 +29,6 @@ import com.astamuse.asta4d.util.Asta4DWarningException;
  * 
  */
 public class Renderer {
-
-    private final static Logger logger = LoggerFactory.getLogger(Renderer.class);
 
     private String selector;
 
@@ -539,23 +538,8 @@ public class Renderer {
      */
     public final static Renderer create(String selector, List<?> list) {
         List<Transformer<?>> transformerList = new ArrayList<Transformer<?>>(list.size());
-        Transformer<?> transformer;
         for (Object obj : list) {
-            if (obj instanceof String) {
-                transformer = new ElementSetterTransformer(new TextSetter(obj.toString()));
-            } else if (obj instanceof ElementSetter) {
-                transformer = new ElementSetterTransformer((ElementSetter) obj);
-            } else if (obj instanceof Renderer) {
-                transformer = new RendererTransformer((Renderer) obj);
-            } else if (obj instanceof Element) {
-                transformer = new ElementTransformer((Element) obj);
-            } else {
-                String msg = "There is a unsupported type in list:" + obj.getClass().getName();
-                Asta4DWarningException awe = new Asta4DWarningException(msg);
-                logger.warn(msg, awe);
-                transformer = new ElementSetterTransformer(new TextSetter(obj.toString()));
-            }
-            transformerList.add(transformer);
+            transformerList.add(TransformerFactory.generateTransformer(obj));
         }
         return new Renderer(selector, transformerList);
     }
@@ -578,6 +562,15 @@ public class Renderer {
         List<T> newList = new ArrayList<>();
         for (S obj : list) {
             newList.add(convertor.convert(obj));
+        }
+        return create(selector, newList);
+    }
+
+    public final static <S, T> Renderer create(String selector, List<S> list, final ParallelDataConvertor<S, T> convertor) {
+        ExecutorService executor = Context.getCurrentThreadContext().getConfiguration().getMultiThreadExecutor();
+        List<Future<T>> newList = new ArrayList<>();
+        for (S obj : list) {
+            newList.add(convertor.invoke(executor, obj));
         }
         return create(selector, newList);
     }

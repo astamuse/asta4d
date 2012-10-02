@@ -50,7 +50,7 @@ public class ExtNodeConstants {
     public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);
     public final static String GROUP_NODE_TAG_SELECTOR = SelectorUtil.tag(GROUP_NODE_TAG);
 
-    public final static String ATTR_REFID = "afdRefId";
+    public final static String ATTR_SNIPPET_REF = "snippet-ref";
 
     public final static String ATTR_CLEAR = "clear";
     public final static String ATTR_CLEAR_WITH_NS = addNS(ATTR_CLEAR);

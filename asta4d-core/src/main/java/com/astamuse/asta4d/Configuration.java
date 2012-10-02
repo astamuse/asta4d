@@ -3,7 +3,9 @@ package com.astamuse.asta4d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
+import com.astamuse.asta4d.concurrent.ExecutorServiceFactory;
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
@@ -37,6 +39,8 @@ public class Configuration {
     /**
      * at present, the following items are regarded as global settings
      */
+    private ExecutorService multiThreadExecutor = ExecutorServiceFactory.getCachableThreadExecutor();
+
     private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
     private List<String> clearNodeClasses = new ArrayList<>();
@@ -105,6 +109,14 @@ public class Configuration {
 
     public void setSkipSnippetExecution(boolean skipSnippetExecution) {
         this.skipSnippetExecution = skipSnippetExecution;
+    }
+
+    public ExecutorService getMultiThreadExecutor() {
+        return multiThreadExecutor;
+    }
+
+    public void setMultiThreadExecutor(ExecutorService multiThreadExecutor) {
+        this.multiThreadExecutor = multiThreadExecutor;
     }
 
     public List<String> getReverseInjectableScopes() {
