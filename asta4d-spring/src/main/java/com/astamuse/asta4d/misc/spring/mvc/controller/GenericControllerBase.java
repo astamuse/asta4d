@@ -11,12 +11,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.View;
 
-import com.astamuse.asta4d.misc.spring.mvc.ConvertUtil;
+import com.astamuse.asta4d.misc.spring.mvc.SpringWebPageView;
+import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerAdapter;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerBuilder;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.view.Asta4dView;
+import com.astamuse.asta4d.web.view.RedirectView;
+import com.astamuse.asta4d.web.view.WebPageView;
 
 //TODO need to cache the mapped result
 @Controller
@@ -105,7 +108,7 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
     @RequestMapping(value = "/**")
     public View doService(HttpServletRequest request) throws Exception {
         Asta4dView view = dispatcher.handleRequest(request);
-        return ConvertUtil.convertSpringView(view);
+        return convertSpringView(view);
     }
 
     @Override
@@ -119,4 +122,17 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
     }
 
     protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);
+
+    private View convertSpringView(Asta4dView view) throws TemplateException {
+        if (view instanceof WebPageView) {
+            WebPageView pageView = (WebPageView) view;
+            return new SpringWebPageView(pageView.getPath());
+        }
+        if (view instanceof RedirectView) {
+            RedirectView redirectView = (RedirectView) view;
+            return new org.springframework.web.servlet.view.RedirectView(redirectView.getUrl(), redirectView.isContextRelative(),
+                    redirectView.isHttp10Compatible(), redirectView.isExposeModelAttributes());
+        }
+        throw new UnsupportedOperationException("View Type:" + view.getClass().getName());
+    }
 }
