@@ -3,15 +3,15 @@ package com.astamuse.asta4d.web.dispatch.mapping.ext.builtin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerBuilder;
+import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerResolver;
 
-public class DefaultHandlerBuilder implements RequestHandlerBuilder {
+public class DefaultHandlerResolver implements RequestHandlerResolver {
 
-    private final static Logger logger = LoggerFactory.getLogger(DefaultHandlerBuilder.class);
+    private final static Logger logger = LoggerFactory.getLogger(DefaultHandlerResolver.class);
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Object createRequestHandler(Object declaration) {
+    public Object resolve(Object declaration) {
         try {
             if (declaration instanceof Class) {
                 return ((Class) declaration).newInstance();

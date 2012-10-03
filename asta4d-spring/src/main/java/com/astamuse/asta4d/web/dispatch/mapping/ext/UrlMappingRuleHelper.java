@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.builtin.DefaultHandlerBuilder;
+import com.astamuse.asta4d.web.dispatch.mapping.ext.builtin.DefaultHandlerResolver;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.builtin.DirectRenderingHandler;
 
 public class UrlMappingRuleHelper {
@@ -16,9 +16,9 @@ public class UrlMappingRuleHelper {
 
     private HttpMethod defaultMethod = HttpMethod.GET;
 
-    private List<RequestHandlerBuilder> requestHandlerBuilderList = new ArrayList<>();
+    private List<RequestHandlerResolver> requestHandlerResolverList = new ArrayList<>();
 
-    private RequestHandlerBuilder defaultBuilder = new DefaultHandlerBuilder();
+    private RequestHandlerResolver defaultResolver = new DefaultHandlerResolver();
 
     private List<UrlMappingRule> urlRules = new ArrayList<>();
 
@@ -26,8 +26,8 @@ public class UrlMappingRuleHelper {
         this.defaultMethod = defaultMethod;
     }
 
-    public void addRequestHandlerBuilder(RequestHandlerBuilder builder) {
-        requestHandlerBuilderList.add(builder);
+    public void addRequestHandlerResolver(RequestHandlerResolver resolver) {
+        requestHandlerResolverList.add(resolver);
     }
 
     public List<UrlMappingRule> getSortedRuleList() {
@@ -70,21 +70,21 @@ public class UrlMappingRuleHelper {
             list = new ArrayList<>();
         }
         for (Object handler : handlerList) {
-            list.add(buildHandler(handler));
+            list.add(createHandler(handler));
         }
         rule.setHandlerList(list);
     }
 
-    public Object buildHandler(Object handlerDeclaration) {
+    public Object createHandler(Object handlerDeclaration) {
         Object handler = null;
-        for (RequestHandlerBuilder builder : requestHandlerBuilderList) {
-            handler = builder.createRequestHandler(handlerDeclaration);
+        for (RequestHandlerResolver resolver : requestHandlerResolverList) {
+            handler = resolver.resolve(handlerDeclaration);
             if (handler != null) {
                 break;
             }
         }
         if (handler == null) {
-            handler = defaultBuilder.createRequestHandler(handlerDeclaration);
+            handler = defaultResolver.resolve(handlerDeclaration);
         }
         return handler;
     }

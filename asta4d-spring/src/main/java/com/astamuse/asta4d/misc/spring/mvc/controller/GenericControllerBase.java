@@ -15,7 +15,7 @@ import com.astamuse.asta4d.misc.spring.mvc.SpringWebPageView;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerAdapter;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerBuilder;
+import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerResolver;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 import com.astamuse.asta4d.web.view.Asta4dView;
@@ -26,16 +26,16 @@ import com.astamuse.asta4d.web.view.WebPageView;
 @Controller
 public abstract class GenericControllerBase implements ApplicationContextAware {
 
-    private final static class SpringManagedRequestHandlerBuilder implements RequestHandlerBuilder {
+    private final static class SpringManagedRequestHandlerResolver implements RequestHandlerResolver {
 
         private ApplicationContext beanCtx;
 
-        SpringManagedRequestHandlerBuilder(ApplicationContext beanCtx) {
+        SpringManagedRequestHandlerResolver(ApplicationContext beanCtx) {
             this.beanCtx = beanCtx;
         }
 
         @Override
-        public Object createRequestHandler(Object declaration) {
+        public Object resolve(Object declaration) {
 
             if (declaration instanceof Class) {
                 Class<?> beanCls = (Class<?>) declaration;
@@ -99,7 +99,7 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
 
     public void init() {
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        helper.addRequestHandlerBuilder(new SpringManagedRequestHandlerBuilder(beanCtx));
+        helper.addRequestHandlerResolver(new SpringManagedRequestHandlerResolver(beanCtx));
         initUrlMappingRules(helper);
         dispatcher.setRuleExtractor(new AntPathRuleExtractor());
         dispatcher.setRuleList(helper.getSortedRuleList());
@@ -116,7 +116,7 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.beanCtx = context;
         // we have to inovke init here because the
-        // SpringManagedRequestHandlerBuilder need to call application context.
+        // SpringManagedRequestHandlerResolver need to call application context.
         // And there is no matter that dispatcher is initialized in multi times,
         // so we do not apply a lock here.
         init();
