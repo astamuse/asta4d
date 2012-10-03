@@ -12,6 +12,7 @@ import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.extract.SnippetExtractor;
 import com.astamuse.asta4d.snippet.interceptor.ContextDataAutowireInterceptor;
+import com.astamuse.asta4d.snippet.interceptor.SnippetInitializeInterceptor;
 import com.astamuse.asta4d.snippet.interceptor.SnippetInterceptor;
 import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 
@@ -63,6 +64,7 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
     protected List<SnippetInterceptor> getDefaultSnippetInterceptorList() {
         List<SnippetInterceptor> list = new ArrayList<>();
         list.add(new ContextDataAutowireInterceptor());
+        list.add(new SnippetInitializeInterceptor());
         return list;
     }
 
