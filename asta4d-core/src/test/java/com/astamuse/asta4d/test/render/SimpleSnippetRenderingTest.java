@@ -27,6 +27,8 @@ public class SimpleSnippetRenderingTest extends BaseTest {
         @ContextData
         private String value;
 
+        private long id;
+
         private String resolvedValue;
 
         private int count = 0;
@@ -35,6 +37,11 @@ public class SimpleSnippetRenderingTest extends BaseTest {
         public void init() throws SnippetInvokeException {
             resolvedValue = value + "-resolved";
             count++;
+        }
+
+        @ContextData
+        private void setId(long id) {
+            this.id = id;
         }
 
         public Renderer render_1() {
