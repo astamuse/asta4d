@@ -46,8 +46,9 @@ public class FlashScopeDataManager {
         @Override
         public void run() {
             List<Entry<String, FlashScopeDataHolder>> entries = new ArrayList<>(flashScopeMap.entrySet());
+            long currentTime = System.currentTimeMillis();
             for (Entry<String, FlashScopeDataHolder> entry : entries) {
-                if (entry.getValue().isExpired()) {
+                if (entry.getValue().isExpired(currentTime)) {
                     flashScopeMap.remove(entry.getKey());
                 }
             }
@@ -67,8 +68,8 @@ public class FlashScopeDataManager {
             return data;
         }
 
-        private boolean isExpired() {
-            return (System.currentTimeMillis() - creationTime) > EXPIRE_TERM_MILLISEC;
+        private boolean isExpired(long currentTime) {
+            return (currentTime - creationTime) > EXPIRE_TERM_MILLISEC;
         }
     }
 }
