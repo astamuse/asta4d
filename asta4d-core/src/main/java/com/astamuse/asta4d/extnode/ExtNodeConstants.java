@@ -51,7 +51,7 @@ public class ExtNodeConstants {
 
     public final static String SNIPPET_NODE_ATTR_BLOCK = "block";
 
-    public final static String GROUP_NODE_NAME = "GroupNode";
+    public final static String GROUP_NODE_NAME = "group";
     public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);
     public final static String GROUP_NODE_TAG_SELECTOR = SelectorUtil.tag(GROUP_NODE_TAG);
 
