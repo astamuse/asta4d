@@ -44,7 +44,13 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>    
-    
+
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+      <version>5.2.0</version>
+    </dependency>
+
   </dependencies>
-  
+
 </project>
