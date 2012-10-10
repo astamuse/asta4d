@@ -1,8 +1,8 @@
 package com.astamuse.asta4d.web.messaging;
 
-import javax.jms.MessageListener;
+public interface Asta4dMessageListener {
 
-public interface Asta4dMessageListener extends MessageListener {
+    boolean onMessage(String messageid, Asta4dMessage message);
 
-    boolean closeConsumer();
+    boolean unregister(String messageid, String uuid, UnregisterMessage message);
 }

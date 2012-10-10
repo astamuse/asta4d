@@ -2,18 +2,24 @@ package com.astamuse.asta4d.web.messaging;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
+import java.net.URI;
+
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
+import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
+import org.apache.activemq.broker.TransportConnector;
+import org.apache.activemq.command.ActiveMQObjectMessage;
+
+import com.astamuse.asta4d.util.IdGenerator;
 
 public class MessageManager {
 
@@ -23,37 +29,42 @@ public class MessageManager {
     private TopicConnection connection;
     private TopicSession session;
 
-    public MessageConsumer register(String messageid, Asta4dMessageListener listener) throws JMSException {
+    public String register(String messageid, Asta4dMessageListener listener) throws JMSException {
+        return register(messageid, IdGenerator.createId(), listener);
+    }
+
+    public String register(String messageid, String uuid, Asta4dMessageListener listener) throws JMSException {
         if (isEmpty(messageid)) {
             return null;
         }
-        TopicSubscriber subscriber = session.createSubscriber(session.createTopic(messageid));
-        subscriber.setMessageListener(new DefaultMessageListener(subscriber, listener));
-        return subscriber;
+        MessageConsumer consumer = session.createSubscriber(session.createTopic(messageid));
+        consumer.setMessageListener(new ActiveMQMessageListener(consumer, uuid, listener));
+        return uuid;
     }
 
-    public void unregister(MessageConsumer consumer) throws JMSException {
-        if (consumer == null) {
-            return;
-        }
-        consumer.close();
-    }
-
-    public void sendMessage(String messageid, Asta4dMessage message) throws JMSException {
-        if (isEmpty(messageid) || message == null) {
-            return;
-        }
-        Message sentMessage = session.createObjectMessage(message);
+    public void unregister(String messageid, String uuid) throws JMSException {
+        Message message = session.createObjectMessage(new UnregisterMessage(uuid));
         TopicPublisher publisher = session.createPublisher(session.createTopic(messageid));
-        publisher.publish(sentMessage);
+        publisher.publish(message);
+    }
+
+    public void sendMessage(String messageid, Asta4dMessage afdMessage) throws JMSException {
+        if (isEmpty(messageid) || afdMessage == null) {
+            return;
+        }
+        Message message = session.createObjectMessage(afdMessage);
+        TopicPublisher publisher = session.createPublisher(session.createTopic(messageid));
+        publisher.publish(message);
     }
 
     private MessageManager() {
         try {
+            TransportConnector connector = new TransportConnector();
+            connector.setUri(new URI("tcp://localhost:61616"));
             broker = new BrokerService();
             broker.setPersistent(false);
             broker.setUseJmx(true);
-            broker.addConnector("tcp://localhost:61616");
+            broker.addConnector(connector);
             broker.start();
             ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
             connection = connectionFactory.createTopicConnection();
@@ -89,21 +100,34 @@ public class MessageManager {
         return MANAGER;
     }
 
-    private static class DefaultMessageListener implements MessageListener {
+    private static class ActiveMQMessageListener implements MessageListener {
         private final MessageConsumer consumer;
+        private final String uuid;
         private final Asta4dMessageListener orgListener;
 
-        private DefaultMessageListener(MessageConsumer consumer, Asta4dMessageListener orgListener) {
+        private ActiveMQMessageListener(MessageConsumer consumer, String uuid, Asta4dMessageListener orgListener) {
             this.consumer = consumer;
+            this.uuid = uuid;
             this.orgListener = orgListener;
         }
 
         @Override
         public void onMessage(Message message) {
-            orgListener.onMessage(message);
+            if (!(message instanceof ActiveMQObjectMessage)) {
+                return;
+            }
             try {
-                if (orgListener.closeConsumer()) {
-                    consumer.close();
+                ActiveMQObjectMessage mqMsg = (ActiveMQObjectMessage) message;
+                String messageid = ((Topic) mqMsg.getDestination()).getTopicName();
+                Asta4dMessage afdMsg = (Asta4dMessage) mqMsg.getObject();
+                if (afdMsg instanceof UnregisterMessage) {
+                    if (orgListener.unregister(messageid, uuid, (UnregisterMessage) afdMsg)) {
+                        consumer.close();
+                    }
+                } else {
+                    if (orgListener.onMessage(messageid, afdMsg)) {
+                        consumer.close();
+                    }
                 }
             } catch (JMSException e) {
                 // TODO
