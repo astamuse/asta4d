@@ -44,8 +44,15 @@ public class MessageManager {
 
     public void unregister(String messageid, String uuid) throws JMSException {
         Message message = session.createObjectMessage(new UnregisterMessage(uuid));
-        TopicPublisher publisher = session.createPublisher(session.createTopic(messageid));
-        publisher.publish(message);
+        TopicPublisher publisher = null;
+        try {
+            publisher = session.createPublisher(session.createTopic(messageid));
+            publisher.publish(message);
+        } catch (Exception e) {
+            if (publisher != null) {
+                publisher.close();
+            }
+        }
     }
 
     public void sendMessage(String messageid, Asta4dMessage afdMessage) throws JMSException {
@@ -53,8 +60,15 @@ public class MessageManager {
             return;
         }
         Message message = session.createObjectMessage(afdMessage);
-        TopicPublisher publisher = session.createPublisher(session.createTopic(messageid));
-        publisher.publish(message);
+        TopicPublisher publisher = null;
+        try {
+            publisher = session.createPublisher(session.createTopic(messageid));
+            publisher.publish(message);
+        } catch (Exception e) {
+            if (publisher != null) {
+                publisher.close();
+            }
+        }
     }
 
     private MessageManager() {
