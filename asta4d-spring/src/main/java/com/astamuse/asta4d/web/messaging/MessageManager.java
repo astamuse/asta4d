@@ -34,8 +34,8 @@ public class MessageManager {
     }
 
     public String register(String messageid, String uuid, Asta4dMessageListener listener) throws JMSException {
-        if (isEmpty(messageid)) {
-            return null;
+        if (isEmpty(messageid) || isEmpty(uuid) || listener == null) {
+            throw new IllegalArgumentException();
         }
         MessageConsumer consumer = session.createSubscriber(session.createTopic(messageid));
         consumer.setMessageListener(new ActiveMQMessageListener(consumer, uuid, listener));
@@ -43,6 +43,9 @@ public class MessageManager {
     }
 
     public void unregister(String messageid, String uuid) throws JMSException {
+        if (isEmpty(messageid) || isEmpty(uuid)) {
+            throw new IllegalArgumentException();
+        }
         Message message = session.createObjectMessage(new UnregisterMessage(uuid));
         TopicPublisher publisher = null;
         try {
@@ -57,7 +60,7 @@ public class MessageManager {
 
     public void sendMessage(String messageid, Asta4dMessage afdMessage) throws JMSException {
         if (isEmpty(messageid) || afdMessage == null) {
-            return;
+            throw new IllegalArgumentException();
         }
         Message message = session.createObjectMessage(afdMessage);
         TopicPublisher publisher = null;
