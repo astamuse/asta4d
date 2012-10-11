@@ -4,5 +4,5 @@ public interface Asta4dMessageListener {
 
     boolean onMessage(String messageid, Asta4dMessage message);
 
-    boolean unregister(String messageid, String uuid, UnregisterMessage message);
+    boolean unregister(String messageid, UnregisterMessage message);
 }

@@ -135,7 +135,11 @@ public class MessageManager {
                 String messageid = ((Topic) mqMsg.getDestination()).getTopicName();
                 Asta4dMessage afdMsg = (Asta4dMessage) mqMsg.getObject();
                 if (afdMsg instanceof UnregisterMessage) {
-                    if (orgListener.unregister(messageid, uuid, (UnregisterMessage) afdMsg)) {
+                    UnregisterMessage unregisterMessage = (UnregisterMessage) afdMsg;
+                    if (!uuid.equals(unregisterMessage.getUuid())) {
+                        return;
+                    }
+                    if (orgListener.unregister(messageid, unregisterMessage)) {
                         consumer.close();
                     }
                 } else {
