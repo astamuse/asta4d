@@ -1,0 +1,94 @@
+package com.astamuse.asta4d.sample.snippet;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+
+import com.astamuse.asta4d.data.annotation.ContextData;
+import com.astamuse.asta4d.extnode.ClearNode;
+import com.astamuse.asta4d.extnode.EmbedNode;
+import com.astamuse.asta4d.extnode.SnippetNode;
+import com.astamuse.asta4d.render.ChildReplacer;
+import com.astamuse.asta4d.render.GoThroughRenderer;
+import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.web.WebApplicationContext;
+
+public class ComplicatedSnippet {
+
+    public Renderer render() {
+        // それ自体は何もしない Renderer です。
+        Renderer render = new GoThroughRenderer();
+
+        // 該当 Element の子要素全てを置換します。
+
+        ChildReplacer replacer = new ChildReplacer(createElement());
+        render.add("ul#childreplacer", replacer);
+
+        // 該当 Element を削除します。
+        render.add("ul#clearnode", new ClearNode());
+
+        // レンダリング結果をデバッグ出力します。
+        render.addDebugger();
+
+        return render;
+    }
+
+    public Renderer outer() {
+        // 文字列, 整数, Date型の値, List型の値を内部Snippetで使用するためにセットします。
+        Renderer render = new GoThroughRenderer();
+        render.add("div#inner", "name", "baz");
+        render.add("div#inner", "age", "30");
+        render.add("div#inner", "currenttime", new Date());
+
+        List<String> list = new ArrayList<>();
+        list.add("This text is passed by outer snippet.(1)");
+        list.add("This text is passed by outer snippet.(2)");
+        list.add("This text is passed by outer snippet.(3)");
+        render.add("div#inner", "list", list);
+        return render;
+    }
+
+    public Renderer inner(String name, int age, Date currenttime, List<String> list) {
+        // 外部Snippetでセットされた値を変数から取得し、使用します。
+        Renderer render = new GoThroughRenderer();
+        render.add("p#name span", name);
+        render.add("p#age span", age);
+        render.add("p#currenttime span", DateFormatUtils.format(currenttime, "yyyy/MM/dd HH:mm:ss"));
+        render.add("ul#list li", list);
+        return render;
+    }
+
+    public Renderer createDynamicSnippet() {
+        Renderer render = new GoThroughRenderer();
+        Element snippet = new SnippetNode("SimpleSnippet");
+        snippet.attr("name", "Dynamic Snippet");
+        render.add("div#snippet", snippet);
+        Element embed = new EmbedNode("/templates/embed/embedded.html");
+        render.add("div#embed", embed);
+        return render;
+    }
+
+    public Renderer changeName(@ContextData(name = "var") String changedName) {
+        return Renderer.create("dd", changedName);
+    }
+
+    public Renderer specificScope(@ContextData(scope = WebApplicationContext.SCOPE_QUERYPARAM) String var) {
+        return Renderer.create("dd", var == null ? "" : var);
+    }
+
+    private Element createElement() {
+        Element ul = new Element(Tag.valueOf("ul"), "");
+        List<Node> lis = new ArrayList<>();
+        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(1)"));
+        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(2)"));
+        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(3)"));
+        ElementUtil.appendNodes(ul, lis);
+        return ul;
+    }
+}
