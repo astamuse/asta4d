@@ -42,19 +42,13 @@ public class InterceptorUtil {
     public final static <H> void executeWithInterceptors(H executionHolder, List<? extends GenericInterceptor<H>> interceptorList,
             Executor<H> executor) throws Exception {
 
-        GenericInterceptor<H> lastInterceptor = null;
         List<GenericInterceptor<H>> runList = new ArrayList<>();
         if (interceptorList != null) {
             runList.addAll(interceptorList);
         }
         runList.add(new ExecutorWrapping<>(executor));
-        Exception executeException = null;
-        try {
-            lastInterceptor = beforeProcess(executionHolder, runList);
-        } catch (Exception ex) {
-            executeException = ex;
-        }
-        ExceptionHandler eh = new ExceptionHandler(executeException);
+        ExceptionHandler eh = new ExceptionHandler();
+        GenericInterceptor<H> lastInterceptor = beforeProcess(executionHolder, runList, eh);
         afterProcess(lastInterceptor, executionHolder, runList, eh);
         // if the passed exception has not been cleared, we will throw it
         // anyway.
@@ -64,12 +58,18 @@ public class InterceptorUtil {
 
     }
 
-    private final static <H> GenericInterceptor<H> beforeProcess(H execution, List<GenericInterceptor<H>> interceptorList) throws Exception {
+    private final static <H> GenericInterceptor<H> beforeProcess(H execution, List<GenericInterceptor<H>> interceptorList,
+            ExceptionHandler eh) throws Exception {
         GenericInterceptor<H> lastInterceptor = null;
         for (GenericInterceptor<H> interceptor : interceptorList) {
-            lastInterceptor = interceptor;
-            if (interceptor.beforeProcess(execution)) {
-                continue;
+            try {
+                if (!interceptor.beforeProcess(execution)) {
+                    break;
+                }
+                lastInterceptor = interceptor;
+            } catch (Exception ex) {
+                eh.setException(ex);
+                return lastInterceptor;
             }
         }
         return lastInterceptor;
