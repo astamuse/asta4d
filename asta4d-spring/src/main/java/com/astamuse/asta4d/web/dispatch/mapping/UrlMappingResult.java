@@ -19,7 +19,7 @@ public class UrlMappingResult {
     }
 
     public UrlMappingRule getRule() {
-        return rule;
+        return UrlMappingRule.getUnmodifiableRule(rule);
     }
 
     public void setRule(UrlMappingRule rule) {

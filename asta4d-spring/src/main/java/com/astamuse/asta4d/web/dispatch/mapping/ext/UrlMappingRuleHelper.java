@@ -8,11 +8,8 @@ import java.util.List;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.builtin.DefaultHandlerResolver;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.builtin.DirectRenderingHandler;
 
 public class UrlMappingRuleHelper {
-
-    private DirectRenderingHandler defaultHandler = new DirectRenderingHandler();
 
     private HttpMethod defaultMethod = HttpMethod.GET;
 
@@ -51,7 +48,6 @@ public class UrlMappingRuleHelper {
             if (handlerList == null) {
                 handlerList = new ArrayList<>();
             }
-            handlerList.add(defaultHandler);
             rule.setHandlerList(handlerList);
         }
         return sortedRuleList;

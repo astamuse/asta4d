@@ -1,5 +1,6 @@
 package com.astamuse.asta4d.web.dispatch.mapping.ext;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -7,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.builtin.RedirectHandler;
+import com.astamuse.asta4d.web.forward.ForwardDescriptor;
 
 public class HandyUrlMappingRule extends UrlMappingRule {
 
@@ -19,7 +21,8 @@ public class HandyUrlMappingRule extends UrlMappingRule {
     private UrlMappingRuleHelper helper;
 
     public HandyUrlMappingRule(UrlMappingRuleHelper helper, HttpMethod method, String sourcePath, String defaultTarget) {
-        super(Sequencer.incrementAndGet(), method, sourcePath, defaultTarget, null, DEFAULT_PRIORITY);
+        super(Sequencer.incrementAndGet(), method, sourcePath, defaultTarget, Collections.emptyList(), DEFAULT_PRIORITY, Collections
+                .<Class<? extends ForwardDescriptor>, String> emptyMap());
         this.helper = helper;
     }
 
@@ -40,6 +43,15 @@ public class HandyUrlMappingRule extends UrlMappingRule {
 
     public void redirect() {
         handler(redirectHandler);
+    }
+
+    public HandyUrlMappingRule forward(Class<? extends ForwardDescriptor> key, String value) {
+        Map<Class<? extends ForwardDescriptor>, String> map = this.getForwardDescriptors();
+        if (map == null) {
+            map = new HashMap<>();
+        }
+        map.put(key, value);
+        return this;
     }
 
     public HandyUrlMappingRule var(String key, Object value) {

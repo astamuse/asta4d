@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.web.dispatch;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,26 +8,19 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.DataOperationException;
-import com.astamuse.asta4d.data.InjectUtil;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 import com.astamuse.asta4d.web.view.Asta4dView;
-import com.astamuse.asta4d.web.view.RedirectView;
 import com.astamuse.asta4d.web.view.WebPageView;
 
 public class RequestDispatcher {
 
     public final static String KEY_CURRENT_RULE = RequestDispatcher.class.getName() + "##KEY_CURRENT_RULE";
-
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private DispatcherRuleExtractor ruleExtractor;
 
@@ -67,7 +58,14 @@ public class RequestDispatcher {
         context.setData(KEY_CURRENT_RULE, rule);
         writePathVarToContext(context, rule.getExtraVarMap());
         retrieveFlashScopeData(request);
-        return invokeHandler(result.getRule().getHandlerList());
+
+        RequestHandlerInvokerFactory factory = ((WebApplicationConfiguration) context.getConfiguration()).getRequestHandlerInvokerFactory();
+
+        Asta4dView view = factory.getInvoker().invoke(rule);
+        if (view != null) {
+            return view;
+        }
+        return new WebPageView(rule.getDefaultTargetPath());
 
     }
 
@@ -88,52 +86,4 @@ public class RequestDispatcher {
         RedirectUtil.getFlashScopeData(flashScopeId);
     }
 
-    private Asta4dView invokeHandler(List<Object> handlerList) throws InvocationTargetException, IllegalAccessException,
-            DataOperationException {
-        // TODO we need a cache here
-        Asta4dView view = null;
-        for (Object handler : handlerList) {
-            if (handler instanceof RequestHandlerAdapter) {
-                view = invokeHandler(((RequestHandlerAdapter) handler).asRequestHandler());
-            } else {
-                view = invokeHandler(handler);
-            }
-            if (view != null) {
-                break;
-            }
-        }
-        return view;
-    }
-
-    private Asta4dView invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, DataOperationException {
-        Method[] methodList = handler.getClass().getMethods();
-        Method m = null;
-        for (Method method : methodList) {
-            if (method.isAnnotationPresent(RequestHandler.class)) {
-                m = method;
-                break;
-            }
-        }
-
-        if (m == null) {
-            // TODO maybe we can return a null?
-            String msg = String.format("Request handler method not found:" + handler.getClass().getName());
-            logger.error(msg);
-            throw new InvocationTargetException(new RuntimeException(msg));
-        }
-
-        Object[] params = InjectUtil.getMethodInjectParams(m);
-        if (params == null) {
-            params = new Object[0];
-        }
-        Object result = m.invoke(handler, params);
-        if (result == null) {
-            return null;
-        } else if (result instanceof String) {
-            return new WebPageView((String) result);
-        } else if (result instanceof RedirectView) {
-            return ((RedirectView) result);
-        }
-        throw new UnsupportedOperationException("Result Type:" + result.getClass().getName());
-    }
 }
