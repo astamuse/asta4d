@@ -27,6 +27,8 @@ public class UrlMappingRule {
 
     private int priority;
 
+    private UrlMappingRule unModifiableDelegator;
+
     public UrlMappingRule(int seq, HttpMethod method, String sourcePath, String defaultTargetPath, List<Object> handlerList, int priority,
             Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors) {
         super();
@@ -37,6 +39,7 @@ public class UrlMappingRule {
         this.handlerList.addAll(handlerList);
         this.priority = priority;
         this.forwardDescriptors.putAll(forwardDescriptors);
+        this.unModifiableDelegator = new UnmodifiableUrlMappingRule(this);
     }
 
     public UrlMappingRule() {
@@ -108,70 +111,80 @@ public class UrlMappingRule {
         this.forwardDescriptors = forwardDescriptors;
     }
 
-    public static UrlMappingRule getUnmodifiableRule(UrlMappingRule rule) {
-        return new UnmodifiableUrlMappingRule(rule);
+    public UrlMappingRule asUnmodifiable() {
+        return unModifiableDelegator;
     }
 
     private static class UnmodifiableUrlMappingRule extends UrlMappingRule {
+        private UrlMappingRule rule;
 
         private UnmodifiableUrlMappingRule(UrlMappingRule rule) {
-            super(rule.getSeq(), rule.getMethod(), rule.getSourcePath(), rule.getDefaultTargetPath(), rule.getHandlerList(), rule
-                    .getPriority(), rule.getForwardDescriptors());
+            this.rule = rule;
         }
 
-        @Override
+        public int getSeq() {
+            return rule.getSeq();
+        }
+
         public void setSeq(int seq) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
+        public HttpMethod getMethod() {
+            return rule.getMethod();
+        }
+
         public void setMethod(HttpMethod method) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
+        public String getSourcePath() {
+            return rule.getSourcePath();
+        }
+
         public void setSourcePath(String sourcePath) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
+        public String getDefaultTargetPath() {
+            return rule.getDefaultTargetPath();
+        }
+
         public void setDefaultTargetPath(String defaultTargetPath) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public List<Object> getHandlerList() {
-            return Collections.unmodifiableList(super.getHandlerList());
+            return Collections.unmodifiableList(rule.getHandlerList());
         }
 
-        @Override
         public void setHandlerList(List<Object> handlerList) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public Map<String, Object> getExtraVarMap() {
-            return Collections.unmodifiableMap(super.getExtraVarMap());
+            return rule.getExtraVarMap();
         }
 
-        @Override
         public void setExtraVarMap(Map<String, Object> extraVarMap) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
+        public int getPriority() {
+            return rule.getPriority();
+        }
+
         public void setPriority(int priority) {
             throw new UnsupportedOperationException();
         }
 
-        @Override
         public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptors() {
-            return Collections.unmodifiableMap(super.getForwardDescriptors());
+            return Collections.unmodifiableMap(rule.getForwardDescriptors());
         }
 
-        @Override
         public void setForwardDescriptors(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors) {
             throw new UnsupportedOperationException();
         }
     }
+
 }
