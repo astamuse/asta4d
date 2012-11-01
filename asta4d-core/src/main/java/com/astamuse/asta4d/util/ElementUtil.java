@@ -29,15 +29,12 @@ public class ElementUtil {
     }
 
     public final static Element parseAsSingle(String html) {
-        Elements elems = Jsoup.parseBodyFragment(html).body().children();
-        if (elems.size() == 1) {
-            return elems.first();
-        } else {
-            return wrapElementsToSingleNode(elems);
-        }
+        Element body = Jsoup.parseBodyFragment(html).body();
+        List<Node> children = body.childNodes();
+        return wrapElementsToSingleNode(children);
     }
 
-    public final static Element wrapElementsToSingleNode(Elements elements) {
+    public final static Element wrapElementsToSingleNode(List<Node> elements) {
         Element groupNode = new GroupNode();
         List<Node> list = new ArrayList<Node>(elements);
         for (Node node : list) {
