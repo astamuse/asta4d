@@ -242,7 +242,7 @@ public class RenderUtil {
             return;
         }
 
-        String selector = currentRenderer.getSelector();
+        String selector = SelectorUtil.not(currentRenderer.getSelector(), ExtNodeConstants.GROUP_NODE_TAG_SELECTOR);
 
         if (currentRenderer instanceof DebugRenderer) {
             currentRenderer.getTransformerList().get(0).invoke(target);
