@@ -15,7 +15,6 @@ public class Asta4DPageProvider implements ContentProvider {
 
     private final static Map<String, WebPage> WebPageCache = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("unused")
     private String path;
 
     private WebPage page = null;
@@ -35,6 +34,10 @@ public class Asta4DPageProvider implements ContentProvider {
             WebPageCache.put(cacheKey, cachedPage);
         }
         this.page = cachedPage;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     @Override
