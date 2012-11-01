@@ -7,9 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
-import com.astamuse.asta4d.web.forward.ForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
+import com.astamuse.asta4d.web.dispatch.response.forward.ForwardDescriptor;
 
 public class UrlMappingRule {
+
+    public enum ForwardActionType {
+        // TODO to support applying rule again feature
+        Default, Redirect, ApplyRule
+    }
 
     private int seq;
 
@@ -17,34 +23,46 @@ public class UrlMappingRule {
 
     private String sourcePath;
 
-    private String defaultTargetPath;
+    private List<Object> handlerList;
 
-    private List<Object> handlerList = new ArrayList<>();
+    private List<RequestHandlerInterceptor> interceptorList;
 
-    private Map<String, Object> extraVarMap = new HashMap<String, Object>();
+    private Map<String, Object> extraVarMap;
 
-    private Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors = new HashMap<>();
+    private List<String> attributeList;
+
+    private Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap;
+
+    private ForwardActionType forwardActionType;
 
     private int priority;
 
     private UrlMappingRule unModifiableDelegator;
 
-    public UrlMappingRule(int seq, HttpMethod method, String sourcePath, String defaultTargetPath, List<Object> handlerList, int priority,
-            Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors) {
+    public UrlMappingRule(int seq, HttpMethod method, String sourcePath, List<Object> handlerList,
+            List<RequestHandlerInterceptor> interceptorList, Map<String, Object> extraVarMap, List<String> attributeList,
+            Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap, ForwardActionType forwardActionType, int priority) {
         super();
         this.seq = seq;
         this.method = method;
         this.sourcePath = sourcePath;
-        this.defaultTargetPath = defaultTargetPath;
-        this.handlerList.addAll(handlerList);
+        this.handlerList = handlerList;
+        this.interceptorList = interceptorList;
+        this.extraVarMap = extraVarMap;
+        this.attributeList = attributeList;
+        this.forwardDescriptorMap = forwardDescriptorMap;
+        this.forwardActionType = forwardActionType;
         this.priority = priority;
-        this.forwardDescriptors.putAll(forwardDescriptors);
-        this.unModifiableDelegator = new UnmodifiableUrlMappingRule(this);
     }
 
     public UrlMappingRule() {
         super();
-        // do nothing
+        this.handlerList = new ArrayList<>();
+        this.interceptorList = new ArrayList<>();
+        this.extraVarMap = new HashMap<>();
+        this.attributeList = new ArrayList<>();
+        this.forwardDescriptorMap = new HashMap<>();
+        this.forwardActionType = ForwardActionType.Default;
     }
 
     public int getSeq() {
@@ -71,20 +89,20 @@ public class UrlMappingRule {
         this.sourcePath = sourcePath;
     }
 
-    public String getDefaultTargetPath() {
-        return defaultTargetPath;
-    }
-
-    public void setDefaultTargetPath(String defaultTargetPath) {
-        this.defaultTargetPath = defaultTargetPath;
-    }
-
     public List<Object> getHandlerList() {
         return handlerList;
     }
 
     public void setHandlerList(List<Object> handlerList) {
         this.handlerList = handlerList;
+    }
+
+    public List<RequestHandlerInterceptor> getInterceptorList() {
+        return interceptorList;
+    }
+
+    public void setInterceptorList(List<RequestHandlerInterceptor> interceptorList) {
+        this.interceptorList = interceptorList;
     }
 
     public Map<String, Object> getExtraVarMap() {
@@ -95,6 +113,14 @@ public class UrlMappingRule {
         this.extraVarMap = extraVarMap;
     }
 
+    public List<String> getAttributeList() {
+        return attributeList;
+    }
+
+    public void setAttributeList(List<String> attributeList) {
+        this.attributeList = attributeList;
+    }
+
     public int getPriority() {
         return priority;
     }
@@ -103,22 +129,34 @@ public class UrlMappingRule {
         this.priority = priority;
     }
 
-    public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptors() {
-        return forwardDescriptors;
+    public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptorMap() {
+        return forwardDescriptorMap;
     }
 
-    public void setForwardDescriptors(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors) {
-        this.forwardDescriptors = forwardDescriptors;
+    public void setForwardDescriptorMap(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap) {
+        this.forwardDescriptorMap = forwardDescriptorMap;
+    }
+
+    public ForwardActionType getForwardActionType() {
+        return forwardActionType;
+    }
+
+    public void setForwardActionType(ForwardActionType forwardActionType) {
+        this.forwardActionType = forwardActionType;
     }
 
     public UrlMappingRule asUnmodifiable() {
+        // It is OK if unModifiableDelegator was initialized by multiple threads
+        if (unModifiableDelegator == null) {
+            unModifiableDelegator = new UnModifiableUrlMappingRule(this);
+        }
         return unModifiableDelegator;
     }
 
-    private static class UnmodifiableUrlMappingRule extends UrlMappingRule {
+    private static class UnModifiableUrlMappingRule extends UrlMappingRule {
         private UrlMappingRule rule;
 
-        private UnmodifiableUrlMappingRule(UrlMappingRule rule) {
+        private UnModifiableUrlMappingRule(UrlMappingRule rule) {
             this.rule = rule;
         }
 
@@ -146,19 +184,19 @@ public class UrlMappingRule {
             throw new UnsupportedOperationException();
         }
 
-        public String getDefaultTargetPath() {
-            return rule.getDefaultTargetPath();
-        }
-
-        public void setDefaultTargetPath(String defaultTargetPath) {
-            throw new UnsupportedOperationException();
-        }
-
         public List<Object> getHandlerList() {
             return Collections.unmodifiableList(rule.getHandlerList());
         }
 
         public void setHandlerList(List<Object> handlerList) {
+            throw new UnsupportedOperationException();
+        }
+
+        public List<RequestHandlerInterceptor> getInterceptorList() {
+            return Collections.unmodifiableList(rule.getInterceptorList());
+        }
+
+        public void setInterceptorList(List<RequestHandlerInterceptor> interceptorList) {
             throw new UnsupportedOperationException();
         }
 
@@ -170,6 +208,14 @@ public class UrlMappingRule {
             throw new UnsupportedOperationException();
         }
 
+        public List<String> getAttributeList() {
+            return Collections.unmodifiableList(rule.getAttributeList());
+        }
+
+        public void setAttributeList(List<String> attributeList) {
+            throw new UnsupportedOperationException();
+        }
+
         public int getPriority() {
             return rule.getPriority();
         }
@@ -178,13 +224,22 @@ public class UrlMappingRule {
             throw new UnsupportedOperationException();
         }
 
-        public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptors() {
-            return Collections.unmodifiableMap(rule.getForwardDescriptors());
+        public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptorMap() {
+            return Collections.unmodifiableMap(rule.getForwardDescriptorMap());
         }
 
-        public void setForwardDescriptors(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors) {
+        public void setForwardDescriptorMap(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap) {
             throw new UnsupportedOperationException();
         }
+
+        public ForwardActionType getForwardActionType() {
+            return rule.getForwardActionType();
+        }
+
+        public void setForwardActionType(ForwardActionType forwardActionType) {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
 }

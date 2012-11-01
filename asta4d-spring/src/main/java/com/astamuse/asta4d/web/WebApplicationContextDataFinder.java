@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
 
@@ -33,6 +35,8 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
             return ((WebApplicationContext) context).getRequest();
         } else if (type.equals(HttpServletResponse.class)) {
             return ((WebApplicationContext) context).getResponse();
+        } else if (type.equals(UrlMappingRule.class)) {
+            return context.getData(RequestDispatcher.KEY_CURRENT_RULE);
         } else {
             return super.findDataInContext(context, scope, name, type);
         }

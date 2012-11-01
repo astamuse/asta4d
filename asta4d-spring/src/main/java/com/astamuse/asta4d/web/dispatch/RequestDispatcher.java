@@ -14,9 +14,13 @@ import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.response.Asta4DPageProvider;
+import com.astamuse.asta4d.web.dispatch.response.ContentProvider;
+import com.astamuse.asta4d.web.dispatch.response.RedirectActionProvider;
+import com.astamuse.asta4d.web.dispatch.response.forward.ContentProviderForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.response.forward.ForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.response.forward.ForwardableException;
 import com.astamuse.asta4d.web.util.RedirectUtil;
-import com.astamuse.asta4d.web.view.Asta4dView;
-import com.astamuse.asta4d.web.view.WebPageView;
 
 public class RequestDispatcher {
 
@@ -46,7 +50,7 @@ public class RequestDispatcher {
         this.ruleList = ruleList;
     }
 
-    public Asta4dView handleRequest(HttpServletRequest request) throws Exception {
+    public ContentProvider handleRequest(HttpServletRequest request) throws Exception {
         // TODO should we handle the exceptions?
 
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
@@ -61,11 +65,38 @@ public class RequestDispatcher {
 
         RequestHandlerInvokerFactory factory = ((WebApplicationConfiguration) context.getConfiguration()).getRequestHandlerInvokerFactory();
 
-        Asta4dView view = factory.getInvoker().invoke(rule);
-        if (view != null) {
-            return view;
+        RequestHandlerInvoker invoker = factory.getInvoker();
+
+        ForwardDescriptor fd = null;
+        try {
+            fd = invoker.invoke(rule);
+        } catch (ForwardableException ex) {
+            fd = ex.getForwardDescriptor();
         }
-        return new WebPageView(rule.getDefaultTargetPath());
+
+        if (fd instanceof ContentProviderForwardDescriptor) {
+            return ((ContentProviderForwardDescriptor) fd).getContentProvider();
+        } else {
+            // it is possible that there is more than one ClassLoader, so we
+            // can't get matched ForwardDescriptor directly since Class is not
+            // implemented as hash key ready.
+            for (Entry<Class<? extends ForwardDescriptor>, String> entry : rule.getForwardDescriptorMap().entrySet()) {
+                if (entry.getKey().isInstance(fd)) {
+                    String path = entry.getValue();
+                    switch (rule.getForwardActionType()) {
+                    case Default:
+                        return new Asta4DPageProvider(path);
+                    case Redirect:
+                        return new RedirectActionProvider(path);
+                    case ApplyRule:
+                        // TODO how?
+                    default:
+                        break;
+                    }
+                }
+            }
+            return null;
+        }
 
     }
 

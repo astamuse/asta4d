@@ -1,7 +1,11 @@
-package com.astamuse.asta4d.web.forward;
+package com.astamuse.asta4d.web.dispatch.response.forward;
 
-@SuppressWarnings("serial")
 public class ForwardableException extends RuntimeException {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4366099909329048101L;
 
     private final ForwardDescriptor forwardDescriptor;
 
@@ -14,8 +18,7 @@ public class ForwardableException extends RuntimeException {
         return forwardDescriptor;
     }
 
-    @Override
-    public synchronized Exception getCause() {
+    public Exception getCauseException() {
         return (Exception) super.getCause();
     }
 }

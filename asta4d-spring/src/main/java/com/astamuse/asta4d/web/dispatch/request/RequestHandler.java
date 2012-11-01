@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.dispatch.annotation;
+package com.astamuse.asta4d.web.dispatch.request;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

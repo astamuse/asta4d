@@ -4,20 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 
 public class WebApplicationConfiguration extends Configuration {
 
-    private RequestHandlerInvokerFactory requestHandlerInvokerFactory = new RequestHandlerInvokerFactory();
+    private RequestHandlerInvokerFactory requestHandlerInvokerFactory;
 
     public WebApplicationConfiguration() {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
         this.setContextDataFinder(new WebApplicationContextDataFinder());
+        this.setRequestHandlerInvokerFactory(new DefaultRequestHandlerInvokerFactory());
 
         // we only allow request scope being reversely injected
         List<String> reverseInjectableScopes = new ArrayList<>();
         reverseInjectableScopes.add(WebApplicationContext.SCOPE_REQUEST);
         this.setReverseInjectableScopes(reverseInjectableScopes);
+
     }
 
     public RequestHandlerInvokerFactory getRequestHandlerInvokerFactory() {

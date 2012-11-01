@@ -14,13 +14,13 @@ import org.springframework.web.servlet.View;
 import com.astamuse.asta4d.misc.spring.mvc.SpringWebPageView;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
-import com.astamuse.asta4d.web.dispatch.RequestHandlerAdapter;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerResolver;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandlerAdapter;
+import com.astamuse.asta4d.web.dispatch.response.Asta4DPageProvider;
+import com.astamuse.asta4d.web.dispatch.response.ContentProvider;
+import com.astamuse.asta4d.web.dispatch.response.RedirectActionProvider;
 import com.astamuse.asta4d.web.util.RedirectUtil;
-import com.astamuse.asta4d.web.view.Asta4dView;
-import com.astamuse.asta4d.web.view.RedirectView;
-import com.astamuse.asta4d.web.view.WebPageView;
 
 //TODO need to cache the mapped result
 @Controller
@@ -102,14 +102,14 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         helper.addRequestHandlerResolver(new SpringManagedRequestHandlerResolver(beanCtx));
         initUrlMappingRules(helper);
         dispatcher.setRuleExtractor(new AntPathRuleExtractor());
-        dispatcher.setRuleList(helper.getSortedRuleList());
+        dispatcher.setRuleList(helper.getArrangedRuleList());
         logger.info("url mapping rules are initialized.");
     }
 
     @RequestMapping(value = "/**")
     public View doService(HttpServletRequest request) throws Exception {
-        Asta4dView view = dispatcher.handleRequest(request);
-        return convertSpringView(view);
+        ContentProvider contentProvider = dispatcher.handleRequest(request);
+        return contentProvider == null ? null : convertSpringView(contentProvider);
     }
 
     @Override
@@ -124,16 +124,14 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
 
     protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);
 
-    private View convertSpringView(Asta4dView view) throws TemplateException {
-        if (view instanceof WebPageView) {
-            WebPageView pageView = (WebPageView) view;
-            return new SpringWebPageView(pageView.getPath());
-        }
-        if (view instanceof RedirectView) {
-            RedirectView redirectView = (RedirectView) view;
-            String url = RedirectUtil.setFlashScopeData(redirectView.getUrl(), redirectView.getFlashScopeData());
+    private View convertSpringView(ContentProvider contentProvider) throws TemplateException {
+        if (contentProvider instanceof Asta4DPageProvider) {
+            return new SpringWebPageView((Asta4DPageProvider) contentProvider);
+        } else if (contentProvider instanceof RedirectActionProvider) {
+            RedirectActionProvider redirector = (RedirectActionProvider) contentProvider;
+            String url = RedirectUtil.setFlashScopeData(redirector.getUrl(), redirector.getFlashScopeData());
             return new org.springframework.web.servlet.view.RedirectView(url);
         }
-        throw new UnsupportedOperationException("View Type:" + view.getClass().getName());
+        throw new UnsupportedOperationException("ContentProvider Type:" + contentProvider.getClass().getName());
     }
 }

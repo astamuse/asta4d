@@ -10,26 +10,20 @@ import org.springframework.web.servlet.View;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateException;
-import com.astamuse.asta4d.web.WebPage;
+import com.astamuse.asta4d.web.dispatch.response.Asta4DPageProvider;
 
 public class SpringWebPageView implements View {
 
-    @SuppressWarnings("unused")
-    private String path = "";
+    private Asta4DPageProvider templateProvider;
 
-    private WebPage page = null;
-
-    public SpringWebPageView(String path) throws TemplateException {
+    public SpringWebPageView(Asta4DPageProvider templateProvider) throws TemplateException {
         super();
-        this.path = path;
-        // TODO handle page not found (rewrite it for internationalization and
-        // negotiation view)
-        this.page = new WebPage(path);
+        this.templateProvider = templateProvider;
     }
 
     @Override
     public String getContentType() {
-        return page.getContentType();
+        return "";
     }
 
     @Override
@@ -38,7 +32,7 @@ public class SpringWebPageView implements View {
         for (Entry<String, ?> entry : model.entrySet()) {
             context.setData(entry.getKey(), entry.getValue());
         }
-        page.output(response.getOutputStream());
+        templateProvider.produce(response);
     }
 
 }
