@@ -242,7 +242,7 @@ public class RenderUtil {
             return;
         }
 
-        String selector = SelectorUtil.not(currentRenderer.getSelector(), ExtNodeConstants.GROUP_NODE_TAG_SELECTOR);
+        String selector = currentRenderer.getSelector();
 
         if (currentRenderer instanceof DebugRenderer) {
             currentRenderer.getTransformerList().get(0).invoke(target);
@@ -260,6 +260,9 @@ public class RenderUtil {
         // to ensure the wanted order.
         Collections.reverse(elemList);
         for (Element elem : elemList) {
+            if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG)) {
+                continue;
+            }
             if (elem == target) {
                 delayedElement = elem;
                 continue;
