@@ -10,8 +10,8 @@ public class LocalizeUtil {
 
     public static String[] getCandidatePaths(String path, Locale locale) {
         int dotIndex = path.lastIndexOf(".");
-        String name = path.substring(0, dotIndex);
-        String extension = path.substring(dotIndex);
+        String name = dotIndex > 0 ? path.substring(0, dotIndex) : path;
+        String extension = dotIndex > 0 ? path.substring(dotIndex) : StringUtils.EMPTY;
         List<String> candidatePathList = new ArrayList<>();
         if (!StringUtils.isEmpty(locale.getCountry())) {
             candidatePathList.add(name + '_' + locale.toString() + extension);
