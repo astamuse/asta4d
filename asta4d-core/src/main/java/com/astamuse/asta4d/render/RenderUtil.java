@@ -1,19 +1,30 @@
 package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import org.jsoup.nodes.Attribute;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.i18n.InvalidMessageException;
+import com.astamuse.asta4d.i18n.MessagesUtil;
+import com.astamuse.asta4d.i18n.ResourceBundleManager;
 import com.astamuse.asta4d.render.concurrent.ConcurrentRenderHelper;
 import com.astamuse.asta4d.render.concurrent.FutureRendererHolder;
 import com.astamuse.asta4d.render.transformer.Transformer;
@@ -23,6 +34,7 @@ import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.LocalizeUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 /**
@@ -34,6 +46,8 @@ import com.astamuse.asta4d.util.SelectorUtil;
  * 
  */
 public class RenderUtil {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(RenderUtil.class);
 
     /**
      * Find out all the snippet in the passed Document and execute them. The
@@ -316,4 +330,60 @@ public class RenderUtil {
 
     }
 
+    public final static void applyMessages(Element target) throws InvalidMessageException {
+        ResourceBundleManager rbManager = Context.getCurrentThreadContext().getConfiguration().getResourceBundleManager();
+        String selector = SelectorUtil.tag(ExtNodeConstants.MSG_NODE_TAG);
+        List<Element> msgElems = target.select(selector);
+        for (Element msgElem : msgElems) {
+            Attributes attributes = msgElem.attributes();
+            if (!attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_KEY)) {
+                throw new InvalidMessageException(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
+            }
+            String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
+            String localeStr = null;
+            if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)) {
+                localeStr = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE);
+            }
+            Map<String, String> paramMap = getMessageParams(attributes);
+            List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            String text;
+            Node node = null;
+            try {
+                text = rbManager.getString(LocalizeUtil.getLocale(localeStr), key, paramMap, externalizeParamKeys);
+            } catch (InvalidMessageException e) {
+                LOGGER.warn("failed to get the message. key=" + key, e);
+                text = '!' + key + '!';
+            }
+            if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {
+                node = ElementUtil.text(text.substring(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX.length()));
+            } else if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX)) {
+                node = ElementUtil.parseAsSingle(text.substring(ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX.length()));
+            } else {
+                node = ElementUtil.text(text);
+            }
+            msgElem.replaceWith(node);
+        }
+    }
+
+    private static Map<String, String> getMessageParams(Attributes attributes) {
+        List<String> excludeAttrNameList = MessagesUtil.getExcludeAttrNameList();
+        Map<String, String> paramMap = new HashMap<>();
+        for (Attribute attribute : attributes) {
+            String key = attribute.getKey();
+            if (excludeAttrNameList.contains(key)) {
+                continue;
+            }
+            paramMap.put(key, attribute.getValue());
+        }
+        return paramMap;
+    }
+
+    private static List<String> getExternalizeParamKeys(Attributes attributes) {
+        if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE)) {
+            String externalizeParamKeys = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE);
+            return Arrays.asList(externalizeParamKeys.split(","));
+        } else {
+            return Collections.emptyList();
+        }
+    }
 }

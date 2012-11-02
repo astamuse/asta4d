@@ -81,6 +81,7 @@ public class Page {
             }
         });
 
+        RenderUtil.applyMessages(doc);
         RenderUtil.applyClearAction(doc, true);
         out.write(doc.outerHtml().getBytes("utf-8"));
     }

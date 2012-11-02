@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class LocalizeUtil {
@@ -28,5 +29,23 @@ public class LocalizeUtil {
             return str;
         }
         return str + "::" + locale.toLanguageTag();
+    }
+
+    public static Locale getLocale(String localeStr) {
+        if (StringUtils.isEmpty(localeStr)) {
+            return null;
+        }
+        try {
+            Locale locale = LocaleUtils.toLocale(localeStr);
+            if (LocaleUtils.isAvailableLocale(locale)) {
+                return locale;
+            }
+            return null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private LocalizeUtil() {
     }
 }

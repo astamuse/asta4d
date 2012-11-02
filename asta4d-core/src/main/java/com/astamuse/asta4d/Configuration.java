@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutorService;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.i18n.DefaultResourceBundleManager;
+import com.astamuse.asta4d.i18n.ResourceBundleManager;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -31,6 +33,8 @@ public class Configuration {
     private List<PageInterceptor> pageInterceptorList = new ArrayList<>();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
+
+    private ResourceBundleManager resourceBundleManager = new DefaultResourceBundleManager();
 
     private boolean cacheEnable = true;
 
@@ -93,6 +97,14 @@ public class Configuration {
 
     public void setContextDataFinder(ContextDataFinder contextDataFinder) {
         this.contextDataFinder = contextDataFinder;
+    }
+
+    public ResourceBundleManager getResourceBundleManager() {
+        return resourceBundleManager;
+    }
+
+    public void setResourceBundleManager(ResourceBundleManager resourceBundleManager) {
+        this.resourceBundleManager = resourceBundleManager;
     }
 
     public boolean isCacheEnable() {
