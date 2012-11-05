@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
-import com.astamuse.asta4d.web.view.RedirectView;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.response.RedirectActionProvider;
 
 public class FormValidateHandler {
 
@@ -35,7 +35,7 @@ public class FormValidateHandler {
             flashScopeData.put("bloodtype", bloodtype);
             flashScopeData.put("nameErrMsg", nameErrMsg);
             flashScopeData.put("ageErrMsg", ageErrMsg);
-            return new RedirectView("/app/form/input", flashScopeData);
+            return new RedirectActionProvider("/app/form/input", flashScopeData);
         }
     }
 }

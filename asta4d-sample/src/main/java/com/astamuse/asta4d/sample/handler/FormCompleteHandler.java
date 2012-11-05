@@ -3,8 +3,8 @@ package com.astamuse.asta4d.sample.handler;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
-import com.astamuse.asta4d.web.view.RedirectView;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.response.RedirectActionProvider;
 
 public class FormCompleteHandler {
 
@@ -15,7 +15,7 @@ public class FormCompleteHandler {
             flashScopeData.put("name", name);
             flashScopeData.put("age", age);
             flashScopeData.put("bloodtype", bloodtype);
-            return new RedirectView("/app/form/input", flashScopeData);
+            return new RedirectActionProvider("/app/form/input", flashScopeData);
         }
         if (submit != null) {
             System.out.println("[FormCompleteHandler:complete]" + String.format("name=%s, age=%s, bloodtype=%s", name, age, bloodtype));

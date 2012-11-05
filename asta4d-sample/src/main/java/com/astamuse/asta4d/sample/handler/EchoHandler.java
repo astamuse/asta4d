@@ -1,6 +1,6 @@
 package com.astamuse.asta4d.sample.handler;
 
-import com.astamuse.asta4d.web.dispatch.annotation.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 
 public class EchoHandler {
 

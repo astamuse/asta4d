@@ -9,7 +9,7 @@ public class SampleSnippetInterceptor implements SnippetInterceptor {
     @Override
     public boolean beforeProcess(SnippetExecutionHolder executionHolder) throws Exception {
         System.out.println("[SampleSnippetInterceptor:beforeProcess]" + getSnippetNameMethod(executionHolder));
-        return false;
+        return true;
     }
 
     public void afterProcess(SnippetExecutionHolder executionHolder, ExceptionHandler exceptionHandler) {

@@ -3,6 +3,7 @@ package com.astamuse.asta4d.sample.controller;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.POST;
 
 import com.astamuse.asta4d.misc.spring.mvc.controller.GenericControllerBase;
+import com.astamuse.asta4d.sample.forward.LoginFailureDescriptor;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
 import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
 import com.astamuse.asta4d.sample.handler.FormValidateHandler;
@@ -26,7 +27,8 @@ public class SampleController extends GenericControllerBase {
 
         rules.add("/app/embed/main", "/templates/embed/main.html");
 
-        rules.add("/app/handler", "/templates/success.html", LoginHandler.class, EchoHandler.class);
+        rules.add("/app/handler", "/templates/success.html", LoginHandler.class, EchoHandler.class).forward(LoginFailureDescriptor.class,
+                "/templates/error.html");
 
         rules.add("/app/renderertypes", "/templates/renderertypes.html");
         rules.add("/app/passvariables", "/templates/passvariables.html");
@@ -37,5 +39,7 @@ public class SampleController extends GenericControllerBase {
         rules.add("/app/form/input", "/templates/form/input.html");
         rules.add(POST, "/app/form/confirm", FormValidateHandler.class);
         rules.add(POST, "/app/form/complete", FormCompleteHandler.class);
+
+        rules.add("/app/localize", "/templates/localize.html");
     }
 }

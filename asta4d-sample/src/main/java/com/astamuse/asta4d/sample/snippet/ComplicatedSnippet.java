@@ -3,12 +3,14 @@ package com.astamuse.asta4d.sample.snippet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.extnode.ClearNode;
 import com.astamuse.asta4d.extnode.EmbedNode;
@@ -80,6 +82,19 @@ public class ComplicatedSnippet {
 
     public Renderer specificScope(@ContextData(scope = WebApplicationContext.SCOPE_QUERYPARAM) String var) {
         return Renderer.create("dd", var == null ? "" : var);
+    }
+
+    public Renderer setWeatherreportParam() {
+        Renderer render = new GoThroughRenderer();
+        Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
+        if (locale.equals(Locale.JAPANESE) || locale.equals(Locale.JAPAN)) {
+            render.add("afd|msg#weatherreport1", "p0", "晴れ");
+        } else {
+            render.add("afd|msg#weatherreport1", "p0", "sunny");
+        }
+        render.add("afd|msg#weatherreport2", "p0", "cloudy");
+        render.add("afd|msg#weatherreport3", "p0", "rain");
+        return render;
     }
 
     private Element createElement() {
