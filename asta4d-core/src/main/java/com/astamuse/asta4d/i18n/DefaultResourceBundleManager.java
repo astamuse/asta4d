@@ -1,6 +1,7 @@
 package com.astamuse.asta4d.i18n;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +30,8 @@ public class DefaultResourceBundleManager implements ResourceBundleManager {
     }
 
     @Override
-    public void setResourceNames(List<String> resourceNames) {
-        this.resourceNames = Collections.unmodifiableList(resourceNames);
+    public void setResourceNames(String... resourceNames) {
+        this.resourceNames = Collections.unmodifiableList(Arrays.asList(resourceNames));
     }
 
     @Override
