@@ -10,7 +10,7 @@ import org.springframework.web.servlet.View;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateException;
-import com.astamuse.asta4d.web.dispatch.response.Asta4DPageProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
 public class SpringWebPageView implements View {
 
@@ -32,7 +32,7 @@ public class SpringWebPageView implements View {
         for (Entry<String, ?> entry : model.entrySet()) {
             context.setData(entry.getKey(), entry.getValue());
         }
-        templateProvider.produce(response);
+        // templateProvider.produce(response);
     }
 
 }

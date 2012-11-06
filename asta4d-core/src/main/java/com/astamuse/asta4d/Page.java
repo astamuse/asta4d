@@ -16,7 +16,6 @@ import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
-import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateResolver;
 
 public class Page {
@@ -62,15 +61,18 @@ public class Page {
     private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper.buildList(Context
             .getCurrentThreadContext().getConfiguration().getPageInterceptorList());
 
-    protected Template template;
+    private Template template;
 
-    public Page(String path) throws TemplateException {
+    private Document renderedDocument;
+
+    public Page(String path) throws Exception {
         Configuration conf = Context.getCurrentThreadContext().getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
         template = templateResolver.findTemplate(path);
+        renderedDocument = renderTemplate(template);
     }
 
-    public void output(OutputStream out) throws Exception {
+    protected Document renderTemplate(Template template) throws Exception {
         Document doc = template.getDocumentClone();
 
         InterceptorUtil.executeWithInterceptors(doc, WrapperPageInterceptorList, new Executor<Document>() {
@@ -83,7 +85,15 @@ public class Page {
 
         RenderUtil.applyMessages(doc);
         RenderUtil.applyClearAction(doc, true);
-        out.write(doc.outerHtml().getBytes("utf-8"));
+        return doc;
+    }
+
+    public Document getRenderedDocument() {
+        return renderedDocument;
+    }
+
+    public void output(OutputStream out) throws Exception {
+        out.write(renderedDocument.outerHtml().getBytes("utf-8"));
     }
 
     public String output() {

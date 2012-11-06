@@ -4,7 +4,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import com.astamuse.asta4d.Page;
-import com.astamuse.asta4d.template.TemplateException;
 
 public class WebPage extends Page {
 
@@ -12,9 +11,9 @@ public class WebPage extends Page {
 
     protected String contentType;
 
-    public WebPage(String path) throws TemplateException {
+    public WebPage(String path) throws Exception {
         super(path);
-        Document doc = template.getDocumentClone();
+        Document doc = getRenderedDocument();
         Elements elems = doc.select("meta[http-equiv=Content-Type]");
         if (elems.size() == 0) {
             this.contentType = DEFAULT_CONTENT_TYPE;

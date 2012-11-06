@@ -12,7 +12,7 @@ public class RedirectUtil {
     public static final String KEY_FLASH_SCOPE_ID = "flash_scope_id";
 
     public static String setFlashScopeData(String url, Map<String, Object> flashScopeData) {
-        if (flashScopeData.isEmpty()) {
+        if (flashScopeData == null || flashScopeData.isEmpty()) {
             return url;
         }
         String flashScopeId = IdGenerator.createId();

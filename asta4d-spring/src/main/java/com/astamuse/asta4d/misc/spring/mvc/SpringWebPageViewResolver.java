@@ -6,7 +6,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 import com.astamuse.asta4d.template.TemplateException;
-import com.astamuse.asta4d.web.dispatch.response.Asta4DPageProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
 public class SpringWebPageViewResolver implements ViewResolver {
 

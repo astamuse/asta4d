@@ -401,9 +401,14 @@ public class InjectUtil {
 
     private final static ContextData findAnnotation(Annotation[] annotations) {
         ContextData cd = null;
+        Class<?> cls;
         for (Annotation annotation : annotations) {
-            if (annotation.annotationType().equals(ContextData.class)) {
+            cls = annotation.annotationType();
+            if (cls.equals(ContextData.class)) {
                 cd = (ContextData) annotation;
+                break;
+            } else if (cls.isAnnotationPresent(ContextData.class)) {
+                cd = cls.getAnnotation(ContextData.class);
                 break;
             }
         }

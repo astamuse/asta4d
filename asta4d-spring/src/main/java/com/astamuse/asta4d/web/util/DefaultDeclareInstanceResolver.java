@@ -1,13 +1,11 @@
-package com.astamuse.asta4d.web.dispatch.mapping.ext.builtin;
+package com.astamuse.asta4d.web.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.web.dispatch.mapping.ext.RequestHandlerResolver;
+public class DefaultDeclareInstanceResolver implements DeclareInstanceResolver {
 
-public class DefaultHandlerResolver implements RequestHandlerResolver {
-
-    private final static Logger logger = LoggerFactory.getLogger(DefaultHandlerResolver.class);
+    private final static Logger logger = LoggerFactory.getLogger(DefaultDeclareInstanceResolver.class);
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -22,7 +20,7 @@ public class DefaultHandlerResolver implements RequestHandlerResolver {
                 return declaration;
             }
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            logger.warn("Can not create request handler instance for:" + declaration.toString(), e);
+            logger.warn("Can not create instance for:" + declaration.toString(), e);
             return null;
         }
     }

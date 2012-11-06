@@ -15,17 +15,13 @@ import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.GenericInterceptor;
 import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
 import com.astamuse.asta4d.template.TemplateException;
-import com.astamuse.asta4d.web.dispatch.interceptor.ForwardDescriptorHolder;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
-import com.astamuse.asta4d.web.dispatch.mapping.DefaultForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.request.RequestHandlerAdapter;
-import com.astamuse.asta4d.web.dispatch.response.Asta4DPageProvider;
-import com.astamuse.asta4d.web.dispatch.response.ContentProvider;
-import com.astamuse.asta4d.web.dispatch.response.forward.ContentProviderForwardDescriptor;
-import com.astamuse.asta4d.web.dispatch.response.forward.ForwardDescriptor;
-import com.astamuse.asta4d.web.dispatch.response.forward.ForwardableException;
+import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
+import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
+import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
@@ -33,11 +29,11 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
      * @see com.astamuse.asta4d.web.dispatch.RequestHandlerInvoker#invoke(com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule)
      */
     @Override
-    public ForwardDescriptor invoke(UrlMappingRule rule) throws Exception {
+    public Object invoke(UrlMappingRule rule) throws Exception {
         RequestHandlerInvokeExecutor executor = new RequestHandlerInvokeExecutor(rule.getHandlerList());
-        ForwardDescriptorHolder holder = new ForwardDescriptorHolder();
+        RequestHandlerResultHolder holder = new RequestHandlerResultHolder();
         InterceptorUtil.executeWithInterceptors(holder, buildInterceptorList(rule), executor);
-        return holder.getForwardDescriptor();
+        return holder.getResult();
     }
 
     /*
@@ -59,7 +55,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
         return list;
     }
 
-    private static class RequestHandlerInterceptorWrapper implements GenericInterceptor<ForwardDescriptorHolder> {
+    private static class RequestHandlerInterceptorWrapper implements GenericInterceptor<RequestHandlerResultHolder> {
 
         private final UrlMappingRule rule;
         private final RequestHandlerInterceptor interceptor;
@@ -70,22 +66,20 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
         }
 
         @Override
-        public boolean beforeProcess(ForwardDescriptorHolder holder) throws Exception {
+        public boolean beforeProcess(RequestHandlerResultHolder holder) throws Exception {
             interceptor.preHandle(rule, holder);
-            return holder.getForwardDescriptor() != null;
+            return holder.getResult() != null;
         }
 
         @Override
-        public void afterProcess(ForwardDescriptorHolder holder, ExceptionHandler exceptionHandler) {
+        public void afterProcess(RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
             interceptor.postHandle(rule, holder, exceptionHandler);
         }
     }
 
-    private static class RequestHandlerInvokeExecutor implements Executor<ForwardDescriptorHolder> {
+    private static class RequestHandlerInvokeExecutor implements Executor<RequestHandlerResultHolder> {
 
         private final static Logger logger = LoggerFactory.getLogger(RequestHandlerInvokeExecutor.class);
-
-        private final static DefaultForwardDescriptor defaultFd = new DefaultForwardDescriptor();
 
         private final List<Object> requestHandlerList;
 
@@ -94,33 +88,26 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
         }
 
         @Override
-        public void execute(ForwardDescriptorHolder holder) throws Exception {
-            ForwardDescriptor fd;
+        public void execute(RequestHandlerResultHolder holder) throws Exception {
+            Object requestHandlerResult = null;
             for (Object handler : requestHandlerList) {
 
-                if (handler instanceof RequestHandlerAdapter) {
-                    fd = invokeHandler(((RequestHandlerAdapter) handler).asRequestHandler());
+                if (handler instanceof DeclareInstanceAdapter) {
+                    requestHandlerResult = invokeHandler(((DeclareInstanceAdapter) handler).asTargetInstance());
                 } else {
-                    fd = invokeHandler(handler);
+                    requestHandlerResult = invokeHandler(handler);
                 }
-                if (fd != null) {
-                    holder.setForwardDescriptor(fd);
+                if (requestHandlerResult != null) {
+                    holder.setResult(requestHandlerResult);
                     break;
                 }
             }
-            holder.setForwardDescriptor(defaultFd);
+            holder.setResult(requestHandlerResult);
         }
 
-        private ForwardDescriptor invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException,
-                DataOperationException, TemplateException {
-            Method[] methodList = handler.getClass().getMethods();
-            Method m = null;
-            for (Method method : methodList) {
-                if (method.isAnnotationPresent(RequestHandler.class)) {
-                    m = method;
-                    break;
-                }
-            }
+        private Object invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, DataOperationException,
+                TemplateException {
+            Method m = AnnotationMethodHelper.findMethod(handler, RequestHandler.class);
 
             if (m == null) {
                 // TODO maybe we can return a null?
@@ -138,18 +125,15 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
                 result = m.invoke(handler, params);
                 if (result == null) {
                     return null;
-                } else if (result instanceof ForwardDescriptor) {
-                    return (ForwardDescriptor) result;
                 } else if (result instanceof String) {
-                    return new ContentProviderForwardDescriptor(new Asta4DPageProvider(result.toString()));
-                } else if (result instanceof ContentProvider) {
-                    return new ContentProviderForwardDescriptor((ContentProvider) result);
+                    // TODO return string directly?
+                    return new Asta4DPageProvider(result.toString());
+                } else {
+                    return result;
                 }
-                throw new UnsupportedOperationException("Result Type:" + result.getClass().getName());
+                // throw new UnsupportedOperationException("Result Type:" +
+                // result.getClass().getName());
             } catch (InvocationTargetException e) {
-                if (e.getTargetException() instanceof ForwardableException) {
-                    throw (ForwardableException) e.getTargetException();
-                }
                 throw e;
             }
 

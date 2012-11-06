@@ -8,14 +8,9 @@ import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
-import com.astamuse.asta4d.web.dispatch.response.forward.ForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
 
 public class UrlMappingRule {
-
-    public enum ForwardActionType {
-        // TODO to support applying rule again feature
-        Default, Redirect, ApplyRule
-    }
 
     private int seq;
 
@@ -31,9 +26,9 @@ public class UrlMappingRule {
 
     private List<String> attributeList;
 
-    private Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap;
+    private List<ResultDescriptor> contentProviderMap;
 
-    private ForwardActionType forwardActionType;
+    private ContentWriter contentWriter;
 
     private int priority;
 
@@ -41,7 +36,7 @@ public class UrlMappingRule {
 
     public UrlMappingRule(int seq, HttpMethod method, String sourcePath, List<Object> handlerList,
             List<RequestHandlerInterceptor> interceptorList, Map<String, Object> extraVarMap, List<String> attributeList,
-            Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap, ForwardActionType forwardActionType, int priority) {
+            List<ResultDescriptor> contentProviderMap, ContentWriter contentWriter, int priority) {
         super();
         this.seq = seq;
         this.method = method;
@@ -50,8 +45,8 @@ public class UrlMappingRule {
         this.interceptorList = interceptorList;
         this.extraVarMap = extraVarMap;
         this.attributeList = attributeList;
-        this.forwardDescriptorMap = forwardDescriptorMap;
-        this.forwardActionType = forwardActionType;
+        this.contentProviderMap = contentProviderMap;
+        this.contentWriter = contentWriter;
         this.priority = priority;
     }
 
@@ -61,8 +56,7 @@ public class UrlMappingRule {
         this.interceptorList = new ArrayList<>();
         this.extraVarMap = new HashMap<>();
         this.attributeList = new ArrayList<>();
-        this.forwardDescriptorMap = new HashMap<>();
-        this.forwardActionType = ForwardActionType.Default;
+        this.contentProviderMap = new ArrayList<>();
     }
 
     public int getSeq() {
@@ -129,20 +123,20 @@ public class UrlMappingRule {
         this.priority = priority;
     }
 
-    public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptorMap() {
-        return forwardDescriptorMap;
+    public List<ResultDescriptor> getContentProviderMap() {
+        return contentProviderMap;
     }
 
-    public void setForwardDescriptorMap(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap) {
-        this.forwardDescriptorMap = forwardDescriptorMap;
+    public void setContentProviderMap(List<ResultDescriptor> contentProviderMap) {
+        this.contentProviderMap = contentProviderMap;
     }
 
-    public ForwardActionType getForwardActionType() {
-        return forwardActionType;
+    public ContentWriter getContentWriter() {
+        return contentWriter;
     }
 
-    public void setForwardActionType(ForwardActionType forwardActionType) {
-        this.forwardActionType = forwardActionType;
+    public void setContentWriter(ContentWriter contentWriter) {
+        this.contentWriter = contentWriter;
     }
 
     public UrlMappingRule asUnmodifiable() {
@@ -151,6 +145,13 @@ public class UrlMappingRule {
             unModifiableDelegator = new UnModifiableUrlMappingRule(this);
         }
         return unModifiableDelegator;
+    }
+
+    @Override
+    public String toString() {
+        return "UrlMappingRule [seq=" + seq + ", method=" + method + ", sourcePath=" + sourcePath + ", handlerList=" + handlerList +
+                ", interceptorList=" + interceptorList + ", extraVarMap=" + extraVarMap + ", attributeList=" + attributeList +
+                ", contentProviderMap=" + contentProviderMap + ", contentWriter=" + contentWriter + ", priority=" + priority + "]";
     }
 
     private static class UnModifiableUrlMappingRule extends UrlMappingRule {
@@ -224,22 +225,26 @@ public class UrlMappingRule {
             throw new UnsupportedOperationException();
         }
 
-        public Map<Class<? extends ForwardDescriptor>, String> getForwardDescriptorMap() {
-            return Collections.unmodifiableMap(rule.getForwardDescriptorMap());
+        public List<ResultDescriptor> getContentProviderMap() {
+            return Collections.unmodifiableList(rule.getContentProviderMap());
         }
 
-        public void setForwardDescriptorMap(Map<Class<? extends ForwardDescriptor>, String> forwardDescriptorMap) {
+        public void setContentProviderMap(List<ResultDescriptor> contentProviderMap) {
             throw new UnsupportedOperationException();
         }
 
-        public ForwardActionType getForwardActionType() {
-            return rule.getForwardActionType();
+        public ContentWriter getContentWriter() {
+            return rule.getContentWriter();
         }
 
-        public void setForwardActionType(ForwardActionType forwardActionType) {
+        public void setContentWriter(ContentWriter contentWriter) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public String toString() {
+            return "READONLY:" + rule.toString();
+        }
     }
 
 }

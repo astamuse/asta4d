@@ -7,25 +7,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
-import com.astamuse.asta4d.web.dispatch.mapping.DefaultForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.response.forward.ForwardDescriptor;
+import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
+import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
 public class HandyUrlMappingRule extends UrlMappingRule {
+
+    public final static String REDIRECT_ATTR = HandyUrlMappingRule.class.getName() + "REDIRECT_ATTR";
 
     public final static int DEFAULT_PRIORITY = 0;
 
     private final static AtomicInteger Sequencer = new AtomicInteger();
 
-    private UrlMappingRuleHelper helper;
-
-    public HandyUrlMappingRule(UrlMappingRuleHelper helper, HttpMethod method, String sourcePath, String defaultTarget) {
+    public HandyUrlMappingRule(HttpMethod method, String sourcePath) {
         super();
         this.setSeq(Sequencer.incrementAndGet());
         this.setMethod(method);
         this.setSourcePath(sourcePath);
-        this.forward(DefaultForwardDescriptor.class, defaultTarget);
-        this.helper = helper;
     }
 
     public HandyUrlMappingRule method(HttpMethod method) {
@@ -41,7 +40,7 @@ public class HandyUrlMappingRule extends UrlMappingRule {
     public HandyUrlMappingRule handler(Object... handlerList) {
         List<Object> list = this.getHandlerList();
         for (Object handler : handlerList) {
-            list.add(helper.createHandler(handler));
+            list.add(DeclareInstanceUtil.createInstance((handler)));
         }
         return this;
     }
@@ -49,19 +48,22 @@ public class HandyUrlMappingRule extends UrlMappingRule {
     public HandyUrlMappingRule interceptor(Object... interceptorList) {
         List<RequestHandlerInterceptor> list = this.getInterceptorList();
         for (Object interceptor : interceptorList) {
-            list.add((RequestHandlerInterceptor) helper.createHandler(interceptor));
+            list.add((RequestHandlerInterceptor) DeclareInstanceUtil.createInstance(interceptor));
         }
         return this;
     }
 
     public void redirect() {
-        this.setForwardActionType(ForwardActionType.Redirect);
+        this.attribute(REDIRECT_ATTR);
     }
 
-    public HandyUrlMappingRule forward(Class<? extends ForwardDescriptor> forwardDescriptor, String path) {
-        Map<Class<? extends ForwardDescriptor>, String> map = this.getForwardDescriptorMap();
-        map.put(forwardDescriptor, path);
+    public HandyUrlMappingRule forward(Object result, Object contentProvider) {
+        this.getContentProviderMap().add(new ResultDescriptor(result, DeclareInstanceUtil.createInstance(contentProvider)));
         return this;
+    }
+
+    public HandyUrlMappingRule forward(Object result, String targetPath) {
+        return this.forward(result, new Asta4DPageProvider(targetPath));
     }
 
     public HandyUrlMappingRule var(String key, Object value) {
