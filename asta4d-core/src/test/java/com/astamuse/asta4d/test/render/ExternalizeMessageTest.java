@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.test.render;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.testng.annotations.Test;
@@ -79,7 +81,9 @@ public class ExternalizeMessageTest extends BaseTest {
     private static void setUpResourceBundleManager(String fileName, PlaceholderFormatter formatter) {
         Configuration configuration = Context.getCurrentThreadContext().getConfiguration();
         ResourceBundleManager manager = configuration.getResourceBundleManager();
-        manager.setResourceName("com.astamuse.asta4d.test.render.messages." + fileName);
+        List<String> resourceNames = new ArrayList<>();
+        resourceNames.add("com.astamuse.asta4d.test.render.messages." + fileName);
+        manager.setResourceNames(resourceNames);
         manager.setFormatter(formatter);
     }
 }

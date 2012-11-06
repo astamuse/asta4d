@@ -1,5 +1,6 @@
 package com.astamuse.asta4d.i18n;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,13 +16,21 @@ import com.astamuse.asta4d.Context;
 
 public class DefaultResourceBundleManager implements ResourceBundleManager {
 
-    private String resourceName = "messages";
+    private static final String RESOURCE_NAME = "messages";
+
+    private List<String> resourceNames;
 
     private PlaceholderFormatter formatter = new SymbolPlaceholderFormatter();
 
+    public DefaultResourceBundleManager() {
+        List<String> resourceNames = new ArrayList<>();
+        resourceNames.add(RESOURCE_NAME);
+        this.resourceNames = Collections.unmodifiableList(resourceNames);
+    }
+
     @Override
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
+    public void setResourceNames(List<String> resourceNames) {
+        this.resourceNames = Collections.unmodifiableList(resourceNames);
     }
 
     @Override
@@ -32,12 +41,18 @@ public class DefaultResourceBundleManager implements ResourceBundleManager {
     @Override
     public String getString(Locale locale, String key, Map<String, String> paramMap, List<String> externalizeParamKeys)
             throws InvalidMessageException {
-        try {
-            ResourceBundle resourceBundle = getResourceBundle(locale);
-            return formatter.format(resourceBundle.getString(key), getParamStrings(resourceBundle, key, paramMap, externalizeParamKeys));
-        } catch (Exception e) {
-            throw new InvalidMessageException(e);
+        InvalidMessageException ex = null;
+        for (String resourceName : resourceNames) {
+            try {
+                ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
+                return formatter
+                        .format(resourceBundle.getString(key), getParamStrings(resourceBundle, key, paramMap, externalizeParamKeys));
+            } catch (InvalidMessageException e) {
+                ex = e;
+                continue;
+            }
         }
+        throw ex;
     }
 
     private Map<String, Object> getParamStrings(ResourceBundle resourceBundle, String key, Map<String, String> paramMap,
@@ -61,7 +76,7 @@ public class DefaultResourceBundleManager implements ResourceBundleManager {
         return messageResolvedMap;
     }
 
-    private ResourceBundle getResourceBundle(Locale locale) {
+    private ResourceBundle getResourceBundle(String resourceName, Locale locale) {
         if (locale != null || LocaleUtils.isAvailableLocale(locale)) {
             return ResourceBundle.getBundle(resourceName, locale, MessagesUtil.getDefaultLocaleExcludeControl());
         }

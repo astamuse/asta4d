@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface ResourceBundleManager {
 
-    void setResourceName(String resourceName);
+    void setResourceNames(List<String> resourceNames);
 
     void setFormatter(PlaceholderFormatter formatter);
 
