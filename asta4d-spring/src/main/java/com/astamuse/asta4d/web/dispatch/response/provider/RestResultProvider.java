@@ -1,13 +1,19 @@
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
+import java.net.HttpURLConnection;
+
 import com.astamuse.asta4d.web.dispatch.annotation.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.annotation.RequestHandlerResult;
-import com.astamuse.asta4d.web.dispatch.response.RestResultWriter;
 
 public class RestResultProvider {
 
-    @ContentProvider(writer = RestResultWriter.class)
+    @ContentProvider
     public RestResult response(@RequestHandlerResult RestResult result) {
-        return result;
+        if (result == null) {
+            return new RestResult(HttpURLConnection.HTTP_OK);
+        } else {
+            return result;
+        }
+
     }
 }

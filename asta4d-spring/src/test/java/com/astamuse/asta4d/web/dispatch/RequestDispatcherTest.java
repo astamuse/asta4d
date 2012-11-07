@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 
 import javax.servlet.ServletOutputStream;
@@ -23,11 +22,11 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.misc.spring.mvc.controller.AntPathRuleExtractor;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.WebPage;
 import com.astamuse.asta4d.web.dispatch.annotation.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
@@ -35,11 +34,8 @@ import com.astamuse.asta4d.web.dispatch.response.Asta4DPageWriter;
 import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
 import com.astamuse.asta4d.web.dispatch.response.JsonWriter;
 import com.astamuse.asta4d.web.dispatch.response.RedirectActionWriter;
-import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.provider.RestResult;
-import com.astamuse.asta4d.web.dispatch.response.provider.RestResultProvider;
-import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
 
 public class RequestDispatcherTest {
 
@@ -86,10 +82,25 @@ public class RequestDispatcherTest {
     }
 
     private void initTestRules(UrlMappingRuleHelper rules) {
-        rules.add("/index", "/index.html");
-        rules.add("/go-redirect", "/go-redirect/ok");
-        rules.add(HttpMethod.DELETE, "/restapi", RestResultProvider.class).handler(TestRestApiHandler.class);
-        rules.add("/getjson", TestJsonQuery.class);
+
+        rules.addGlobalForward(NullPointerException.class, "/NullPointerException", 501);
+        rules.addGlobalForward(Exception.class, "/Exception", 500);
+
+        //@formatter:off
+        
+        rules.add("/index").forward("/index.html")
+                           .forward(Throwable.class, "/error.html", 500);
+
+        rules.add("/go-redirect").redirect("/go-redirect/ok");
+        
+        rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
+        
+        rules.add("/getjson").json(TestJsonQuery.class);
+        rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
+        rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
+        
+        rules.add("/**/*").forward("/notfound", 404);
+      //@formatter:on
     }
 
     @DataProvider(name = "data")
@@ -102,13 +113,21 @@ public class RequestDispatcherTest {
                 { new VoidHandler(), new RequestHandlerInterceptor[] { new ViewChangeIntercepter() }, "/test4.html" },
                 { new ThrowDescriptorHandler(), new RequestHandlerInterceptor[] { new CancelExceptionIntercepter() }, null } };
                 */
-        return new Object[][] { { "get", "/index", 0, new Asta4DPageProvider("/index.html"), new Asta4DPageWriter() },
-                { "get", "/go-redirect", 0, new RedirectTargetProvider("/go-redirect/ok"), new RedirectActionWriter() },
-                { "delete", "/restapi", 401, null, null }, { "get", "/getjson", 0, new TestJsonQuery(), new JsonWriter() } };
+        //@formatter:off
+        return new Object[][] { 
+                { "get", "/index", 0, new WebPage("/index.html"), new Asta4DPageWriter() },
+                { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
+                { "delete", "/restapi", 401, null, null }, 
+                { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
+                { "get", "/nofile", 404, new WebPage("/notfound"), new Asta4DPageWriter() },
+                { "get", "/thrownep", 501, new WebPage("/NullPointerException"), new Asta4DPageWriter() },
+                { "get", "/throwexception", 500, new WebPage("/Exception"), new Asta4DPageWriter() },
+                };
+        //@formatter:on
     }
 
     @Test(dataProvider = "data")
-    public void execute(String method, String url, int status, Object expectedResult, ContentWriter cw) throws Exception {
+    public void execute(String method, String url, int status, Object expectedContent, ContentWriter cw) throws Exception {
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
@@ -136,7 +155,7 @@ public class RequestDispatcherTest {
             verify(response).setStatus(status);
         }
 
-        if (expectedResult == null) {
+        if (expectedContent == null) {
             return;
         }
 
@@ -148,21 +167,12 @@ public class RequestDispatcherTest {
                 expectedBos.write(b);
             }
         });
-        if (expectedResult instanceof RedirectTargetProvider) {
+        if (expectedContent instanceof RedirectDescriptor) {
             // how test?
         } else {
+            cw.writeResponse(expectedResponse, expectedContent);
 
-            Method m = AnnotationMethodHelper.findMethod(expectedResult, ContentProvider.class);
-            Object[] params = InjectUtil.getMethodInjectParams(m);
-            if (params == null) {
-                params = new Object[0];
-            }
-            Object content;
-            content = m.invoke(expectedResult, params);
-
-            cw.writeResponse(expectedResponse, content);
-
-            Assert.assertEquals(bos.toByteArray(), expectedBos.toByteArray());
+            Assert.assertEquals(new String(bos.toByteArray()), new String(expectedBos.toByteArray()));
 
         }
     }
@@ -178,8 +188,8 @@ public class RequestDispatcherTest {
     public static class TestJsonObject {
         private int value = 0;
 
-        public TestJsonObject() {
-
+        public TestJsonObject(int value) {
+            this.value = value;
         }
 
         public int getValue() {
@@ -193,11 +203,24 @@ public class RequestDispatcherTest {
 
     public static class TestJsonQuery {
 
-        @ContentProvider(writer = JsonWriter.class)
+        @ContentProvider
         public TestJsonObject query() {
-            TestJsonObject obj = new TestJsonObject();
-            obj.setValue(123);
+            TestJsonObject obj = new TestJsonObject(123);
             return obj;
+        }
+    }
+
+    public static class ThrowNEPHandler {
+        @RequestHandler
+        public Object foo() {
+            throw new NullPointerException();
+        }
+    }
+
+    public static class ThrowExceptionHandler {
+        @RequestHandler
+        public Object foo() {
+            throw new RuntimeException();
         }
     }
 

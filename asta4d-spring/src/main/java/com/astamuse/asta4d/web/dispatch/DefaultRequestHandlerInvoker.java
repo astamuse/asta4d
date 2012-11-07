@@ -20,8 +20,8 @@ import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
-import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
@@ -91,12 +91,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
         public void execute(RequestHandlerResultHolder holder) throws Exception {
             Object requestHandlerResult = null;
             for (Object handler : requestHandlerList) {
-
-                if (handler instanceof DeclareInstanceAdapter) {
-                    requestHandlerResult = invokeHandler(((DeclareInstanceAdapter) handler).asTargetInstance());
-                } else {
-                    requestHandlerResult = invokeHandler(handler);
-                }
+                requestHandlerResult = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);
                 if (requestHandlerResult != null) {
                     holder.setResult(requestHandlerResult);
                     break;
@@ -126,8 +121,15 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
                 if (result == null) {
                     return null;
                 } else if (result instanceof String) {
-                    // TODO return string directly?
-                    return new Asta4DPageProvider(result.toString());
+                    String s = result.toString();
+                    String redirectPrefix = "redirect:";
+                    if (s.toLowerCase().startsWith(redirectPrefix)) {
+                        s = s.substring(redirectPrefix.length());
+                        return new RedirectTargetProvider(s);
+                    } else {
+                        return new Asta4DPageProvider(s);
+                    }
+
                 } else {
                     return result;
                 }

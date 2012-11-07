@@ -4,12 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
+import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
 public class UrlMappingRuleHelper {
+
+    public final static int DEFAULT_PRIORITY = 0;
+
+    private final static AtomicInteger Sequencer = new AtomicInteger();
 
     private final static class InterceptorHolder {
         String attribute;
@@ -23,9 +30,26 @@ public class UrlMappingRuleHelper {
 
     }
 
+    private final static class GlobalForwardHolder {
+        Object result;
+        String targetPath;
+        Integer status;
+        boolean isRedirect;
+
+        public GlobalForwardHolder(Object result, String targetPath, Integer status, boolean isRedirect) {
+            super();
+            this.result = result;
+            this.targetPath = targetPath;
+            this.status = status;
+            this.isRedirect = isRedirect;
+        }
+    }
+
     private HttpMethod defaultMethod = HttpMethod.GET;
 
     private List<InterceptorHolder> interceptorHolderList = new ArrayList<>();
+
+    private List<GlobalForwardHolder> forwardHolderList = new ArrayList<>();
 
     private List<UrlMappingRule> ruleList = new ArrayList<>();
 
@@ -33,16 +57,28 @@ public class UrlMappingRuleHelper {
         this.defaultMethod = defaultMethod;
     }
 
-    public void addRequestHandlerInterceptor(RequestHandlerInterceptor... interceptorList) {
-        for (RequestHandlerInterceptor interceptor : interceptorList) {
-            interceptorHolderList.add(new InterceptorHolder(null, interceptor));
+    public void addRequestHandlerInterceptor(String attribute, Object... interceptorList) {
+        RequestHandlerInterceptor interceptor;
+        for (Object obj : interceptorList) {
+            interceptor = (RequestHandlerInterceptor) DeclareInstanceUtil.createInstance(obj);
+            interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
         }
     }
 
-    public void addRequestHandlerInterceptor(String attribute, RequestHandlerInterceptor... interceptorList) {
-        for (RequestHandlerInterceptor interceptor : interceptorList) {
-            interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
-        }
+    public void addRequestHandlerInterceptor(Object... interceptorList) {
+        addRequestHandlerInterceptor(null, interceptorList);
+    }
+
+    public void addGlobalForward(Object result, String targetPath, int status) {
+        forwardHolderList.add(new GlobalForwardHolder(result, targetPath, status, false));
+    }
+
+    public void addGlobalForward(Object result, String targetPath) {
+        forwardHolderList.add(new GlobalForwardHolder(result, targetPath, null, false));
+    }
+
+    public void addGlobalRedirect(Object result, String targetPath) {
+        forwardHolderList.add(new GlobalForwardHolder(result, targetPath, null, true));
     }
 
     public List<UrlMappingRule> getArrangedRuleList() {
@@ -72,68 +108,84 @@ public class UrlMappingRuleHelper {
         */
 
         // set interceptor
-        List<String> attrList;
         List<RequestHandlerInterceptor> interceptorList;
         for (UrlMappingRule rule : sortedRuleList) {
             interceptorList = new ArrayList<>();
-            attrList = rule.getAttributeList();
             for (InterceptorHolder iHolder : interceptorHolderList) {
                 if (iHolder.attribute == null) {
                     interceptorList.add(iHolder.interceptor);
-                } else if (attrList.contains(iHolder.attribute)) {
+                } else if (rule.hasAttribute(iHolder.attribute)) {
                     interceptorList.add(iHolder.interceptor);
                 }
             }
             rule.setInterceptorList(interceptorList);
         }
 
+        // set global result forward
+        for (UrlMappingRule rule : sortedRuleList) {
+            // add global forward
+            HandyRuleWithForward hf = new HandyRuleWithForward(rule);
+            for (GlobalForwardHolder forwardHolder : forwardHolderList) {
+                if (forwardHolder.isRedirect) {
+                    hf.redirect(forwardHolder.result, forwardHolder.targetPath);
+                } else if (forwardHolder.status == null) {
+                    hf.forward(forwardHolder.result, forwardHolder.targetPath);
+                } else {
+                    hf.forward(forwardHolder.result, forwardHolder.targetPath, forwardHolder.status);
+                }
+            }
+
+            // move the default forward rule to the last of the result list
+            List<ResultDescriptor> resultList = rule.getContentProviderMap();
+            int size = resultList.size();
+            ResultDescriptor result, defaultResult = null;
+            for (int i = size - 1; i >= 0; i--) {
+                result = resultList.get(i);
+                if (result.getResultTypeIdentifier() == null && result.getResultInstanceIdentifier() == null) {
+                    resultList.remove(i);
+                    defaultResult = result;
+                    break;
+                }
+            }
+            if (defaultResult != null) {
+                resultList.add(defaultResult);
+            }
+            rule.setContentProviderMap(resultList);
+        }// sortedRuleList loop
+
         return sortedRuleList;
     }
 
-    private HandyUrlMappingRule createDefaultRule(HttpMethod method, String sourcePath) {
-        HandyUrlMappingRule rule = new HandyUrlMappingRule(method, sourcePath);
+    private UrlMappingRule createDefaultRule(HttpMethod method, String sourcePath) {
+        UrlMappingRule rule = new UrlMappingRule();
         ruleList.add(rule);
-        return rule;
-    }
 
-    public HandyUrlMappingRule add(HttpMethod method, String sourcePath, Object contentProvider, Object... handlerList) {
-        HandyUrlMappingRule rule = createDefaultRule(method, sourcePath);
-        if (contentProvider != null) {
-            rule.forward(null, contentProvider);
-        }
-        rule.handler(handlerList);
-        return rule;
-    }
-
-    public HandyUrlMappingRule add(HttpMethod method, String sourcePath, String targetPath, Object... handlerList) {
-        HandyUrlMappingRule rule = createDefaultRule(method, sourcePath);
-        rule.forward(null, targetPath);
-        rule.handler(handlerList);
-        return rule;
-    }
-
-    public HandyUrlMappingRule add(HttpMethod method, String sourcePath, Object contentProvider) {
-        HandyUrlMappingRule rule = createDefaultRule(method, sourcePath);
-        if (contentProvider instanceof String) {
-            rule.forward(null, contentProvider.toString());
-        } else {
-            rule.forward(null, contentProvider);
-        }
+        rule.setMethod(method);
+        rule.setSourcePath(sourcePath);
+        rule.setSeq(Sequencer.incrementAndGet());
+        rule.setPriority(DEFAULT_PRIORITY);
 
         return rule;
-
     }
 
-    public HandyUrlMappingRule add(String sourcePath, Object contentProvider, Object... handlerList) {
-        return add(defaultMethod, sourcePath, contentProvider, handlerList);
+    public HandyRule add(HttpMethod method, String sourcePath) {
+        HandyRule handyRule = new HandyRule(createDefaultRule(method, sourcePath));
+        return handyRule;
     }
 
-    public HandyUrlMappingRule add(String sourcePath, String targetPath, Object... handlerList) {
-        return add(defaultMethod, sourcePath, targetPath, handlerList);
+    public HandyRuleWithAttrOnly add(HttpMethod method, String sourcePath, String targetPath) {
+        UrlMappingRule rule = createDefaultRule(method, sourcePath);
+        HandyRule handyRule = new HandyRule(rule);
+        handyRule.forward(targetPath);
+        return new HandyRuleWithAttrOnly(rule);
     }
 
-    public HandyUrlMappingRule add(String sourcePath, Object contentProvider) {
-        return add(defaultMethod, sourcePath, contentProvider);
+    public HandyRule add(String sourcePath) {
+        return add(defaultMethod, sourcePath);
+    }
+
+    public HandyRuleWithAttrOnly add(String sourcePath, String targetPath) {
+        return add(defaultMethod, sourcePath, targetPath);
     }
 
 }

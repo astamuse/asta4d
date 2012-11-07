@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.web.dispatch.mapping;
 
+import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
+
 public class ResultDescriptor {
 
     private Class<?> resultTypeIdentifier = null;
@@ -8,10 +10,13 @@ public class ResultDescriptor {
 
     private Object contentProvider = null;
 
+    private ContentWriter writer = null;
+
     @SuppressWarnings("rawtypes")
-    public ResultDescriptor(Object resultIdentifier, Object contentProvider) {
+    public ResultDescriptor(Object resultIdentifier, Object contentProvider, ContentWriter writer) {
         super();
         this.contentProvider = contentProvider;
+        this.writer = writer;
         if (resultIdentifier instanceof Class) {
             resultTypeIdentifier = (Class) resultIdentifier;
         } else {
@@ -29,6 +34,10 @@ public class ResultDescriptor {
 
     public Object getContentProvider() {
         return contentProvider;
+    }
+
+    public ContentWriter getWriter() {
+        return writer;
     }
 
 }

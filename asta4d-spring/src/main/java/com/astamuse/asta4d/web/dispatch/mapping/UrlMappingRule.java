@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
-import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
 
 public class UrlMappingRule {
 
@@ -28,15 +27,13 @@ public class UrlMappingRule {
 
     private List<ResultDescriptor> contentProviderMap;
 
-    private ContentWriter contentWriter;
-
     private int priority;
 
     private UrlMappingRule unModifiableDelegator;
 
     public UrlMappingRule(int seq, HttpMethod method, String sourcePath, List<Object> handlerList,
             List<RequestHandlerInterceptor> interceptorList, Map<String, Object> extraVarMap, List<String> attributeList,
-            List<ResultDescriptor> contentProviderMap, ContentWriter contentWriter, int priority) {
+            List<ResultDescriptor> contentProviderMap, int priority) {
         super();
         this.seq = seq;
         this.method = method;
@@ -46,7 +43,6 @@ public class UrlMappingRule {
         this.extraVarMap = extraVarMap;
         this.attributeList = attributeList;
         this.contentProviderMap = contentProviderMap;
-        this.contentWriter = contentWriter;
         this.priority = priority;
     }
 
@@ -107,12 +103,20 @@ public class UrlMappingRule {
         this.extraVarMap = extraVarMap;
     }
 
+    public Object extraVar(String key) {
+        return this.extraVarMap.get(key);
+    }
+
     public List<String> getAttributeList() {
         return attributeList;
     }
 
     public void setAttributeList(List<String> attributeList) {
         this.attributeList = attributeList;
+    }
+
+    public boolean hasAttribute(String attr) {
+        return this.attributeList.contains(attr);
     }
 
     public int getPriority() {
@@ -131,14 +135,6 @@ public class UrlMappingRule {
         this.contentProviderMap = contentProviderMap;
     }
 
-    public ContentWriter getContentWriter() {
-        return contentWriter;
-    }
-
-    public void setContentWriter(ContentWriter contentWriter) {
-        this.contentWriter = contentWriter;
-    }
-
     public UrlMappingRule asUnmodifiable() {
         // It is OK if unModifiableDelegator was initialized by multiple threads
         if (unModifiableDelegator == null) {
@@ -151,7 +147,7 @@ public class UrlMappingRule {
     public String toString() {
         return "UrlMappingRule [seq=" + seq + ", method=" + method + ", sourcePath=" + sourcePath + ", handlerList=" + handlerList +
                 ", interceptorList=" + interceptorList + ", extraVarMap=" + extraVarMap + ", attributeList=" + attributeList +
-                ", contentProviderMap=" + contentProviderMap + ", contentWriter=" + contentWriter + ", priority=" + priority + "]";
+                ", contentProviderMap=" + contentProviderMap + ", priority=" + priority + "]";
     }
 
     private static class UnModifiableUrlMappingRule extends UrlMappingRule {
@@ -209,12 +205,20 @@ public class UrlMappingRule {
             throw new UnsupportedOperationException();
         }
 
+        public Object extraVar(String key) {
+            return rule.extraVar(key);
+        }
+
         public List<String> getAttributeList() {
             return Collections.unmodifiableList(rule.getAttributeList());
         }
 
         public void setAttributeList(List<String> attributeList) {
             throw new UnsupportedOperationException();
+        }
+
+        public boolean hasAttribute(String attr) {
+            return rule.hasAttribute(attr);
         }
 
         public int getPriority() {
@@ -230,14 +234,6 @@ public class UrlMappingRule {
         }
 
         public void setContentProviderMap(List<ResultDescriptor> contentProviderMap) {
-            throw new UnsupportedOperationException();
-        }
-
-        public ContentWriter getContentWriter() {
-            return rule.getContentWriter();
-        }
-
-        public void setContentWriter(ContentWriter contentWriter) {
             throw new UnsupportedOperationException();
         }
 

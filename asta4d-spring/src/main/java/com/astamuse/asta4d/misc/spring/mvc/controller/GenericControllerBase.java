@@ -15,37 +15,10 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
-import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 
 //TODO need to cache the mapped result
 @Controller
 public abstract class GenericControllerBase implements ApplicationContextAware {
-
-    private final static class SpringManagedRequestHandlerAdapter implements DeclareInstanceAdapter {
-
-        private ApplicationContext beanCtx;
-
-        private Class<?> beanCls = null;
-
-        private String beanId = null;
-
-        SpringManagedRequestHandlerAdapter(ApplicationContext beanCtx, Class<?> beanCls, String beanId) {
-            this.beanCtx = beanCtx;
-            this.beanCls = beanCls;
-            this.beanId = beanId;
-        }
-
-        @Override
-        public Object asTargetInstance() {
-            if (beanCls != null) {
-                return beanCtx.getBean(beanCls);
-            } else if (beanId != null) {
-                return beanCtx.getBean(beanId);
-            } else {
-                return null;
-            }
-        }
-    }
 
     private final static Logger logger = LoggerFactory.getLogger(GenericControllerBase.class);
 

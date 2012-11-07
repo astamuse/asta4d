@@ -2,7 +2,6 @@ package com.astamuse.asta4d.web.dispatch.response.provider;
 
 import com.astamuse.asta4d.web.WebPage;
 import com.astamuse.asta4d.web.dispatch.annotation.ContentProvider;
-import com.astamuse.asta4d.web.dispatch.response.Asta4DPageWriter;
 
 public class Asta4DPageProvider {
 
@@ -16,7 +15,7 @@ public class Asta4DPageProvider {
         return path;
     }
 
-    @ContentProvider(writer = Asta4DPageWriter.class)
+    @ContentProvider
     public WebPage producePage() throws Exception {
         return new WebPage(path);
     }
