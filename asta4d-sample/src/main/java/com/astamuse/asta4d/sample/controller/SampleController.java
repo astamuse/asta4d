@@ -18,7 +18,7 @@ public class SampleController extends GenericControllerBase {
         rules.add("/app/index", "/templates/index.html");
 
         rules.add("/app/snippet", "/templates/snippet.html");
-        rules.add("/app/{name}/{age}", "/templates/variableinjection.html").setPriority(1);
+        rules.add("/app/{name}/{age}", "/templates/variableinjection.html").priority(1);
         rules.add("/app/attributevalues", "/templates/attributevalues.html");
 
         rules.add("/app/extend/appendchild", "/templates/extend/appendchild.html");
@@ -27,8 +27,11 @@ public class SampleController extends GenericControllerBase {
 
         rules.add("/app/embed/main", "/templates/embed/main.html");
 
-        rules.add("/app/handler", "/templates/success.html", LoginHandler.class, EchoHandler.class).forward(LoginFailureDescriptor.class,
-                "/templates/error.html");
+        //@formatter:off
+        rules.add("/app/handler").handler(LoginHandler.class).handler(EchoHandler.class)
+                .forward("/templates/success.html")
+                .forward(LoginFailureDescriptor.class, "/templates/error.html");
+        //@formatter:on
 
         rules.add("/app/renderertypes", "/templates/renderertypes.html");
         rules.add("/app/passvariables", "/templates/passvariables.html");
@@ -37,8 +40,8 @@ public class SampleController extends GenericControllerBase {
         rules.add("/app/contextdata", "/templates/contextdata.html");
 
         rules.add("/app/form/input", "/templates/form/input.html");
-        rules.add(POST, "/app/form/confirm", FormValidateHandler.class);
-        rules.add(POST, "/app/form/complete", FormCompleteHandler.class);
+        rules.add(POST, "/app/form/confirm").handler(FormValidateHandler.class);
+        rules.add(POST, "/app/form/complete").handler(FormCompleteHandler.class);
 
         rules.add("/app/localize", "/templates/localize.html");
     }

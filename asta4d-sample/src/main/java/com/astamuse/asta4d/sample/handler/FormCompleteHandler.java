@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.RedirectActionProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 
 public class FormCompleteHandler {
 
@@ -15,7 +15,7 @@ public class FormCompleteHandler {
             flashScopeData.put("name", name);
             flashScopeData.put("age", age);
             flashScopeData.put("bloodtype", bloodtype);
-            return new RedirectActionProvider("/app/form/input", flashScopeData);
+            return new RedirectTargetProvider("/app/form/input", flashScopeData);
         }
         if (submit != null) {
             System.out.println("[FormCompleteHandler:complete]" + String.format("name=%s, age=%s, bloodtype=%s", name, age, bloodtype));

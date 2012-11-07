@@ -4,18 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.sample.forward.LoginFailureDescriptor;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.forward.ForwardDescriptor;
-import com.astamuse.asta4d.web.dispatch.response.forward.ForwardableException;
 
 public class LoginHandler {
 
     @RequestHandler
-    public ForwardDescriptor doLogin(String flag) {
+    public LoginFailureDescriptor doLogin(String flag) throws LoginFailureDescriptor {
         if (StringUtils.isEmpty(flag)) {
             return null;
         }
         if ("error".equals(flag)) {
-            throw new ForwardableException(new LoginFailureDescriptor(), new IllegalArgumentException());
+            throw new LoginFailureDescriptor();
         }
         if (!Boolean.parseBoolean(flag)) {
             return new LoginFailureDescriptor();

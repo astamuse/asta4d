@@ -50,4 +50,34 @@
       </dependency>
     </dependencies>
 
+    <profiles>
+      <!-- With this profile, jetty will run during the "test" phase -->
+      <profile>
+        <id>jetty-run</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.mortbay.jetty</groupId>
+              <artifactId>jetty-maven-plugin</artifactId>
+              <version>7.6.2.v20120308</version>
+              <configuration>
+                    <webApp>
+                      <contextPath>/asta4d-sample</contextPath>
+                    </webApp>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>jetty-run</id>
+                  <phase>test</phase>
+                  <goals>
+                    <goal>run</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
+
 </project>
