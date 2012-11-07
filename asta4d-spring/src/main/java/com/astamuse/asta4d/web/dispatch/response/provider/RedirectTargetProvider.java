@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.dispatch.annotation.ContentProvider;
+import com.astamuse.asta4d.web.dispatch.response.RedirectActionWriter;
 
 public class RedirectTargetProvider {
 
@@ -23,7 +24,7 @@ public class RedirectTargetProvider {
         this.targetPath = targetPath;
     }
 
-    @ContentProvider
+    @ContentProvider(writer = RedirectActionWriter.class)
     public RedirectDescriptor getRedirectDescriptor() throws Exception {
         Map<String, Object> flashScopeData = null;
         Context context = Context.getCurrentThreadContext();
