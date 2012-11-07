@@ -76,23 +76,18 @@ public class RequestDispatcher {
         retrieveFlashScopeData(request);
 
         ResultDescriptor requestResult = handleRequest(rule);
-
-        if (requestResult == null) {
-            throw new NullPointerException("request result should not be null!!![" + rule.toString() + "]");
-        } else {
-            try {
-                Object content = AnnotationMethodHelper
-                        .invokeMethodForAnnotation(requestResult.getContentProvider(), ContentProvider.class);
-                if (content instanceof HeaderInfoHoldingContent) {
-                    headerWriter.writeResponse(response, content);
-                    content = ((HeaderInfoHoldingContent) content).getContent();
-                }
-                ContentWriter cw = requestResult.getWriter();
-                cw.writeResponse(response, content);
-            } catch (InvocationTargetException e) {
-                throw e;
+        try {
+            Object content = AnnotationMethodHelper.invokeMethodForAnnotation(requestResult.getContentProvider(), ContentProvider.class);
+            if (content instanceof HeaderInfoHoldingContent) {
+                headerWriter.writeResponse(response, content);
+                content = ((HeaderInfoHoldingContent) content).getContent();
             }
+            ContentWriter cw = requestResult.getWriter();
+            cw.writeResponse(response, content);
+        } catch (InvocationTargetException e) {
+            throw e;
         }
+
     }
 
     /**
@@ -142,8 +137,14 @@ public class RequestDispatcher {
                 cls = rd.getResultTypeIdentifier();
                 instanceIdentifier = rd.getResultInstanceIdentifier();
                 if (cls == null && instanceIdentifier == null) {
-                    matchResult = rd;
-                    break;
+                    // if there is an exception, it should no be matched to the
+                    // default rule.
+                    if (requestHandlerResult instanceof Exception) {
+                        continue;
+                    } else {
+                        matchResult = rd;
+                        break;
+                    }
                 } else if (requestHandlerResult == null) {
                     continue;
                 } else if (cls == null) {
@@ -156,7 +157,15 @@ public class RequestDispatcher {
                     break;
                 }
             }
-            return matchResult;
+            if (matchResult == null) {
+                if (requestHandlerResult instanceof Exception) {
+                    throw (Exception) requestHandlerResult;
+                } else {
+                    throw new NullPointerException("request result should not be null!!![" + currentRule.toString() + "]");
+                }
+            } else {
+                return matchResult;
+            }
         } else {
             ContentProvider cp = m.getAnnotation(ContentProvider.class);
             ContentWriter cw = cp.writer().newInstance();
