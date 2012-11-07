@@ -1,26 +1,16 @@
 package com.astamuse.asta4d.web.dispatch;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.astamuse.asta4d.data.DataOperationException;
-import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.GenericInterceptor;
 import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
-import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
@@ -79,8 +69,6 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
     private static class RequestHandlerInvokeExecutor implements Executor<RequestHandlerResultHolder> {
 
-        private final static Logger logger = LoggerFactory.getLogger(RequestHandlerInvokeExecutor.class);
-
         private final List<Object> requestHandlerList;
 
         public RequestHandlerInvokeExecutor(List<Object> requestHandlerList) {
@@ -100,46 +88,6 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
             holder.setResult(requestHandlerResult);
         }
 
-        private Object invokeHandler(Object handler) throws InvocationTargetException, IllegalAccessException, DataOperationException,
-                TemplateException {
-            Method m = AnnotationMethodHelper.findMethod(handler, RequestHandler.class);
-
-            if (m == null) {
-                // TODO maybe we can return a null?
-                String msg = String.format("Request handler method not found:" + handler.getClass().getName());
-                logger.error(msg);
-                throw new InvocationTargetException(new RuntimeException(msg));
-            }
-
-            Object[] params = InjectUtil.getMethodInjectParams(m);
-            if (params == null) {
-                params = new Object[0];
-            }
-            Object result;
-            try {
-                result = m.invoke(handler, params);
-                if (result == null) {
-                    return null;
-                } else if (result instanceof String) {
-                    String s = result.toString();
-                    String redirectPrefix = "redirect:";
-                    if (s.toLowerCase().startsWith(redirectPrefix)) {
-                        s = s.substring(redirectPrefix.length());
-                        return new RedirectTargetProvider(s);
-                    } else {
-                        return new Asta4DPageProvider(s);
-                    }
-
-                } else {
-                    return result;
-                }
-                // throw new UnsupportedOperationException("Result Type:" +
-                // result.getClass().getName());
-            } catch (InvocationTargetException e) {
-                throw e;
-            }
-
-        }
     }
 
 }

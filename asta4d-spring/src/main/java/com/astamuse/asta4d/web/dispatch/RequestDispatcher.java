@@ -64,7 +64,13 @@ public class RequestDispatcher {
     }
 
     public void dispatchAndProcess(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        logger.info("access for:" + request.getRequestURI());
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("apply rule at :" + result.getRule());
+        }
+
         // if not found result, we do not need return 404, instead of user
         // defining all match rule
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
