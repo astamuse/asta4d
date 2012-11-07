@@ -25,7 +25,7 @@ public class AnnotationMethodHelper {
     public final static Object invokeMethodForAnnotation(Object obj, Class<? extends Annotation> annotation)
             throws InvocationTargetException, DataOperationException, IllegalAccessException, IllegalArgumentException {
         Object targetObj = obj instanceof DeclareInstanceAdapter ? ((DeclareInstanceAdapter) obj).asTargetInstance() : obj;
-        Method m = findMethod(obj, annotation);
+        Method m = findMethod(targetObj, annotation);
         if (m == null) {
             // TODO maybe we can return a null?
             String msg = String.format("Method not found for annotation %s at class %s:", annotation.toString(), targetObj.getClass()
