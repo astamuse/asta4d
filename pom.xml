@@ -13,6 +13,7 @@
     <modules>
         <module>asta4d-core</module>
         <module>asta4d-spring</module>
+        <module>eureika-batch</module>
         <module>eureika-web</module>
     </modules>  
   
@@ -20,6 +21,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+    <repositories>
+      <repository>
+          <id>springsource-repo</id>
+          <name>SpringSource Repository</name>
+          <url>http://repo.springsource.org/release</url>
+      </repository>
+    </repositories>  
+  
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -40,6 +49,18 @@
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.4.1</version>
+          <configuration>
+            <filesets>
+              <fileset>
+                <directory>${settings.localRepository}/com/astamuse</directory>
+              </fileset>
+            </filesets>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>2.5.1</version>
           <configuration>
@@ -47,6 +68,18 @@
             <target>1.7</target>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>        
+        <!--
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>  
+        -->
       </plugins>
     </build>  
   
