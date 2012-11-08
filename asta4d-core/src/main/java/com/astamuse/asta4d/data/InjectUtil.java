@@ -44,38 +44,9 @@ public class InjectUtil {
         Object defaultValue;
 
         void fixForPrimitiveType() {
-            // convert primitive types to their box types
-            if (type.isPrimitive()) {
-                String name = type.getName();
-                switch (name) {
-                case "char":
-                    type = Character.class;
-                    defaultValue = ' ';
-                    break;
-                case "byte":
-                    type = Byte.class;
-                    defaultValue = new Byte((byte) 0);
-                    break;
-                case "short":
-                    type = Short.class;
-                    defaultValue = new Short((short) 0);
-                    break;
-                case "int":
-                    type = Integer.class;
-                    defaultValue = new Integer(0);
-                    break;
-                case "long":
-                    type = Long.class;
-                    defaultValue = new Long(0L);
-                    break;
-                case "boolean":
-                    type = Boolean.class;
-                    defaultValue = new Boolean(false);
-                    break;
-                }
-            } else {
-                defaultValue = null;
-            }
+            TypeInfo typeInfo = new TypeInfo(type);
+            type = typeInfo.getType();
+            defaultValue = typeInfo.getDefaultValue();
         }
     }
 

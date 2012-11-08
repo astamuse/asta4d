@@ -1,11 +1,15 @@
 package com.astamuse.asta4d.data;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.builtin.String2Bool;
@@ -22,14 +26,14 @@ import com.astamuse.asta4d.data.builtin.String2Long;
  */
 public class DefaultContextDataFinder implements ContextDataFinder {
 
-    private ConcurrentHashMap<String, DataConvertor<?, ?>> dataConvertorCache = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<DataConvertorKey, ArrayDataConvertor<?, ?>> dataConvertorCache = new ConcurrentHashMap<>();
 
-    private List<DataConvertor<?, ?>> dataConvertorList = getDefaultDataConvertorList();
+    private List<ArrayDataConvertor<?, ?>> dataConvertorList = getDefaultDataConvertorList();
 
     private List<String> dataSearchScopeOrder = getDefaultScopeOrder();
 
-    private final static List<DataConvertor<?, ?>> getDefaultDataConvertorList() {
-        List<DataConvertor<?, ?>> defaultList = new ArrayList<>();
+    private final static List<ArrayDataConvertor<?, ?>> getDefaultDataConvertorList() {
+        List<ArrayDataConvertor<?, ?>> defaultList = new ArrayList<>();
         defaultList.add(new String2Long());
         defaultList.add(new String2Int());
         defaultList.add(new String2Bool());
@@ -44,12 +48,12 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         return list;
     }
 
-    public List<DataConvertor<?, ?>> getDataConvertorList() {
+    public List<ArrayDataConvertor<?, ?>> getDataConvertorList() {
         return dataConvertorList;
     }
 
-    public void setDataConvertorList(List<DataConvertor<?, ?>> dataConvertorList) {
-        List<DataConvertor<?, ?>> list = new ArrayList<>(dataConvertorList);
+    public void setDataConvertorList(List<ArrayDataConvertor<?, ?>> dataConvertorList) {
+        List<ArrayDataConvertor<?, ?>> list = new ArrayList<>(dataConvertorList);
         list.addAll(getDefaultDataConvertorList());
         this.dataConvertorList = list;
     }
@@ -62,9 +66,8 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         this.dataSearchScopeOrder = dataSearchScopeOrder;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Object findDataInContext(Context context, String scope, String name, Class<?> type) throws DataOperationException {
+    public Object findDataInContext(Context context, String scope, String name, Class<?> targetType) throws DataOperationException {
         Object data = null;
         if (StringUtils.isEmpty(scope)) {
             data = findDataByScopeOrder(context, 0, name);
@@ -76,19 +79,22 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             return null;
         }
 
-        if (type.isAssignableFrom(data.getClass())) {
+        Class<?> srcType = new TypeInfo(data.getClass()).getType();
+        if (targetType.isAssignableFrom(srcType)) {
             return data;
         }
 
-        DataConvertor convertor = getConvertor(data.getClass(), type);
-        if (convertor == null) {
-            String msg = String.format("Could not find appropriate data convertor for from type {} to type {}", data.getClass().getName(),
-                    type.getName());
-            throw new DataOperationException(msg);
-        } else {
-            return convertor.convert(data);
+        if (srcType.isArray() && targetType.isAssignableFrom(srcType.getComponentType())) {
+            return Array.get(data, 0);
         }
 
+        if (targetType.isArray() && targetType.getComponentType().isAssignableFrom(srcType)) {
+            Object array = Array.newInstance(srcType, 1);
+            Array.set(array, 0, data);
+            return array;
+        }
+
+        return convertData(srcType, targetType, data);
     }
 
     private Object findDataByScopeOrder(Context context, int scopeIndex, String name) {
@@ -103,31 +109,71 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
     }
 
-    private DataConvertor<?, ?> getConvertor(Class<?> srcType, Class<?> targetType) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Object convertData(Class<?> srcType, Class<?> targetType, Object data) throws DataOperationException {
         try {
-            String cachekey = targetType.getName() + "<=" + srcType.getName();
-            DataConvertor<?, ?> convertor = null;
             if (Context.getCurrentThreadContext().getConfiguration().isCacheEnable()) {
-                convertor = dataConvertorCache.get(cachekey);
-            }
-            if (convertor == null) {
-                Class<?> convertorSrcType, convertorTargetType;
-                Method method;
-                for (DataConvertor<?, ?> dc : dataConvertorList) {
-                    method = findConvertMethod(dc);
-                    convertorSrcType = method.getParameterTypes()[0];
-                    convertorTargetType = method.getReturnType();
-                    if (convertorSrcType.isAssignableFrom(srcType) && targetType.isAssignableFrom(convertorTargetType)) {
-                        convertor = dc;
-                        dataConvertorCache.put(cachekey, dc);
-                        break;
-                    }
+                Object convertedData = convertFromCachedConverter(srcType, targetType, data);
+                if (convertedData != null) {
+                    return convertedData;
                 }
             }
-            return convertor;
+            Class<?> convertorSrcType, convertorTargetType;
+            for (ArrayDataConvertor dc : dataConvertorList) {
+                Method method = findConvertMethod(dc);
+                convertorSrcType = method.getParameterTypes()[0];
+                convertorTargetType = method.getReturnType();
+                if (convertorSrcType.isAssignableFrom(srcType) && targetType.isAssignableFrom(convertorTargetType)) {
+                    dataConvertorCache.put(new DataConvertorKey(srcType, targetType, ConvertType.ELEMENT_TO_ELEMENT), dc);
+                    return dc.convert(data);
+                }
+
+                if (srcType.isArray() && targetType.isArray() && convertorSrcType.isAssignableFrom(srcType.getComponentType()) &&
+                        targetType.getComponentType().isAssignableFrom(convertorTargetType)) {
+                    dataConvertorCache.put(new DataConvertorKey(srcType, targetType, ConvertType.ARRAY_TO_ARRAY), dc);
+                    return dc.convertFromToArray((Object[]) data);
+                }
+
+                if (srcType.isArray() && convertorSrcType.isAssignableFrom(srcType.getComponentType()) &&
+                        targetType.isAssignableFrom(convertorTargetType)) {
+                    dataConvertorCache.put(new DataConvertorKey(srcType, targetType, ConvertType.ARRAY_TO_ELEMENT), dc);
+                    return dc.convertFromArray((Object[]) data);
+                }
+
+                if (targetType.isArray() && convertorSrcType.isAssignableFrom(srcType) &&
+                        targetType.getComponentType().isAssignableFrom(convertorTargetType)) {
+                    dataConvertorCache.put(new DataConvertorKey(srcType, targetType, ConvertType.ELEMENT_TO_ARRAY), dc);
+                    return dc.convertToArray(data);
+                }
+            }
         } catch (SecurityException e) {
             throw new RuntimeException(e);
         }
+        String msg = String.format("Could not find appropriate data convertor for from type %s to type %s", data.getClass().getName(),
+                targetType.getName());
+        throw new DataOperationException(msg);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Object convertFromCachedConverter(Class<?> srcType, Class<?> targetType, Object data) {
+        ArrayDataConvertor cachedConvertor = dataConvertorCache.get(new DataConvertorKey(srcType, targetType,
+                ConvertType.ELEMENT_TO_ELEMENT));
+        if (cachedConvertor != null) {
+            return cachedConvertor.convert(data);
+        }
+        cachedConvertor = dataConvertorCache.get(new DataConvertorKey(srcType, targetType, ConvertType.ARRAY_TO_ARRAY));
+        if (cachedConvertor != null) {
+            return cachedConvertor.convertFromToArray((Object[]) data);
+        }
+        cachedConvertor = dataConvertorCache.get(new DataConvertorKey(srcType, targetType, ConvertType.ARRAY_TO_ELEMENT));
+        if (cachedConvertor != null) {
+            return cachedConvertor.convertFromArray((Object[]) data);
+        }
+        cachedConvertor = dataConvertorCache.get(new DataConvertorKey(srcType, targetType, ConvertType.ELEMENT_TO_ARRAY));
+        if (cachedConvertor != null) {
+            return cachedConvertor.convertToArray(data);
+        }
+        return null;
     }
 
     private Method findConvertMethod(DataConvertor<?, ?> convertor) {
@@ -142,4 +188,45 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         return rtnMethod;
     }
 
+    private enum ConvertType {
+        ELEMENT_TO_ELEMENT, ELEMENT_TO_ARRAY, ARRAY_TO_ELEMENT, ARRAY_TO_ARRAY;
+    }
+
+    private static final class DataConvertorKey {
+        @SuppressWarnings("unused")
+        private final String srcType;
+        @SuppressWarnings("unused")
+        private final String targetType;
+        @SuppressWarnings("unused")
+        private final ConvertType convertType;
+
+        public DataConvertorKey(Class<?> srcType, Class<?> targetType, ConvertType convertType) {
+            if (srcType.isArray()) {
+                this.srcType = srcType.getComponentType().getName() + "[]";
+            } else {
+                this.srcType = srcType.getName();
+            }
+            if (targetType.isArray()) {
+                this.targetType = targetType.getComponentType().getName() + "[]";
+            } else {
+                this.targetType = targetType.getName();
+            }
+            this.convertType = convertType;
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+    }
 }

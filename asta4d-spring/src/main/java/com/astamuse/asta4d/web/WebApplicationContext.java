@@ -1,8 +1,10 @@
 package com.astamuse.asta4d.web;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,13 +77,10 @@ public class WebApplicationContext extends Context {
             map = new HashMap<>();
             HttpServletRequest request = getRequest();
             Enumeration<String> headerNames = request.getHeaderNames();
-            String name;
-            String value;
             while (headerNames.hasMoreElements()) {
-                name = headerNames.nextElement();
-                // TODO we should consider the situation of multi header values
-                value = request.getHeader(name);
-                map.put(name, value);
+                String name = headerNames.nextElement();
+                String[] values = getHeaderValues(request.getHeaders(name));
+                map.put(name, values);
             }
             map = Collections.unmodifiableMap(map);
         }
@@ -91,7 +90,9 @@ public class WebApplicationContext extends Context {
             HttpServletRequest request = getRequest();
             Cookie[] cookies = request.getCookies();
             for (Cookie cookie : cookies) {
-                map.put(cookie.getName(), cookie);
+                String name = cookie.getName();
+                Cookie[] values = mergeCookies(cookie, (Cookie[]) map.get(name));
+                map.put(name, values);
             }
             map = Collections.unmodifiableMap(map);
         }
@@ -108,10 +109,8 @@ public class WebApplicationContext extends Context {
             Enumeration<String> paramNames = request.getParameterNames();
             while (paramNames.hasMoreElements()) {
                 String name = paramNames.nextElement();
-                // TODO we should consider the situation of multi parameter
-                // values
-                String value = request.getParameter(name);
-                map.put(name, value);
+                String[] values = request.getParameterValues(name);
+                map.put(name, values);
             }
             map = Collections.unmodifiableMap(map);
             break;
@@ -141,6 +140,24 @@ public class WebApplicationContext extends Context {
             map = super.getScopeDataMapCopy(scope);
         }
         return map;
+    }
+
+    private static String[] getHeaderValues(Enumeration<String> headers) {
+        List<String> values = new ArrayList<>();
+        while (headers.hasMoreElements()) {
+            values.add(headers.nextElement());
+        }
+        return values.toArray(new String[values.size()]);
+    }
+
+    private static Cookie[] mergeCookies(Cookie cookie, Cookie... cookies) {
+        if (cookies == null) {
+            return new Cookie[] { cookie };
+        }
+        Cookie[] mergedCookies = new Cookie[cookies.length + 1];
+        System.arraycopy(cookies, 0, mergedCookies, 0, cookies.length);
+        mergedCookies[mergedCookies.length - 1] = cookie;
+        return mergedCookies;
     }
 
 }

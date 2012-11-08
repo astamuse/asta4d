@@ -1,6 +1,6 @@
 package com.astamuse.asta4d.data.builtin;
 
-import com.astamuse.asta4d.data.DataConvertor;
+import com.astamuse.asta4d.data.ArrayDataConvertor;
 
 /**
  * Convert String to Boolean
@@ -8,7 +8,7 @@ import com.astamuse.asta4d.data.DataConvertor;
  * @author e-ryu
  * 
  */
-public class String2Bool implements DataConvertor<String, Boolean> {
+public class String2Bool extends ArrayDataConvertor<String, Boolean> {
 
     @Override
     public Boolean convert(String s) {
