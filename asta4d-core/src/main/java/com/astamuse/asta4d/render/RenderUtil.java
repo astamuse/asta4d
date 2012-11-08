@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -22,9 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
-import com.astamuse.asta4d.i18n.InvalidMessageException;
-import com.astamuse.asta4d.i18n.MessagesUtil;
-import com.astamuse.asta4d.i18n.ResourceBundleManager;
+import com.astamuse.asta4d.format.PlaceholderFormatter;
 import com.astamuse.asta4d.render.concurrent.ConcurrentRenderHelper;
 import com.astamuse.asta4d.render.concurrent.FutureRendererHolder;
 import com.astamuse.asta4d.render.transformer.Transformer;
@@ -34,7 +34,13 @@ import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.InvalidMessageException;
 import com.astamuse.asta4d.util.LocalizeUtil;
+import com.astamuse.asta4d.util.ResourceBundleUtil;
+import com.astamuse.asta4d.util.ResourceBundleUtil.ExternalParamValue;
+import com.astamuse.asta4d.util.ResourceBundleUtil.InternalParamValue;
+import com.astamuse.asta4d.util.ResourceBundleUtil.ParamValue;
+import com.astamuse.asta4d.util.ResourceBundleUtil.ResourceBundleConfig;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 /**
@@ -48,6 +54,14 @@ import com.astamuse.asta4d.util.SelectorUtil;
 public class RenderUtil {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(RenderUtil.class);
+
+    private final static List<String> EXCLUDE_ATTR_NAME_LIST = new ArrayList<>();
+
+    static {
+        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_KEY);
+        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_LOCALE);
+        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE);
+    }
 
     /**
      * Find out all the snippet in the passed Document and execute them. The
@@ -330,8 +344,8 @@ public class RenderUtil {
 
     }
 
+    @SuppressWarnings("unchecked")
     public final static void applyMessages(Element target) throws InvalidMessageException {
-        ResourceBundleManager rbManager = Context.getCurrentThreadContext().getConfiguration().getResourceBundleManager();
         String selector = SelectorUtil.tag(ExtNodeConstants.MSG_NODE_TAG);
         List<Element> msgElems = target.select(selector);
         for (Element msgElem : msgElems) {
@@ -340,16 +354,20 @@ public class RenderUtil {
                 throw new InvalidMessageException(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
             }
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
-            String localeStr = null;
+            Locale locale = null;
             if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)) {
-                localeStr = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE);
+                locale = LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE));
             }
-            Map<String, String> paramMap = getMessageParams(attributes);
             List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            List<String> resourceNames = Context.getCurrentThreadContext().getConfiguration().getResourceNames();
+            PlaceholderFormatter formatter = Context.getCurrentThreadContext().getConfiguration().getPlaceholderFormatter();
+            ResourceBundleConfig<PlaceholderFormatter> config = new ResourceBundleConfig<PlaceholderFormatter>(formatter, resourceNames,
+                    locale);
+            Map<String, ParamValue> paramMap = getMessageParams(attributes, key, externalizeParamKeys);
             String text;
             Node node = null;
             try {
-                text = rbManager.getString(LocalizeUtil.getLocale(localeStr), key, paramMap, externalizeParamKeys);
+                text = ResourceBundleUtil.getString(config, key, paramMap.entrySet().toArray(new Entry[paramMap.size()]));
             } catch (InvalidMessageException e) {
                 LOGGER.warn("failed to get the message. key=" + key, e);
                 text = '!' + key + '!';
@@ -365,15 +383,20 @@ public class RenderUtil {
         }
     }
 
-    private static Map<String, String> getMessageParams(Attributes attributes) {
-        List<String> excludeAttrNameList = MessagesUtil.getExcludeAttrNameList();
-        Map<String, String> paramMap = new HashMap<>();
+    private static Map<String, ParamValue> getMessageParams(Attributes attributes, String key, List<String> externalizeParamKeys) {
+        List<String> excludeAttrNameList = EXCLUDE_ATTR_NAME_LIST;
+        Map<String, ParamValue> paramMap = new HashMap<>();
         for (Attribute attribute : attributes) {
-            String key = attribute.getKey();
-            if (excludeAttrNameList.contains(key)) {
+            String attrKey = attribute.getKey();
+            if (excludeAttrNameList.contains(attrKey)) {
                 continue;
             }
-            paramMap.put(key, attribute.getValue());
+            String value = attribute.getValue();
+            if (externalizeParamKeys.contains(attrKey)) {
+                paramMap.put(attrKey, new ExternalParamValue(value));
+            } else {
+                paramMap.put(attrKey, new InternalParamValue(value));
+            }
         }
         return paramMap;
     }

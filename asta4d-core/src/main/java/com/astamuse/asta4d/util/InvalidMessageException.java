@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.i18n;
+package com.astamuse.asta4d.util;
 
 @SuppressWarnings("serial")
 public class InvalidMessageException extends Exception {

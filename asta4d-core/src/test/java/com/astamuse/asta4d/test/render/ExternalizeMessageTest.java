@@ -6,11 +6,10 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.i18n.NamedPlaceholderFormatter;
-import com.astamuse.asta4d.i18n.NumberPlaceholderFormatter;
-import com.astamuse.asta4d.i18n.PlaceholderFormatter;
-import com.astamuse.asta4d.i18n.ResourceBundleManager;
-import com.astamuse.asta4d.i18n.SymbolPlaceholderFormatter;
+import com.astamuse.asta4d.format.NamedPlaceholderFormatter;
+import com.astamuse.asta4d.format.NumberPlaceholderFormatter;
+import com.astamuse.asta4d.format.PlaceholderFormatter;
+import com.astamuse.asta4d.format.SymbolPlaceholderFormatter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
@@ -78,8 +77,7 @@ public class ExternalizeMessageTest extends BaseTest {
 
     private static void setUpResourceBundleManager(String fileName, PlaceholderFormatter formatter) {
         Configuration configuration = Context.getCurrentThreadContext().getConfiguration();
-        ResourceBundleManager manager = configuration.getResourceBundleManager();
-        manager.setResourceNames("com.astamuse.asta4d.test.render.messages." + fileName);
-        manager.setFormatter(formatter);
+        configuration.setPlaceholderFormatter(formatter);
+        configuration.setResourceNames("com.astamuse.asta4d.test.render.messages." + fileName);
     }
 }

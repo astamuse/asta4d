@@ -7,8 +7,8 @@ import java.util.concurrent.ExecutorService;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
-import com.astamuse.asta4d.i18n.DefaultResourceBundleManager;
-import com.astamuse.asta4d.i18n.ResourceBundleManager;
+import com.astamuse.asta4d.format.PlaceholderFormatter;
+import com.astamuse.asta4d.format.SymbolPlaceholderFormatter;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -34,7 +34,9 @@ public class Configuration {
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
-    private ResourceBundleManager resourceBundleManager = new DefaultResourceBundleManager();
+    private List<String> resourceNames = null;
+
+    private PlaceholderFormatter placeholderFormatter = new SymbolPlaceholderFormatter();
 
     private boolean cacheEnable = true;
 
@@ -99,12 +101,24 @@ public class Configuration {
         this.contextDataFinder = contextDataFinder;
     }
 
-    public ResourceBundleManager getResourceBundleManager() {
-        return resourceBundleManager;
+    public List<String> getResourceNames() {
+        if (resourceNames == null) {
+            resourceNames = new ArrayList<>();
+            resourceNames.add("messages");
+        }
+        return new ArrayList<String>(resourceNames);
     }
 
-    public void setResourceBundleManager(ResourceBundleManager resourceBundleManager) {
-        this.resourceBundleManager = resourceBundleManager;
+    public void setResourceNames(String... resourceNames) {
+        this.resourceNames = Arrays.asList(resourceNames);
+    }
+
+    public PlaceholderFormatter getPlaceholderFormatter() {
+        return placeholderFormatter;
+    }
+
+    public void setPlaceholderFormatter(PlaceholderFormatter placeholderFormatter) {
+        this.placeholderFormatter = placeholderFormatter;
     }
 
     public boolean isCacheEnable() {
