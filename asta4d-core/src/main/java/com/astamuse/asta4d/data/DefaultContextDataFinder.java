@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.astamuse.asta4d.Context;
@@ -193,11 +191,8 @@ public class DefaultContextDataFinder implements ContextDataFinder {
     }
 
     private static final class DataConvertorKey {
-        @SuppressWarnings("unused")
         private final String srcType;
-        @SuppressWarnings("unused")
         private final String targetType;
-        @SuppressWarnings("unused")
         private final ConvertType convertType;
 
         public DataConvertorKey(Class<?> srcType, Class<?> targetType, ConvertType convertType) {
@@ -221,12 +216,46 @@ public class DefaultContextDataFinder implements ContextDataFinder {
 
         @Override
         public int hashCode() {
-            return HashCodeBuilder.reflectionHashCode(this);
+            // HashCodeBuilder.reflectionHashCode is not use for performance
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((convertType == null) ? 0 : convertType.hashCode());
+            result = prime * result + ((srcType == null) ? 0 : srcType.hashCode());
+            result = prime * result + ((targetType == null) ? 0 : targetType.hashCode());
+            return result;
         }
 
         @Override
         public boolean equals(Object obj) {
-            return EqualsBuilder.reflectionEquals(this, obj);
+            // EqualsBuilder.reflectionEquals is not use for performance
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof DataConvertorKey)) {
+                return false;
+            }
+            DataConvertorKey other = (DataConvertorKey) obj;
+            if (this.convertType != other.convertType) {
+                return false;
+            }
+            if (this.srcType == null) {
+                if (other.srcType != null) {
+                    return false;
+                }
+            } else if (!this.srcType.equals(other.srcType)) {
+                return false;
+            }
+            if (this.targetType == null) {
+                if (other.targetType != null) {
+                    return false;
+                }
+            } else if (!this.targetType.equals(other.targetType)) {
+                return false;
+            }
+            return true;
         }
     }
 }

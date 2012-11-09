@@ -29,13 +29,20 @@ class TypeInfo {
                 this.type = Long.class;
                 this.defaultValue = Long.valueOf(0L);
                 break;
+            case "float":
+                this.type = Float.class;
+                this.defaultValue = Float.valueOf(0.0F);
+                break;
+            case "double":
+                this.type = Double.class;
+                this.defaultValue = Double.valueOf(0.0D);
+                break;
             case "boolean":
                 this.type = Boolean.class;
                 this.defaultValue = Boolean.FALSE;
                 break;
             default:
-                this.type = type;
-                this.defaultValue = null;
+                throw new IllegalArgumentException("Unexpected Primitive Type Name : " + name);
             }
         } else if (type.isArray() && type.getComponentType().isPrimitive()) {
             String name = type.getComponentType().getName();
@@ -60,13 +67,20 @@ class TypeInfo {
                 this.type = Long[].class;
                 this.defaultValue = new Long[0];
                 break;
+            case "float":
+                this.type = Float[].class;
+                this.defaultValue = new Float[0];
+                break;
+            case "double":
+                this.type = Double[].class;
+                this.defaultValue = new Double[0];
+                break;
             case "boolean":
                 this.type = Boolean[].class;
                 this.defaultValue = new Boolean[0];
                 break;
             default:
-                this.type = type;
-                this.defaultValue = null;
+                throw new IllegalArgumentException("Unexpected Primitive Type Name : " + name);
             }
         } else {
             this.type = type;
