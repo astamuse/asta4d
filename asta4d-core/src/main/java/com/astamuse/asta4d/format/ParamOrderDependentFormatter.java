@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.util.InvalidMessageException;
 
 public abstract class ParamOrderDependentFormatter implements PlaceholderFormatter {
 
     @Override
-    public String format(String pattern, Map<String, Object> paramMap) {
+    public String format(String pattern, Map<String, Object> paramMap) throws InvalidMessageException {
         Object[] params = retrieveNumberedParamKeyList(paramMap);
         return format(pattern, params);
     }
 
-    public abstract String format(String pattern, Object... params);
+    public abstract String format(String pattern, Object... params) throws InvalidMessageException;
 
     private static Object[] retrieveNumberedParamKeyList(Map<String, Object> paramMap) {
         List<Object> numberedParamNameList = new ArrayList<>();
