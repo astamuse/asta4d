@@ -10,6 +10,7 @@ import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
 public class UrlMappingRuleHelper {
@@ -59,9 +60,18 @@ public class UrlMappingRuleHelper {
 
     public void addRequestHandlerInterceptor(String attribute, Object... interceptorList) {
         RequestHandlerInterceptor interceptor;
+        Object instance;
         for (Object obj : interceptorList) {
-            interceptor = (RequestHandlerInterceptor) DeclareInstanceUtil.createInstance(obj);
-            interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
+            instance = DeclareInstanceUtil.createInstance(obj);
+            if(instance instanceof RequestHandlerInterceptor){
+                interceptor = (RequestHandlerInterceptor)instance;
+                interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
+            }else if(instance instanceof DeclareInstanceAdapter){
+                //TODO want a better solution
+                interceptor = (RequestHandlerInterceptor)((DeclareInstanceAdapter)instance).asTargetInstance();
+                interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
+            }
+
         }
     }
 
