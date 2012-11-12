@@ -6,8 +6,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
+import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
@@ -46,6 +49,31 @@ public class UrlMappingRuleHelper {
         }
     }
 
+    private static class InterceptorWrapper implements RequestHandlerInterceptor {
+
+        final static String InterceptorInstanceCacheKey = InterceptorWrapper.class.getName() + "#InterceptorInstanceCacheKey";
+
+        DeclareInstanceAdapter adapter;
+
+        InterceptorWrapper(DeclareInstanceAdapter adapter) {
+            this.adapter = adapter;
+        }
+
+        @Override
+        public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
+            RequestHandlerInterceptor interceptor = (RequestHandlerInterceptor) adapter.asTargetInstance();
+            Context.getCurrentThreadContext().setData(InterceptorInstanceCacheKey, interceptor);
+            interceptor.preHandle(rule, holder);
+        }
+
+        @Override
+        public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
+            // retrieve the instance that actually was executed
+            RequestHandlerInterceptor interceptor = Context.getCurrentThreadContext().getData(InterceptorInstanceCacheKey);
+            interceptor.postHandle(rule, holder, exceptionHandler);
+        }
+    }
+
     private HttpMethod defaultMethod = HttpMethod.GET;
 
     private List<InterceptorHolder> interceptorHolderList = new ArrayList<>();
@@ -63,12 +91,11 @@ public class UrlMappingRuleHelper {
         Object instance;
         for (Object obj : interceptorList) {
             instance = DeclareInstanceUtil.createInstance(obj);
-            if(instance instanceof RequestHandlerInterceptor){
-                interceptor = (RequestHandlerInterceptor)instance;
+            if (instance instanceof RequestHandlerInterceptor) {
+                interceptor = (RequestHandlerInterceptor) instance;
                 interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
-            }else if(instance instanceof DeclareInstanceAdapter){
-                //TODO want a better solution
-                interceptor = (RequestHandlerInterceptor)((DeclareInstanceAdapter)instance).asTargetInstance();
+            } else if (instance instanceof DeclareInstanceAdapter) {
+                interceptor = new InterceptorWrapper((DeclareInstanceAdapter) instance);
                 interceptorHolderList.add(new InterceptorHolder(attribute, interceptor));
             }
 
