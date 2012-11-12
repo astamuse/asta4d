@@ -39,10 +39,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
                 throw new TemplateException(String.format("Template %s not found.", path));
             }
             t = new Template(info.getPath(), input);
-            Template pre = templateMap.putIfAbsent(cacheKey, t);
-            if (pre != null) {
-                t = pre;
-            }
+            templateMap.put(cacheKey, t);
             return t;
         } catch (Exception e) {
             throw new TemplateException(path + " resolve error", e);
