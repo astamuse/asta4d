@@ -58,7 +58,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
         @Override
         public boolean beforeProcess(RequestHandlerResultHolder holder) throws Exception {
             interceptor.preHandle(rule, holder);
-            return holder.getResult() != null;
+            return holder.getResult() == null;
         }
 
         @Override
