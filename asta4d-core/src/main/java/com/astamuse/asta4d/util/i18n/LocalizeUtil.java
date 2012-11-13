@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.util.i18n;
 
 import java.util.ArrayList;
 import java.util.List;

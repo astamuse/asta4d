@@ -32,10 +32,9 @@ import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.InvalidMessageException;
-import com.astamuse.asta4d.util.LocalizeUtil;
-import com.astamuse.asta4d.util.ResourceBundleHelperBase.ParamMapResourceBundleHelper;
-import com.astamuse.asta4d.util.ResourceBundleUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
+import com.astamuse.asta4d.util.i18n.LocalizeUtil;
+import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 
 /**
  * 
@@ -349,9 +348,12 @@ public class RenderUtil {
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
             List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
 
-            ParamMapResourceBundleHelper helper = ResourceBundleUtil.getParamMapHelper();
+            // TODO cache localed helper instance
+            ParamMapResourceBundleHelper helper = null;
             if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)) {
-                helper.locale(LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)));
+                helper = new ParamMapResourceBundleHelper(LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)));
+            } else {
+                helper = new ParamMapResourceBundleHelper();
             }
 
             Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);

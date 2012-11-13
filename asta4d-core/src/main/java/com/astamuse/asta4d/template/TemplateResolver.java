@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateResolver.TemplateInfo;
-import com.astamuse.asta4d.util.LocalizeUtil;
 import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
+import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 
 //TODO internationalization
 public abstract class TemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo> {

@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.util.i18n;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,8 +12,7 @@ import org.apache.commons.lang3.LocaleUtils;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
 import com.astamuse.asta4d.format.PlaceholderFormatter;
-import com.astamuse.asta4d.util.ResourceBundleHelperBase.ParamMapResourceBundleHelper;
-import com.astamuse.asta4d.util.ResourceBundleHelperBase.ResourceBundleHelper;
+import com.astamuse.asta4d.util.InvalidMessageException;
 
 public class ResourceBundleUtil {
 
@@ -57,14 +56,6 @@ public class ResourceBundleUtil {
             }
         }
         throw new InvalidMessageException("key[" + key + "] not found.", ex);
-    }
-
-    public static ResourceBundleHelper getHelper() {
-        return new ResourceBundleHelper();
-    }
-
-    public static ParamMapResourceBundleHelper getParamMapHelper() {
-        return new ParamMapResourceBundleHelper();
     }
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {

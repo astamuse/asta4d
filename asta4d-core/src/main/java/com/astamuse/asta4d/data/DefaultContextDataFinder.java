@@ -13,6 +13,8 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.builtin.String2Bool;
 import com.astamuse.asta4d.data.builtin.String2Int;
 import com.astamuse.asta4d.data.builtin.String2Long;
+import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
+import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
 /**
  * A default implementation of {@link ContextDataFinder}. It will search data in
@@ -66,7 +68,12 @@ public class DefaultContextDataFinder implements ContextDataFinder {
 
     @Override
     public Object findDataInContext(Context context, String scope, String name, Class<?> targetType) throws DataOperationException {
-        Object data = null;
+        Object data = findByType(context, scope, name, targetType);
+
+        if (data != null) {
+            return data;
+        }
+
         if (StringUtils.isEmpty(scope)) {
             data = findDataByScopeOrder(context, 0, name);
         } else {
@@ -93,6 +100,16 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
 
         return convertData(srcType, targetType, data);
+    }
+
+    private Object findByType(Context context, String scope, String name, Class<?> targetType) {
+        if (targetType.equals(ResourceBundleHelper.class)) {
+            return new ResourceBundleHelper();
+        } else if (targetType.equals(ParamMapResourceBundleHelper.class)) {
+            return new ParamMapResourceBundleHelper();
+        } else {
+            return null;
+        }
     }
 
     private Object findDataByScopeOrder(Context context, int scopeIndex, String name) {

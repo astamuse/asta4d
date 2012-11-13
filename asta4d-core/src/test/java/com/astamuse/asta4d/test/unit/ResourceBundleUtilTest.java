@@ -13,16 +13,15 @@ import com.astamuse.asta4d.format.NamedPlaceholderFormatter;
 import com.astamuse.asta4d.format.NumberPlaceholderFormatter;
 import com.astamuse.asta4d.format.SymbolPlaceholderFormatter;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
-import com.astamuse.asta4d.util.ResourceBundleHelperBase.ParamMapResourceBundleHelper;
-import com.astamuse.asta4d.util.ResourceBundleHelperBase.ResourceBundleHelper;
-import com.astamuse.asta4d.util.ResourceBundleUtil;
+import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
+import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
 public class ResourceBundleUtilTest extends BaseTest {
 
     @Test
     public void useHelperDefault() throws Exception {
         setUp("symbol_placeholder_messages");
-        ResourceBundleHelper helper = ResourceBundleUtil.getHelper();
+        ResourceBundleHelper helper = new ResourceBundleHelper();
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
         assertEquals(
                 helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
@@ -32,7 +31,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useSymbolFormatter() throws Exception {
         setUp("symbol_placeholder_messages");
-        ResourceBundleHelper helper = ResourceBundleUtil.getHelper().formatter(new SymbolPlaceholderFormatter());
+        ResourceBundleHelper helper = new ResourceBundleHelper(new SymbolPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
         assertEquals(
                 helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
@@ -42,7 +41,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useSymbolFormatterJaJp() throws Exception {
         setUp("symbol_placeholder_messages");
-        ResourceBundleHelper helper = ResourceBundleUtil.getHelper().formatter(new SymbolPlaceholderFormatter()).locale(Locale.JAPAN);
+        ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new SymbolPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
         assertEquals(
                 helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
@@ -52,7 +51,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNumberFormatter() throws Exception {
         setUp("number_placeholder_messages");
-        ResourceBundleHelper helper = ResourceBundleUtil.getHelper().formatter(new NumberPlaceholderFormatter());
+        ResourceBundleHelper helper = new ResourceBundleHelper(new NumberPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
         assertEquals(
                 helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
@@ -62,7 +61,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNumberFormatterJaJp() throws Exception {
         setUp("number_placeholder_messages");
-        ResourceBundleHelper helper = ResourceBundleUtil.getHelper().formatter(new NumberPlaceholderFormatter()).locale(Locale.JAPAN);
+        ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new NumberPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
         assertEquals(
                 helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
@@ -72,7 +71,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNamedFormatter() throws Exception {
         setUp("named_placeholder_messages");
-        ParamMapResourceBundleHelper helper = ResourceBundleUtil.getParamMapHelper().formatter(new NamedPlaceholderFormatter());
+        ParamMapResourceBundleHelper helper = new ParamMapResourceBundleHelper(new NamedPlaceholderFormatter());
         {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("date", "Tomorrow");
@@ -90,8 +89,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNamedFormatterJaJp() throws Exception {
         setUp("named_placeholder_messages");
-        ParamMapResourceBundleHelper helper = ResourceBundleUtil.getParamMapHelper().formatter(new NamedPlaceholderFormatter())
-                .locale(Locale.JAPAN);
+        ParamMapResourceBundleHelper helper = new ParamMapResourceBundleHelper(Locale.JAPAN, new NamedPlaceholderFormatter());
         {
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("date", "明日");
