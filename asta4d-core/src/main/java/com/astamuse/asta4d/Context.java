@@ -66,7 +66,11 @@ public class Context {
 
     public void setData(String scope, String key, Object data) {
         Map<String, Object> dataMap = acquireMapForScope(scope);
-        dataMap.put(key, data);
+        if (data == null) {
+            dataMap.remove(key);
+        } else {
+            dataMap.put(key, data);
+        }
     }
 
     public <T> T getData(String key) {
