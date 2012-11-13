@@ -103,6 +103,9 @@ public class DefaultContextDataFinder implements ContextDataFinder {
     }
 
     private Object findByType(Context context, String scope, String name, Class<?> targetType) {
+        if (Context.class.isAssignableFrom(targetType)) {
+            return context;
+        }
         if (targetType.equals(ResourceBundleHelper.class)) {
             return new ResourceBundleHelper();
         } else if (targetType.equals(ParamMapResourceBundleHelper.class)) {
