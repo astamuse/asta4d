@@ -12,7 +12,7 @@ public class JsonUtil {
 
     private final static ObjectMapper mapper = new ObjectMapper();
     static {
-        mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        // mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
     }
 
     public final static void toJson(OutputStream out, Object obj) throws IOException {
