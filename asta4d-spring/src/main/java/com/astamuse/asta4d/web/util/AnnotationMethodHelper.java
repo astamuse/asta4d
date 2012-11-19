@@ -5,11 +5,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectUtil;
 
 public class AnnotationMethodHelper {
+
+    private final static Logger logger = LoggerFactory.getLogger(AnnotationMethodHelper.class);
 
     private final static ConcurrentHashMap<String, Method> methodCache = new ConcurrentHashMap<>();
 
@@ -68,9 +73,13 @@ public class AnnotationMethodHelper {
         if (params == null) {
             params = new Object[0];
         }
+
         try {
             return m.invoke(targetObj, params);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            String msg = "Error occured when invoke method for annotiona %s on %s with params:%s";
+            msg = String.format(msg, annotation.getName(), targetObj.getClass().getName(), params);
+            logger.error(msg, e);
             throw e;
         }
     }
