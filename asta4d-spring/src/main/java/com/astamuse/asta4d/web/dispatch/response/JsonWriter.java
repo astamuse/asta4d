@@ -8,6 +8,7 @@ public class JsonWriter implements ContentWriter {
 
     @Override
     public void writeResponse(HttpServletResponse response, Object content) throws Exception {
+        response.setContentType("application/json");
         JsonUtil.toJson(response.getOutputStream(), content);
     }
 
