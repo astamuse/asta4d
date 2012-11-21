@@ -38,7 +38,7 @@ import com.astamuse.asta4d.util.IdGenerator;
  * @author e-ryu
  * 
  */
-public class AttriuteSetter implements ElementSetter {
+public class AttributeSetter implements ElementSetter {
 
     private static enum ActionType {
         SET {
@@ -93,7 +93,7 @@ public class AttriuteSetter implements ElementSetter {
      * @param value
      *            attribute value
      */
-    public AttriuteSetter(String attr, Object value) {
+    public AttributeSetter(String attr, Object value) {
         super();
         if (attr.equalsIgnoreCase("+class")) {
             this.actionType = ActionType.ADDCLASS;

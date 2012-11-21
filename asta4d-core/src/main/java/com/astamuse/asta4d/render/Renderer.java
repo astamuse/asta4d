@@ -441,7 +441,7 @@ public class Renderer {
      * Create a renderer for attribute setting by given parameter.
      * <p>
      * An additional character of "+" or "-" can be used as a prefix of
-     * attribute name. See detail at {@link AttriuteSetter}.
+     * attribute name. See detail at {@link AttributeSetter}.
      * 
      * @param selector
      *            a css selector
@@ -452,7 +452,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, String attr, String value) {
-        return create(selector, new AttriuteSetter(attr, value));
+        return create(selector, new AttributeSetter(attr, value));
     }
 
     /**
@@ -460,7 +460,7 @@ public class Renderer {
      * <p>
      * An additional character of "+" or "-" can be used as a prefix of
      * attribute name. There is also a special logic for an instance with
-     * arbitrary type. See detail at {@link AttriuteSetter}.
+     * arbitrary type. See detail at {@link AttributeSetter}.
      * 
      * @param selector
      *            a css selector
@@ -471,7 +471,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, String attr, Object value) {
-        return create(selector, new AttriuteSetter(attr, value));
+        return create(selector, new AttributeSetter(attr, value));
     }
 
     /**

@@ -79,12 +79,10 @@ public class Page {
             @Override
             public void execute(Document doc) throws Exception {
                 RenderUtil.applySnippets(doc);
+                RenderUtil.applyMessages(doc);
                 RenderUtil.applyClearAction(doc, true);
             }
         });
-
-        RenderUtil.applyMessages(doc);
-        RenderUtil.applyClearAction(doc, true);
         return doc;
     }
 

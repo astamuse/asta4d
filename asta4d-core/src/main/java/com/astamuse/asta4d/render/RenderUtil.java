@@ -46,7 +46,7 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
  */
 public class RenderUtil {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(RenderUtil.class);
+    private final static Logger logger = LoggerFactory.getLogger(RenderUtil.class);
 
     private final static List<String> EXCLUDE_ATTR_NAME_LIST = new ArrayList<>();
 
@@ -337,13 +337,15 @@ public class RenderUtil {
 
     }
 
-    public final static void applyMessages(Element target) throws InvalidMessageException {
+    public final static void applyMessages(Element target) {
         String selector = SelectorUtil.tag(ExtNodeConstants.MSG_NODE_TAG);
         List<Element> msgElems = target.select(selector);
         for (Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
             if (!attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_KEY)) {
-                throw new InvalidMessageException(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
+                InvalidMessageException ex = new InvalidMessageException(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
+                logger.error("", ex);
+                continue;
             }
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
             List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
@@ -361,7 +363,7 @@ public class RenderUtil {
             try {
                 text = helper.getMessage(key, paramMap);
             } catch (InvalidMessageException e) {
-                LOGGER.warn("failed to get the message. key=" + key, e);
+                logger.warn("failed to get the message. key=" + key, e);
                 text = '!' + key + '!';
             }
             Node node;
