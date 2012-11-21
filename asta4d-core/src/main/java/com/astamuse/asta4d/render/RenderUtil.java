@@ -327,13 +327,17 @@ public class RenderUtil {
             // TODO check if there are unfinished snippet left.
             ElementUtil.removeNodesBySelector(target, removeSnippetSelector, true);
             ElementUtil.removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
-
+            ElementUtil.removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
         }
 
-        ElementUtil.removeNodesBySelector(target,
-                SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null), false);
+        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
+                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
+        ElementUtil.removeNodesBySelector(target, fakeGroup, false);
+
+        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
+        ElementUtil.removeNodesBySelector(target, clearGroup, false);
+
         ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
-        ElementUtil.removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
 
     }
 
