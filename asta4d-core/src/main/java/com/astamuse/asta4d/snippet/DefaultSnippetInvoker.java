@@ -55,7 +55,9 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         } catch (SnippetInvokeException ex) {
             throw ex;
         } catch (Exception ex) {
-            String msg = "execute with params:" + Arrays.asList(execution.getParams());
+            Object[] params = execution.getParams();
+
+            String msg = "execute with params:" + (params == null ? null : Arrays.asList(params));
             throw new SnippetInvokeException(declaration, msg, ex);
         }
 

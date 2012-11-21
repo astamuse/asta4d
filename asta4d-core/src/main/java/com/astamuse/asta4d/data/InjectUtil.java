@@ -162,8 +162,9 @@ public class InjectUtil {
         // whether it is a problem?
         Method[] mtds = cls.getMethods();
         for (Method method : mtds) {
-            if (method.isAnnotationPresent(ContextData.class)) {
-                cd = method.getAnnotation(ContextData.class);
+            cd = findAnnotation(method.getAnnotations());
+            if (cd != null) {
+                // cd = method.getAnnotation(ContextData.class);
                 MethodInfo mi = new MethodInfo();
 
                 mi.method = method;
@@ -251,11 +252,11 @@ public class InjectUtil {
         while (!cls.getName().equals(objCls)) {
             flds = cls.getDeclaredFields();
             for (Field field : flds) {
-                if (field.isAnnotationPresent(ContextData.class)) {
+                cd = findAnnotation(field.getAnnotations());
+                if (cd != null) {
                     fi = new FieldInfo();
                     fi.field = field;
                     fi.type = field.getType();
-                    cd = field.getAnnotation(ContextData.class);
                     if (StringUtils.isEmpty(cd.name())) {
                         fi.name = field.getName();
                     } else {
