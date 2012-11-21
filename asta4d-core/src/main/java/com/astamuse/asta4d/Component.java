@@ -84,4 +84,8 @@ public class Component {
         return elem.html();
     }
 
+    public String toString() {
+        return toHtml();
+    }
+
 }
