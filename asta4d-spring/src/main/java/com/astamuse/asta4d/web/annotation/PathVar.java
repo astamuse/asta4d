@@ -9,7 +9,7 @@ import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.web.WebApplicationContext;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 @ContextData(scope = WebApplicationContext.SCOPE_PATHVAR)
 public @interface PathVar {
 
