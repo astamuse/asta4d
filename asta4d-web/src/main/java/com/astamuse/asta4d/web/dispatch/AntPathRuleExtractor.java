@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.misc.spring.mvc.controller;
+package com.astamuse.asta4d.web.dispatch;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -8,15 +8,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.util.AntPathMatcher;
-
-import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
-import com.astamuse.asta4d.web.dispatch.HttpMethod;
+import com.astamuse.asta4d.web.copyleft.SpringAntPathMatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class AntPathRuleExtractor implements DispatcherRuleExtractor {
-    private AntPathMatcher pathMatcher = new AntPathMatcher();
+    private SpringAntPathMatcher pathMatcher = new SpringAntPathMatcher();
 
     @Override
     public UrlMappingResult findMappedRule(HttpServletRequest request, List<UrlMappingRule> ruleList) {

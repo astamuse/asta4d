@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 

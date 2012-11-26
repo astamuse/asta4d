@@ -12,6 +12,7 @@
 
     <modules>
         <module>asta4d-core</module>
+        <module>asta4d-web</module>
         <module>asta4d-spring</module>
         <module>eureika-batch</module>
         <module>eureika-web</module>

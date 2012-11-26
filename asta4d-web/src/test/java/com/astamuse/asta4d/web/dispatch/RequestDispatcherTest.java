@@ -22,7 +22,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.misc.spring.mvc.controller.AntPathRuleExtractor;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;

@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>com.astamuse</groupId>
-      <artifactId>asta4d-core</artifactId>
+      <artifactId>asta4d-web</artifactId>
       <version>0.1</version>
     </dependency>
     
