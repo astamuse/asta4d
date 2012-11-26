@@ -1,0 +1,34 @@
+body {
+	background: #cceecc;
+	font-family: Georgia, 'Hiragino Mincho Pro', Meiryo, serif;
+	color: #000000;
+	margin: 20px auto;
+	line-height: 1.5em;
+	width: 960px;
+}
+
+section {
+	width: 676px;
+	margin-bottom: 10px;
+}
+
+section article {
+	border-radius: 4px;
+	font-size: 1em;
+	background-color: #ffffff;
+	color: #000000;
+	padding: 5px;
+	margin: 10px -10px;
+}
+
+.italic {
+	font-style: italic;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.red {
+	color: red;
+}

@@ -1,0 +1,23 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../css/common.css" rel="stylesheet" type="text/css" />
+<title>Asta4D Sample Project</title>
+</head>
+<body>
+	<h1>Use Snippet for rendering dynamic page.</h1>
+
+	<section>
+		<article>
+			<div afd:render="SimpleSnippet">dummy text</div>
+
+			<afd:snippet render="SimpleSnippet:setProfile">
+				<p id="name">name:<span>dummy name</span></p>
+				<p id="age">age:<span>0</span></p>
+			</afd:snippet>
+		</article>
+	</section>
+
+</body>
+</html>

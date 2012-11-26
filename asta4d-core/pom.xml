@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+      <groupId>com.astamuse</groupId>
+      <artifactId>asta4d</artifactId>
+      <version>0.1</version>
+  </parent>
+  
+  <groupId>com.astamuse</groupId>
+  <artifactId>asta4d-core</artifactId>
+  <version>0.1</version>
+  <packaging>jar</packaging>
+
+  <name>com.astamuse.asta4d-core</name>
+  <url></url>
+
+  <dependencies>
+    <dependency>
+      <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.6.3</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.1</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>com.thoughtworks.paranamer</groupId>
+        <artifactId>paranamer</artifactId>
+        <version>2.5</version>
+    </dependency>    
+    
+  </dependencies>
+  
+</project>

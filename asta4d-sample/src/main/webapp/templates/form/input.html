@@ -1,0 +1,26 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<title>Asta4D Sample Project</title>
+</head>
+<body>
+	<h1>Input</h1>
+
+	<section>
+		<article>
+			<form action="./confirm" method="post" afd:render="FormSnippet:setInitValue">
+				<label for="name">name:</label><input id="name" name="name" type="text"/><span id="nameErrMsg" class="red"></span><br />
+				<label for="age">age</label><input id="age" name="age" type="text"/><span id="ageErrMsg" class="red"></span><br />
+				<label for="bloodtype">bloodtype:</label>
+				<select id="bloodtype" name="bloodtype">
+					<option/>
+				</select><br />
+				<input type="submit" value="confirm">
+			</form>
+		</article>
+	</section>
+
+</body>
+</html>

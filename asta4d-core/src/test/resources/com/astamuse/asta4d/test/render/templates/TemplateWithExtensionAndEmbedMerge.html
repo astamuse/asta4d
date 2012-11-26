@@ -1,0 +1,22 @@
+<afd:extension parent="/TemplateWithExtension_Parent.html">
+
+<afd:block append="myheadforappend">
+<script src="appendscript">
+aaa
+</script>
+</afd:block>
+
+<afd:block insert="myheadforinsert">
+<script src="insertscript">
+iii
+</script>
+</afd:block>
+
+<afd:block override="mybody">
+override body
+
+<afd:embed target="/TemplateWithExtensionAndEmbedMerge_Embed.html"></afd:embed>
+
+</afd:block>
+
+</afd:extension>

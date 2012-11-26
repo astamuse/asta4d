@@ -1,0 +1,32 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<title>Asta4D Sample Project</title>
+</head>
+<body>
+	<h1>Confirm</h1>
+
+	<section>
+		<article>
+			<p>Are you sure you have the correct?</p>
+			<dl afd:render="FormSnippet:setInputValue">
+				<dt>name</dt><dd class="name">name:<span>name</span></dd>
+				<dt>age</dt><dd class="age">age:<span>age</span></dd>
+				<dt>bloodtype</dt><dd class="bloodtype">bloodtype:<span>bloodtype</span></dd>
+			</dl>
+			<form action="./complete" method="post">
+				<input type="submit" name="submit" value="send">
+				<input type="submit" name="cancel" value="cancel">
+				<afd:snippet render="FormSnippet:setHiddenValue">
+					<input id="name" name="name" type="hidden" value="" />
+					<input id="age" name="age" type="hidden" value="" />
+					<input id="bloodtype" name="bloodtype" type="hidden" value="" />
+				</afd:snippet>
+			</form>
+		</article>
+	</section>
+
+</body>
+</html>

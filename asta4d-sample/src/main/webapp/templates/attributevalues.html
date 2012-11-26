@@ -1,0 +1,27 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../css/common.css" rel="stylesheet" type="text/css" />
+<title>Asta4D Sample Project</title>
+</head>
+<body>
+	<h1>Manipulate attribute values.</h1>
+
+	<section>
+		<article>
+			<afd:snippet render="SimpleSnippet:manipulateAttrValues">
+				<ul>
+					<li>set checked attribute to no button<br/>
+					<input type="radio" id="yes" name="yesno" value="YES"/><label for="yes">YES</label>&nbsp;<input type="radio" id="no" name="yesno" value="NO"/><label for="no">NO</label></li>
+					<li>delete disabled attribute<br/>
+					<button type="button" id="delete" disabled="disabled">button</button></li>
+					<li id="plus" class="bold italic">add "red" to class value</li>
+					<li id="minus" class="bold italic">remove "bold" to class value</li>
+				</ul>
+			</afd:snippet>
+		</article>
+	</section>
+
+</body>
+</html>

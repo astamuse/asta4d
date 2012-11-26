@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+<!--
+    <bean id="appConfig" class="com.astamuse.eureika.web.util.AppConfig" factory-method="instance"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties">
+            <value>controller.scope=#{appConfig.controllerScope}</value>
+        </property>
+    </bean>
+    <import resource="dao.xml"/>
+    <import resource="service.xml"/>
+    <import resource="db.xml"/>
+    <import resource="mvc.xml"/>
+    <import resource="asta4d.xml"/>
+    <import resource="handler.xml"/>
+    <import resource="webflow.xml"/>
+-->
+
+    <import resource="snippet.xml"/>
+
+    <bean class="com.astamuse.asta4d.sample.controller.SampleController"/>
+
+    <mvc:interceptors>
+        <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateContextInitializer" />
+    </mvc:interceptors>
+
+    <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
+        <property name="templateResolver">
+            <bean class="com.astamuse.asta4d.misc.spring.mvc.SpringWebApplicationTemplateResolver"/>
+        </property>
+        <property name="snippetResolver">
+            <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
+        </property>
+        <property name="pageInterceptorList">
+            <list>
+                <bean class="com.astamuse.asta4d.sample.interceptor.SamplePageInterceptor"/>
+            </list>
+        </property>
+        <property name="snippetInvoker" ref="snippetInvoker"/>
+    </bean>
+
+    <bean id="asta4dContext" class="com.astamuse.asta4d.web.WebApplicationContext" scope="prototype">
+        <property name="configuration" ref="asta4dConfiguration"/>
+    </bean>
+
+    <bean id="snippetInvoker" class="com.astamuse.asta4d.snippet.DefaultSnippetInvoker">
+        <property name="snippetInterceptorList">
+            <list>
+                <bean class="com.astamuse.asta4d.sample.interceptor.SampleSnippetInterceptor"/>
+            </list>
+        </property>
+    </bean>
+</beans>
