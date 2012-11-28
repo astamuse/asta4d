@@ -1,5 +1,13 @@
 /asta4d-core/target
+/asta4d-core/test-output
+
 /asta4d-doc/target
+
 /asta4d-sample/target
+/asta4d-sample/test-output
+
 /asta4d-spring/target
+/asta4d-spring/test-output
+
 /asta4d-web/target
+/asta4d-web/test-output
