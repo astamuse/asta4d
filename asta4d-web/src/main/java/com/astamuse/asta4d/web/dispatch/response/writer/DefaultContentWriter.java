@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.dispatch.response;
+package com.astamuse.asta4d.web.dispatch.response.writer;
 
 import javax.servlet.http.HttpServletResponse;
 

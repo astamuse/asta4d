@@ -6,25 +6,22 @@ import java.util.List;
 
 import javax.servlet.http.Cookie;
 
-public class HeaderInfoHoldingContent {
+public class HeaderInfo {
 
     private HashMap<String, String> headerMap;
 
     private List<Cookie> cookieList;
 
-    private Object content;
-
     private Integer status;
 
-    public HeaderInfoHoldingContent(Object content) {
-        this(null, content);
+    public HeaderInfo() {
+        this(null);
     }
 
-    public HeaderInfoHoldingContent(Integer status, Object content) {
+    public HeaderInfo(Integer status) {
         this.status = status;
         headerMap = new HashMap<>();
         cookieList = new ArrayList<>();
-        this.content = content;
     }
 
     public Integer getStatus() {
@@ -49,10 +46,6 @@ public class HeaderInfoHoldingContent {
 
     public List<Cookie> getCookieList() {
         return cookieList;
-    }
-
-    public Object getContent() {
-        return content;
     }
 
 }

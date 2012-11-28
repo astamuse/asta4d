@@ -11,8 +11,11 @@ import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
-import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.String2Asta4DPageTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.String2RedirctTransformer;
 import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
@@ -73,6 +76,10 @@ public class UrlMappingRuleHelper {
             interceptor.postHandle(rule, holder, exceptionHandler);
         }
     }
+
+    private final static String2Asta4DPageTransformer asta4dPageTransformer = new String2Asta4DPageTransformer();
+
+    private final static String2RedirctTransformer redirectTransformer = new String2RedirctTransformer();
 
     private HttpMethod defaultMethod = HttpMethod.GET;
 
@@ -172,22 +179,31 @@ public class UrlMappingRuleHelper {
                 }
             }
 
+            // add default transformer
+            List<ResultTransformer> transformerList = rule.getResultTransformerList();
+            transformerList.add(redirectTransformer);
+            transformerList.add(asta4dPageTransformer);
+
             // move the default forward rule to the last of the result list
-            List<ResultDescriptor> resultList = rule.getContentProviderMap();
-            int size = resultList.size();
-            ResultDescriptor result, defaultResult = null;
+            ResultTransformer transformer, defaultTransformer = null;
+            int size = transformerList.size();
+
             for (int i = size - 1; i >= 0; i--) {
-                result = resultList.get(i);
-                if (result.getResultTypeIdentifier() == null && result.getResultInstanceIdentifier() == null) {
-                    resultList.remove(i);
-                    defaultResult = result;
-                    break;
+                transformer = transformerList.get(i);
+                if (transformer instanceof SimpleTypeMatchTransformer) {
+                    if (((SimpleTypeMatchTransformer) transformer).isAsDefaultMatch()) {
+                        defaultTransformer = transformer;
+                        transformerList.remove(i);
+                        break;
+                    }
                 }
             }
-            if (defaultResult != null) {
-                resultList.add(defaultResult);
+
+            if (defaultTransformer != null) {
+                transformerList.add(defaultTransformer);
             }
-            rule.setContentProviderMap(resultList);
+
+            rule.setResultTransformerList(transformerList);
         }// sortedRuleList loop
 
         return sortedRuleList;

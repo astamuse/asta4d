@@ -1,20 +1,25 @@
 package com.astamuse.asta4d.web.dispatch.mapping.ext;
 
-import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.response.Asta4DPageWriter;
-import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.HeaderWriter;
-import com.astamuse.asta4d.web.dispatch.response.JsonWriter;
-import com.astamuse.asta4d.web.dispatch.response.RedirectActionWriter;
-import com.astamuse.asta4d.web.dispatch.response.SerialWriter;
+import com.astamuse.asta4d.web.dispatch.request.transformer.HeaderInfoTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.JsonTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.String2Asta4DPageTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.String2RedirctTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoHoldingContent;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RestResultProvider;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.SerialProvider;
 
 public class HandyRuleWithForward {
+
+    private final static String2Asta4DPageTransformer asta4dPageTransformer = new String2Asta4DPageTransformer();
+
+    private final static String2RedirctTransformer redirectTransformer = new String2RedirctTransformer();
+
+    private final static HeaderInfoTransformer headerTransformer = new HeaderInfoTransformer();
+
+    private final static JsonTransformer jsonTransformer = new JsonTransformer();
 
     protected UrlMappingRule rule;
 
@@ -22,46 +27,43 @@ public class HandyRuleWithForward {
         this.rule = rule;
     }
 
-    public HandyRuleWithForward forward(Object result, Object contentProvider, ContentWriter writer) {
-        Object cpInstance = DeclareInstanceUtil.createInstance(contentProvider);
-        rule.getContentProviderMap().add(new ResultDescriptor(result, cpInstance, writer));
+    private HandyRuleWithForward forward(Object result, Object target) {
+        rule.getResultTransformerList().add(new SimpleTypeMatchTransformer(result, target));
         return this;
     }
 
-    public HandyRuleWithForward forward(Object contentProvider, ContentWriter writer) {
-        return this.forward(null, contentProvider, writer);
-    }
-
     public HandyRuleWithForward forward(Object result, String targetPath) {
-        return this.forward(result, new Asta4DPageProvider(targetPath), new Asta4DPageWriter());
+        return this.forward(result, asta4dPageTransformer.transformToContentProvider(targetPath));
     }
 
     public HandyRuleWithForward forward(Object result, String targetPath, int status) {
-        ContentWriter cw = new SerialWriter(new HeaderWriter(new HeaderInfoHoldingContent(status, null)), new Asta4DPageWriter());
-        return this.forward(result, new Asta4DPageProvider(targetPath), cw);
-    }
-
-    public HandyRuleWithForward forward(String targetPath) {
-        return this.forward(null, targetPath);
-    }
-
-    public HandyRuleWithForward forward(String targetPath, int status) {
-        return this.forward(null, targetPath, status);
+        HeaderInfoProvider header = (HeaderInfoProvider) headerTransformer.transformToContentProvider(new HeaderInfo(status));
+        Asta4DPageProvider page = (Asta4DPageProvider) asta4dPageTransformer.transformToContentProvider(targetPath);
+        SerialProvider sp = new SerialProvider(header, page);
+        return this.forward(result, sp);
     }
 
     public HandyRuleWithForward redirect(Object result, String targetPath) {
-        return this.forward(result, new RedirectTargetProvider(targetPath), new RedirectActionWriter());
+        return this.forward(result, redirectTransformer.transformToContentProvider("redirect:" + targetPath));
     }
 
-    public HandyRuleWithForward redirect(String targetPath) {
-        return this.redirect(null, targetPath);
+    public void forward(String targetPath) {
+        this.forward(null, targetPath);
     }
 
-    public void json(Object contentProvider) {
-        this.forward(contentProvider, new JsonWriter());
+    public void forward(String targetPath, int status) {
+        this.forward(null, targetPath, status);
+    }
+
+    public void redirect(String targetPath) {
+        this.redirect(null, targetPath);
+    }
+
+    public void json() {
+        rule.getResultTransformerList().add(jsonTransformer);
     }
 
     public void rest() {
-        this.forward(new RestResultProvider(), new HeaderWriter());
+        rule.getResultTransformerList().add(headerTransformer);
     }
 }

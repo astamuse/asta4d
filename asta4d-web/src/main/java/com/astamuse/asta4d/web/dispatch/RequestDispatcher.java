@@ -1,7 +1,7 @@
 package com.astamuse.asta4d.web.dispatch;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,16 +17,13 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.annotation.ContentProvider;
-import com.astamuse.asta4d.web.dispatch.mapping.ResultDescriptor;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.HeaderWriter;
-import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoHoldingContent;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
-import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
+import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
+import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import com.astamuse.asta4d.web.dispatch.response.writer.HeaderWriter;
+import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 
 public class RequestDispatcher {
@@ -63,6 +60,7 @@ public class RequestDispatcher {
         this.ruleList = ruleList;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void dispatchAndProcess(HttpServletRequest request, HttpServletResponse response) throws Exception {
         logger.info("access for:" + request.getRequestURI());
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
@@ -81,19 +79,12 @@ public class RequestDispatcher {
         writePathVarToContext(context, rule.getExtraVarMap());
         retrieveFlashScopeData(request);
 
-        ResultDescriptor requestResult = handleRequest(rule);
-        try {
-            Object content = AnnotationMethodHelper.invokeMethodForAnnotation(requestResult.getContentProvider(), ContentProvider.class);
-            if (content instanceof HeaderInfoHoldingContent) {
-                headerWriter.writeResponse(response, content);
-                content = ((HeaderInfoHoldingContent) content).getContent();
-            }
-            ContentWriter cw = requestResult.getWriter();
-            cw.writeResponse(response, content);
-        } catch (InvocationTargetException e) {
-            throw e;
+        List<ContentProvider<?>> requestResult = handleRequest(rule);
+        ContentWriter cw;
+        for (ContentProvider<?> cp : requestResult) {
+            cw = (ContentWriter<?>) DeclareInstanceUtil.createInstance(cp.getContentWriter());
+            cw.writeResponse(response, cp.produce());
         }
-
     }
 
     /**
@@ -102,7 +93,7 @@ public class RequestDispatcher {
      * @return ContentProvider
      * @throws Exception
      */
-    private ResultDescriptor handleRequest(UrlMappingRule currentRule) throws Exception {
+    private List<ContentProvider<?>> handleRequest(UrlMappingRule currentRule) throws Exception {
         // TODO should we handle the exceptions?
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         RequestHandlerInvokerFactory factory = ((WebApplicationConfiguration) context.getConfiguration()).getRequestHandlerInvokerFactory();
@@ -119,65 +110,72 @@ public class RequestDispatcher {
             requestHandlerResult = ex;
         }
 
-        if (requestHandlerResult != null && requestHandlerResult instanceof String) {
-            String s = requestHandlerResult.toString();
-            String redirectPrefix = "redirect:";
-            if (s.toLowerCase().startsWith(redirectPrefix)) {
-                s = s.substring(redirectPrefix.length());
-                requestHandlerResult = new RedirectTargetProvider(s);
-            } else {
-                requestHandlerResult = new Asta4DPageProvider(s);
-            }
-        }
-
         context.setData(KEY_REQUEST_HANDLER_RESULT, requestHandlerResult);
 
-        // determine whether it is a contentprovider
-        Method m = requestHandlerResult == null ? null : AnnotationMethodHelper.findMethod(requestHandlerResult, ContentProvider.class);
-        if (m == null) {
-            List<ResultDescriptor> list = currentRule.getContentProviderMap();
-            Class<?> cls;
-            Object instanceIdentifier;
-            ResultDescriptor matchResult = null;
-            for (ResultDescriptor rd : list) {
-                cls = rd.getResultTypeIdentifier();
-                instanceIdentifier = rd.getResultInstanceIdentifier();
-                if (cls == null && instanceIdentifier == null) {
-                    // if there is an exception, it should no be matched to the
-                    // default rule.
-                    if (requestHandlerResult instanceof Exception) {
-                        continue;
-                    } else {
-                        matchResult = rd;
-                        break;
-                    }
-                } else if (requestHandlerResult == null) {
-                    continue;
-                } else if (cls == null) {
-                    if (instanceIdentifier.equals(requestHandlerResult)) {
-                        matchResult = rd;
-                        break;
-                    }
-                } else if (cls.isAssignableFrom(requestHandlerResult.getClass())) {
-                    matchResult = rd;
-                    break;
-                }
-            }
-            if (matchResult == null) {
-                if (requestHandlerResult instanceof Exception) {
-                    throw (Exception) requestHandlerResult;
+        List<ContentProvider<?>> cpList = new ArrayList<>();
+
+        if (requestHandlerResult instanceof List) {
+            List<?> resultList = (List<?>) requestHandlerResult;
+            ContentProvider<?> cp;
+            for (Object result : resultList) {
+                if (result instanceof ContentProvider<?>) {
+                    cpList.add((ContentProvider<?>) result);
                 } else {
-                    throw new NullPointerException("request result should not be null!!![" + currentRule.toString() + "]");
+                    cp = ResultTransformerUtil.transform(requestHandlerResult, currentRule.getResultTransformerList());
+                    cpList.add(cp);
                 }
-            } else {
-                return matchResult;
             }
         } else {
-            ContentProvider cp = m.getAnnotation(ContentProvider.class);
-            ContentWriter cw = cp.writer().newInstance();
-            return new ResultDescriptor(requestHandlerResult, requestHandlerResult, cw);
+            ContentProvider<?> cp = ResultTransformerUtil.transform(requestHandlerResult, currentRule.getResultTransformerList());
+            cpList.add(cp);
         }
-
+        return cpList;
+        /*
+                Method m = requestHandlerResult == null ? null : AnnotationMethodHelper.findMethod(requestHandlerResult, ContentProvider.class);
+                if (m == null) {
+                    List<ResultDescriptor> list = currentRule.getContentProviderMap();
+                    Class<?> cls;
+                    Object instanceIdentifier;
+                    ResultDescriptor matchResult = null;
+                    for (ResultDescriptor rd : list) {
+                        cls = rd.getResultTypeIdentifier();
+                        instanceIdentifier = rd.getResultInstanceIdentifier();
+                        if (cls == null && instanceIdentifier == null) {
+                            // if there is an exception, it should no be matched to the
+                            // default rule.
+                            if (requestHandlerResult instanceof Exception) {
+                                continue;
+                            } else {
+                                matchResult = rd;
+                                break;
+                            }
+                        } else if (requestHandlerResult == null) {
+                            continue;
+                        } else if (cls == null) {
+                            if (instanceIdentifier.equals(requestHandlerResult)) {
+                                matchResult = rd;
+                                break;
+                            }
+                        } else if (cls.isAssignableFrom(requestHandlerResult.getClass())) {
+                            matchResult = rd;
+                            break;
+                        }
+                    }
+                    if (matchResult == null) {
+                        if (requestHandlerResult instanceof Exception) {
+                            throw (Exception) requestHandlerResult;
+                        } else {
+                            throw new NullPointerException("request result should not be null!!![" + currentRule.toString() + "]");
+                        }
+                    } else {
+                        return matchResult;
+                    }
+                } else {
+                    ContentProvider cp = m.getAnnotation(ContentProvider.class);
+                    ContentWriter cw = cp.writer().newInstance();
+                    return new ResultDescriptor(requestHandlerResult, requestHandlerResult, cw);
+                }
+        */
     }
 
     private void writePathVarToContext(WebApplicationContext context, Map<String, Object> pathVarMap) {

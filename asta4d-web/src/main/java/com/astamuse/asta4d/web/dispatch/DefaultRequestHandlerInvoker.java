@@ -11,6 +11,9 @@ import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
+import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
@@ -20,7 +23,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
      */
     @Override
     public Object invoke(UrlMappingRule rule) throws Exception {
-        RequestHandlerInvokeExecutor executor = new RequestHandlerInvokeExecutor(rule.getHandlerList());
+        RequestHandlerInvokeExecutor executor = new RequestHandlerInvokeExecutor(rule.getHandlerList(), rule.getResultTransformerList());
         RequestHandlerResultHolder holder = new RequestHandlerResultHolder();
         InterceptorUtil.executeWithInterceptors(holder, buildInterceptorList(rule), executor);
         return holder.getResult();
@@ -71,21 +74,33 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
         private final List<Object> requestHandlerList;
 
-        public RequestHandlerInvokeExecutor(List<Object> requestHandlerList) {
+        private final List<ResultTransformer> resultTransformerList;
+
+        public RequestHandlerInvokeExecutor(List<Object> requestHandlerList, List<ResultTransformer> resultTransformerList) {
             this.requestHandlerList = requestHandlerList;
+            this.resultTransformerList = resultTransformerList;
         }
 
         @Override
         public void execute(RequestHandlerResultHolder holder) throws Exception {
-            Object requestHandlerResult = null;
+            List<ContentProvider<?>> cpList = new ArrayList<>();
+            holder.setResult(cpList);
+            Object result;
+            ContentProvider<?> cp;
             for (Object handler : requestHandlerList) {
-                requestHandlerResult = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);
-                if (requestHandlerResult != null) {
-                    holder.setResult(requestHandlerResult);
-                    break;
-                }
+                result = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);
+                if (result != null) {
+                    cp = ResultTransformerUtil.transform(result, resultTransformerList);
+                    cpList.add(cp);
+                    if (!cp.isContinuable()) {
+                        break;
+                    }
+                }// result != null
+            }// for
+            if (cpList.isEmpty()) {
+                cpList.add(ResultTransformerUtil.transform(null, resultTransformerList));
             }
-            holder.setResult(requestHandlerResult);
+
         }
 
     }

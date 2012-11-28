@@ -8,7 +8,6 @@ public class RedirectDescriptor {
     private Map<String, Object> flashScopeData;
 
     public RedirectDescriptor(String targetPath, Map<String, Object> flashScopeData) {
-        super();
         this.targetPath = targetPath;
         this.flashScopeData = flashScopeData;
     }
