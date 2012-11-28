@@ -9,7 +9,8 @@ public class DeclareInstanceUtil {
 
     private final static DeclareInstanceResolver defaultResolver = new DefaultDeclareInstanceResolver();
 
-    public final static Object createInstance(Object declaration) {
+    @SuppressWarnings("unchecked")
+    public final static <T> T createInstance(Object declaration) {
         WebApplicationConfiguration conf = (WebApplicationConfiguration) Context.getCurrentThreadContext().getConfiguration();
         List<DeclareInstanceResolver> resolverList = conf.getInstanceResolverList();
         Object handler = null;
@@ -22,6 +23,6 @@ public class DeclareInstanceUtil {
         if (handler == null) {
             handler = defaultResolver.resolve(declaration);
         }
-        return handler;
+        return (T) handler;
     }
 }

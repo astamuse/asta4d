@@ -25,16 +25,15 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.WebPage;
-import com.astamuse.asta4d.web.dispatch.annotation.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.Asta4DPageWriter;
-import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.JsonWriter;
-import com.astamuse.asta4d.web.dispatch.response.RedirectActionWriter;
+import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPage;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
-import com.astamuse.asta4d.web.dispatch.response.provider.RestResult;
+import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
+import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import com.astamuse.asta4d.web.dispatch.response.writer.JsonWriter;
+import com.astamuse.asta4d.web.dispatch.response.writer.RedirectActionWriter;
 
 public class RequestDispatcherTest {
 
@@ -87,14 +86,14 @@ public class RequestDispatcherTest {
 
         //@formatter:off
         
-        rules.add("/index").forward("/index.html")
-                           .forward(Throwable.class, "/error.html", 500);
+        rules.add("/index").forward(Throwable.class, "/error.html", 500)
+                           .forward("/index.html");
 
         rules.add("/go-redirect").redirect("/go-redirect/ok");
         
         rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
         
-        rules.add("/getjson").json(TestJsonQuery.class);
+        rules.add("/getjson").handler(TestJsonQuery.class).json();
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
         
@@ -114,13 +113,15 @@ public class RequestDispatcherTest {
                 */
         //@formatter:off
         return new Object[][] { 
-                { "get", "/index", 0, new WebPage("/index.html"), new Asta4DPageWriter() },
+                { "get", "/index", 0, new Asta4DPage("/index.html"), new Asta4DPageWriter() },
+                
                 { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
                 { "delete", "/restapi", 401, null, null }, 
                 { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
-                { "get", "/nofile", 404, new WebPage("/notfound"), new Asta4DPageWriter() },
-                { "get", "/thrownep", 501, new WebPage("/NullPointerException"), new Asta4DPageWriter() },
-                { "get", "/throwexception", 500, new WebPage("/Exception"), new Asta4DPageWriter() },
+                { "get", "/nofile", 404, new Asta4DPage("/notfound"), new Asta4DPageWriter() },
+                { "get", "/thrownep", 501, new Asta4DPage("/NullPointerException"), new Asta4DPageWriter() },
+                { "get", "/throwexception", 500, new Asta4DPage("/Exception"), new Asta4DPageWriter() },
+                
                 };
         //@formatter:on
     }
@@ -179,8 +180,8 @@ public class RequestDispatcherTest {
     public static class TestRestApiHandler {
 
         @RequestHandler
-        public RestResult doDelete() {
-            return new RestResult(401);
+        public HeaderInfo doDelete() {
+            return new HeaderInfo(401);
         }
     }
 
@@ -202,7 +203,7 @@ public class RequestDispatcherTest {
 
     public static class TestJsonQuery {
 
-        @ContentProvider
+        @RequestHandler
         public TestJsonObject query() {
             TestJsonObject obj = new TestJsonObject(123);
             return obj;

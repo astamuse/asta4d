@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 
 public class UrlMappingRule {
 
@@ -25,7 +26,7 @@ public class UrlMappingRule {
 
     private List<String> attributeList;
 
-    private List<ResultDescriptor> contentProviderMap;
+    private List<ResultTransformer> resultTransformerList;
 
     private int priority;
 
@@ -33,7 +34,7 @@ public class UrlMappingRule {
 
     public UrlMappingRule(int seq, HttpMethod method, String sourcePath, List<Object> handlerList,
             List<RequestHandlerInterceptor> interceptorList, Map<String, Object> extraVarMap, List<String> attributeList,
-            List<ResultDescriptor> contentProviderMap, int priority) {
+            List<ResultTransformer> resultTransformerList, int priority) {
         super();
         this.seq = seq;
         this.method = method;
@@ -42,7 +43,7 @@ public class UrlMappingRule {
         this.interceptorList = interceptorList;
         this.extraVarMap = extraVarMap;
         this.attributeList = attributeList;
-        this.contentProviderMap = contentProviderMap;
+        this.resultTransformerList = resultTransformerList;
         this.priority = priority;
     }
 
@@ -52,7 +53,7 @@ public class UrlMappingRule {
         this.interceptorList = new ArrayList<>();
         this.extraVarMap = new HashMap<>();
         this.attributeList = new ArrayList<>();
-        this.contentProviderMap = new ArrayList<>();
+        this.resultTransformerList = new ArrayList<>();
     }
 
     public int getSeq() {
@@ -127,12 +128,12 @@ public class UrlMappingRule {
         this.priority = priority;
     }
 
-    public List<ResultDescriptor> getContentProviderMap() {
-        return contentProviderMap;
+    public List<ResultTransformer> getResultTransformerList() {
+        return resultTransformerList;
     }
 
-    public void setContentProviderMap(List<ResultDescriptor> contentProviderMap) {
-        this.contentProviderMap = contentProviderMap;
+    public void setResultTransformerList(List<ResultTransformer> resultTransformerList) {
+        this.resultTransformerList = resultTransformerList;
     }
 
     public UrlMappingRule asUnmodifiable() {
@@ -147,7 +148,7 @@ public class UrlMappingRule {
     public String toString() {
         return "UrlMappingRule [seq=" + seq + ", method=" + method + ", sourcePath=" + sourcePath + ", handlerList=" + handlerList +
                 ", interceptorList=" + interceptorList + ", extraVarMap=" + extraVarMap + ", attributeList=" + attributeList +
-                ", contentProviderMap=" + contentProviderMap + ", priority=" + priority + "]";
+                ", resultTransformerList=" + resultTransformerList + ", priority=" + priority + "]";
     }
 
     private static class UnModifiableUrlMappingRule extends UrlMappingRule {
@@ -229,11 +230,11 @@ public class UrlMappingRule {
             throw new UnsupportedOperationException();
         }
 
-        public List<ResultDescriptor> getContentProviderMap() {
-            return Collections.unmodifiableList(rule.getContentProviderMap());
+        public List<ResultTransformer> getResultTransformerList() {
+            return Collections.unmodifiableList(rule.getResultTransformerList());
         }
 
-        public void setContentProviderMap(List<ResultDescriptor> contentProviderMap) {
+        public void setResultTransformerList(List<ResultTransformer> resultTransformerList) {
             throw new UnsupportedOperationException();
         }
 

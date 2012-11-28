@@ -1,6 +1,6 @@
 package com.astamuse.asta4d.web.dispatch.mapping;
 
-import com.astamuse.asta4d.web.dispatch.response.ContentWriter;
+import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
 
 public class ResultDescriptor {
 
