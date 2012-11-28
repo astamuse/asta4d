@@ -29,8 +29,8 @@ public class SampleController extends GenericControllerBase {
 
         //@formatter:off
         rules.add("/app/handler").handler(LoginHandler.class).handler(EchoHandler.class)
-                .forward("/templates/success.html")
-                .forward(LoginFailureDescriptor.class, "/templates/error.html");
+                                 .forward(LoginFailureDescriptor.class, "/templates/error.html")
+                                 .forward("/templates/success.html");
         //@formatter:on
 
         rules.add("/app/renderertypes", "/templates/renderertypes.html");
