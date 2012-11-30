@@ -1,27 +1,21 @@
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
+import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
 
-public class Asta4DPageProvider implements ContentProvider<Asta4DPage> {
+public class Asta4DPageProvider implements ContentProvider<Page> {
 
     public final static String AttrBodyOnly = Asta4DPageProvider.class.getName() + "##bodyOnly";
 
     private String path;
 
-    private boolean bodyOnly;
-
     public Asta4DPageProvider() {
-        this("", false);
+        this("");
     }
 
     public Asta4DPageProvider(String path) {
-        this(path, false);
-    }
-
-    public Asta4DPageProvider(String path, boolean bodyOnly) {
         this.path = path;
-        this.bodyOnly = bodyOnly;
     }
 
     public String getPath() {
@@ -32,26 +26,18 @@ public class Asta4DPageProvider implements ContentProvider<Asta4DPage> {
         this.path = path;
     }
 
-    public boolean isBodyOnly() {
-        return bodyOnly;
-    }
-
-    public void setBodyOnly(boolean bodyOnly) {
-        this.bodyOnly = bodyOnly;
-    }
-
     @Override
     public boolean isContinuable() {
         return false;
     }
 
     @Override
-    public Asta4DPage produce() throws Exception {
-        return new Asta4DPage(path, bodyOnly);
+    public Page produce() throws Exception {
+        return new Page(path);
     }
 
     @Override
-    public Class<? extends ContentWriter<Asta4DPage>> getContentWriter() {
+    public Class<? extends ContentWriter<Page>> getContentWriter() {
         return Asta4DPageWriter.class;
     }
 
