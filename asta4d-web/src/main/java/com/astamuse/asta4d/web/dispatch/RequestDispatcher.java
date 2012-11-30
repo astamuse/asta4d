@@ -83,7 +83,7 @@ public class RequestDispatcher {
         ContentWriter cw;
         for (ContentProvider<?> cp : requestResult) {
             cw = (ContentWriter<?>) DeclareInstanceUtil.createInstance(cp.getContentWriter());
-            cw.writeResponse(response, cp.produce());
+            cw.writeResponse(rule, response, cp.produce());
         }
     }
 

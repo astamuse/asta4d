@@ -22,12 +22,13 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPage;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
@@ -89,6 +90,8 @@ public class RequestDispatcherTest {
         rules.add("/index").forward(Throwable.class, "/error.html", 500)
                            .forward("/index.html");
 
+        rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageWriter.AttrBodyOnly);
+        
         rules.add("/go-redirect").redirect("/go-redirect/ok");
         
         rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
@@ -103,24 +106,16 @@ public class RequestDispatcherTest {
 
     @DataProvider(name = "data")
     public Object[][] getTestData() throws Exception {
-        /*
-        return new Object[][] { { "get", "/index", new Asta4DPageProvider("/index.html") },
-                { new ReturnStringHandler(), new RequestHandlerInterceptor[0], "/test1.html" },
-                { new ReturnDescriptorHandler(), new RequestHandlerInterceptor[0], "/test2.html" },
-                { new ThrowDescriptorHandler(), new RequestHandlerInterceptor[0], "/test2.html" },
-                { new VoidHandler(), new RequestHandlerInterceptor[] { new ViewChangeIntercepter() }, "/test4.html" },
-                { new ThrowDescriptorHandler(), new RequestHandlerInterceptor[] { new CancelExceptionIntercepter() }, null } };
-                */
         //@formatter:off
         return new Object[][] { 
-                { "get", "/index", 0, new Asta4DPage("/index.html"), new Asta4DPageWriter() },
-                
+                { "get", "/index", 0, new Page("/index.html"), new Asta4DPageWriter() },
+                { "get", "/body-only", 0, new Page("/bodyOnly.html"), new Asta4DPageWriter() },
                 { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
                 { "delete", "/restapi", 401, null, null }, 
                 { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
-                { "get", "/nofile", 404, new Asta4DPage("/notfound"), new Asta4DPageWriter() },
-                { "get", "/thrownep", 501, new Asta4DPage("/NullPointerException"), new Asta4DPageWriter() },
-                { "get", "/throwexception", 500, new Asta4DPage("/Exception"), new Asta4DPageWriter() },
+                { "get", "/nofile", 404, new Page("/notfound"), new Asta4DPageWriter() },
+                { "get", "/thrownep", 501, new Page("/NullPointerException"), new Asta4DPageWriter() },
+                { "get", "/throwexception", 500, new Page("/Exception"), new Asta4DPageWriter() },
                 
                 };
         //@formatter:on
@@ -170,7 +165,8 @@ public class RequestDispatcherTest {
         if (expectedContent instanceof RedirectDescriptor) {
             // how test?
         } else {
-            cw.writeResponse(expectedResponse, expectedContent);
+            UrlMappingRule currentRule = context.getData(RequestDispatcher.KEY_CURRENT_RULE);
+            cw.writeResponse(currentRule, expectedResponse, expectedContent);
 
             Assert.assertEquals(new String(bos.toByteArray()), new String(expectedBos.toByteArray()));
 

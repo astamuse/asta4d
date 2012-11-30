@@ -7,12 +7,13 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 
 public class HeaderWriter implements ContentWriter<HeaderInfo> {
 
     @Override
-    public void writeResponse(HttpServletResponse response, HeaderInfo info) throws Exception {
+    public void writeResponse(UrlMappingRule currentRule, HttpServletResponse response, HeaderInfo info) throws Exception {
         if (info == null) {
             return;
         }
