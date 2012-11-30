@@ -35,24 +35,31 @@ public class Component {
 
     }
 
-    private Template template;
-
     private Element renderedElement;
+
+    public Component(Element elem, AttributesRequire attrs) throws Exception {
+        Document doc = new Document("");
+        doc.appendElement("body");
+        doc.body().appendChild(elem);
+        renderedElement = renderTemplate(doc, attrs);
+    }
+
+    public Component(Element elem) throws Exception {
+        this(elem, null);
+    }
 
     public Component(String path, AttributesRequire attrs) throws Exception {
         Configuration conf = Context.getCurrentThreadContext().getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
-        template = templateResolver.findTemplate(path);
-        renderedElement = renderTemplate(template, attrs);
+        Template template = templateResolver.findTemplate(path);
+        renderedElement = renderTemplate(template.getDocumentClone(), attrs);
     }
 
     public Component(String path) throws Exception {
         this(path, null);
     }
 
-    protected Element renderTemplate(Template template, AttributesRequire attrs) throws Exception {
-        Document doc = template.getDocumentClone();
-
+    protected Element renderTemplate(Document doc, AttributesRequire attrs) throws Exception {
         if (attrs != null) {
             List<AttributeSetter> attrList = attrs.getAttrList();
             Element body = doc.body();
@@ -78,10 +85,11 @@ public class Component {
     }
 
     public String toHtml() {
-        Element elem = toElement();
-        RenderUtil.applyMessages(elem);
-        RenderUtil.applyClearAction(elem, true);
-        return elem.html();
+        Document doc = new Document("");
+        doc.appendChild(toElement());
+        RenderUtil.applyMessages(doc);
+        RenderUtil.applyClearAction(doc, true);
+        return doc.html();
     }
 
     public String toString() {
