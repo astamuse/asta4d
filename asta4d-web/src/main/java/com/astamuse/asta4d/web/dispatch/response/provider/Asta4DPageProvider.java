@@ -6,8 +6,6 @@ import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
 
 public class Asta4DPageProvider implements ContentProvider<Page> {
 
-    public final static String AttrBodyOnly = Asta4DPageProvider.class.getName() + "##bodyOnly";
-
     private String path;
 
     public Asta4DPageProvider() {
