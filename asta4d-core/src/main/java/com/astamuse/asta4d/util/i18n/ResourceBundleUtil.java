@@ -60,11 +60,11 @@ public class ResourceBundleUtil {
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {
         if (locale != null || LocaleUtils.isAvailableLocale(locale)) {
-            return ResourceBundle.getBundle(resourceName, locale, DEFAULT_LOCALE_EXCLUDE_CONTROL);
+            return ResourceBundle.getBundle(resourceName, locale);
         }
         Locale currentLocale = Context.getCurrentThreadContext().getCurrentLocale();
         if (currentLocale != null || LocaleUtils.isAvailableLocale(currentLocale)) {
-            return ResourceBundle.getBundle(resourceName, currentLocale, DEFAULT_LOCALE_EXCLUDE_CONTROL);
+            return ResourceBundle.getBundle(resourceName, currentLocale);
         }
         return ResourceBundle.getBundle(resourceName);
     }
