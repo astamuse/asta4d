@@ -33,4 +33,8 @@ public class HandyRule extends HandyRuleWithHandler {
         return this;
     }
 
+    public HandyRule id(String id) {
+        this.var(UrlMappingRuleHelper.ID_VAR_NAME, id);
+        return this;
+    }
 }

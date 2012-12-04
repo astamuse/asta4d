@@ -35,4 +35,9 @@ public class HandyRuleWithAttrOnly {
         return this;
     }
 
+    public HandyRuleWithAttrOnly id(String id) {
+        this.var(UrlMappingRuleHelper.ID_VAR_NAME, id);
+        return this;
+    }
+
 }

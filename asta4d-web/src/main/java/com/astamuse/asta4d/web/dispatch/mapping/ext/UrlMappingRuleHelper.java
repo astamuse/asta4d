@@ -3,6 +3,7 @@ package com.astamuse.asta4d.web.dispatch.mapping.ext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,6 +21,10 @@ import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
 public class UrlMappingRuleHelper {
+
+    public final static String ID_VAR_NAME = UrlMappingRuleHelper.class.getName() + "-rule-id";
+
+    public final static String REMAP_ID_VAR_NAME = UrlMappingRuleHelper.class.getName() + "-remap-rule-id";
 
     public final static int DEFAULT_PRIORITY = 0;
 
@@ -125,9 +130,46 @@ public class UrlMappingRuleHelper {
         forwardHolderList.add(new GlobalForwardHolder(result, targetPath, null, true));
     }
 
+    private UrlMappingRule searchRuleById(List<UrlMappingRule> list, String id) {
+        UrlMappingRule result = null;
+        Object ruleId;
+        for (UrlMappingRule rule : list) {
+            ruleId = rule.extraVar(ID_VAR_NAME);
+            if (ruleId == null) {
+                continue;
+            } else if (ruleId.equals(id)) {
+                result = rule;
+                break;
+            }
+        }
+        if (result == null) {
+            throw new IllegalArgumentException("Can not find a rule is identified by given id:" + id);
+        } else {
+            return result;
+        }
+    }
+
     public List<UrlMappingRule> getArrangedRuleList() {
-        List<UrlMappingRule> sortedRuleList = new ArrayList<>(ruleList);
-        Collections.sort(sortedRuleList, new Comparator<UrlMappingRule>() {
+        List<UrlMappingRule> arrangedRuleList = new ArrayList<>(ruleList);
+
+        // config remapped rule at first
+        Object reMapId;
+        UrlMappingRule copyFromRule;
+        for (UrlMappingRule rule : arrangedRuleList) {
+            reMapId = rule.extraVar(REMAP_ID_VAR_NAME);
+            if (reMapId == null) {
+                continue;
+            }
+            copyFromRule = searchRuleById(arrangedRuleList, reMapId.toString());
+            rule.setAttributeList(new ArrayList<>(copyFromRule.getAttributeList()));
+            rule.setExtraVarMap(new HashMap<>(copyFromRule.getExtraVarMap()));
+            rule.setHandlerList(new ArrayList<>(copyFromRule.getHandlerList()));
+            rule.setInterceptorList(new ArrayList<>(copyFromRule.getInterceptorList()));
+            rule.setPriority(copyFromRule.getPriority());
+            rule.setResultTransformerList(new ArrayList<>(copyFromRule.getResultTransformerList()));
+        }
+
+        Collections.sort(arrangedRuleList, new Comparator<UrlMappingRule>() {
             @Override
             public int compare(UrlMappingRule r1, UrlMappingRule r2) {
                 int pc = r1.getPriority() - r2.getPriority();
@@ -140,6 +182,7 @@ public class UrlMappingRuleHelper {
             }
 
         });
+
         /*
         List<Object> handlerList;
         for (UrlMappingRule rule : sortedRuleList) {
@@ -153,7 +196,7 @@ public class UrlMappingRuleHelper {
 
         // set interceptor
         List<RequestHandlerInterceptor> interceptorList;
-        for (UrlMappingRule rule : sortedRuleList) {
+        for (UrlMappingRule rule : arrangedRuleList) {
             interceptorList = new ArrayList<>();
             for (InterceptorHolder iHolder : interceptorHolderList) {
                 if (iHolder.attribute == null) {
@@ -166,7 +209,7 @@ public class UrlMappingRuleHelper {
         }
 
         // set global result forward
-        for (UrlMappingRule rule : sortedRuleList) {
+        for (UrlMappingRule rule : arrangedRuleList) {
             // add global forward
             HandyRuleWithForward hf = new HandyRuleWithForward(rule);
             for (GlobalForwardHolder forwardHolder : forwardHolderList) {
@@ -206,7 +249,7 @@ public class UrlMappingRuleHelper {
             rule.setResultTransformerList(transformerList);
         }// sortedRuleList loop
 
-        return sortedRuleList;
+        return arrangedRuleList;
     }
 
     private UrlMappingRule createDefaultRule(HttpMethod method, String sourcePath) {
@@ -221,8 +264,8 @@ public class UrlMappingRuleHelper {
         return rule;
     }
 
-    public HandyRule add(HttpMethod method, String sourcePath) {
-        HandyRule handyRule = new HandyRule(createDefaultRule(method, sourcePath));
+    public HandyRuleWithRemap add(HttpMethod method, String sourcePath) {
+        HandyRuleWithRemap handyRule = new HandyRuleWithRemap(createDefaultRule(method, sourcePath));
         return handyRule;
     }
 
@@ -233,7 +276,7 @@ public class UrlMappingRuleHelper {
         return new HandyRuleWithAttrOnly(rule);
     }
 
-    public HandyRule add(String sourcePath) {
+    public HandyRuleWithRemap add(String sourcePath) {
         return add(defaultMethod, sourcePath);
     }
 
