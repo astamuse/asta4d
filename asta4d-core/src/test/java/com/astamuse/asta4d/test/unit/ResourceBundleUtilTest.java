@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
@@ -26,6 +27,11 @@ public class ResourceBundleUtilTest extends BaseTest {
         assertEquals(
                 helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
                         helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
+    }
+
+    @BeforeClass
+    public void setDefaultLocale() {
+        Locale.setDefault(Locale.ROOT);
     }
 
     @Test

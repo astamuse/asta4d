@@ -2,6 +2,7 @@ package com.astamuse.asta4d.test.render;
 
 import java.util.Locale;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
@@ -31,6 +32,11 @@ public class ExternalizeMessageTest extends BaseTest {
             renderer.add("afd|msg", "weather", "sunny");
             return renderer;
         }
+    }
+
+    @BeforeClass
+    public void setDefaultLocale() {
+        Locale.setDefault(Locale.ROOT);
     }
 
     @Test
