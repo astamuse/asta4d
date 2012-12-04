@@ -87,8 +87,11 @@ public class RequestDispatcherTest {
 
         //@formatter:off
         
-        rules.add("/index").forward(Throwable.class, "/error.html", 500)
+        rules.add("/index").id("index-page")
+                           .forward(Throwable.class, "/error.html", 500)
                            .forward("/index.html");
+        
+        rules.add("/index-duplicated").reMapTo("index-page");
 
         rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageWriter.AttrBodyOnly);
         
@@ -109,6 +112,7 @@ public class RequestDispatcherTest {
         //@formatter:off
         return new Object[][] { 
                 { "get", "/index", 0, new Page("/index.html"), new Asta4DPageWriter() },
+                { "get", "/index-duplicated", 0, new Page("/index.html"), new Asta4DPageWriter() },
                 { "get", "/body-only", 0, new Page("/bodyOnly.html"), new Asta4DPageWriter() },
                 { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
                 { "delete", "/restapi", 401, null, null }, 
@@ -116,7 +120,6 @@ public class RequestDispatcherTest {
                 { "get", "/nofile", 404, new Page("/notfound"), new Asta4DPageWriter() },
                 { "get", "/thrownep", 501, new Page("/NullPointerException"), new Asta4DPageWriter() },
                 { "get", "/throwexception", 500, new Page("/Exception"), new Asta4DPageWriter() },
-                
                 };
         //@formatter:on
     }
