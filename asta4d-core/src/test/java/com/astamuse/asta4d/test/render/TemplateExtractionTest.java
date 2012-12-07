@@ -20,4 +20,8 @@ public class TemplateExtractionTest extends BaseTest {
     public void loadTempateWithExtensionAndEmbedMerge() {
         new SimpleCase("TemplateWithExtensionAndEmbedMerge.html");
     }
+
+    public void loadTemplateWithThreeLevelExtension() {
+        new SimpleCase("ThreeLevelExtension_Child.html");
+    }
 }
