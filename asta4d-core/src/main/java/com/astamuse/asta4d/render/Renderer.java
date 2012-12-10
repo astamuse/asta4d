@@ -337,8 +337,8 @@ public class Renderer {
      *            a css selector
      * @return the created renderer or the current renderer for chain calling
      */
-    public Renderer addDebugger(String selector) {
-        return DebugRenderer.logger.isDebugEnabled() ? add(create(selector, new DebugRenderer())) : this;
+    public Renderer addDebugger(String logMessage, String selector) {
+        return DebugRenderer.logger.isDebugEnabled() ? add(create(selector, new DebugRenderer(logMessage))) : this;
     }
 
     /**
@@ -349,8 +349,8 @@ public class Renderer {
      * 
      * @return the created renderer or the current renderer for chain calling
      */
-    public Renderer addDebugger() {
-        return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer()) : this;
+    public Renderer addDebugger(String logMessage) {
+        return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer(logMessage)) : this;
     }
 
     /**
