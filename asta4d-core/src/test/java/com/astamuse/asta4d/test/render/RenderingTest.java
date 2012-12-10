@@ -66,6 +66,7 @@ public class RenderingTest extends BaseTest {
             renderer.add("#testadd", "class", "a");
             renderer.add("#testaddexisted", "+class", "b");
             renderer.add("#testremovebynull", "class", null);
+            renderer.add(".xabc", "should not be rendered");
             renderer.add("#testremovebyminus", "-class", "b");
             renderer.add("#testremovebyaddnull", "+class", null);
             renderer.add("#testset", "class", "b");

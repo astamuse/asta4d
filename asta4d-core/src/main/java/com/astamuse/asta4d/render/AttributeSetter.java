@@ -78,6 +78,12 @@ public class AttributeSetter implements ElementSetter {
             protected void configure(Element elem, String attrName, Object attrValue) {
                 elem.removeAttr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName);
                 elem.removeAttr(attrName);
+                // for remove all class definition, we have to clear the
+                // classNames too.
+                if (attrName.equals("class")) {
+                    elem.classNames().clear();
+                }
+
             }
         },
         ADDCLASS {
