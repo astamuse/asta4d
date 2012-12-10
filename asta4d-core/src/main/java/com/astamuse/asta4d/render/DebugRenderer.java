@@ -39,7 +39,7 @@ public class DebugRenderer extends Renderer {
     final static Logger logger = LoggerFactory.getLogger(DebugRenderer.class);
 
     public DebugRenderer(final String logMessage) {
-        super(CurrentNodeSelector, new ElementSetterTransformer(new ElementSetter() {
+        super(CurrentNodeSelector + ":" + logMessage, new ElementSetterTransformer(new ElementSetter() {
             @Override
             public void set(Element elem) {
                 String logStr = logMessage + ":\n" + elem.toString();
