@@ -38,7 +38,7 @@ public class RenderingTest extends BaseTest {
         public Renderer elementRendering() {
             Element elem = ElementUtil.parseAsSingle("<div>i am a danymic element</div>");
             Renderer render = Renderer.create("*", elem);
-            render.addDebugger();
+            render.addDebugger("TestRender");
             return render;
         }
 
@@ -74,8 +74,8 @@ public class RenderingTest extends BaseTest {
 
         public Renderer clearNode() {
             Renderer render = Renderer.create("#byClearNode", new ClearNode());
-            render.addDebugger();
-            render.addDebugger();
+            render.addDebugger("ClearNode");
+            render.addDebugger("ClearNode");
             return render;
         }
 

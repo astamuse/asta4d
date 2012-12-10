@@ -38,11 +38,12 @@ public class DebugRenderer extends Renderer {
 
     final static Logger logger = LoggerFactory.getLogger(DebugRenderer.class);
 
-    public DebugRenderer() {
+    public DebugRenderer(final String logMessage) {
         super(CurrentNodeSelector, new ElementSetterTransformer(new ElementSetter() {
             @Override
             public void set(Element elem) {
-                logger.debug(elem.toString());
+                String logStr = logMessage + ":\n" + elem.toString();
+                logger.debug(logStr);
             }
         }));
     }
