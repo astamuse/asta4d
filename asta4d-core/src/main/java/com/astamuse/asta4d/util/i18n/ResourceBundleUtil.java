@@ -76,10 +76,14 @@ public class ResourceBundleUtil {
     }
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {
+        Context context = Context.getCurrentThreadContext();
+        if (!context.getConfiguration().isCacheEnable()) {
+            ResourceBundle.clearCache();
+        }
         if (locale != null || LocaleUtils.isAvailableLocale(locale)) {
             return ResourceBundle.getBundle(resourceName, locale);
         }
-        Locale currentLocale = Context.getCurrentThreadContext().getCurrentLocale();
+        Locale currentLocale = context.getCurrentLocale();
         if (currentLocale != null || LocaleUtils.isAvailableLocale(currentLocale)) {
             return ResourceBundle.getBundle(resourceName, currentLocale);
         }
