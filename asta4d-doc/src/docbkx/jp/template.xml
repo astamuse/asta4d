@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="template"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Template</title>
+
+  <para>レンダリングsnippetクラスの宣言：</para>
+  <para>View 層の静的コンテンツとなる HTML ファイルです。テンプレートファイルはデフォルトではWebアプリのDocument Root
+  以下に配置しますが、/WEB-INF下に指定したい場合には TemplateResolver#searchPath() を指定できます。
+  テンプレートファイルでは、レンダリングの際に呼び出される Snippet クラスをHTMLタグ内に指定することができます。</para>
+
+  <programlisting language="html">
+<![CDATA[
+
+<html>
+  <head><title>template sample</title></head>
+  <body>
+    <!-- (1) -->
+    <div afd:render="SampleSnippet">
+      <span>dummy text</span>
+    </div>
+    <!-- (2) -->
+    <div afd:render="SampleSnippet:execute">
+      <span id="sample" value="1">dummy text</span>
+      <span id="sample_nosymbol" class="text name">text</span>
+      <span id="sample_plus" class="text name">text</span>
+      <span id="sample_minus" class="text name">text</span>
+      <div id="dynamic_snippet"></div>
+      <div id="dynamic_embed"></div>
+    </div>
+    <!-- (3) -->
+    <afd:snippet render="SampleSnippet:embedTag" value="sampleValue">
+      <span>dummy text</span>
+    </afd:snippet>
+  </body>
+</html>
+
+]]>
+  </programlisting>
+
+  
+  <para>(1)	任意のタグの「afd:render」属性に、SampleSnippetクラスをSnippetとして呼び出すことを宣言しています。メソッド名を指定しない場合、
+  render()メソッドが呼び出されます。(クラス名は完全修飾名で指定することもできます。Configuration#setSnippetResolver()でデフォルトパッケージ
+  を指定することで、パッケージ名を省略することができます。また、Spring MVCとの連携動作をする際、Spring Bean Containerで管理しているBean ID を指定します。)</para>
+
+  <para>(2)	(2)	任意のタグの「afd:render」属性に、SampleSnippetクラスのexecute()メソッドをSnippetとして呼び出すことを宣言しています。
+  また、子要素のspanタグの属性名や属性値はexecuteメソッド内でレンダリング対照の指定に使用することができます。</para>
+  
+  <para>(3)	afd:snippetタグのrender属性に、SampleSnippetクラスのembedTag()メソッドをSnippetとして呼び出すことを宣言しています。また、
+  value属性はembedTag()メソッドの引数として参照することができます。</para>
+  
+  <para>テンプレートファイルは別のテンプレートファイルを継承することができます。あるテンプレートを継承したテンプレートでは、親となるテンプレートの任意の要素に追加・挿入・上書きを
+  行うことができます。要素の追加および挿入は、主にHTMLヘッダ情報をマージする目的で使用することを想定しています。</para>
+  
+  <para>parent.html</para>
+  
+  <programlisting language="html">
+<![CDATA[
+
+<html>
+  <head>
+    <afd:block id="block1">
+      <link href="parent1.css" rel="stylesheet" type="text/css" />
+    </afd:block>
+    <afd:block id="block2">
+      <link href="parent2.css" rel="stylesheet" type="text/css" />
+    </afd:block>
+  <title>extension sample</title>
+  </head>
+  <body>
+    <afd:block id="content">content</afd:block>
+  </body>
+</html>
+
+
+]]>
+  </programlisting>
+
+  <para>child.html</para>
+  
+  <programlisting language="html">
+<![CDATA[
+
+<html>
+<head></head>
+<body>
+<!-- (1) -->
+<afd:extension parent="parent.html">
+  <!-- (2) -->
+  <afd:block append="block1">
+    <link href="child1.css" rel="stylesheet" type="text/css" />
+  </afd:block>
+  <!-- (3) -->
+  <afd:block insert="block2">
+    <link href="child2.css" rel="stylesheet" type="text/css" />
+  </afd:block>
+  <!-- (4) -->
+  <afd:block override="content ">
+    <div>hello</div>
+    <!-- (5) -->
+    <afd:embed target="/templates/embed.html" ></afd:embed>
+  </afd:block>
+</afd:extension>
+</body></html>
+
+
+]]>
+  </programlisting>
+  
+  <para>embed.html</para>
+  
+  <programlisting language="html">
+<![CDATA[
+
+<html>
+<head></head>
+<body>
+  <!-- (6) -->
+  <afd:block append="block1">
+    <link href="embed.css" rel="stylesheet" type="text/css" />
+  </afd:block>
+  <div>good embed</div>
+</body></html>
+
+
+
+]]>
+  </programlisting> 
+  
+  <para>(1)	テンプレートファイル「parent.html」を継承することを宣言しています。(子テンプレートに対して、「afd:extension」
+  宣言以外のものが無視されているので、editor向けのhead情報などを自由に設定することができます)</para>
+  
+  <para>(2)	継承元テンプレートのblock1属性の子要素の後に追加することを宣言しています。レンダリングの結果
+  「&lt;link href="parent1.css" ... /&gt;&lt;link href="child1.css" ... /&gt;」が出力されます。</para>
+  
+  <para>(3)	継承元テンプレートのblock2属性の子要素の前に挿入することを宣言しています。レンダリングの結果
+  「&lt;link href="child2.css" ... /&gt;&lt;link href="parent2.css" ... /&gt;」が出力されます。</para>
+
+  <para>(4)	継承元テンプレートのcontent属性の子要素を上書きすることを宣言しています。レンダリングの結果「&lt;div&gt;hello&lt;/div&gt;」が出力されます。</para>
+  
+  <para>(5)	別のHTMLファイルを埋め込むことを宣言しています。「/templates/embed.html」の内容が埋め込まれてレンダリングされます。</para>
+  
+  <para>(6)	embedファイルでも、bodyの部分以外は無視されていますので、エディタ向けののヘッダなどは自由に設定できる。且つ、block宣言があれば、
+  継承と同じように、引用元のファイルに対象blockを探して、追加もしくは上書きをします。</para>
+  
+  <para>上記のテンプレートファイルのレンダリング結果は下記のようになっている：</para>
+  <programlisting language="html">
+<![CDATA[
+
+<html>
+  <head>
+      <!—block1 -->
+      <link href="parent1.css" rel="stylesheet" type="text/css" />
+<link href="child1.css" rel="stylesheet" type="text/css" />
+<link href="embed.css" rel="stylesheet" type="text/css" />
+     <!—block2 -->
+      <link href="child2.css" rel="stylesheet" type="text/css" />
+      <link href="parent2.css" rel="stylesheet" type="text/css" />
+  <title>extension sample</title>
+  </head>
+  <body>
+    <!—content -->
+    <div>hello</div>
+    <!—embed -->
+    <div>good embed</div>
+  </body>
+</html>
+
+}
+
+]]>
+  </programlisting>  
+  
+  <para>afd:clearでマークしている内容はレンダリングする際削除されますので、テンプレートに複数行のデータの表現を表したい場合、
+  開発側は余計な行に「afd:clear」を入れるので、適当に複数行のHTMLを書いても構いません。</para>
+  
+  <programlisting language="html">
+<![CDATA[
+
+<ul>
+<li class="first"> row 1
+<li class="even"  afd:clear> row 2
+<li class=" odd" afd:clear > row 3
+</ul>
+
+
+]]>
+  </programlisting>
+  
+  <para>HTML5について：</para>
+  
+  <para>使用しているHTML解析ライブラリjsoupはWHATWGのHTML5を準拠している。設計の目的は最大限の互換性を持つことなので、
+  不正フォーマットがあっても、エラーにならずに自動的に補完して修正する仕様になっている。結果として、テンプレートファイルにもしミスなどの原因で
+  不正フォーマットがあっても、jsoupがエラーにならずに正常に解析できるようになっており、自動修正の結果は予想通りであれば、画面が正しく表示しますが、
+  予想通りではない場合、画面がおかしくなることです。</para>
+  
+  <para>特に気を付けなければならないのは、HTML5の基準として、セルフクローズのタグがイリーガルなので、セルフクローズのタグをやめてください。</para>
+
+  <para>Snippet呼び出し宣言、別ファイル埋め込み宣言はネストさせることができます。ネストしたSnippet呼び出しは、外側のタグに宣言したものから順番に呼び出されます。</para>
+
+    <programlisting language="html">
+<![CDATA[
+
+<html>
+  <head><title>nest sample</title></head>
+  <body>
+    <afd:snippet render="SampleNestSnippet:outer">
+      <p id="outer"></p>
+        <afd:snippet render="SampleNestSnippet:inner">
+          <p id="inner"></p>
+        </afd:snippet>
+      <afd:embed target="/templates/nested_embed.html" />
+    </afd:snippet>
+  </body>
+</html>
+
+
+]]>
+  </programlisting>
+  
+  <programlisting language="html">
+<![CDATA[
+
+<div id="nested1"></div>
+<div id="nested2" afd:render="SampleNestSnippet:nestedEmbed"></div>
+
+
+]]>
+  </programlisting>  
+  <para>この場合、outer -> nestedEmbed -> innerの順にレンダリングメソッドが呼び出されます。また、外側のSnippetで設定した属性値を内側のSnippetで
+  引数として使用することができます。(テンプレートファイルのHTMLタグ属性値をSnippetレンダリングメソッドの引数として扱う方法は3. Snippet を参照してください)</para>
+  
+ 
+</chapter>

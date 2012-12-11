@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="overview"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Asta4Dの紹介</title>
+
+  <para>Asta4Dは有名なScalaフレームワークであるLiftからインスピレーションを受け、LiftのJava版のような位置
+  づけとして開発されました。Scalaを使用している場合にはLiftを選択することを強く推奨しますが、Liftの恩恵を
+  受けながらもJavaを使用し続けたい場合、Asta4Dが最善の選択肢となりえるでしょう。
+  </para>
+  
+  <para>過去10年間に、様々なJavaフレームワークが作られてきました。特にMVCアーキテクチャとJSPタグリブ
+  （もしくは他の伝統的なテンプレート技術）により、大幅に開発効率が上がりました。しかし、下記のような事柄が
+  いまだに開発者の頭を悩ませ続けています：
+  </para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>ページソースに動的コードが混在しており、ページの再設計やレイアウト調整を行う妨げになると
+	  デザイナーやフロントエンドエンジニアから不満を持たれています。同様に、デザイナーやフロントエンドエンジニア
+	  がページの再設計とレイアウト調整を行うたびにページソースに埋め込まれた動的コードの挙動を壊してしまう
+	  ことがバックエンドエンジニアの不満になります。ソースのリファクタリングに大きなコストかけてまでページの再設計
+	  や新しいページの設計に合わせることは困難であるためです。</para>
+    </listitem>
+
+    <listitem>
+      <para>開発者は、テンプレート言語の機能が貧弱であることに不満を抱いており、複雑なレンダリングロジックの
+	  ために様々なおまじないのようなコードを書くことに疲れています。</para>
+    </listitem>
+
+    <listitem>
+      <para>開発者はMVCアーキテクチャの生産性が高くないことに不満を抱いており、PHPやASPのようなより効率の良い
+	  手法を求めています。</para>
+    </listitem>
+
+  </itemizedlist>
+  
+  <para>Asta4Dはこれらの問題点に対するソリューションです。我々はLiftからたくさんのことを学び、それらをJavaの世界に
+  もたらそうと試みています。Asta4Dは下記の点に焦点を当て作られました。
+  </para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>テンプレートとレンダリングの分離</para>
+	  <para>テンプレートファイルには動的なコードが含まれません。Asta4Dのテンプレートファイルは常にフロントエンドエンジニアが
+	  メンテナンスし易い純粋なHTMLファイルです。非常にデザインフレンドリーであり、我々はソースリファクタリングに要する作業負荷を
+	  90%以上減らすことができます。
+	  </para>
+      
+      <programlisting language="html">
+<![CDATA[
+<section>
+	<article>
+		<div afd:render="SimpleSnippet">dummy text</div>
+		<afd:snippet render="SimpleSnippet:setProfile">
+			<p id="name">name:<span>dummy name</span></p>
+			<p id="age">age:<span>0</span></p>
+		</afd:snippet>
+	</article>
+</section>
+]]>
+      </programlisting>      
+      
+      
+	  <para>レンダリングロジックは独立なJavaクラスで実装していますので、開発者は新しいテンプレート言語の習得が要らなく、
+	  いつも慣れているJavaのままで開発し、Java言語のフールパワーを利用できる。
+	  </para>
+	  
+      <programlisting language="java">
+<![CDATA[
+
+public class SimpleSnippet {
+
+    public Renderer render(String name) {
+        if (StringUtils.isEmpty(name)) {
+            name = "Asta4D";
+        }
+        Element element = 
+ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
+        return Renderer.create("*", element);
+    }
+
+    public Renderer setProfile() {
+        Renderer render = new GoThroughRenderer();
+        render.add("p#name span", "asta4d");
+        render.add("p#age span", "20");
+        return render;
+    }
+}
+
+]]>
+      </programlisting>
+	  
+    </listitem>
+
+    <listitem>
+      <para>コントローラを必要としないView Firstと使いやすURLマッチング仕組み</para>
+      <para>我々はMVCアーキテクチャが偉大でパワフルであると考えていますが、生産性が高くはないとも考えています。長年Javaエンジニアは
+      PHPやASPのようなより効率の良い手法を求め続けていました。伝統的なPHP/ASPでの開発が効率が良い理由は「View First」と呼ばれる
+      解決策によるものです。View Firstの開発スタイルでは、開発者はPHP/ASPの伝統的な開発方法と同じようにページの表示結果を前提として
+      ロジックを実装します。
+      </para>
+      
+      <para>多くの人は表示結果を前提とした場所に動的コードを実装することは、ソースがより複雑になり理解が困難になると言うかもしれません。
+      その主張は間違ってはいませんが、Asta4Dではテンプレートファイルとレンダリングロジックとを分離しているため問題となりません。生産性の面では、
+      開発者は複雑なソースの構成を気にすることなく本質的な開発に専念することができます。
+      </para>
+      
+      <para>同時に、Asta4Dは使いやすいURLマッチングルールを設定するAPIも提供しています。</para>
+
+      <programlisting language="java">
+<![CDATA[
+
+        rules.add("/app/", "/templates/index.html");
+
+        rules.add("/app/handler")
+             .handler(LoginHandler.class)
+             .handler(EchoHandler.class)
+             .forward(LoginFailure.class, "/templates/error.html")
+             .forward("/templates/success.html");
+
+
+]]>
+      </programlisting>
+      
+    </listitem>
+
+    <listitem>
+      <para>簡単かつ柔軟な処理フロー</para>
+      
+      <para>Asta4Dには、コントローラがありません。特定のRequestに対して、特定な責任者があると考えて、
+      request handlerという仕組みを用意しています。request handlerはいつも特定のrequestによって
+      特定な結果をクライアントに戻そうと担当している部品です。</para>
+      
+      <para>そして、AjaxもしくはRestfulのRequestは簡単にrequest handlerに任せられます。</para>
+      
+      <para>JSON:</para>
+      <programlisting language="java">
+<![CDATA[
+
+rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
+
+//...
+
+public class GetUserListHandler {
+
+    @RequestHandler
+    public List<String> queryUserList() {
+        return Arrays.asList("otani", "ryu", "mizuhara");
+    }
+}
+
+
+]]>
+      </programlisting>
+
+      <para>Restful:</para>
+      <programlisting language="java">
+<![CDATA[
+
+rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
+
+//...
+
+public class AddUserHandler {
+
+    @RequestHandler
+    public HeaderInfo doAdd(String newUserName) {
+        // some logic that should add a new user by the given name
+        // ...
+        return new HeaderInfo(200);
+    }
+}
+
+
+]]>
+      </programlisting>
+
+    </listitem>
+
+    
+    <listitem>
+      <para>request handlerを用いた副作用の分離とマルチスレッドレンダリング</para>
+      
+      <para>システム上に「副作用を伴う挙動」と「副作用を伴わない挙動」と呼ばれている二つタイプの操作があります。
+      システムの状態を変更するような作用のある挙動を、「副作用を伴う挙動」と呼ぶことにします。例えば、同じURLに対して
+      ログインチェックが行われる場合、ログイン前と認証に成功したログイン後ではおそらく異なるページが表示されるでしょう。
+      このようなログイン処理は「副作用を伴う挙動」です。また別の分かりやすい例としては、データベース更新処理があります。
+      更新処理がコミットされれば、それに関連したページは更新処理前とは異なる表示をするでしょう。これもまた「副作用を伴う
+      挙動」の一種です。データベース検索処理はどうでしょうか。検索処理は副作用を伴わない挙動です。これは何回検索処理を
+      行ったかに関わらず、常に同じ結果を返すことを意味しています。</para>
+      
+      <para>我々は、その「副作用」を慎重的に管理するべきと思い、全部の「副作用」をrequest handlerの仕組みで管理し、
+      ビュー層の機能を純粋にし、ソースをより綺麗でメンテナンスし易くするようになっています。これは、Asta4Dがひとつのページを
+      マルチスレッドでレンダリングすることを容易にすることも意味しています。なぜなら、レンダリング処理は副作用から解放されているからです。
+      </para>
+      
+      <para>並行的なsnippetレンダリング</para>
+      <programlisting language="html">
+<![CDATA[
+
+<div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
+    <div id="test">xx</div>
+</div>
+
+<afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>
+    <div id="test">xx</div>
+</afd:snippet>
+
+
+]]>
+      </programlisting>      
+      
+      <para>並行的なリストレンダリング</para>
+      <programlisting language="java">
+<![CDATA[
+
+Renderer renderer = Renderer.create("div#test", list, new ParallelDataConvertor<String, String>() {
+                @Override
+                public String convert(String obj) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return obj + "-sleep";
+                }
+            });
+
+
+
+]]>
+      </programlisting> 
+      
+    </listitem>
+   
+  </itemizedlist> 
+
+
+  <para>Asta4Dの将来の方向性は、フルスタックのWeb フレームワークですが、初期の段階ではSpring MVCと結合して利用する方針をとっています。
+  開発を行う際、Asta4Dではサポートしていない機能があれば、Spring MVCに任せて実装する方針です。</para>
+
+  <para>現在、Asta4Dは三つの部分に分けて実装しています。</para>
+    
+   
+  <itemizedlist>   
+    <listitem><para>Asta4D Core: テンプレートエンジン</para></listitem>
+    <listitem><para>Asta4D Web: View Firstの仕組み</para></listitem>
+    <listitem><para>Asta4D Spring: Spring MVCとの連携動作</para></listitem>
+  </itemizedlist>
+
+
+  <para>まず、全体構造図を参考してください。簡単な説明は構造図に記載しているため、ここではいくつかの部分のみに追加説明をします。</para>
+
+  <itemizedlist>   
+    <listitem><para>URL Mapping Rule Extractor: 今回、解析文法はSpring3の@RequestMappingルールを流用し、Antのパス宣言文法を利用します。</para></listitem>
+    
+    <listitem>
+        <para>Request Handler: テンプレートに移す前に、画面表示に関係のない更新処理などはこちらに対応できます。</para>
+        <para>※副作用という観点から見ると、テンプレート表示は副作用がなく、DB更新・ログイン処理などは副作用があります。そして、
+        副作用のある処理はRequest Handlerで対応するという考え方になります。</para>
+    </listitem>
+    
+    <listitem>
+        <para>Renderer:生のテンプレートファイルの内容に対してどの部分はどのようにレンダリングするかということをSnippet Method
+        で定義するクラスです。CSS Selectorでレンダリング対象を宣言してから動作を設定します。Rendererで設定できる動作はテキスト設定、
+        属性設定、css class追加、css class削除、DOM Node削除、DOM Node書き換えなどがあります。また、リストベースでの動作もできます。
+        （詳しくは後述します）</para>
+    </listitem>
+
+  </itemizedlist>  
+  
+
+
+
+
+
+
+  
+</chapter>
