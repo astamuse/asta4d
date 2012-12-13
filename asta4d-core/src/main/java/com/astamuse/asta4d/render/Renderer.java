@@ -329,6 +329,20 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link DataConvertor} and add it to the current renderer. See
+     * {@link #create(String, List)}.
+     * 
+     * @param selector
+     * @param list
+     * @param convertor
+     * @return the created renderer for chain calling
+     */
+    public <S, T> Renderer add(String selector, List<S> list, ParallelDataConvertor<S, T> convertor) {
+        return add(create(selector, list, convertor));
+    }
+
+    /**
      * add a {@link DebugRenderer} to the current Renderer and when this
      * renderer is applied, the target element specified by the given selector
      * will be output by logger.
