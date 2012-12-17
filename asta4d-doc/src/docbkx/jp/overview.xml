@@ -52,7 +52,7 @@
 	  90%以上減らすことができます。
 	  </para>
       
-      <programlisting language="html">
+      <programlisting language="php">
 <![CDATA[
 <section>
 	<article>
@@ -201,7 +201,7 @@ public class AddUserHandler {
       </para>
       
       <para>並行的なsnippetレンダリング</para>
-      <programlisting language="html">
+      <programlisting language="php">
 <![CDATA[
 
 <div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
