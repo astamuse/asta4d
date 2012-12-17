@@ -105,11 +105,14 @@ Thus, we created Asta4D.
     ```
 
     ```java
-    rules.add("/app/handler")
-         .handler(LoginHandler.class)
-         .handler(EchoHandler.class)
-         .forward(LoginFailure.class, "/templates/error.html")
-         .forward("/templates/success.html");
+    public class AddUserHandler {
+
+        @RequestHandler
+        public HeaderInfo doAdd(String newUserName) {
+            // some logic that should add a new user by the given name
+            // ...
+            return new HeaderInfo(200);
+        }
     ```
 
 -   Multi-Thread rendering
