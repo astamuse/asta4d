@@ -24,123 +24,125 @@ Thus, we created Asta4D.
     There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be 
     easily maintained by front-end developers, it is very design friendly and we can reduce the workload for 
     source refactoring by over 90%.
-    
-        ```html
-        <section>
-            <article>
-                <div afd:render="SimpleSnippet">dummy text</div>
-                <afd:snippet render="SimpleSnippet:setProfile">
-                    <p id="name">name:<span>dummy name</span></p>
-                    <p id="age">age:<span>0</span></p>
-                </afd:snippet>
-            </article>
-        </section>
-        ```
-    
+
+
+    ```html
+    <section>
+        <article>
+            <div afd:render="SimpleSnippet">dummy text</div>
+            <afd:snippet render="SimpleSnippet:setProfile">
+                <p id="name">name:<span>dummy name</span></p>
+                <p id="age">age:<span>0</span></p>
+            </afd:snippet>
+        </article>
+    </section>
+    ```
+
+
     There is only some minimal mix-in extra declarations that tell template engine which Java class will rendering these 
     html contents, which Java class is usually called as a snippet class.
 
     In the snippet class, we use traditional CSS selector to reference rendering target, amazing and powerful.
-    
-        ```java
-        public class SimpleSnippet {
-        
-            public Renderer render(String name) {
-                if (StringUtils.isEmpty(name)) {
-                    name = "Asta4D";
-                }
-                Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
-                return Renderer.create("*", element);
+
+
+    ```java
+    public class SimpleSnippet {
+
+        public Renderer render(String name) {
+            if (StringUtils.isEmpty(name)) {
+                name = "Asta4D";
             }
-        
-            public Renderer setProfile() {
-                Renderer render = new GoThroughRenderer();
-                render.add("p#name span", "asta4d");
-                render.add("p#age span", "20");
-                return render;
-            }
+            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
+            return Renderer.create("*", element);
         }
-        ```
+
+        public Renderer setProfile() {
+            Renderer render = new GoThroughRenderer();
+            render.add("p#name span", "asta4d");
+            render.add("p#age span", "20");
+            return render;
+        }
+    }
+    ```
 
 -   View first and URL matching
 
     There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined 
     URL matching rules and all the data query logic should be implemented at the snippet class which we mentioned above.
 
+    ```java
+    rules.add("/app/", "/templates/index.html");
 
-        ```java
-        rules.add("/app/", "/templates/index.html");
-
-        rules.add("/app/handler")
-             .handler(LoginHandler.class)
-             .handler(EchoHandler.class)
-             .forward(LoginFailure.class, "/templates/error.html")
-             .forward("/templates/success.html");
-        ```
+    rules.add("/app/handler")
+         .handler(LoginHandler.class)
+         .handler(EchoHandler.class)
+         .forward(LoginFailure.class, "/templates/error.html")
+         .forward("/templates/success.html");
+    ```
 
 -   Request handlers for ajax and Restful request
     
     json request:
-        
-        ```java
-        rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
-        ```
-        
-        ```java
-        public class GetUserListHandler {
 
-            @RequestHandler
-            public List<String> queryUserList() {
-                return Arrays.asList("otani", "ryu", "mizuhara");
-            }
+    ```java
+    rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
+    ```
+
+    ```java
+    public class GetUserListHandler {
+
+        @RequestHandler
+        public List<String> queryUserList() {
+            return Arrays.asList("otani", "ryu", "mizuhara");
         }
-        ```
-        
+    }
+    ```
+
     Restful request:
-    
-        ```java
-        rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
-        ```
-        
-        ```java
-        rules.add("/app/handler")
-             .handler(LoginHandler.class)
-             .handler(EchoHandler.class)
-             .forward(LoginFailure.class, "/templates/error.html")
-             .forward("/templates/success.html");
-        ```
+
+    ```java
+    rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
+    ```
+
+    ```java
+    rules.add("/app/handler")
+         .handler(LoginHandler.class)
+         .handler(EchoHandler.class)
+         .forward(LoginFailure.class, "/templates/error.html")
+         .forward("/templates/success.html");
+    ```
 
 -   Multi-Thread rendering
 
     parallel snippet rendering: All the snippet marked as afd:parallelÅh or ÅgparallelÅh will be executed parallel.
     
-        ```html
-        <div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
-            <div id="test">xx</div>
-        </div>
+    ```html
+    <div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
+        <div id="test">xx</div>
+    </div>
 
-        <afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>
-            <div id="test">xx</div>
-        </afd:snippet>
-        ```    
+    <afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>
+        <div id="test">xx</div>
+    </afd:snippet>
+    ```    
 
     parallel list rendering: A parallel data convertor can be used for parallel rendering a list.
     
-        ```java
-        Renderer renderer = Renderer.create("div#test", list, 
-            new ParallelDataConvertor<String, String>() {
-                    @Override
-                    public String convert(String obj) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return obj + "-sleep";
+    ```java
+    Renderer renderer = Renderer.create("div#test", list, 
+        new ParallelDataConvertor<String, String>() {
+                @Override
+                public String convert(String obj) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                });
-        ```
-        
+                    return obj + "-sleep";
+                }
+            });
+    ```
+
 ## Quick start
 The quickest way to start with Asta4D is from the sample project. Asta4D projects is structured by Maven 3, after 
 install Maven 3, run the start bat(sh), you will get a working Asta4D project with jetty.
@@ -154,11 +156,13 @@ document which includes more detailed user guide which is for our employees.
 ## Questions and answers
 
 -   **Q**: Who developed Asta4D and what its current status is?
+    
     **A**: Asta4D is powered by astamuse company Ltd. locating at Tokyo Japan. We are concentrating on global innovation support 
     and develop Asta4D for our own services. Currently, Asta4D is used by our new service development and is still in earlier 
     alpha release status.
 
 -   **Q**: Why are there Spring MVC Framework dependencies in Asta4D?
+    
     **A**: Our initial purpose is to drive up our new service development, so we have to consider a balance of progression and schedule 
     between Asta4DÅfs development and our serviceÅfs development. So we decided to start Asta4DÅfs work basing on Spring MVC 
     therefore Spring MVC can do the things that we have no time to do. Currently, we have removed 90% dependencies from Spring MVC, 
