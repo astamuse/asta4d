@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="template"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Renderer</title>
+
+  <para>Snippetで戻り値として返されるレンダリングデータです。Render属性を定義したタグの子要素の完全置換・CSSセレクタでの条件指定による部分置換などを行うことができます。</para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class SampleSnippet {
+  public Renderer render() {
+    Element element = ElementUtil.parseAsSingle("<div>replaced element</div>");
+    return Renderer.create("*", element); // (1)
+  }
+
+  public Renderer execute() {
+    Renderer renderer = Renderer.create("#sample", "replaced text"); // (2)
+    renderer.add("#sample", "value", "2"); // (3)
+    renderer.add("#sample_nosymbol", "class", "label"); // (4)
+    renderer.add("#sample_plus", "+class", "label"); // (5)
+    renderer.add("#sample_minus", "-class", "text"); // (6)
+    Element subSnippet = new SnippetNode("DynamicSnippet:execute");
+    renderer.add("#dynamic_snippet", new ChildReplacer(subSnippet)); // (7)
+    Element embed = new EmbedNode("/templates/dynamic_embed.html");
+    renderer.add("#dynamic_embed", embed); // (8)
+    return renderer;
+  }
+
+  public Renderer embedTag(String value) {
+    return Renderer.create("span", value); // (9)
+  }
+}
+
+
+]]>
+  </programlisting>
+
+  <para>(1)	CSSセレクタとして「*(任意の要素と一致)」、出力する要素として文字列から作成したElementを指定しています。render属性を指定したタグの種類に関わらず、
+  「&lt;div&gt;replaced element&lt;/div&gt;」に置換して出力します。</para>
+  <para>(2)	CSSセレクタとして「#sample(id属性の値がsample)」、出力する要素として文字列を指定しています。</para>
+  <para>(3)	id属性の値がsampleであるタグのvalue属性の値に「2」を設定して出力するように指定しています。(2)と(3)の指定により、レンダリングの結果
+  「&lt;span id="sample" value="2"&gt;replaced text&lt;/span&gt;」が出力されます。</para>
+  <para>(4)	id属性の値がsample_nosymbolであるタグのclass属性の値に「label」を設定して出力するように指定しています。レンダリングの結果「&lt;span id="sample_nosymbol" 
+  class="label"&gt;text&lt;/span&gt;」が出力されます。</para>
+  <para>(5)	属性名の前に「+」を付与することにより、id属性の値がsample_plusであるタグのclass属性の値に「label」を追加して出力するように指定しています。レンダリングの結果
+  「&lt;span id="sample_plus" class="text name label"&gt;text&lt;/span&gt;」が出力されます。(属性値の追加はclass属性にのみ作用します。class属性以外に+記号を
+  付与した場合、記号を付与していない場合と同様に扱われます)</para>
+  <para>(6)	属性名の前に「-」を付与することにより、id属性の値がsample_minusであるタグのclass属性の値から「text」を削除して出力するように指定しています。レンダリングの結果
+  「&lt;span id="sample_minus" class="name"&gt;text&lt;/span&gt;」が出力されます。(属性値の削除はclass属性にのみ作用します。class属性以外に-記号を付与した場合、
+  属性ごと削除します)</para>
+  <para>(7)	動的に別のSnippetのレンダリングメソッドを呼び出すことを宣言しています。</para>
+  <para>(8)	動的に別のテンプレートファイルを埋め込むことを宣言しています。</para>
+  <para>(9)	CSSセレクタとして「span(タグ名)」、出力する要素として引数valueの値を指定しています。render属性を指定したタグの子要素のspanタグの内容を、render属性を指定したタグのvalue
+  属性の値に置換して出力します。</para>
+
+  
+  <para>レンダリングにはjsoupを利用しています。CSSセレクタの詳細な記法はjsoup APIを参照してください。<link
+      xl:href="http://jsoup.org/apidocs/org/jsoup/select/Selector.html">CSS Selector</link></para>
+
+  <para>特殊なRendererについて：</para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>GothroughRenderer</para>
+      <para>それ自体は何もしない Renderer です。</para>
+    </listitem>
+    
+    <listitem>
+      <para>ChildReplacer</para>
+      <para>該当Elementの子要素全てを置換します。</para>
+    </listitem>  
+
+    <listitem>
+      <para>ClearNode</para>
+      <para>該当Elementを削除します。また、任意のタグに「afd:clear」と宣言することで、レンダリング前にテンプレートから削除することも可能です。</para>
+    </listitem>  
+
+    <listitem>
+      <para>ElementSetter</para>
+      <para>該当Elementに対して任意の操作ができるインタフェースです。特殊なレンダリング動作を行いたい場合にこのインターフェースを実装したレンダリングクラスを作成することで実現できます。</para>
+    </listitem>  
+
+    <listitem>
+      <para>DebugRenderer</para>
+      <para>Renderer#addDebuger(String selector)でDebugRendererを追加することができます。DebugRendererに対して、該当Elementの内容をloggerで出力します。
+      Selectorを指定しない場合、snippetメソッドを定義したElementを出力対象とします。</para>
+    </listitem>  
+
+    <listitem>
+      <para>任意データ型の属性設定</para>
+      <para>属性を設定する際、String、long, int, booleanはStringとして、そのまま該当Elementの属性に設定しますが、その以外のデータ型の設定も可能です。内部はインスタンスのリファレンスを保持して、
+      Snippetメソッドの変数に自動適用します（ContextDataを参照）。</para>
+    </listitem>      
+  </itemizedlist>
+</chapter>

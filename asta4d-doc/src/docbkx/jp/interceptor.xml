@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="template"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Interceptor</title>
+
+  <para>Request Interceptor(要補足)</para>
+  
+  <para>Page Interceptor</para>
+  
+  <para>ページのレンダリング処理前後に処理を行いたい場合に使用します。インターフェースPageInterceptorを実装したクラスをConfiguration#setPageInterceptorList()で設定します。</para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class SamplePageInterceptor implements PageInterceptor {
+    @Override
+    public void prePageRendering(Renderer renderer) { // (1)
+        // ページレンダリング前の処理(省略)
+    }
+
+    @Override
+    public void postPageRendering(Renderer renderer) { // (2)
+        // ページレンダリング後の処理(省略)
+    }
+}
+
+
+
+]]>
+  </programlisting>
+
+  <para>(1)	ページレンダリング前に実行されます。</para>
+  <para>(2)	ページレンダリング後に実行されます。prePageRenderingおよびレンダリング処理で例外が発生した場合、実行されません。</para>
+
+  <para>Snippet Interceptor</para>
+  <para>Snippetのメソッド実行前後に処理を行いたい場合に使用します。インターフェースSnippetInterceptorを実装したクラスを
+  DefaultSnippetInvoker.setSnippetInterceptorList ()で設定します。</para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class SampleSnippetInterceptor implements SnippetInterceptor {
+    @Override
+    public boolean beforeProcess( // (1)
+            SnippetExecutionHolder executionHolder) throws Exception {
+        // Snippetメソッド実行前の処理(省略)
+        return true;
+    }
+
+    @Override
+    public void afterProcess( // (2)
+            SnippetExecutionHolder executionHolder, ExceptionHandler exceptionHandler) {
+        // Snippetメソッド実行後の処理(省略)
+    }
+}
+
+
+
+
+]]>
+  </programlisting> 
+  
+  <para>(1)	Snippetメソッド実行前に実行されます。戻り値としてfalseを返すとSnippetメソッドおよびafterProcessは実行されません。</para>
+  <para>(2)	Snippetメソッド実行後に実行されます。ExceptionHandlerでbreforePrcessもしくはsnippetメソッドの実行中に発生した例外の情報を持っており、ExceptionHandler#setException(null)
+  を設定することより例外を取り消すことができます。取り消しを行わない場合、afterProcess実行後にこの例外は上に投げられます。</para>
+  
+</chapter>
