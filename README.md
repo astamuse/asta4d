@@ -161,7 +161,7 @@ which includes more detailed user guide which is for our employees.
 
 -   **Q**: Who developed Asta4D and what its current status is?
     
-    **A**: Asta4D is powered by astamuse company Ltd. locating at Tokyo Japan. We are concentrating on global innovation support 
+    **A**: Asta4D is powered by [astamuse company Ltd.](http://www.astamuse.co.jp/) locating at Tokyo Japan. We are concentrating on global innovation support 
     and develop Asta4D for our own services. Currently, Asta4D is used by our new service development and is still in earlier 
     alpha release status.
 
