@@ -2,7 +2,7 @@
 
 It is a web application framework which is friendly to design and flexible to development.
 It is inspired by lift which is a famous scala web application framework. Asta4D is therefore 
-developed as an alternative of lift for Java. If you like scala, we strongly recommend lift 
+developed as an alternative of [lift](http://liftweb.net/) for Java. If you like scala, we strongly recommend lift 
 for you and if youÅed like to enjoy the benefit of lift while still staying with Java, we believe 
 our Asta4D is your best fit.
 
@@ -153,8 +153,9 @@ install Maven 3, run the start bat(sh), you will get a working Asta4D project wi
 bringing it into your own project as maven modules. Do not worry about it, we will fix this problem when we officially 
 release the beta version)
 
-Additionally, there is an English document which describes how Asta4D works in more details, and there is also a Japanese
-document which includes more detailed user guide which is for our employees.
+Additionally, there is an [English document](http://astamuse.github.com/asta4d/userguide/index.html) which describes how 
+Asta4D works in more details, and there is also a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html)
+which includes more detailed user guide which is for our employees.
 
 ## Questions and answers
 
