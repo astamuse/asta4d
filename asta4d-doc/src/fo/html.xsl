@@ -6,6 +6,10 @@
   <xsl:import href="urn:docbkx:stylesheet"/>
   <!-- highlight.xsl must be imported in order to enable highlighting support, highlightSource=1 parameter
    is not sufficient -->
-  <xsl:import href="highlight.xsl"/>
+  <xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
   <xsl:param name="highlight.source" select="1"/>
+
+    <xsl:param name="chapter.autolabel">1</xsl:param>
+    <xsl:param name="section.autolabel" select="1"/>
+    <xsl:param name="section.label.includes.component.label" select="1"/>  
 </xsl:stylesheet>

@@ -6,6 +6,6 @@
   <xsl:import href="urn:docbkx:stylesheet"/>
   <!-- highlight.xsl must be imported in order to enable highlighting support, highlightSource=1 parameter
    is not sufficient -->
-  <xsl:import href="highlight.xsl"/>
+  <xsl:import href="highlight-fo.xsl"/>
   <xsl:param name="highlight.source" select="1"/>
 </xsl:stylesheet>

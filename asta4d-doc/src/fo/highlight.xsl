@@ -8,11 +8,11 @@
                 version='1.0'>
 
   <xsl:template match='xslthl:keyword'>
-    <span class="hl-keyword"><xsl:value-of select='.'/></span>
+    <span class="hl-keyword" color="#7F0055"><xsl:value-of select='.'/></span>
   </xsl:template>
 
   <xsl:template match='xslthl:comment'>
-    <span class="hl-comment"><xsl:value-of select='.'/></span>
+    <span class="hl-comment" color="#3F5F5F"><xsl:value-of select='.'/></span>
   </xsl:template>
 
   <xsl:template match='xslthl:oneline-comment'>
