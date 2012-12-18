@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<book xmlns="http://docbook.org/ns/docbook" version="5.0"
+<book xml:id="asta4d-user-guide"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
-    xmlns:xlink="http://www.w3.org/1999/xlink">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <bookinfo>
-    <title>Asta4D Framework user guide</title>
+    <title>Asta4D Framework User Guide</title>
 
     <productname>Asta4D Framework</productname>
 
@@ -11,9 +16,12 @@
 
     <authorgroup>
       <author>
-        <firstname>rui</firstname>
-
-        <surname>liu</surname>
+        <firstname>Shunsuke</firstname>
+        <surname>Otani</surname>
+      </author>	  
+      <author>
+        <firstname>Rui</firstname>
+        <surname>Liu</surname>
       </author>
     </authorgroup>
   </bookinfo>
@@ -23,11 +31,20 @@
   <toc></toc>
 
   <part id="asta4d-introduction">
-    <title>Overview of Asta4D Framework</title>
+    <title>Introduction of Asta4D</title>
 
     <partintro id="asta4d-core-intro">
-      <para>asta4d is a lift like framework with Java.</para>
+      <para>Asta4D is a web application framework which is friendly to design and flexible to development.</para>
+      
+      <xi:include href="en/overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+
     </partintro>
   </part>
+  
+  <part id="asta4d-functionality">
+    <title>Functions of Asta4D</title>
+    <para>...</para>
+  </part>  
   
 </book>
