@@ -184,7 +184,7 @@ public class RenderingTest extends BaseTest {
 
     public void testRemoveClassInListRendering() {
         // TODO to resovle this problem
-        // new SimpleCase("Rendering_removeClassInListRendering.html");
+        new SimpleCase("Rendering_removeClassInListRendering.html");
     }
 
     /*
