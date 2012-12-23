@@ -20,6 +20,7 @@ package com.astamuse.asta4d.render.transformer;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.render.ElementSetter;
+import com.astamuse.asta4d.util.ElementUtil;
 
 public class ElementSetterTransformer extends Transformer<ElementSetter> {
 
@@ -29,7 +30,7 @@ public class ElementSetterTransformer extends Transformer<ElementSetter> {
 
     @Override
     public Element transform(Element elem, ElementSetter content) {
-        Element result = elem.clone();
+        Element result = ElementUtil.safeClone(elem);
         content.set(result);
         return result;
     }

@@ -19,6 +19,8 @@ package com.astamuse.asta4d.render.transformer;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.util.ElementUtil;
+
 public class ElementTransformer extends Transformer<Element> {
 
     public ElementTransformer(Element content) {
@@ -27,7 +29,7 @@ public class ElementTransformer extends Transformer<Element> {
 
     @Override
     protected Element transform(Element elem, Element content) {
-        return content.clone();
+        return ElementUtil.safeClone(content);
     }
 
 }
