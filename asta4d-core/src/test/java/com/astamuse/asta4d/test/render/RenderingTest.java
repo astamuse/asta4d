@@ -73,6 +73,20 @@ public class RenderingTest extends BaseTest {
             return renderer;
         }
 
+        public Renderer removeClassInListRendering() {
+            List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            return Renderer.create(".item", list, new DataConvertor<Integer, Renderer>() {
+                @Override
+                public Renderer convert(Integer i) {
+                    Renderer render = Renderer.create(".x-num", i);
+                    int idx = (i % 3) + 1;
+                    render.add(".x-idx-" + idx, "-class", "x-remove");
+                    render.add(".x-remove", new ClearNode());
+                    return render;
+                }
+            });
+        }
+
         public Renderer clearNode() {
             Renderer render = Renderer.create("#byClearNode", new ClearNode());
             render.addDebugger("ClearNode");
@@ -166,6 +180,11 @@ public class RenderingTest extends BaseTest {
 
     public void testClassAttrSetting() {
         new SimpleCase("Rendering_classAttrSetting.html");
+    }
+
+    public void testRemoveClassInListRendering() {
+        // TODO to resovle this problem
+        // new SimpleCase("Rendering_removeClassInListRendering.html");
     }
 
     /*

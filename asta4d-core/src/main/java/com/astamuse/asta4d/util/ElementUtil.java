@@ -74,6 +74,29 @@ public class ElementUtil {
         }
     }
 
+    /**
+     * there is a bug in jsoup, so we implement a safe empty by ourselves.
+     * https://github.com/jhy/jsoup/issues/278
+     * 
+     * @param node
+     */
+    public final static Element safeClone(Element elem) {
+        Element newElem = elem.clone();
+        // resetClassNames(newElem);
+        return newElem;
+    }
+
+    private final static void resetClassNames(Element elem) {
+        if (elem == null) {
+            return;
+        }
+        elem.classNames(new ProxiedClassNameSet(elem));
+        Elements children = elem.children();
+        for (Element child : children) {
+            resetClassNames(child);
+        }
+    }
+
     public final static void appendNodes(Element parent, List<Node> children) {
         for (Node node : children) {
             parent.appendChild(node);
