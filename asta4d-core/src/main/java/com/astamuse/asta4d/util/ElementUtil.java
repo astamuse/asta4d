@@ -17,10 +17,12 @@
 
 package com.astamuse.asta4d.util;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -82,15 +84,30 @@ public class ElementUtil {
      */
     public final static Element safeClone(Element elem) {
         Element newElem = elem.clone();
-        // resetClassNames(newElem);
+        try {
+            resetClassNames(newElem);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         return newElem;
     }
 
-    private final static void resetClassNames(Element elem) {
+    private final static Field FieldClassNames;
+    static {
+        try {
+            FieldClassNames = Element.class.getDeclaredField("classNames");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private final static void resetClassNames(Element elem) throws IllegalAccessException {
         if (elem == null) {
             return;
         }
-        elem.classNames(new ProxiedClassNameSet(elem));
+        FieldUtils.writeField(FieldClassNames, elem, null, true);
+
+        // elem.classNames(new ProxiedClassNameSet(elem));
         Elements children = elem.children();
         for (Element child : children) {
             resetClassNames(child);
