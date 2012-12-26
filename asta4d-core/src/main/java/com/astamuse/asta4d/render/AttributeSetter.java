@@ -64,6 +64,12 @@ public class AttributeSetter implements ElementSetter {
                 if (attrValue instanceof String) {
                     elem.removeAttr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName);
                     elem.attr(attrName, attrValue.toString());
+                } else if (attrValue instanceof Number) {
+                    elem.removeAttr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName);
+                    elem.attr(attrName, attrValue.toString());
+                } else if (attrValue instanceof Boolean) {
+                    elem.removeAttr(ExtNodeConstants.ATTR_DATAREF_PREFIX_WITH_NS + attrName);
+                    elem.attr(attrName, attrValue.toString());
                 } else {
                     String dataRefId = attrName + "_" + IdGenerator.createId();
                     Context context = Context.getCurrentThreadContext();
