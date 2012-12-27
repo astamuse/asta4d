@@ -12,9 +12,8 @@ import com.astamuse.asta4d.test.render.infra.SimpleCase;
 @Test(singleThreaded = true)
 public class ContextBindDataTest extends BaseTest {
 
-    private final static AtomicInteger NonParallelRenderCounter = new AtomicInteger();
-
     public static class NonParallelRender {
+        private AtomicInteger NonParallelRenderCounter = new AtomicInteger();
         private ContextBindData<Integer> data = new ContextBindData<Integer>() {
             @Override
             protected Integer buildData() {
@@ -29,9 +28,9 @@ public class ContextBindDataTest extends BaseTest {
         }
     }
 
-    private final static AtomicInteger ParallelRenderCounter = new AtomicInteger();
-
     public static class ParallelRender {
+        private AtomicInteger ParallelRenderCounter = new AtomicInteger();
+
         private ContextBindData<Integer> data = new ContextBindData<Integer>(true) {
             @Override
             protected Integer buildData() {
