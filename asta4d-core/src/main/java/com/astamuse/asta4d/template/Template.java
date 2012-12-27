@@ -29,6 +29,7 @@ import org.jsoup.parser.Parser;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.util.IdGenerator;
 
 public class Template {
 
@@ -81,6 +82,8 @@ public class Template {
     }
 
     public Document getDocumentClone() {
-        return doc.clone();
+        Document newDoc = doc.clone();
+        newDoc.attr(ExtNodeConstants.ATTR_DOC_REF, "doc-" + IdGenerator.createId());
+        return newDoc;
     }
 }

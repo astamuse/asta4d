@@ -130,7 +130,7 @@ public class RenderUtil {
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
                 refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
                 if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL)) {
-                    ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context);
+                    ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
                     final Context newContext = context.clone();
                     final String declaration = renderDeclaration;
                     crHelper.submitWithContext(newContext, refId, new Callable<Renderer>() {
@@ -172,7 +172,7 @@ public class RenderUtil {
             TemplateUtil.regulateElement(doc);
             applySnippets(doc);
         } else {
-            ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context);
+            ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
             if (crHelper.hasUnCompletedTask()) {
                 try {
                     FutureRendererHolder holder = crHelper.take();
