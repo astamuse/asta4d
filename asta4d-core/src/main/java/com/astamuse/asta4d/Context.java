@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 public class Context {
@@ -172,6 +173,7 @@ public class Context {
 
     public void init() {
         clear();
+        ContextBindData.initConext(this);
     }
 
     public void clear() {
