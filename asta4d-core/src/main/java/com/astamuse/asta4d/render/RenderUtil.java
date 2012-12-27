@@ -160,6 +160,7 @@ public class RenderUtil {
         while (embedNodeIterator.hasNext()) {
             embed = embedNodeIterator.next();
             if (isBlockedByParentSnippet(doc, embed)) {
+                embedNodeListCount--;
                 continue;
             }
             embedContent = TemplateUtil.getEmbedNodeContent(embed);

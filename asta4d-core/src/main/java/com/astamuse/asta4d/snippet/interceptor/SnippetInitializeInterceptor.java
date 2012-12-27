@@ -18,6 +18,7 @@
 package com.astamuse.asta4d.snippet.interceptor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.astamuse.asta4d.Context;
@@ -35,7 +36,8 @@ public class SnippetInitializeInterceptor implements SnippetInterceptor {
         Context context = Context.getCurrentThreadContext();
         List<Object> snippetList = context.getData(InstanceListCacheKey);
         if (snippetList == null) {
-            snippetList = new ArrayList<>();
+            // TODO we need a more efficient list
+            snippetList = Collections.synchronizedList(new ArrayList<>());
             context.setData(InstanceListCacheKey, snippetList);
         }
         Object target = execution.getInstance();

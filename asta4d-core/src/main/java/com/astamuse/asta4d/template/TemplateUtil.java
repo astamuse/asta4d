@@ -48,6 +48,10 @@ public class TemplateUtil {
         regulateEmbed(elem);
     }
 
+    private final static String createSnippetRef() {
+        return "sn-" + IdGenerator.createId();
+    }
+
     private final static void regulateSnippets(Element elem) {
 
         // find nodes emebed with snippet attribute
@@ -86,7 +90,6 @@ public class TemplateUtil {
         // first, we regulate the snippets to legal form
         List<Element> snippetNodes = elem.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
         String status;
-        String id;
         for (Element sn : snippetNodes) {
             // regulate status
             if (sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS)) {
@@ -105,8 +108,7 @@ public class TemplateUtil {
             }
             // regulate id
             if (!sn.hasAttr(ExtNodeConstants.ATTR_SNIPPET_REF)) {
-                id = "sn-" + IdGenerator.createId();
-                sn.attr(ExtNodeConstants.ATTR_SNIPPET_REF, id);
+                sn.attr(ExtNodeConstants.ATTR_SNIPPET_REF, createSnippetRef());
             }
             // regulate type
             if (!sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE)) {
@@ -159,6 +161,33 @@ public class TemplateUtil {
         }
     }
 
+    private final static void resetSnippetRefs(Element elem) {
+        String snippetRefSelector = SelectorUtil.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
+        List<Element> snippets = new ArrayList<>(elem.select(snippetRefSelector));
+        String oldRef, newRef;
+        String blockedSnippetSelector;
+        List<Element> blockedSnippets;
+        for (Element element : snippets) {
+            oldRef = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
+            newRef = createSnippetRef();
+
+            // find blocked snippet
+            blockedSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
+                    ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK, oldRef);
+            blockedSnippets = new ArrayList<>(elem.select(blockedSnippetSelector));
+
+            // find blocked embed
+            blockedSnippetSelector = SelectorUtil.attr(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK,
+                    oldRef);
+            blockedSnippets.addAll(elem.select(blockedSnippetSelector));
+
+            for (Element be : blockedSnippets) {
+                be.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK, newRef);
+            }
+            element.attr(ExtNodeConstants.ATTR_SNIPPET_REF, newRef);
+        }
+    }
+
     public final static Element getEmbedNodeContent(Element elem) throws TemplateException {
         String target;
         Configuration conf = Context.getCurrentThreadContext().getConfiguration();
@@ -205,6 +234,10 @@ public class TemplateUtil {
             attr = attrs.next();
             wrappingNode.attr(attr.getKey(), attr.getValue());
         }
+
+        // a embed template file may by included many times in same parent
+        // template, so we have to avoid duplicated snippet refs
+        resetSnippetRefs(wrappingNode);
 
         return wrappingNode;
     }
