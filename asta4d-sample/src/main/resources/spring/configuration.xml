@@ -9,23 +9,6 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-<!--
-    <bean id="appConfig" class="com.astamuse.eureika.web.util.AppConfig" factory-method="instance"/>
-
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="properties">
-            <value>controller.scope=#{appConfig.controllerScope}</value>
-        </property>
-    </bean>
-    <import resource="dao.xml"/>
-    <import resource="service.xml"/>
-    <import resource="db.xml"/>
-    <import resource="mvc.xml"/>
-    <import resource="asta4d.xml"/>
-    <import resource="handler.xml"/>
-    <import resource="webflow.xml"/>
--->
-
     <import resource="snippet.xml"/>
 
     <bean class="com.astamuse.asta4d.sample.controller.SampleController"/>
