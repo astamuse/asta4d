@@ -87,6 +87,7 @@ public class ExtNodeConstants {
     public final static String MSG_NODE_ATTR_EXTERNALIZE = "externalize";
 
     public final static String ATTR_SNIPPET_REF = "snippet-ref";
+    public final static String ATTR_DOC_REF = "doc-ref";
 
     public final static String ATTR_CLEAR = "clear";
     public final static String ATTR_CLEAR_WITH_NS = addNS(ATTR_CLEAR);

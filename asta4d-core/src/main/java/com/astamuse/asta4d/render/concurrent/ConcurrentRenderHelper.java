@@ -23,12 +23,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 
+import org.jsoup.nodes.Document;
+
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.Renderer;
 
 public class ConcurrentRenderHelper {
 
-    private final static String INSTANCE_KEY = ConcurrentRenderHelper.class.getName() + "##instance-key";
+    private final static String INSTANCE_KEY = ConcurrentRenderHelper.class.getName() + "##instance-key##";
 
     private CompletionService<FutureRendererHolder> cs;
 
@@ -38,11 +41,13 @@ public class ConcurrentRenderHelper {
         cs = new ExecutorCompletionService<>(es);
     }
 
-    public final static ConcurrentRenderHelper getInstance(Context context) {
-        ConcurrentRenderHelper instance = context.getData(INSTANCE_KEY);
+    public final static ConcurrentRenderHelper getInstance(Context context, Document doc) {
+        String docRef = doc.attr(ExtNodeConstants.ATTR_DOC_REF);
+        String key = INSTANCE_KEY + docRef;
+        ConcurrentRenderHelper instance = context.getData(key);
         if (instance == null) {
             instance = new ConcurrentRenderHelper(context.getConfiguration().getMultiThreadExecutor());
-            context.setData(INSTANCE_KEY, instance);
+            context.setData(key, instance);
         }
         return instance;
     }
