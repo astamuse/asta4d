@@ -53,7 +53,7 @@ public class ComplicatedSnippet {
         render.add("ul#clearnode", new ClearNode());
 
         // レンダリング結果をデバッグ出力します。
-        render.addDebugger();
+        render.addDebugger("current element");
 
         return render;
     }
