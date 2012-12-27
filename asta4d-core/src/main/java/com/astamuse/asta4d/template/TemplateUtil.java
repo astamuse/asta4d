@@ -170,9 +170,17 @@ public class TemplateUtil {
         for (Element element : snippets) {
             oldRef = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
             newRef = createSnippetRef();
+
+            // find blocked snippet
             blockedSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
                     ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK, oldRef);
             blockedSnippets = new ArrayList<>(elem.select(blockedSnippetSelector));
+
+            // find blocked embed
+            blockedSnippetSelector = SelectorUtil.attr(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK,
+                    oldRef);
+            blockedSnippets.addAll(elem.select(blockedSnippetSelector));
+
             for (Element be : blockedSnippets) {
                 be.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK, newRef);
             }
