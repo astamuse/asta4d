@@ -170,7 +170,11 @@ public class Context {
         return map;
     }
 
-    public void clearSavedData() {
+    public void init() {
+        clear();
+    }
+
+    public void clear() {
         scopeMap.clear();
     }
 

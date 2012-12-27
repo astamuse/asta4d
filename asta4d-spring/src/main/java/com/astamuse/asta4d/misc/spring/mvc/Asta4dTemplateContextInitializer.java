@@ -39,7 +39,7 @@ public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter 
             templateContext = applicationContext.getBean(WebApplicationContext.class);
             Context.setCurrentThreadContext(templateContext);
         }
-        templateContext.clearSavedData();
+        templateContext.init();
         WebApplicationContext webContext = (WebApplicationContext) templateContext;
         webContext.setRequest(request);
         webContext.setResponse(response);
@@ -50,7 +50,7 @@ public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter 
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         Context templateContext = Context.getCurrentThreadContext();
         if (templateContext != null) {
-            templateContext.clearSavedData();
+            templateContext.clear();
         }
         super.afterCompletion(request, response, handler, ex);
     }
