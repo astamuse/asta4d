@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xml:id="asta4d-user-guide"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <bookinfo>
+    <title>Asta4D Framework ユーザガイド</title>
+
+    <productname>Asta4D Framework</productname>
+
+    <releaseinfo>0.1</releaseinfo>
+
+    <authorgroup>
+      <author>
+        <firstname>Shunsuke</firstname>
+        <surname>Otani</surname>
+      </author>	  
+      <author>
+        <firstname>Rui</firstname>
+        <surname>Liu</surname>
+      </author>
+    </authorgroup>
+  </bookinfo>
+
+  <!-- front matter -->
+
+  <toc></toc>
+
+  <part id="asta4d-introduction">
+    <title>Asta4Dの概要</title>
+
+    <partintro id="asta4d-core-intro">
+      <para>Asta4Dはデザインフレンドリーと開発に柔軟性を持たせるという特徴を持つWEB
+      アプリケーションフレームワークです。</para>
+      
+      <xi:include href="jp/overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    </partintro>
+  </part>
+  
+  <part id="asta4d-functionality">
+    <title>Asta4Dの機能</title>
+
+    <partintro id="asta4d-function">
+      <para>これから、機能を説明します。最低限実装が必要な箇所は GenericController・Template・Snippetの三つのみです。</para>
+      
+      <xi:include href="jp/controller.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+      <xi:include href="jp/template.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+    </partintro>
+  </part>  
+  
+</book>

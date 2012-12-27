@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="controller"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>GenericController</title>
+
+  <para>URL とテンプレートファイルとの紐付けや、Request Handlerの設定などを行います。抽象クラスGenericControllerBase
+  を継承し、抽象メソッドinitUrlMappingRules()を実装します。</para>
+  <para>まず、URLとレンダリング先のマッチング関係を指定できます。URLのパースには Spring の AntPathMatcher を利用しています。
+  詳細な記法は<link
+      xl:href="http://static.springsource.org/spring/docs/3.1.x/javadoc-api/org/springframework/util/AntPathMatcher.html">Spring API</link>を参照してください。
+  </para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class GenericControllerSample extends GenericControllerBase {
+
+    @Override
+    protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
+        rules.add("/search/company", "/index_search.html"); // (1)
+        rules.add("/search/q/{query}", "/search/result_company.html");// (2)
+        rules.add("/search/q/**/{query}", "/search.html")
+             .var("ex", "query")
+             .method(POST)
+             .priority(-100); // (3)
+        …
+    }
+}
+
+
+]]>
+  </programlisting>
+
+  
+  <para>(1)	「/index」へのリクエストにテンプレートファイルとして index.html を使用することを定義しています。Methodを指定しない場合、
+  デフォルトメソッドとしてGETが設定されます。UrlMappingRuleHelper# setDefaultMethod() でデフォルトメソッドを変更することができます。</para>
+
+  <para>(2)	「/search/q/{任意の文字列}」へのリクエストにテンプレートファイルとして search.html を使用し、URLに含まれる{任意の文字列}
+  を変数「query」に格納することを定義しています。格納した変数は、Snippet で使用することができます。</para>
+  
+  <para>(3)	「/search/q/{任意のパス}/{任意の文字列}」へのリクエストにテンプレートファイルとして search.html を使用し、URLに含まれる{任意の文字列}
+  を変数「query」に格納することを定義しています。また、var() で追加変数の宣言、method() でPOSTの指定、priority()
+  でこのルールの優先度を指定しています。</para>
+  
+  <para>RequestHanlderについて：</para>
+  
+  <programlisting language="java">
+<![CDATA[
+
+public class GenericControllerSample extends GenericControllerBase {
+
+    @Override
+    protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
+        rules.add(POST, "/profile/complete", ProfileSendHandler.class); // (4)
+        rules.add(GET, "/login", "/login.html", LoginHandler.class); // (5)   
+        rules.add("/login/xx", 
+                  ProfileSendHandler.class, LoginHandler.class); // (6)
+        …
+    }
+}
+
+]]>
+  </programlisting>
+
+  
+  <para>(4)	「/profile/complete」への POST リクエストに、ProfileSendHandlerで処理を行うことを定義しています。
+  遷移先はProfileSendHandlerの戻り値で決定します。</para>
+  
+  <para>(5)	「/login」への GET リクエストに、LoginHandler で処理を行うことを定義しています。LoginHandlerの戻り値がない場合、
+  指定されている「/login.html」をデフォルト遷移先としてレンダリングします。（RequestHandlerの戻り値がない場合に限り、ルールで指定している
+  遷移先を参照します）</para>
+  
+  <para>(6)	RequestHandlerを複数指定し、チェーンとして順次処理を行うことを定義しています。チェーン内の途中にあるRequestHandler
+  が遷移先を返すと、後続の処理を続けず返された遷移先に遷移します。</para>
+  
+  <para>リダイレクトについて：</para>
+  <programlisting language="java">
+<![CDATA[
+
+public class GenericControllerSample extends GenericControllerBase {
+    @Override
+    protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
+        rules.add(
+                "/redirect",
+                "http://astamuse.com/",
+                RedirectHandler.class); // (7)
+        rules.add("/redirect", "http://astamuse.com/").redirect(); // (8)
+    }
+}
+
+]]>
+  </programlisting>  
+  
+  <para>(7)	ビルトインのRedirectHandlerを使用して、遷移先にリダイレクトする(HTTP 302を戻す)ことを定義しています。</para>
+  <para>(8)	同様の処理をredirect()メソッドを使用して定義しています。</para>
+  
+  <para>handler()メソッドについて：</para>
+  <programlisting language="java">
+<![CDATA[
+
+public class GenericControllerSample extends GenericControllerBase {
+    @Override
+    protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
+        rules.add("/example/patentlist/xxx/fff", 
+            "/patentlist.html",
+            LoginHandler.class, ProfileSendHandler.class).handler(
+              new Object() {
+                        @RequestHandler
+                        public void go() {
+                           // do nothing
+                        }
+              })
+            .handler(LoginHandler.class)
+            .handler(ProfileSendHandler.class);// (9)…
+    }
+}
+
+
+]]>
+  </programlisting>
+  <para>(9)	handler()メソッドでRequestHandlerを追加設定することが可能です。</para>
+  
+ 
+</chapter>

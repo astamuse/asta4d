@@ -6,7 +6,13 @@
   <artifactId>asta4d-doc</artifactId>
   <version>0.1</version>
   <packaging>jar</packaging>
-
+  <repositories>
+      <repository>
+      <id>mvn-public</id>
+      <name>MVNRepository</name>
+      <url>http://mvnrepository.com</url>
+    </repository>
+  </repositories>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -16,23 +22,42 @@
       <plugin>
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.14</version>
+		<version>2.0.14</version>
         <executions>
           <execution>
             <goals>
-              <goal>generate-pdf</goal>
+              <!--<goal>generate-pdf</goal>-->
+              <goal>generate-html</goal>
             </goals>
             <phase>pre-site</phase>
+        <configuration>
+		  <paperType>A4</paperType>
+          <xincludeSupported>true</xincludeSupported>
+		  <highlightSource>1</highlightSource>
+		  <foCustomization>${basedir}/src/fo/docbook.xsl</foCustomization>
+        </configuration>			
           </execution>
         </executions>        
         <dependencies>
-          <dependency>
+              <dependency>
+                  <groupId>net.sf.xslthl</groupId>
+                  <artifactId>xslthl</artifactId>
+                  <version>2.0.1</version>
+                  <scope>runtime</scope>
+              </dependency>
+              <dependency>
+                  <groupId>net.sf.offo</groupId>
+                  <artifactId>fop-hyph</artifactId>
+                  <version>1.2</version>
+                  <scope>runtime</scope>
+              </dependency>		
+          <dependency>		  
             <groupId>net.sf.docbook</groupId>
             <artifactId>docbook-xml</artifactId>
             <version>5.0-all</version>
             <classifier>resources</classifier>
             <type>zip</type>
-            <scope>runtime</scope>
+            <scope>compile</scope>
           </dependency>
         </dependencies>        
       </plugin>
