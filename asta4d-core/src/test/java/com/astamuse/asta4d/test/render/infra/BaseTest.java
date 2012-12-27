@@ -59,12 +59,12 @@ public class BaseTest {
             Context.setCurrentThreadContext(context);
 
         }
-        context.clearSavedData();
+        context.init();
     }
 
     @AfterMethod
     public void clearContext() {
-        Context.getCurrentThreadContext().clearSavedData();
+        Context.getCurrentThreadContext().clear();
     }
 
 }
