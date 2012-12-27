@@ -38,6 +38,7 @@
       アプリケーションフレームワークです。</para>
       
       <xi:include href="jp/overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
 
     </partintro>
   </part>
@@ -61,7 +62,6 @@
       <xi:include href="jp/interceptor.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
       
       <xi:include href="jp/contextdata.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-
     </partintro>
   </part>  
   

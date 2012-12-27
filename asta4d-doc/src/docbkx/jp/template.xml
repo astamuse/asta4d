@@ -14,7 +14,7 @@
   以下に配置しますが、/WEB-INF下に指定したい場合には TemplateResolver#searchPath() を指定できます。
   テンプレートファイルでは、レンダリングの際に呼び出される Snippet クラスをHTMLタグ内に指定することができます。</para>
 
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <html>
@@ -59,7 +59,7 @@
   
   <para>parent.html</para>
   
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <html>
@@ -83,7 +83,7 @@
 
   <para>child.html</para>
   
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <html>
@@ -114,7 +114,7 @@
   
   <para>embed.html</para>
   
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <html>
@@ -149,7 +149,7 @@
   継承と同じように、引用元のファイルに対象blockを探して、追加もしくは上書きをします。</para>
   
   <para>上記のテンプレートファイルのレンダリング結果は下記のようになっている：</para>
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <html>
@@ -179,7 +179,7 @@
   <para>afd:clearでマークしている内容はレンダリングする際削除されますので、テンプレートに複数行のデータの表現を表したい場合、
   開発側は余計な行に「afd:clear」を入れるので、適当に複数行のHTMLを書いても構いません。</para>
   
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <ul>
@@ -203,7 +203,7 @@
 
   <para>Snippet呼び出し宣言、別ファイル埋め込み宣言はネストさせることができます。ネストしたSnippet呼び出しは、外側のタグに宣言したものから順番に呼び出されます。</para>
 
-    <programlisting language="html">
+    <programlisting language="php">
 <![CDATA[
 
 <html>
@@ -223,7 +223,7 @@
 ]]>
   </programlisting>
   
-  <programlisting language="html">
+  <programlisting language="php">
 <![CDATA[
 
 <div id="nested1"></div>
