@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="template"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>ContextDataと変数注入</title>
+
+  <para>Snippetのレンダリングメソッド、およびRequest Handlerのハンドルメソッドで変数として扱うデータについて定義するアノテーションです。変数の名前やスコープなどを指定することができます。</para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>SnipetもしくはRequestHandlerのメソッドに注入する</para>
+      <programlisting language="java">
+<![CDATA[
+
+public class ContextDataSampleSnippet {
+  // (1)
+  public Renderer getPathVarName(
+      @ContextData(name = "count", scope = WebApplicationContext.SCOPE_PATHVAR)
+      int count) {
+  }
+
+  // (2)
+  public Renderer getQueryParamName(
+      @ContextData(name = "var", scope = WebApplicationContext.SCOPE_QUERYPARAM)
+      String name) {
+  }
+
+  // (3)
+  public Renderer getDefaultName(String name) {
+  }
+}
+
+
+]]>
+       </programlisting>
+       <para>(1)	GenericController#initUrlMappingRules()で「/xxx/{count}」と宣言しパス変数に格納した値を引数「count」として扱うよう定義しています。
+       (データ型を int に自動変換しています。)</para>
+       <para>(2)	リクエストパラメータ「xxx.html?var=xxx」として渡された値を引数「name」として扱うよう定義しています。</para>
+       <para>(3)	ContextDataアノテーションを定義していないため、最も狭いスコープから順番に変数名「name」と一致する値を探し、引数として扱います。</para>       
+    </listitem>
+    
+    <listitem>
+      <para>Snippetのフィールドに注入と初期化(InitializableSnippet)</para>
+      <programlisting language="java">
+<![CDATA[
+
+public class InitSnippet implements InitializableSnippet {
+
+        @ContextData
+        private String value; // (1)
+        private long id;
+        private String resolvedValue;
+        private int count = 0;
+
+        @Override
+        public void init() throws SnippetInvokeException { //(2)
+            resolvedValue = value + "-resolved";
+            count++;
+        }
+        @ContextData
+        private void setId(long id) {　//(3)
+            this.id = id;
+        }
+        public Renderer render_1() {
+            return Renderer.create(".value", resolvedValue)
+                           .add(".count", count);
+        }
+        public Renderer render_2() {
+            return Renderer.create(".value", resolvedValue)
+                           .add(".count", count);
+        }
+    }
+
+
+]]>
+       </programlisting>
+       <para>(1)	毎回Snippetメソッドを呼び出されている前に、@Contextで宣言しているフィールドをContextからの値で設定します。</para>
+       <para>(2)	SnippetクラスのインスタンスはRequestごとにSingletonになっており、初めて呼ばれている場合、かつ、InitializableSnippetインタフェースを宣言している場合、initメソッドが一回呼ばれます。</para>
+       <para>(3)	setterでも宣言することが可能です。</para>  
+        
+        <para>リバース注入</para>
+        <programlisting language="java">
+<![CDATA[
+
+    public class InitSnippet implements InitializableSnippet {
+    @ContextData(scope = WebApplicationContext.SCOPE_REQUEST, 
+reverse = true)
+    private String reverseTest;
+    }
+
+]]>
+       </programlisting> 
+       <para>フィールドもしくはgetterメソッドで@Contextで明示的にRequestスコープを指定してreverseをtrueに設定すれば、snippetメソッドの実行が完了した後に、
+       該当フィールドの値を逆にContextに自動保存します。</para>
+    </listitem>
+    
+    <listitem>
+        <para>変数スコープの自動サーチについて</para>
+        <para>@ContextDataでスコープを指定していない場合、特定の順番でサーチします。HTMLタグの属性(snippetを宣言している該当Elementから一番外側の親Elementまで探す、
+        Snippetのレンダリングメソッドのみ有効)・パス変数・リクエストパラメータ・Flashスコープ変数・クッキー・リクエストヘッダ・リクエスト変数・セッション・グローバル変数の順です。(ここでのリクエスト
+        変数・グローバル変数とは、Context.setData()から設定して使用する値です)。また、この順番は DefaultContextDataFinder#setDataSearchScopeOrder() 
+        で任意に変更することができます。</para>
+    </listitem>
+    
+  </itemizedlist>
+
+</chapter>

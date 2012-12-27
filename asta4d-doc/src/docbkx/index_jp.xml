@@ -51,6 +51,16 @@
       <xi:include href="jp/controller.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
       
       <xi:include href="jp/template.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+      <xi:include href="jp/snippet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+      <xi:include href="jp/renderer.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+      <xi:include href="jp/request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+      <xi:include href="jp/interceptor.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+      
+      <xi:include href="jp/contextdata.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 
     </partintro>
   </part>  

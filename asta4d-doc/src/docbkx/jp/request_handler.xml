@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="template"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Request Handler</title>
+
+  <para>Viewの表示前に処理を行いたい場合に使用します。</para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class GenericController extends GenericControllerBase {
+  @Override
+  protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
+    rules.add(HttpMethod.POST, "/login/{id}", LoginHandler.class);  // (1)
+  }
+}
+
+
+
+]]>
+  </programlisting>
+  
+  <programlisting language="java">
+<![CDATA[
+
+public class LoginHandler {
+  @RequestHandler // (2)
+  public String doLogin(
+    @ContextData(scope=WebApplicationContext.SCOPE_PATHVAR) String id) {
+    // ログイン処理の実行(省略)
+    return "/mypage.html";
+  }
+}
+
+
+
+]]>
+  </programlisting>  
+
+  <para>(1)	「/login/&lt;任意の文字列&gt;」への POST リクエストに、Request Handler としてLoginHandler を使用し、URLに含まれる&lt;任意の文字列&gt;を変数「id」に格納することを定義しています。</para>
+  <para>(2)	「/login/&lt;任意の文字列&gt;」への POST リクエスト時にdoLoginメソッドを実行し、その後mypage.htmlテンプレートを使用してViewのレンダリングを実行します。引数「id」として、URLに含まれる&lt;任意の文字列&gt;をメソッド内で使用することができます。</para>
+
+  <para>リダイレクトとFlashスコープ：リダイレクトにより画面遷移を行う場合、Flashスコープに設定した値を受け渡すことができます。</para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class RedirectSampleHandler {
+
+    @RequestHandler
+    public Object redirect(String name, String age, String bloodtype) {
+        Map<String, Object> flashScopeData = new HashMap<>();
+        flashScopeData.put("name", name);
+        flashScopeData.put("age", age);
+        flashScopeData.put("bloodtype", bloodtype);
+        return new RedirectView("/profile/input", flashScopeData); // (3)
+    }
+}
+
+
+
+
+]]>
+  </programlisting> 
+  
+  <para>(3)	RedirectView の第一引数にリダイレクト先の url を、第二引数にFlashスコープに設定する値のMapを指定しています。「/profile/input」に設定された Request Handler およびテンプレートで指定した Snippet 内で、Flash スコープに設定した値を参照することができます。</para>
+
+</chapter>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="template"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Snippet</title>
+
+  <para>View層の動的出力部分です。テンプレートファイルに定義されたメソッドが呼び出されます。Rendererを返すレンダリングメソッドを定義します。</para>
+
+  <programlisting language="java">
+<![CDATA[
+
+public class SampleSnippet {
+  public Renderer render() { // (1)
+    Element element = ElementUtil.parseAsSingle("<div>replaced element</div>");
+    return Renderer.create("*", element);
+  }
+
+  public Renderer execute() { // (2)
+    Renderer renderer = Renderer.create("#sample", "replaced text");
+    renderer.add("#sample", "value", "2");
+    renderer.add("#sample_nosymbol", "class", "label");
+    renderer.add("#sample_plus", "+class", "label");
+    renderer.add("#sample_minus", "-class", "text");
+    Element subSnippet = new SnippetNode("DynamicSnippet:execute");
+    renderer.add("#dynamic_snippet", new ChildReplacer(subSnippet));
+    Element embed = new EmbedNode("/templates/dynamic_embed.html");
+    renderer.add("#dynamic_embed", embed);
+    return renderer;
+  }
+
+  public Renderer embedTag(String value) { // (3)
+    return Renderer.create("span", value);
+  }
+}
+
+
+]]>
+  </programlisting>
+
+  
+  <para>(1)	テンプレートファイルの任意のタグもしくはafd:snippetタグのrender属性でメソッド名を指定しない場合に呼び出されます。</para>
+
+  <para>(2)	「&lt;クラス名&gt;:execute」と指定した場合に呼び出されます。</para>
+  
+  <para>(3)	「&lt;クラス名&gt;:embedTag」と指定した場合に呼び出されます。また、render属性を定義したタグのvalue属性の値が引数value
+  の値に格納されます。(テンプレートファイルのタグ属性名と一致するレンダリングメソッドの引数に値が格納されます)</para>
+  
+</chapter>
