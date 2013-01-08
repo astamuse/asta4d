@@ -18,7 +18,6 @@
 package com.astamuse.asta4d.snippet.interceptor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.astamuse.asta4d.Context;
@@ -36,16 +35,20 @@ public class SnippetInitializeInterceptor implements SnippetInterceptor {
         Context context = Context.getCurrentThreadContext();
         List<Object> snippetList = context.getData(InstanceListCacheKey);
         if (snippetList == null) {
-            // TODO we need a more efficient list
-            snippetList = Collections.synchronizedList(new ArrayList<>());
+            snippetList = new ArrayList<>();
             context.setData(InstanceListCacheKey, snippetList);
         }
+
         Object target = execution.getInstance();
         boolean inialized = false;
-        for (Object initializedSnippet : snippetList) {
-            if (initializedSnippet == target) {
-                inialized = true;
-                break;
+
+        // TODO we need a more efficient way to avoid global lock
+        synchronized (snippetList) {
+            for (Object initializedSnippet : snippetList) {
+                if (initializedSnippet == target) {
+                    inialized = true;
+                    break;
+                }
             }
         }
 
@@ -53,7 +56,9 @@ public class SnippetInitializeInterceptor implements SnippetInterceptor {
             if (target instanceof InitializableSnippet) {
                 ((InitializableSnippet) target).init();
             }
-            snippetList.add(target);
+            synchronized (snippetList) {
+                snippetList.add(target);
+            }
         }
 
         return true;
