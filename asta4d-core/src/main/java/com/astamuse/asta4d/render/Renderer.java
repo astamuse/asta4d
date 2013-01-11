@@ -136,7 +136,7 @@ public class Renderer {
      *            a long value that will be treated as a String
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, long value) {
+    public Renderer add(String selector, Long value) {
         return add(create(selector, value));
     }
 
@@ -149,7 +149,7 @@ public class Renderer {
      *            an int value that will be treated as a String
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, int value) {
+    public Renderer add(String selector, Integer value) {
         return add(create(selector, value));
     }
 
@@ -177,6 +177,20 @@ public class Renderer {
      * @return the created renderer for chain calling
      */
     public Renderer add(String selector, String value) {
+        return add(create(selector, value));
+    }
+
+    /**
+     * Create a renderer for text rendering by given parameter and add it to the
+     * current renderer. See {@link #create(String, Object)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a Object value that will be rendered
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Object value) {
         return add(create(selector, value));
     }
 
@@ -376,7 +390,7 @@ public class Renderer {
      *            a long value that will be treated as a String
      * @return the created renderer
      */
-    public final static Renderer create(String selector, long value) {
+    public final static Renderer create(String selector, Long value) {
         return create(selector, String.valueOf(value));
     }
 
@@ -389,7 +403,7 @@ public class Renderer {
      *            an int value that will be treated as a String
      * @return the created renderer
      */
-    public final static Renderer create(String selector, int value) {
+    public final static Renderer create(String selector, Integer value) {
         return create(selector, String.valueOf(value));
     }
 
@@ -402,7 +416,7 @@ public class Renderer {
      *            a boolean value that will be treated as a String
      * @return the created renderer
      */
-    public final static Renderer create(String selector, boolean value) {
+    public final static Renderer create(String selector, Boolean value) {
         return create(selector, String.valueOf(value));
     }
 
@@ -421,6 +435,25 @@ public class Renderer {
      */
     public final static Renderer create(String selector, String value) {
         return create(selector, new TextSetter(value));
+    }
+
+    /**
+     * Create a renderer for text by given parameter.
+     * <p>
+     * All child nodes of the target element specified by selector will be
+     * emptied and the given String value will be rendered as a single text node
+     * of the target element.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a Object that will be rendered. toString() will be called for
+     *            generating a String
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Object value) {
+        String s = value == null ? "null" : value.toString();
+        return create(selector, new TextSetter(s));
     }
 
     /**
