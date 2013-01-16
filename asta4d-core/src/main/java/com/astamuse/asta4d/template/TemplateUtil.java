@@ -255,9 +255,11 @@ public class TemplateUtil {
                 blockType = ExtNodeConstants.BLOCK_NODE_ATTR_APPEND;
             } else if (block.hasAttr(ExtNodeConstants.BLOCK_NODE_ATTR_INSERT)) {
                 blockType = ExtNodeConstants.BLOCK_NODE_ATTR_INSERT;
-            } else {
+            } else if (!block.hasAttr("id")) {
                 // TODO I want a approach to logging out template file path here
-                logger.warn("The block does not declare its action correctlly.[{}]", block.toString());
+                logger.warn("The block does not declare its action or id correctlly.[{}]", block.toString());
+                continue;
+            } else {
                 continue;
             }
 
