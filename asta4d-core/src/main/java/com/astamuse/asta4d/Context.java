@@ -54,8 +54,9 @@ public class Context {
 
     // private List
 
-    public final static Context getCurrentThreadContext() {
-        return instanceHolder.get();
+    @SuppressWarnings("unchecked")
+    public final static <T extends Context> T getCurrentThreadContext() {
+        return (T) instanceHolder.get();
     }
 
     public final static void setCurrentThreadContext(Context context) {
