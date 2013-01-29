@@ -19,6 +19,7 @@ package com.astamuse.asta4d;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -126,8 +127,8 @@ public class Configuration {
         return new ArrayList<String>(resourceNames);
     }
 
-    public void setResourceNames(String... resourceNames) {
-        this.resourceNames = Arrays.asList(resourceNames);
+    public void setResourceNames(List<String> resourceNames) {
+        this.resourceNames = Collections.unmodifiableList(resourceNames);
     }
 
     public PlaceholderFormatter getPlaceholderFormatter() {
