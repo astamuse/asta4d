@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.test.render;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.testng.annotations.BeforeClass;
@@ -101,6 +102,6 @@ public class ExternalizeMessageTest extends BaseTest {
     private static void setUpResourceBundleManager(String fileName, PlaceholderFormatter formatter) {
         Configuration configuration = Context.getCurrentThreadContext().getConfiguration();
         configuration.setPlaceholderFormatter(formatter);
-        configuration.setResourceNames("com.astamuse.asta4d.test.render.messages." + fileName);
+        configuration.setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
     }
 }
