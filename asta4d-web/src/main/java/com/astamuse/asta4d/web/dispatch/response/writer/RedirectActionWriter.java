@@ -17,6 +17,11 @@
 
 package com.astamuse.asta4d.web.dispatch.response.writer;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.Context;
@@ -26,16 +31,46 @@ import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 
 public class RedirectActionWriter implements ContentWriter<RedirectDescriptor> {
+
+    private static final String FlashScopeDataListKey = RedirectActionWriter.class.getName() + "##FlashScopeDataListKey";
+
+    public static void addFlashScopeData(Map<String, Object> flashScopeData) {
+        if (flashScopeData == null || flashScopeData.isEmpty()) {
+            return;
+        }
+        WebApplicationContext context = Context.getCurrentThreadContext();
+        List<Map<String, Object>> dataList = context.getData(FlashScopeDataListKey);
+        if (dataList == null) {
+            dataList = new LinkedList<>();
+        }
+        dataList.add(flashScopeData);
+    }
+
     @Override
     public void writeResponse(UrlMappingRule currentRule, HttpServletResponse response, RedirectDescriptor content) throws Exception {
         RedirectDescriptor rd = (RedirectDescriptor) content;
         String url = rd.getTargetPath();
-        if (url.startsWith("/")) {
-            WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
-            url = context.getRequest().getContextPath() + url;
+        Map<String, Object> flashScopeData = rd.getFlashScopeData();
+        if (url == null) {
+            addFlashScopeData(flashScopeData);
+        } else {
+            Map<String, Object> dataMap = new HashMap<String, Object>();
+            WebApplicationContext context = Context.getCurrentThreadContext();
+            List<Map<String, Object>> dataList = context.getData(FlashScopeDataListKey);
+            if (dataList != null) {
+                for (Map<String, Object> map : dataList) {
+                    dataMap.putAll(map);
+                }
+            }
+            if (flashScopeData != null) {
+                dataMap.putAll(flashScopeData);
+            }
+            if (url.startsWith("/")) {
+                url = context.getRequest().getContextPath() + url;
+            }
+            url = RedirectUtil.setFlashScopeData(url, dataMap);
+            response.sendRedirect(url);
         }
-        url = RedirectUtil.setFlashScopeData(url, rd.getFlashScopeData());
-        response.sendRedirect(url);
     }
 
 }
