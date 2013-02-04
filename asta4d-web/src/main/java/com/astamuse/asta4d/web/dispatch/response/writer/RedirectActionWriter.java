@@ -42,6 +42,7 @@ public class RedirectActionWriter implements ContentWriter<RedirectDescriptor> {
         List<Map<String, Object>> dataList = context.getData(FlashScopeDataListKey);
         if (dataList == null) {
             dataList = new LinkedList<>();
+            context.setData(FlashScopeDataListKey, dataList);
         }
         dataList.add(flashScopeData);
     }
