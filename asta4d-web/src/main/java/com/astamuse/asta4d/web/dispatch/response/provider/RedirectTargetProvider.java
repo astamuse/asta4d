@@ -24,8 +24,6 @@ import com.astamuse.asta4d.web.dispatch.response.writer.RedirectActionWriter;
 
 public class RedirectTargetProvider implements ContentProvider<RedirectDescriptor> {
 
-    public final static String FlashScopeDataContextKey = RedirectTargetProvider.class + "##FlashScopeDataContextKey";
-
     private String targetPath;
 
     private Map<String, Object> flashScopeData;
@@ -41,6 +39,10 @@ public class RedirectTargetProvider implements ContentProvider<RedirectDescripto
     public RedirectTargetProvider(String targetPath, Map<String, Object> flashScopeData) {
         this.targetPath = targetPath;
         this.flashScopeData = flashScopeData;
+    }
+
+    public RedirectTargetProvider(Map<String, Object> flashScopeData) {
+        this(null, flashScopeData);
     }
 
     public String getTargetPath() {
@@ -61,7 +63,7 @@ public class RedirectTargetProvider implements ContentProvider<RedirectDescripto
 
     @Override
     public boolean isContinuable() {
-        return false;
+        return targetPath == null;
     }
 
     @Override
