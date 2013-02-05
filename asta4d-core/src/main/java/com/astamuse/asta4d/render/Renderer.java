@@ -19,9 +19,8 @@ package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import org.jsoup.nodes.Element;
 
@@ -33,6 +32,9 @@ import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.render.transformer.TransformerFactory;
+import com.astamuse.asta4d.util.collection.ListConvertUtil;
+import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
+import com.astamuse.asta4d.util.collection.RowConvertor;
 
 /**
  * A renderer is for describing rendering actions.
@@ -324,13 +326,13 @@ public class Renderer {
      *            non-list add methods of Renderer.
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, List<?> list) {
+    public Renderer add(String selector, Iterable<?> list) {
         return add(create(selector, list));
     }
 
     /**
      * Create a renderer for list rendering by given parameter with given
-     * {@link DataConvertor} and add it to the current renderer. See
+     * {@link RowConvertor} and add it to the current renderer. See
      * {@link #create(String, List)}.
      * 
      * @param selector
@@ -338,7 +340,21 @@ public class Renderer {
      * @param convertor
      * @return the created renderer for chain calling
      */
-    public <S, T> Renderer add(String selector, List<S> list, DataConvertor<S, T> convertor) {
+    public <S, T> Renderer add(String selector, Iterable<S> list, RowConvertor<S, T> convertor) {
+        return add(create(selector, list, convertor));
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link DataConvertor} and add it to the current renderer. See
+     * {@link #create(String, Iterable, ParallelRowConvertor)}.
+     * 
+     * @param selector
+     * @param list
+     * @param convertor
+     * @return the created renderer for chain calling
+     */
+    public <S, T> Renderer add(String selector, Iterable<S> list, ParallelRowConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
 
@@ -347,12 +363,34 @@ public class Renderer {
      * {@link DataConvertor} and add it to the current renderer. See
      * {@link #create(String, List)}.
      * 
+     * This method has been deprecated. Use
+     * {@link #add(String, Iterable, RowConvertor)} instead.
+     * 
      * @param selector
      * @param list
      * @param convertor
      * @return the created renderer for chain calling
      */
-    public <S, T> Renderer add(String selector, List<S> list, ParallelDataConvertor<S, T> convertor) {
+    @Deprecated
+    public <S, T> Renderer add(String selector, Iterable<S> list, DataConvertor<S, T> convertor) {
+        return add(create(selector, list, convertor));
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link ParallelDataConvertor} and add it to the current renderer. See
+     * {@link #create(String, List)}.
+     * 
+     * This method has been deprecated. Use
+     * {@link #add(String, Iterable, ParallelRowConvertor)} instead.
+     * 
+     * @param selector
+     * @param list
+     * @param convertor
+     * @return the created renderer for chain calling
+     */
+    @Deprecated
+    public <S, T> Renderer add(String selector, Iterable<S> list, ParallelDataConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
 
@@ -452,7 +490,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        String s = value == null ? "null" : value.toString();
+        String s = value == null ? null : value.toString();
         return create(selector, new TextSetter(s));
     }
 
@@ -600,8 +638,8 @@ public class Renderer {
      *            non-list add methods of Renderer
      * @return the created renderer
      */
-    public final static Renderer create(String selector, List<?> list) {
-        List<Transformer<?>> transformerList = new ArrayList<Transformer<?>>(list.size());
+    public final static Renderer create(String selector, Iterable<?> list) {
+        List<Transformer<?>> transformerList = new LinkedList<>();
         for (Object obj : list) {
             transformerList.add(TransformerFactory.generateTransformer(obj));
         }
@@ -610,7 +648,7 @@ public class Renderer {
 
     /**
      * Create a renderer for list rendering by given parameter with given
-     * {@link DataConvertor}. See {@link #create(String, List)}.
+     * {@link RowConvertor}. See {@link #create(String, List)}.
      * 
      * @param selector
      *            a css selector
@@ -622,20 +660,75 @@ public class Renderer {
      *            Renderer
      * @return the created renderer
      */
-    public final static <S, T> Renderer create(String selector, List<S> list, DataConvertor<S, T> convertor) {
-        List<T> newList = new ArrayList<>();
-        for (S obj : list) {
-            newList.add(convertor.convert(obj));
-        }
-        return create(selector, newList);
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, RowConvertor<S, T> convertor) {
+        return create(selector, ListConvertUtil.transform(list, convertor));
     }
 
-    public final static <S, T> Renderer create(String selector, List<S> list, final ParallelDataConvertor<S, T> convertor) {
-        ExecutorService executor = Context.getCurrentThreadContext().getConfiguration().getMultiThreadExecutor();
-        List<Future<T>> newList = new ArrayList<>();
-        for (S obj : list) {
-            newList.add(convertor.invoke(executor, obj));
-        }
-        return create(selector, newList);
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link ParallelRowConvertor}. This method will not block the current
+     * thread and will return immediately.
+     * 
+     * See {@link #create(String, List)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list with arbitrary type data
+     * @param convertor
+     *            a convertor that can convert the arbitrary types of the list
+     *            data to the types supported by the non-list create methods of
+     *            Renderer
+     * @return the created renderer
+     */
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
+        return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link DataConvertor}. See {@link #create(String, List)}.
+     * 
+     * This method has been deprecated. Use
+     * {@link #create(String, Iterable, RowConvertor)} instead.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list with arbitrary type data
+     * @param convertor
+     *            a convertor that can convert the arbitrary types of the list
+     *            data to the types supported by the non-list create methods of
+     *            Renderer
+     * @return the created renderer
+     */
+    @Deprecated
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, DataConvertor<S, T> convertor) {
+        return create(selector, ListConvertUtil.transform(list, convertor));
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given
+     * {@link ParallelDataConvertor}. This method will not block the current
+     * thread and will return immediately.
+     * 
+     * See {@link #create(String, List)}.
+     * 
+     * This method has been deprecated. Use
+     * {@link #create(String, Iterable, ParallelRowConvertor)} instead.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list with arbitrary type data
+     * @param convertor
+     *            a convertor that can convert the arbitrary types of the list
+     *            data to the types supported by the non-list create methods of
+     *            Renderer
+     * @return the created renderer
+     */
+    @Deprecated
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelDataConvertor<S, T> convertor) {
+        return create(selector, ListConvertUtil.transformToFuture(list, convertor));
     }
 }
