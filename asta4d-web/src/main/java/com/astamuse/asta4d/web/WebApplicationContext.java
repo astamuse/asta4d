@@ -108,7 +108,7 @@ public class WebApplicationContext extends Context {
             Cookie[] cookies = request.getCookies();
             for (Cookie cookie : cookies) {
                 String name = cookie.getName();
-                String[] values = mergeCookieValues(cookie, (Cookie[]) map.get(name));
+                String[] values = mergeCookieValues(cookie, (String[]) map.get(name));
                 map.put(name, values);
             }
             map = Collections.unmodifiableMap(map);
@@ -167,7 +167,7 @@ public class WebApplicationContext extends Context {
         return values.toArray(new String[values.size()]);
     }
 
-    private static String[] mergeCookieValues(Cookie cookie, Cookie... cookies) {
+    private static String[] mergeCookieValues(Cookie cookie, String[] cookies) {
         if (cookies == null) {
             return new String[] { cookie.getValue() };
         }
