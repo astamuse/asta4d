@@ -37,6 +37,7 @@ public class ListConvertUtil {
         int idx = 0;
         while (it.hasNext()) {
             newList.add(convertor.convert(idx, it.next()));
+            idx++;
         }
         return new ArrayList<>(newList);
     }
