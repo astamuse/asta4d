@@ -16,7 +16,6 @@
         <module>asta4d-spring</module>
         <module>eureika-batch</module>
         <module>eureika-web</module>
-        <module>asta-career</module>
     </modules>  
   
   <properties>
