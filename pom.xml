@@ -11,6 +11,7 @@
   <url>http://eureika2013.astamuse.com</url>
 
     <modules>
+        <module>asta4d-career</module>
         <module>asta4d-core</module>
         <module>asta4d-web</module>
         <module>asta4d-spring</module>
