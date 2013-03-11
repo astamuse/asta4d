@@ -1,5 +1,13 @@
+<!-- @ShowCode:showOverridechildStart -->
 <afd:extension parent="/templates/extend/parent.html">
 	<afd:block override="block">
 		<li>This is child template text.</li>
 	</afd:block>
+<!-- @ShowCode:showOverridechildEnd -->
+    <afd:block append="source">
+        <div afd:render="ShowCodeSnippet:showCode" file="/templates/extend/overridechild.html" startMark="showOverridechildStart" endMark="showOverridechildEnd">
+        </div>
+    </afd:block>
+<!-- @ShowCode:showOverridechildStart -->
 </afd:extension>
+<!-- @ShowCode:showOverridechildEnd -->

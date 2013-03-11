@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Use Snippet for rendering dynamic page.</h1>
 
+    <!-- @ShowCode:showSnippetStart -->
 	<section>
 		<article>
 			<div afd:render="SimpleSnippet">dummy text</div>
@@ -18,6 +21,12 @@
 			</afd:snippet>
 		</article>
 	</section>
+	<!--@ShowCode:showSnippetEnd -->
 
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/snippet.html" startMark="showSnippetStart" endMark="showSnippetEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showSnippetStart" endMark="showSnippetEnd">
+    </div>
 </body>
 </html>

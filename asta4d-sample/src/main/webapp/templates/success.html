@@ -3,16 +3,22 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Success Page</h1>
 
+    <!--@ShowCode:showSuccessStart -->
 	<section>
 		<article>
 			<p>Request Handler processing was succeed.</p>
 		</article>
 	</section>
+    <!--@ShowCode:showSuccessEnd -->
 
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/success.html" startMark="showSuccessStart" endMark="showSuccessEnd">
+    </div>
 </body>
 </html>

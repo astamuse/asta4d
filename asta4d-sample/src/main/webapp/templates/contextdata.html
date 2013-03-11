@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Use ContextData annotation.</h1>
 
+    <!-- @ShowCode:showContextdataStart -->
 	<section>
 		<article>
 			Default Data Scope Order:
@@ -35,6 +38,12 @@
 			</dl>
 		</article>
 	</section>
+    <!-- @ShowCode:showContextdataEnd -->
 
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/contextdata.html" startMark="showContextdataStart" endMark="showContextdataEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showContextdataStart" endMark="showContextdataEnd">
+    </div>
 </body>
 </html>

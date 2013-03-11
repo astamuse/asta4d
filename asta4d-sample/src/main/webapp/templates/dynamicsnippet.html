@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Use dynamic Snippet and dynamic embed.</h1>
 
+    <!-- @ShowCode:showDynamicsnippetStart -->
 	<section>
 		<article>
 			<afd:snippet render="ComplicatedSnippet:createDynamicSnippet">
@@ -16,6 +19,12 @@
 			</afd:snippet>
 		</article>
 	</section>
+    <!-- @ShowCode:showDynamicsnippetEnd -->
 
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/dynamicsnippet.html" startMark="showDynamicsnippetStart" endMark="showDynamicsnippetEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showDynamicsnippetStart" endMark="showDynamicsnippetEnd">
+    </div>
 </body>
 </html>

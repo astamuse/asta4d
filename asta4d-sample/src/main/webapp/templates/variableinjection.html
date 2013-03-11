@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Inject values of the variable.</h1>
 
+    <!-- @ShowCode:showVariableinjectionStart -->
 	<section>
 		<article>
 			<div afd:render="SimpleSnippet">dummy text</div>
@@ -18,6 +21,14 @@
 			</afd:snippet>
 		</article>
 	</section>
+	<!-- @ShowCode:showVariableinjectionEnd -->
+
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/variableinjection.html" startMark="showVariableinjectionStart" endMark="showVariableinjectionEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showVariableinjectionStart" endMark="showVariableinjectionEnd">
+    </div>
 
 </body>
 </html>

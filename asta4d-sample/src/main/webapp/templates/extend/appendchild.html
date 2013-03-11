@@ -1,5 +1,13 @@
+<!-- @ShowCode:showAppendchildStart -->
 <afd:extension parent="/templates/extend/parent.html">
 	<afd:block append="block">
 		<li>This is child template text.</li>
 	</afd:block>
+<!-- @ShowCode:showAppendchildEnd -->
+	<afd:block append="source">
+        <div afd:render="ShowCodeSnippet:showCode" file="/templates/extend/appendchild.html" startMark="showAppendchildStart" endMark="showAppendchildEnd">
+        </div>
+    </afd:block>
+<!-- @ShowCode:showAppendchildStart -->
 </afd:extension>
+<!-- @ShowCode:showAppendchildEnd -->
