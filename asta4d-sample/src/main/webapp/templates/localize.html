@@ -3,11 +3,14 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 		<link href="../css/common.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+		<script type="text/javascript" src="../js/prettify.js"></script>
 		<title>Asta4D Sample Project</title>
 	</head>
-	<body>
+	<body onload="prettyPrint()">
 		<h1>Localize Messages.</h1>
 
+        <!-- @ShowCode:showLocalizeStart -->
 		<section>
 			<article afd:render="ComplicatedSnippet:setWeatherreportParam">
 				<afd:msg key="weatherreport1" p0="weather" id="weatherreport1">天気</afd:msg><br/>
@@ -18,6 +21,12 @@
 				<afd:msg key="escapedUrl">test<a href="https://www.google.co.jp/">link</a>test</afd:msg><br/>
 			</article>
 		</section>
+	    <!-- @ShowCode:showLocalizeEnd -->
 
+	    <div afd:render="ShowCodeSnippet:showCode" file="/templates/localize.html" startMark="showLocalizeStart" endMark="showLocalizeEnd">
+	    </div>
+
+	    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showLocalizeStart" endMark="showLocalizeEnd">
+	    </div>
 	</body>
 </html>

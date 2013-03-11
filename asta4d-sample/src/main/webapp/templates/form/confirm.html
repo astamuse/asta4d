@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Confirm</h1>
 
+    <!-- @ShowCode:showConfirmStart -->
 	<section>
 		<article>
 			<p>Are you sure you have the correct?</p>
@@ -27,6 +30,12 @@
 			</form>
 		</article>
 	</section>
+    <!-- @ShowCode:showConfirmEnd -->
 
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/form/confirm.html" startMark="showConfirmStart" endMark="showConfirmEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/FormSnippet.java" startMark="showConfirmStart" endMark="showConfirmEnd">
+    </div>
 </body>
 </html>

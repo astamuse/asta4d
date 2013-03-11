@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Pass variables from outer Snippet to inner Snippet.</h1>
 
+    <!-- @ShowCode:showPassvariablesStart -->
 	<section>
 		<article>
 			<div id="outer" afd:render="ComplicatedSnippet:outer">
@@ -22,6 +25,13 @@
 			</div>
 		</article>
 	</section>
+	<!-- @ShowCode:showPassvariablesEnd -->
+
+	<div afd:render="ShowCodeSnippet:showCode" file="/templates/passvariables.html" startMark="showPassvariablesStart" endMark="showPassvariablesEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showPassvariablesStart" endMark="showPassvariablesEnd">
+    </div>
 
 </body>
 </html>

@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Extend other template.</h1>
 
+    <!-- @ShowCode:showParentStart -->
 	<section>
 		<article>
 			<ol>
@@ -17,6 +20,11 @@
 			</ol>
 		</article>
 	</section>
+	<!-- @ShowCode:showParentEnd -->
 
+    <afd:block id="source">
+	    <div afd:render="ShowCodeSnippet:showCode" file="/templates/extend/parent.html" startMark="showParentStart" endMark="showParentEnd">
+	    </div>
+    </afd:block>
 </body>
 </html>

@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Embed other template.</h1>
 
+    <!-- @ShowCode:showMainStart -->
 	<section>
 		<article>
 			<ol>
@@ -18,6 +21,13 @@
 			</ol>
 		</article>
 	</section>
+	<!-- @ShowCode:showMainEnd -->
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/main.html" startMark="showMainStart" endMark="showMainEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/embedded.html" startMark="showEmbeddedStart" endMark="showEmbeddedEnd">
+    </div>
 
 </body>
 </html>

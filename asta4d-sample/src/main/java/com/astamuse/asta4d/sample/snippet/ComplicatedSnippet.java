@@ -1,18 +1,18 @@
 /*
  * Copyright 2012 astamuse company,Ltd.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package com.astamuse.asta4d.sample.snippet;
@@ -40,6 +40,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 
 public class ComplicatedSnippet {
 
+    // @ShowCode:showRenderertypesStart
     public Renderer render() {
         // それ自体は何もしない Renderer です。
         Renderer render = new GoThroughRenderer();
@@ -58,6 +59,9 @@ public class ComplicatedSnippet {
         return render;
     }
 
+    // @ShowCode:showRenderertypesEnd
+
+    // @ShowCode:showPassvariablesStart
     public Renderer outer() {
         // 文字列, 整数, Date型の値, List型の値を内部Snippetで使用するためにセットします。
         Renderer render = new GoThroughRenderer();
@@ -83,6 +87,8 @@ public class ComplicatedSnippet {
         return render;
     }
 
+    // @ShowCode:showPassvariablesEnd
+    // @ShowCode:showDynamicsnippetStart
     public Renderer createDynamicSnippet() {
         Renderer render = new GoThroughRenderer();
         Element snippet = new SnippetNode("SimpleSnippet");
@@ -93,6 +99,8 @@ public class ComplicatedSnippet {
         return render;
     }
 
+    // @ShowCode:showDynamicsnippetEnd
+    // @ShowCode:showContextdataStart
     public Renderer changeName(@ContextData(name = "var") String changedName) {
         return Renderer.create("dd", changedName);
     }
@@ -101,6 +109,8 @@ public class ComplicatedSnippet {
         return Renderer.create("dd", var == null ? "" : var);
     }
 
+    // @ShowCode:showContextdataEnd
+    // @ShowCode:showLocalizeStart
     public Renderer setWeatherreportParam() {
         Renderer render = new GoThroughRenderer();
         Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
@@ -114,6 +124,8 @@ public class ComplicatedSnippet {
         return render;
     }
 
+    // @ShowCode:showLocalizeEnd
+    // @ShowCode:showRenderertypesStart
     private Element createElement() {
         Element ul = new Element(Tag.valueOf("ul"), "");
         List<Node> lis = new ArrayList<>();
@@ -123,4 +135,5 @@ public class ComplicatedSnippet {
         ElementUtil.appendNodes(ul, lis);
         return ul;
     }
+    // @ShowCode:showRenderertypesEnd
 }

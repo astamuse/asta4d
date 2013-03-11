@@ -11,4 +11,5 @@
     <bean id="ComplicatedSnippet" class="com.astamuse.asta4d.sample.snippet.ComplicatedSnippet"/>
     <bean id="FormSnippet" class="com.astamuse.asta4d.sample.snippet.FormSnippet"/>
     <bean id="SimpleSnippet" class="com.astamuse.asta4d.sample.snippet.SimpleSnippet"/>
+    <bean id="ShowCodeSnippet" class="com.astamuse.asta4d.sample.snippet.ShowCodeSnippet"/>
 </beans>

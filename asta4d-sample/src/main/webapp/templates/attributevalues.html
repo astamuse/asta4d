@@ -3,11 +3,14 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../js/prettify.js"></script>
 <title>Asta4D Sample Project</title>
 </head>
-<body>
+<body onload="prettyPrint()">
 	<h1>Manipulate attribute values.</h1>
 
+    <!-- @ShowCode:showAttributevaluesStart -->
 	<section>
 		<article>
 			<afd:snippet render="SimpleSnippet:manipulateAttrValues">
@@ -22,6 +25,12 @@
 			</afd:snippet>
 		</article>
 	</section>
+    <!-- @ShowCode:showAttributevaluesEnd -->
 
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/attributevalues.html" startMark="showAttributevaluesStart" endMark="showAttributevaluesEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showAttributevaluesStart" endMark="showAttributevaluesEnd">
+    </div>
 </body>
 </html>
