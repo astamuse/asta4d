@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.sample.controller;
 
+import static com.astamuse.asta4d.web.dispatch.HttpMethod.GET;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.POST;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.PUT;
 
@@ -35,6 +36,9 @@ public class SampleController extends GenericControllerBase {
     @Override
     protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
         //@formatter:off
+        rules.add(GET, "/")
+             .redirect("/app/index");
+        
         rules.add("/app/", "/templates/index.html");
         rules.add("/app/index", "/templates/index.html");
 

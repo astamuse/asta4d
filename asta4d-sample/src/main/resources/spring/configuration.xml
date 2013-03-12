@@ -11,11 +11,16 @@
 
     <import resource="snippet.xml"/>
 
+    <!-- Configures the @Controller programming model -->
+    <mvc:annotation-driven/>
     <bean class="com.astamuse.asta4d.sample.controller.SampleController"/>
 
     <mvc:interceptors>
         <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateContextInitializer" />
     </mvc:interceptors>
+    
+    <mvc:resources mapping="/css/**" location="/css/" order="-100"/>
+    <mvc:resources mapping="/js/**" location="/js/" order="-100"/>
 
     <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
         <property name="templateResolver">
