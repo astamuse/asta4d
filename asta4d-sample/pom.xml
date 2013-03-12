@@ -33,7 +33,14 @@
        <artifactId>spring-webmvc</artifactId>
        <version>3.1.2.RELEASE</version>
       </dependency>
-
+      
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
+      </dependency>
+      
     </dependencies>
 
     <profiles>
@@ -48,7 +55,7 @@
               <version>8.1.2.v20120308</version>
               <configuration>
                     <webApp>
-                      <contextPath>/asta4d-sample</contextPath>
+                      <contextPath>/</contextPath>
                     </webApp>
               </configuration>
               <executions>
