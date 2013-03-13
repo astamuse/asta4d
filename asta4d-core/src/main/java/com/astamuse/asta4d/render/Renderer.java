@@ -682,7 +682,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+        if (Context.getCurrentThreadContext().getConfiguration().isBlockParallelListRendering()) {
+            return create(selector, ListConvertUtil.transform(list, convertor));
+        } else {
+            return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+        }
     }
 
     /**
