@@ -60,6 +60,8 @@ public class Configuration {
 
     private boolean skipSnippetExecution = false;
 
+    private boolean blockParallelListRendering = false;
+
     /**
      * at present, the following items are regarded as global settings
      */
@@ -153,6 +155,14 @@ public class Configuration {
 
     public void setSkipSnippetExecution(boolean skipSnippetExecution) {
         this.skipSnippetExecution = skipSnippetExecution;
+    }
+
+    public boolean isBlockParallelListRendering() {
+        return blockParallelListRendering;
+    }
+
+    public void setBlockParallelListRendering(boolean blockParallelListRendering) {
+        this.blockParallelListRendering = blockParallelListRendering;
     }
 
     public ExecutorService getMultiThreadExecutor() {
