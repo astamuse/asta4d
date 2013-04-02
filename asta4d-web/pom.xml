@@ -5,22 +5,21 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.4.2</version>
+      <version>0.4.2-SNAPSHOT</version>
   </parent>
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-web</artifactId>
-  <version>0.1</version>
   <packaging>jar</packaging>
 
   <name>com.astamuse.asta4d-web</name>
-  <url></url>
+  <description>web functionalities of asta4d framework, including view first and url matching</description>
 
   <dependencies>
     <dependency>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d-core</artifactId>
-      <version>0.1</version>
+      <version>${project.version}</version>
     </dependency>
     
     <dependency>

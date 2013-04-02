@@ -10,20 +10,13 @@
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
-  <url>http://github.com/astamuse/asta4d</url>
   <description>asta4d framework is a view first web framework</description>
 
-  <modules>
-      <module>asta4d-core</module>
-      <module>asta4d-web</module>
-      <module>asta4d-spring</module>
-      <module>asta4d-sample</module>
-  </modules>  
-
+  <url>http://github.com/astamuse/asta4d</url>
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -54,6 +47,13 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  
+  <modules>
+      <module>asta4d-core</module>
+      <module>asta4d-web</module>
+      <module>asta4d-spring</module>
+      <module>asta4d-sample</module>
+  </modules>
   
   <dependencies>
     <dependency>
@@ -98,6 +98,34 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.9</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>          
+        </plugin>  
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>2.2.1</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

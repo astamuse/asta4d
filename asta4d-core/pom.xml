@@ -5,16 +5,15 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.4.2</version>
+      <version>0.4.2-SNAPSHOT</version>
   </parent>
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-core</artifactId>
-  <version>0.1</version>
   <packaging>jar</packaging>
 
   <name>com.astamuse.asta4d-core</name>
-  <url></url>
+  <description>core functionalities of asta4d framework, including template and snippt implemention</description>
 
   <dependencies>
     <dependency>
