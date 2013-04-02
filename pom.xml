@@ -1,33 +1,59 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
+  
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+  
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>0.1</version>
+  <version>0.4.2</version>
   <packaging>pom</packaging>
 
-  <name>com.astamuse.asta4d</name>
-  <url>http://asta4d.astamuse.com</url>
+  <name>asta4d framework</name>
+  <url>http://github.com/astamuse/asta4d</url>
+  <description>asta4d framework is a view first web framework</description>
 
-    <modules>
-        <module>asta4d-core</module>
-        <module>asta4d-web</module>
-        <module>asta4d-spring</module>
-        <module>asta4d-sample</module>
-    </modules>  
-  
+  <modules>
+      <module>asta4d-core</module>
+      <module>asta4d-web</module>
+      <module>asta4d-spring</module>
+      <module>asta4d-sample</module>
+  </modules>  
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>git@github.com:astamuse/asta4d.git</url>
+    <connection>scm:git:git@github.com:astamuse/asta4d.git</connection>
+    <developerConnection>scm:git:git@github.com:astamuse/asta4d.git</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>s.otani</id>
+      <name>Shunsuke Otani</name>
+      <email>s.otani@astamuse.co.jp</email>
+    </developer>
+    <developer>
+      <id>e.ryu</id>
+      <name>Rui Liu</name>
+      <email>e.ryu@astamuse.co.jp</email>
+    </developer>
+  </developers>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-    <repositories>
-      <repository>
-          <id>springsource-repo</id>
-          <name>SpringSource Repository</name>
-          <url>http://repo.springsource.org/release</url>
-      </repository>
-    </repositories>  
   
   <dependencies>
     <dependency>
@@ -72,14 +98,21 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.4</version>
-        </plugin>        
-        <!--
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.3</version>
-        </plugin>  
-        -->
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>1.4</version>
+          <executions>
+            <execution>
+              <id>sign-artifacts</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sign</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </build>  
   
