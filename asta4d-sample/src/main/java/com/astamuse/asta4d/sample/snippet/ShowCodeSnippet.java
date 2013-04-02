@@ -57,7 +57,7 @@ public class ShowCodeSnippet {
         pre.attr("style", "overflow-x:auto");
         List<Node> preChildren = new ArrayList<>();
         if (contents != null) {
-            preChildren.add(new Element(Tag.valueOf("b"), "").appendText(contents));
+            preChildren.add(new Element(Tag.valueOf("span"), "").appendText(contents));
         }
         ElementUtil.appendNodes(pre, preChildren);
 
