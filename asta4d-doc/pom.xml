@@ -4,7 +4,7 @@
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-doc</artifactId>
-  <version>0.4.2-SNAPSHOT</version>
+  <version>0.4.2</version>
   <packaging>jar</packaging>
   <repositories>
       <repository>
