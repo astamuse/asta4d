@@ -147,11 +147,20 @@ Thus, we created Asta4D.
     ```
 
 ## Quick start
-The quickest way to start with Asta4D is from the sample project. Asta4D projects is structured by Maven 3, after 
-install Maven 3, run the start bat(sh), you will get a working Asta4D project with jetty.
-(At present, since we have not put Asta4DÅfs libraries to any Maven library server yet, the only way to use Asta4D is 
-bringing it into your own project as maven modules. Do not worry about it, we will fix this problem when we officially 
-release the beta version)
+We are working for creating a maven archetype, before it finished, the quickest way to start with Asta4D is 
+[download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_0.4.2.zip)
+as a prototype. Asta4D projects is structured by Maven 3, so you have to install Maven 3 at first. After install Maven 3, extract your
+downloaded file and go to the root foler(the folder with pom.xml file), start the sample project by the following command:
+
+    ```
+    maven jetty:run
+    ```
+
+Then you can access the sample project by http://localhost:8080, there are source samples shown, it is a good start from reading the samples.
+After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/com/astamuse/asta4d/sample/controller/SampleController.java,
+and also you can add your own html template files to /src/main/webapp.
+
+One last thing, do not forget modify the groupId and artifactId in pom file, as well as the version. 
 
 Additionally, there is an [English document](http://astamuse.github.com/asta4d/userguide/index.html) which describes how 
 Asta4D works in more details, and there is also a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html)
