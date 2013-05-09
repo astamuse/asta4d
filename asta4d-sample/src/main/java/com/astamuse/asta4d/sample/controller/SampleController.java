@@ -39,6 +39,12 @@ public class SampleController extends GenericControllerBase {
         rules.add(GET, "/")
              .redirect("/app/index");
         
+        initSampleRules(rules);
+        //@formatter:on
+    }
+    
+    private void initSampleRules(UrlMappingRuleHelper rules){
+        //@formatter:off
         rules.add("/app/", "/templates/index.html");
         rules.add("/app/index", "/templates/index.html");
 
