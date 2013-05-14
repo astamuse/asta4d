@@ -46,7 +46,7 @@ public class ConcurrentRenderHelper {
         String key = INSTANCE_KEY + docRef;
         ConcurrentRenderHelper instance = context.getData(key);
         if (instance == null) {
-            instance = new ConcurrentRenderHelper(context.getConfiguration().getMultiThreadExecutor());
+            instance = new ConcurrentRenderHelper(context.getConfiguration().getSnippetExecutorFactory().getExecutorService());
             context.setData(key, instance);
         }
         return instance;

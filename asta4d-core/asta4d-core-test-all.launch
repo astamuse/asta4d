@@ -12,6 +12,8 @@
 <listAttribute key="org.testng.eclipse.PACKAGE_TEST_LIST">
 <listEntry value="com.astamuse.asta4d.test.unit"/>
 <listEntry value="com.astamuse.asta4d.test.render"/>
+<listEntry value="com.astamuse.asta4d.test.unit"/>
+<listEntry value="com.astamuse.asta4d.test.unit"/>
 </listAttribute>
 <intAttribute key="org.testng.eclipse.TYPE" value="5"/>
 </launchConfiguration>
