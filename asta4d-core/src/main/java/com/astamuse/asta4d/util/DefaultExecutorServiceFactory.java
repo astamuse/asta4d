@@ -53,4 +53,11 @@ public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
     public ExecutorService getExecutorService() {
         return es;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        es.shutdown();
+        super.finalize();
+    }
+
 }
