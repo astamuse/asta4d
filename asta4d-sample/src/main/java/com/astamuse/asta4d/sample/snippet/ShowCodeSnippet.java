@@ -107,7 +107,7 @@ public class ShowCodeSnippet {
             }
 
             // find the line that has the mark
-            reader = new BufferedReader(new InputStreamReader(inputStream));
+            reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
             String line = null;
             String contents = "";
             boolean isMark = false;
