@@ -87,6 +87,7 @@ public class Page {
         TemplateResolver templateResolver = conf.getTemplateResolver();
         template = templateResolver.findTemplate(path);
         renderedDocument = renderTemplate(template);
+        renderedDocument.outputSettings().prettyPrint(conf.isOutputAsPrettyPrint());
     }
 
     protected Document renderTemplate(Template template) throws Exception {

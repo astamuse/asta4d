@@ -61,6 +61,8 @@ public class Configuration {
 
     private boolean skipSnippetExecution = false;
 
+    private boolean outputAsPrettyPrint = true;
+
     private boolean blockParallelListRendering = false;
 
     private ExecutorServiceFactory snippetExecutorFactory = new DefaultExecutorServiceFactory("asta4d-snippet", 200);
@@ -184,6 +186,14 @@ public class Configuration {
 
     public void setParallelRecursivePolicyForListRendering(ParallelRecursivePolicy parallelRecursivePolicyForListRendering) {
         this.parallelRecursivePolicyForListRendering = parallelRecursivePolicyForListRendering;
+    }
+
+    public boolean isOutputAsPrettyPrint() {
+        return outputAsPrettyPrint;
+    }
+
+    public void setOutputAsPrettyPrint(boolean outputAsPrettyPrint) {
+        this.outputAsPrettyPrint = outputAsPrettyPrint;
     }
 
     public boolean isBlockParallelListRendering() {
