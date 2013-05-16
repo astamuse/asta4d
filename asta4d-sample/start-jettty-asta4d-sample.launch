@@ -11,8 +11,8 @@
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="RunJettyRunWebAppClassPathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="runjettyrun.Bootstrap"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="asta4d-sample"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dasta4d.sample.source_location=${resource_loc:asta4d-sample}/src/main/java -javaagent:${project_loc:asta4d-sample}/libs/spring-instrument-3.1.2.RELEASE.jar&quot;"/>
-<stringAttribute key="run_jetty_run.CONTEXT_ATTR" value="/asta4d-sample"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dasta4d.sample.source_location=${resource_loc:asta4d-sample}/src/main/java"/>
+<stringAttribute key="run_jetty_run.CONTEXT_ATTR" value="/"/>
 <booleanAttribute key="run_jetty_run.ENABLE_JNDI_ATTR" value="false"/>
 <booleanAttribute key="run_jetty_run.ENABLE_NEED_CLIENT_AUTH_ATTR" value="false"/>
 <booleanAttribute key="run_jetty_run.ENABLE_PARENT_LOADER_PRIORITY_ATTR" value="true"/>

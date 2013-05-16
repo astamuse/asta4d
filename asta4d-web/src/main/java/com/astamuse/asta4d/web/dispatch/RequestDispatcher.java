@@ -82,12 +82,19 @@ public class RequestDispatcher {
         logger.info("access for:" + request.getRequestURI());
         UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
 
+        // if not found result, we do not need return 404, instead of user
+        // defining all match rule
+
+        if (result == null) {
+            logger.warn("There is no matched rule found, we will simply return a 404. You should define your own matching all rule for this case.");
+            response.setStatus(404);
+            return;
+        }
+
         if (logger.isDebugEnabled()) {
             logger.debug("apply rule at :" + result.getRule());
         }
 
-        // if not found result, we do not need return 404, instead of user
-        // defining all match rule
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         writePathVarToContext(context, result.getPathVarMap());
 

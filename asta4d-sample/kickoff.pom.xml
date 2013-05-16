@@ -3,7 +3,7 @@
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-sample</artifactId>
-  <version>0.4.2</version>
+  <version>0.4.21-SNAPSHOT</version>
   <packaging>war</packaging>
 
   <name>com.astamuse.asta4d-sample</name>
@@ -16,7 +16,7 @@
       <dependency>
         <groupId>com.astamuse</groupId>
         <artifactId>asta4d-spring</artifactId>
-        <version>0.4.2</version>
+        <version>0.5.16</version>
       </dependency>
       
       <dependency>
@@ -59,6 +59,12 @@
                     <webApp>
                       <contextPath>/</contextPath>
                     </webApp>
+					<systemProperties>
+					  <systemProperty>
+						<name>asta4d.sample.source_location</name>
+						<value>src/main/java</value>
+					  </systemProperty>
+					</systemProperties>
               </configuration>
             </plugin>
           </plugins>

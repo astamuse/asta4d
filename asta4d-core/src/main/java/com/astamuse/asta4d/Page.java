@@ -90,8 +90,9 @@ public class Page {
     }
 
     protected Document renderTemplate(Template template) throws Exception {
+        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
         Document doc = template.getDocumentClone();
-
+        doc.outputSettings().prettyPrint(conf.isOutputAsPrettyPrint());
         InterceptorUtil.executeWithInterceptors(doc, WrapperPageInterceptorList, new Executor<Document>() {
             @Override
             public void execute(Document doc) throws Exception {

@@ -23,6 +23,7 @@
     <mvc:resources mapping="/js/**" location="/js/" order="-100"/>
 
     <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
+        <property name="cacheEnable" value="false"/>
         <property name="templateResolver">
             <bean class="com.astamuse.asta4d.misc.spring.mvc.SpringWebApplicationTemplateResolver"/>
         </property>
@@ -35,6 +36,18 @@
             </list>
         </property>
         <property name="snippetInvoker" ref="snippetInvoker"/>
+        <property name="snippetExecutorFactory">
+            <bean class="com.astamuse.asta4d.util.DefaultExecutorServiceFactory">
+                <constructor-arg index="0"><value>asta4d-sample-snippet</value></constructor-arg>
+                <constructor-arg index="1"><value>100</value></constructor-arg>
+            </bean>
+        </property>
+        <property name="listExecutorFactory">
+            <bean class="com.astamuse.asta4d.util.DefaultExecutorServiceFactory">
+                <constructor-arg index="0"><value>asta4d-sample-snippet</value></constructor-arg>
+                <constructor-arg index="1"><value>200</value></constructor-arg>
+            </bean>
+        </property>
     </bean>
 
     <bean id="asta4dContext" class="com.astamuse.asta4d.web.WebApplicationContext" scope="prototype">

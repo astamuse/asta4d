@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
@@ -36,7 +35,9 @@ import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
 import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 import com.astamuse.asta4d.template.FileTemplateResolver;
 import com.astamuse.asta4d.template.TemplateResolver;
+import com.astamuse.asta4d.util.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.ExecutorServiceFactory;
+import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 
 public class Configuration {
 
@@ -60,13 +61,19 @@ public class Configuration {
 
     private boolean skipSnippetExecution = false;
 
+    private boolean outputAsPrettyPrint = false;
+
     private boolean blockParallelListRendering = false;
+
+    private ExecutorServiceFactory snippetExecutorFactory = new DefaultExecutorServiceFactory("asta4d-snippet", 200);
+
+    private ExecutorServiceFactory listExecutorFactory = new DefaultExecutorServiceFactory("asta4d-list", 600);
+
+    private ParallelRecursivePolicy parallelRecursivePolicyForListRendering = ParallelRecursivePolicy.EXCEPTION;
 
     /**
      * at present, the following items are regarded as global settings
      */
-    private ExecutorService multiThreadExecutor = ExecutorServiceFactory.getCachableThreadExecutor();
-
     private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
     private List<String> clearNodeClasses = new ArrayList<>();
@@ -157,20 +164,44 @@ public class Configuration {
         this.skipSnippetExecution = skipSnippetExecution;
     }
 
+    public ExecutorServiceFactory getSnippetExecutorFactory() {
+        return snippetExecutorFactory;
+    }
+
+    public void setSnippetExecutorFactory(ExecutorServiceFactory snippetExecutorFactory) {
+        this.snippetExecutorFactory = snippetExecutorFactory;
+    }
+
+    public ExecutorServiceFactory getListExecutorFactory() {
+        return listExecutorFactory;
+    }
+
+    public void setListExecutorFactory(ExecutorServiceFactory listExecutorFactory) {
+        this.listExecutorFactory = listExecutorFactory;
+    }
+
+    public ParallelRecursivePolicy getParallelRecursivePolicyForListRendering() {
+        return parallelRecursivePolicyForListRendering;
+    }
+
+    public void setParallelRecursivePolicyForListRendering(ParallelRecursivePolicy parallelRecursivePolicyForListRendering) {
+        this.parallelRecursivePolicyForListRendering = parallelRecursivePolicyForListRendering;
+    }
+
+    public boolean isOutputAsPrettyPrint() {
+        return outputAsPrettyPrint;
+    }
+
+    public void setOutputAsPrettyPrint(boolean outputAsPrettyPrint) {
+        this.outputAsPrettyPrint = outputAsPrettyPrint;
+    }
+
     public boolean isBlockParallelListRendering() {
         return blockParallelListRendering;
     }
 
     public void setBlockParallelListRendering(boolean blockParallelListRendering) {
         this.blockParallelListRendering = blockParallelListRendering;
-    }
-
-    public ExecutorService getMultiThreadExecutor() {
-        return multiThreadExecutor;
-    }
-
-    public void setMultiThreadExecutor(ExecutorService multiThreadExecutor) {
-        this.multiThreadExecutor = multiThreadExecutor;
     }
 
     public List<String> getReverseInjectableScopes() {

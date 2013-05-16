@@ -15,10 +15,8 @@
  * 
  */
 
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.util.collection;
 
-import java.util.concurrent.ExecutorService;
-
-public interface ExecutorServiceFactory {
-    public ExecutorService getExecutorService();
+public enum ParallelRecursivePolicy {
+    EXCEPTION, CURRENT_THREAD, NEW_THREAD
 }

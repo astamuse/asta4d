@@ -47,6 +47,7 @@ public class BaseTest {
             this.setSnippetResolver(snippetResolver);
 
             this.setReverseInjectableScopes(Arrays.asList(ReverseInjectableScope));
+            this.setOutputAsPrettyPrint(true);
         }
     };
 
