@@ -87,12 +87,12 @@ public class Page {
         TemplateResolver templateResolver = conf.getTemplateResolver();
         template = templateResolver.findTemplate(path);
         renderedDocument = renderTemplate(template);
-        renderedDocument.outputSettings().prettyPrint(conf.isOutputAsPrettyPrint());
     }
 
     protected Document renderTemplate(Template template) throws Exception {
+        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
         Document doc = template.getDocumentClone();
-
+        doc.outputSettings().prettyPrint(conf.isOutputAsPrettyPrint());
         InterceptorUtil.executeWithInterceptors(doc, WrapperPageInterceptorList, new Executor<Document>() {
             @Override
             public void execute(Document doc) throws Exception {
