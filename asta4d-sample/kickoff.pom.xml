@@ -16,7 +16,7 @@
       <dependency>
         <groupId>com.astamuse</groupId>
         <artifactId>asta4d-spring</artifactId>
-        <version>0.4.2</version>
+        <version>0.5.16</version>
       </dependency>
       
       <dependency>

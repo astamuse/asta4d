@@ -4,7 +4,7 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.4.21-SNAPSHOT</version>
+      <version>0.5.16</version>
   </parent>
 
   <groupId>com.astamuse</groupId>
@@ -79,7 +79,7 @@
                       <copy todir="../asta4d-archetype/src/main/resources/archetype-resources/src">
                         <fileset dir="target/generated-sources/archetype/src/main/resources/archetype-resources/src" includes="**/*" />
                       </copy>
-                      <copy tofile="../asta4d-archetype/src/main/resources/archetype-resources/pom.xml" file="target/generated-sources/archetype/src/main/resources/archetype-resources/kickoff.pom.xml"/>
+                      <copy tofile="../asta4d-archetype/src/main/resources/archetype-resources/pom.xml" file="target/generated-sources/archetype/src/main/resources/archetype-resources/kickoff.pom.xml" />
                     </target>
                   </configuration>
                 </execution>
