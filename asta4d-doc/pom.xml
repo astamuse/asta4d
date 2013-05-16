@@ -6,6 +6,10 @@
   <artifactId>asta4d-doc</artifactId>
   <version>0.5.16</version>
   <packaging>jar</packaging>
+  
+  <name>com.astamuse.asta4d-doc</name>
+  <description>document of asta4d</description>
+  
   <repositories>
       <repository>
       <id>mvn-public</id>
