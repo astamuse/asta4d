@@ -106,10 +106,12 @@ public class WebApplicationContext extends Context {
             map = new HashMap<>();
             HttpServletRequest request = getRequest();
             Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-                String name = cookie.getName();
-                String[] values = mergeCookieValues(cookie, (String[]) map.get(name));
-                map.put(name, values);
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    String name = cookie.getName();
+                    String[] values = mergeCookieValues(cookie, (String[]) map.get(name));
+                    map.put(name, values);
+                }
             }
             map = Collections.unmodifiableMap(map);
         }
