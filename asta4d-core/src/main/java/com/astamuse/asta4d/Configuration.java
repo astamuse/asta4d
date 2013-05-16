@@ -61,7 +61,7 @@ public class Configuration {
 
     private boolean skipSnippetExecution = false;
 
-    private boolean outputAsPrettyPrint = true;
+    private boolean outputAsPrettyPrint = false;
 
     private boolean blockParallelListRendering = false;
 
