@@ -19,6 +19,7 @@ package com.astamuse.asta4d.snippet.interceptor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
@@ -27,37 +28,47 @@ import com.astamuse.asta4d.snippet.SnippetExecutionHolder;
 
 public class SnippetInitializeInterceptor implements SnippetInterceptor {
 
+    private static class InitializedListHolder {
+        ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+        List<Object> snippetList = new ArrayList<>();
+    }
+
     private final static String InstanceListCacheKey = SnippetInitializeInterceptor.class + "##InstanceListCacheKey##";
 
     @Override
     public boolean beforeProcess(SnippetExecutionHolder execution) throws Exception {
 
         Context context = Context.getCurrentThreadContext();
-        List<Object> snippetList = context.getData(InstanceListCacheKey);
-        if (snippetList == null) {
-            snippetList = new ArrayList<>();
-            context.setData(InstanceListCacheKey, snippetList);
+        InitializedListHolder listHolder = context.getData(InstanceListCacheKey);
+        if (listHolder == null) {
+            listHolder = new InitializedListHolder();
+            context.setData(InstanceListCacheKey, listHolder);
         }
 
         Object target = execution.getInstance();
         boolean inialized = false;
 
-        // TODO we need a more efficient way to avoid global lock
-        synchronized (snippetList) {
-            for (Object initializedSnippet : snippetList) {
+        listHolder.lock.readLock().lock();
+        try {
+            for (Object initializedSnippet : listHolder.snippetList) {
                 if (initializedSnippet == target) {
                     inialized = true;
                     break;
                 }
             }
+        } finally {
+            listHolder.lock.readLock().unlock();
         }
 
         if (!inialized) {
             if (target instanceof InitializableSnippet) {
                 ((InitializableSnippet) target).init();
             }
-            synchronized (snippetList) {
-                snippetList.add(target);
+            listHolder.lock.writeLock().lock();
+            try {
+                listHolder.snippetList.add(target);
+            } finally {
+                listHolder.lock.writeLock().unlock();
             }
         }
 
