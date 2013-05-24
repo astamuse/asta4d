@@ -43,10 +43,6 @@ public class ElementUtil {
         return wrap;
     }
 
-    public final static Elements parse(String html) {
-        return Jsoup.parseBodyFragment(html).select("body");
-    }
-
     public final static Element parseAsSingle(String html) {
         Element body = Jsoup.parseBodyFragment(html).body();
         List<Node> children = body.childNodes();
