@@ -17,20 +17,24 @@
 
 package com.astamuse.asta4d.misc.spring.mvc;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 
-public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter implements ApplicationContextAware {
+public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter implements ApplicationContextAware, ServletContextAware {
 
     private ApplicationContext applicationContext;
+
+    private ServletContext servletContext;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -43,6 +47,7 @@ public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter 
         WebApplicationContext webContext = (WebApplicationContext) templateContext;
         webContext.setRequest(request);
         webContext.setResponse(response);
+        webContext.setServletContext(servletContext);
         return true;
     }
 
@@ -58,6 +63,11 @@ public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.applicationContext = context;
+    }
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
 
 }

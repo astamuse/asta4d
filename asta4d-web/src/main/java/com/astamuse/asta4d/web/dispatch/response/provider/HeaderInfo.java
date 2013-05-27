@@ -45,15 +45,15 @@ public class HeaderInfo {
         return status;
     }
 
-    public void setHeader(String name, String value) {
+    public void addHeader(String name, String value) {
         headerMap.put(name, value);
     }
 
-    public void setCookie(String name, String value) {
+    public void addCookie(String name, String value) {
         cookieList.add(new Cookie(name, value));
     }
 
-    public void setCookie(Cookie cookie) {
+    public void addCookie(Cookie cookie) {
         cookieList.add(cookie);
     }
 

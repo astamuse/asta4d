@@ -20,6 +20,7 @@ package com.astamuse.asta4d.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -52,6 +53,8 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
             return ((WebApplicationContext) context).getRequest();
         } else if (type.equals(HttpServletResponse.class)) {
             return ((WebApplicationContext) context).getResponse();
+        } else if (type.equals(ServletContext.class)) {
+            return ((WebApplicationContext) context).getServletContext();
         } else if (type.equals(UrlMappingRule.class)) {
             return context.getData(RequestDispatcher.KEY_CURRENT_RULE);
         } else {

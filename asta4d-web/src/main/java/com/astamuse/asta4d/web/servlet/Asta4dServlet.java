@@ -62,13 +62,18 @@ public abstract class Asta4dServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        Context context = null;
+        WebApplicationContext context = null;
         try {
             context = Context.getCurrentThreadContext();
             if (context == null) {
                 context = createAsta4dContext();
                 Context.setCurrentThreadContext(context);
             }
+
+            context.setRequest(req);
+            context.setResponse(res);
+            context.setServletContext(getServletContext());
+
             dispatcher.dispatchAndProcess(req, res);
         } catch (Exception e) {
             throw new ServletException(e);

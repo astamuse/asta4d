@@ -10,6 +10,7 @@ import javax.servlet.ServletContext;
 
 import com.astamuse.asta4d.web.dispatch.response.writer.BinaryDataWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import com.astamuse.asta4d.web.util.BinaryDataUtil;
 
 public class BinaryDataProvider implements ContentProvider<InputStream> {
 
@@ -27,8 +28,8 @@ public class BinaryDataProvider implements ContentProvider<InputStream> {
         this(retrieveInputStreamFromFile(commonFile));
     }
 
-    public BinaryDataProvider(String commonFilePath) {
-        this(new File(commonFilePath));
+    public BinaryDataProvider(ServletContext servletContext, ClassLoader classLoader, String path) {
+        this(BinaryDataUtil.retrieveInputStreamByPath(servletContext, classLoader, path));
     }
 
     private static final InputStream retrieveInputStreamFromFile(File file) {
