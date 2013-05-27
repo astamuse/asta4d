@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
@@ -56,7 +55,7 @@ public abstract class Asta4dServlet extends HttpServlet {
         super.init(config);
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
         initUrlMappingRules(helper);
-        dispatcher.setRuleExtractor(new AntPathRuleExtractor());
+        dispatcher.setRuleExtractor(createConfiguration().getRuleExtractor());
         dispatcher.setRuleList(helper.getArrangedRuleList());
         logger.info("url mapping rules are initialized.");
     }
