@@ -74,12 +74,6 @@ public class RequestDispatcherTest {
         Context.setCurrentThreadContext(context);
         context.setConfiguration(configuration);
 
-        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        initTestRules(helper);
-
-        dispatcher.setRuleExtractor(new AntPathRuleExtractor());
-        dispatcher.setRuleList(helper.getArrangedRuleList());
-
     }
 
     @BeforeMethod
@@ -87,6 +81,7 @@ public class RequestDispatcherTest {
         Context context = Context.getCurrentThreadContext();
         if (context == null) {
             context = new WebApplicationContext();
+            context.setConfiguration(configuration);
             Context.setCurrentThreadContext(context);
         }
         context.clear();
@@ -164,7 +159,11 @@ public class RequestDispatcherTest {
                 bos.write(b);
             }
         });
-        dispatcher.dispatchAndProcess(request, response);
+
+        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
+        initTestRules(helper);
+
+        dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
 
         if (status != 0) {
             verify(response).setStatus(status);

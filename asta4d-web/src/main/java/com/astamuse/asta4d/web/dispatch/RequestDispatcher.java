@@ -39,7 +39,6 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.HeaderWriter;
 import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 
@@ -51,36 +50,21 @@ public class RequestDispatcher {
 
     private final static Logger logger = LoggerFactory.getLogger(RequestDispatcher.class);
 
-    private final static HeaderWriter headerWriter = new HeaderWriter();
-
-    private DispatcherRuleExtractor ruleExtractor;
-
-    private List<UrlMappingRule> ruleList;
-
     public RequestDispatcher() {
 
     }
 
-    public DispatcherRuleExtractor getRuleExtractor() {
-        return ruleExtractor;
-    }
-
-    public void setRuleExtractor(DispatcherRuleExtractor ruleExtractor) {
-        this.ruleExtractor = ruleExtractor;
-    }
-
-    public List<UrlMappingRule> getRuleList() {
-        return ruleList;
-    }
-
-    public void setRuleList(List<UrlMappingRule> ruleList) {
-        this.ruleList = ruleList;
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void dispatchAndProcess(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void dispatchAndProcess(List<UrlMappingRule> ruleList) throws Exception {
+        WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
+        HttpServletRequest request = context.getRequest();
+        HttpServletResponse response = context.getResponse();
+
         logger.info("access for:" + request.getRequestURI());
-        UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
+
+        WebApplicationConfiguration conf = (WebApplicationConfiguration) context.getConfiguration();
+
+        UrlMappingResult result = conf.getRuleExtractor().findMappedRule(request, ruleList);
 
         // if not found result, we do not need return 404, instead of user
         // defining all match rule
@@ -95,7 +79,6 @@ public class RequestDispatcher {
             logger.debug("apply rule at :" + result.getRule());
         }
 
-        WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         writePathVarToContext(context, result.getPathVarMap());
 
         UrlMappingRule rule = result.getRule();

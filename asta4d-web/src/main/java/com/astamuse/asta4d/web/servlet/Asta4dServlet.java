@@ -18,6 +18,7 @@
 package com.astamuse.asta4d.web.servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -32,6 +33,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
 /**
@@ -50,14 +52,19 @@ public abstract class Asta4dServlet extends HttpServlet {
 
     protected RequestDispatcher dispatcher = new RequestDispatcher();
 
+    private List<UrlMappingRule> ruleList;
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        ruleList = createRuleList();
+    }
+
+    private List<UrlMappingRule> createRuleList() {
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
         initUrlMappingRules(helper);
-        dispatcher.setRuleExtractor(createConfiguration().getRuleExtractor());
-        dispatcher.setRuleList(helper.getArrangedRuleList());
         logger.info("url mapping rules are initialized.");
+        return helper.getArrangedRuleList();
     }
 
     @Override
@@ -74,7 +81,12 @@ public abstract class Asta4dServlet extends HttpServlet {
             context.setResponse(res);
             context.setServletContext(getServletContext());
 
-            dispatcher.dispatchAndProcess(req, res);
+            if (context.getConfiguration().isCacheEnable()) {
+                dispatcher.dispatchAndProcess(ruleList);
+            } else {
+                dispatcher.dispatchAndProcess(createRuleList());
+            }
+
         } catch (Exception e) {
             throw new ServletException(e);
         } finally {
