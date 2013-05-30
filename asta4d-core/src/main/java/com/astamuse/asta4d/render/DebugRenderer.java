@@ -47,4 +47,10 @@ public class DebugRenderer extends Renderer {
             }
         }));
     }
+
+    @Override
+    RendererType getRendererType() {
+        return RendererType.DEBUG;
+    }
+
 }

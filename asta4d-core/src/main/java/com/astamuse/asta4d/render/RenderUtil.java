@@ -259,13 +259,16 @@ public class RenderUtil {
             return;
         }
         applyClearAction(target, false);
-        apply(target, rendererList, 0, count);
+
+        RenderAction renderAction = new RenderAction();
+
+        apply(target, rendererList, renderAction, 0, count);
     }
 
     // TODO since this method is called recursively, we need do a test to find
     // out the threshold of render list size that will cause a
     // StackOverflowError.
-    private final static void apply(Element target, List<Renderer> rendererList, int startIndex, int count) {
+    private final static void apply(Element target, List<Renderer> rendererList, RenderAction renderAction, int startIndex, int count) {
 
         // The renderer list have to be applied recursively because the
         // transformer will always return a new Element clone.
@@ -276,20 +279,38 @@ public class RenderUtil {
 
         Renderer currentRenderer = rendererList.get(startIndex);
 
-        if (currentRenderer instanceof GoThroughRenderer) {
-            apply(target, rendererList, startIndex + 1, count);
+        RendererType rendererType = currentRenderer.getRendererType();
+
+        switch (rendererType) {
+        case GO_THROUGH:
+            apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
+        case DEBUG:
+            currentRenderer.getTransformerList().get(0).invoke(target);
+            apply(target, rendererList, renderAction, startIndex + 1, count);
+            return;
+        case RENDER_ACTION:
+            ((RenderActionRenderer) currentRenderer).getStyle().apply(renderAction);
+            apply(target, rendererList, renderAction, startIndex + 1, count);
+            return;
+        default:
+            // do nothing
+            break;
         }
 
         String selector = currentRenderer.getSelector();
 
-        if (currentRenderer instanceof DebugRenderer) {
-            currentRenderer.getTransformerList().get(0).invoke(target);
-            apply(target, rendererList, startIndex + 1, count);
-            return;
+        List<Element> elemList = new ArrayList<>(target.select(selector));
+
+        if (elemList.isEmpty()) {
+            if (renderAction.isOutputMissingSelectorWarning()) {
+                logger.warn("There is no element found for selector [{}], if it is deserved, try Renderer#disableMissingSelectorWarning() "
+                        + "to disable this message and Renderer#enableMissingSelectorWarning could enable this warning again in "
+                        + "your renderer chain", selector);
+            }
+            apply(target, rendererList, renderAction, startIndex + 1, count);
         }
 
-        List<Element> elemList = new ArrayList<>(target.select(selector));
         List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
 
         Element delayedElement = null;
@@ -320,12 +341,12 @@ public class RenderUtil {
         // a new element even it is not necessary (that is how Transformer
         // works).
         if (delayedElement == null) {
-            apply(target, rendererList, startIndex + 1, count);
+            apply(target, rendererList, renderAction, startIndex + 1, count);
         } else {
             for (Transformer<?> transformer : transformerList) {
                 resultNode = transformer.invoke(delayedElement);
                 delayedElement.before(resultNode);
-                apply(resultNode, rendererList, startIndex + 1, count);
+                apply(resultNode, rendererList, renderAction, startIndex + 1, count);
             }// for transformer
             delayedElement.remove();
         }

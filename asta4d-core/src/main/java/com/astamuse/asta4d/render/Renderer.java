@@ -105,6 +105,10 @@ public class Renderer {
         return "\n\"" + selector + "\"#>\n{" + this.transformerList + "}\n\n";
     }
 
+    RendererType getRendererType() {
+        return RendererType.COMMON;
+    }
+
     /**
      * Get list of all the renderers hold by the current renderer
      * 
@@ -735,4 +739,15 @@ public class Renderer {
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelDataConvertor<S, T> convertor) {
         return create(selector, ListConvertUtil.transformToFuture(list, convertor));
     }
+
+    // Render action control
+
+    public Renderer disableMissingSelectorWarning() {
+        return this.add(new RenderActionRenderer(RenderActionStyle.DISABLE_MISSING_SELECTOR_WARNING));
+    }
+
+    public Renderer eableMissingSelectorWarning() {
+        return this.add(new RenderActionRenderer(RenderActionStyle.ENABLE_MISSING_SELECTOR_WARNING));
+    }
+
 }
