@@ -48,6 +48,8 @@ public class BaseTest {
 
             this.setReverseInjectableScopes(Arrays.asList(ReverseInjectableScope));
             this.setOutputAsPrettyPrint(true);
+
+            this.setSaveCallstackInfoOnRendererCreation(true);
         }
     };
 

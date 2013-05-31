@@ -80,6 +80,8 @@ public class Configuration {
 
     private String tagNameSpace = "afd";
 
+    private boolean saveCallstackInfoOnRendererCreation = false;
+
     public TemplateResolver getTemplateResolver() {
         return templateResolver;
     }
@@ -226,6 +228,14 @@ public class Configuration {
 
     public void setTagNameSpace(String tagNameSpace) {
         this.tagNameSpace = tagNameSpace;
+    }
+
+    public boolean isSaveCallstackInfoOnRendererCreation() {
+        return saveCallstackInfoOnRendererCreation;
+    }
+
+    public void setSaveCallstackInfoOnRendererCreation(boolean saveCallstackInfoOnRendererCreation) {
+        this.saveCallstackInfoOnRendererCreation = saveCallstackInfoOnRendererCreation;
     }
 
 }

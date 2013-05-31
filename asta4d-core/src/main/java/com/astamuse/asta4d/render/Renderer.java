@@ -49,11 +49,18 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
  */
 public class Renderer {
 
+    private final static boolean saveCallstackInfo;
+    static {
+        saveCallstackInfo = Context.getCurrentThreadContext().getConfiguration().isSaveCallstackInfoOnRendererCreation();
+    }
+
     private String selector;
 
     private List<Transformer<?>> transformerList;
 
     private List<Renderer> chain;
+
+    private String creationSiteInfo = null;
 
     /**
      * Create a Renderer by given css selector and {@link Transformer}
@@ -90,6 +97,24 @@ public class Renderer {
         this.transformerList = transformerList;
         chain = new ArrayList<>();
         chain.add(this);
+
+        if (saveCallstackInfo) {
+            StackTraceElement[] Stacks = Thread.currentThread().getStackTrace();
+            StackTraceElement callSite = null;
+            boolean myClsStarted = false;
+            for (StackTraceElement stackTraceElement : Stacks) {
+                if (stackTraceElement.getClassName().equals(Renderer.class.getName())) {
+                    myClsStarted = true;
+                    continue;
+                } else if (myClsStarted) {
+                    callSite = stackTraceElement;
+                    break;
+                }
+            }
+            if (callSite != null) {
+                creationSiteInfo = callSite.toString();
+            }
+        }
     }
 
     public String getSelector() {
@@ -107,6 +132,10 @@ public class Renderer {
 
     RendererType getRendererType() {
         return RendererType.COMMON;
+    }
+
+    String getCreationSiteInfo() {
+        return creationSiteInfo;
     }
 
     /**

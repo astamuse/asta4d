@@ -304,9 +304,16 @@ public class RenderUtil {
 
         if (elemList.isEmpty()) {
             if (renderAction.isOutputMissingSelectorWarning()) {
-                logger.warn("There is no element found for selector [{}], if it is deserved, try Renderer#disableMissingSelectorWarning() "
-                        + "to disable this message and Renderer#enableMissingSelectorWarning could enable this warning again in "
-                        + "your renderer chain", selector);
+                String creationInfo = currentRenderer.getCreationSiteInfo();
+                if (creationInfo == null) {
+                    creationInfo = "";
+                } else {
+                    creationInfo = " at [" + creationInfo + "]";
+                }
+                logger.warn(
+                        "There is no element found for selector [{}]{}, if it is deserved, try Renderer#disableMissingSelectorWarning() "
+                                + "to disable this message and Renderer#enableMissingSelectorWarning could enable this warning again in "
+                                + "your renderer chain", selector, creationInfo);
             }
             apply(target, rendererList, renderAction, startIndex + 1, count);
         }
