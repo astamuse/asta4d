@@ -13,7 +13,7 @@
 
     <!-- Configures the @Controller programming model -->
     <mvc:annotation-driven/>
-    <bean class="com.astamuse.asta4d.sample.controller.SampleController"/>
+    <bean class="com.astamuse.asta4d.misc.spring.mvc.controller.GenericController"/>
 
     <mvc:interceptors>
         <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateContextInitializer" />

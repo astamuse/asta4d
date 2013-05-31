@@ -31,16 +31,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
 //TODO need to cache the mapped result
 @Controller
-public abstract class GenericControllerBase implements ApplicationContextAware {
+public abstract class GenericController implements ApplicationContextAware {
 
-    private final static Logger logger = LoggerFactory.getLogger(GenericControllerBase.class);
+    private final static Logger logger = LoggerFactory.getLogger(GenericController.class);
 
     private ApplicationContext beanCtx = null;
 
@@ -55,7 +57,9 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
             Context.setCurrentThreadContext(templateContext);
         }
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        initUrlMappingRules(helper);
+        UrlMappingRuleInitializer ruleInitializer = ((WebApplicationConfiguration) templateContext.getConfiguration())
+                .getUrlMappingRuleInitializer();
+        ruleInitializer.initUrlMappingRules(helper);
         ruleList = helper.getArrangedRuleList();
         logger.info("url mapping rules are initialized.");
     }
@@ -79,7 +83,6 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         init();
     }
 
-    protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);
     /*
         private View convertSpringView(ContentProvider contentProvider) throws TemplateException {
             if (contentProvider instanceof Asta4DPageProvider) {

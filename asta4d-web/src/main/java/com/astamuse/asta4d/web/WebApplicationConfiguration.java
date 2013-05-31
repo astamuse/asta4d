@@ -25,6 +25,7 @@ import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.DeclareInstanceResolver;
 
 public class WebApplicationConfiguration extends Configuration {
@@ -34,6 +35,8 @@ public class WebApplicationConfiguration extends Configuration {
     private List<DeclareInstanceResolver> instanceResolverList = new ArrayList<>();
 
     private DispatcherRuleExtractor ruleExtractor = new AntPathRuleExtractor();
+
+    private UrlMappingRuleInitializer urlMappingRuleInitializer = null;
 
     public WebApplicationConfiguration() {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
@@ -69,6 +72,14 @@ public class WebApplicationConfiguration extends Configuration {
 
     public void setRuleExtractor(DispatcherRuleExtractor ruleExtractor) {
         this.ruleExtractor = ruleExtractor;
+    }
+
+    public UrlMappingRuleInitializer getUrlMappingRuleInitializer() {
+        return urlMappingRuleInitializer;
+    }
+
+    public void setUrlMappingRuleInitializer(UrlMappingRuleInitializer urlMappingRuleInitializer) {
+        this.urlMappingRuleInitializer = urlMappingRuleInitializer;
     }
 
 }
