@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.astamuse</groupId>
+  <groupId>com.asta4d.sample</groupId>
   <artifactId>asta4d-sample</artifactId>
-  <version>0.5.17-SNAPSHOT</version>
+  <version>0.5.17.1-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>com.astamuse.asta4d-sample</name>
+  <name>com.asta4d.sample.asta4d-sample</name>
   <description>sample of asta4d framework, shows how to use asta4d</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
