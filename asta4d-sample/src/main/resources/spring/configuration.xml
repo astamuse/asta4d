@@ -48,6 +48,9 @@
                 <constructor-arg index="1"><value>200</value></constructor-arg>
             </bean>
         </property>
+        <property name="urlMappingRuleInitializer">
+            <bean class="com.astamuse.asta4d.sample.UrlRules"/>
+        </property>
     </bean>
 
     <bean id="asta4dContext" class="com.astamuse.asta4d.web.WebApplicationContext" scope="prototype">

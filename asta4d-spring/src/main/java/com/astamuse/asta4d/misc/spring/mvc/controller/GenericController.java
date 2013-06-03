@@ -38,9 +38,8 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
-//TODO need to cache the mapped result
 @Controller
-public abstract class GenericController implements ApplicationContextAware {
+public class GenericController implements ApplicationContextAware {
 
     private final static Logger logger = LoggerFactory.getLogger(GenericController.class);
 
