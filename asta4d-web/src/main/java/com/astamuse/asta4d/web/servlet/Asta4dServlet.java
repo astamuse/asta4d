@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
@@ -57,6 +58,7 @@ public abstract class Asta4dServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        Configuration.setConfiguration(createConfiguration());
         ruleList = createRuleList();
     }
 
@@ -81,7 +83,7 @@ public abstract class Asta4dServlet extends HttpServlet {
             context.setResponse(res);
             context.setServletContext(getServletContext());
 
-            if (context.getConfiguration().isCacheEnable()) {
+            if (Configuration.getConfiguration().isCacheEnable()) {
                 dispatcher.dispatchAndProcess(ruleList);
             } else {
                 dispatcher.dispatchAndProcess(createRuleList());
@@ -98,7 +100,6 @@ public abstract class Asta4dServlet extends HttpServlet {
 
     protected WebApplicationContext createAsta4dContext() {
         WebApplicationContext context = new WebApplicationContext();
-        context.setConfiguration(createConfiguration());
         return context;
     }
 

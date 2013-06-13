@@ -52,13 +52,15 @@ public class BaseTest {
             this.setSaveCallstackInfoOnRendererCreation(true);
         }
     };
+    static {
+        Configuration.setConfiguration(configuration);
+    }
 
     @BeforeMethod
     public void initContext() {
         Context context = Context.getCurrentThreadContext();
         if (context == null) {
             context = new Context();
-            context.setConfiguration(configuration);
             Context.setCurrentThreadContext(context);
 
         }

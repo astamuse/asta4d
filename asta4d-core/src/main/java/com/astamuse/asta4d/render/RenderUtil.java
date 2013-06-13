@@ -111,7 +111,7 @@ public class RenderUtil {
         String renderDeclaration;
         Renderer renderer;
         Context context = Context.getCurrentThreadContext();
-        Configuration conf = context.getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
         final SnippetInvoker invoker = conf.getSnippetInvoker();
 
         String refId;

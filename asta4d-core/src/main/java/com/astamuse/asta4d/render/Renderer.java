@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
@@ -51,7 +52,7 @@ public class Renderer {
 
     private final static boolean saveCallstackInfo;
     static {
-        saveCallstackInfo = Context.getCurrentThreadContext().getConfiguration().isSaveCallstackInfoOnRendererCreation();
+        saveCallstackInfo = Configuration.getConfiguration().isSaveCallstackInfoOnRendererCreation();
     }
 
     private String selector;
@@ -715,7 +716,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (Context.getCurrentThreadContext().getConfiguration().isBlockParallelListRendering()) {
+        if (Configuration.getConfiguration().isBlockParallelListRendering()) {
             return create(selector, ListConvertUtil.transform(list, convertor));
         } else {
             return create(selector, ListConvertUtil.transformToFuture(list, convertor));

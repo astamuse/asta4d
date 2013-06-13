@@ -62,7 +62,7 @@ public class RequestDispatcher {
 
         logger.info("access for:" + request.getRequestURI());
 
-        WebApplicationConfiguration conf = (WebApplicationConfiguration) context.getConfiguration();
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
 
         UrlMappingResult result = conf.getRuleExtractor().findMappedRule(request, ruleList);
 
@@ -102,8 +102,9 @@ public class RequestDispatcher {
      */
     private List<ContentProvider<?>> handleRequest(UrlMappingRule currentRule) throws Exception {
         // TODO should we handle the exceptions?
-        WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
-        RequestHandlerInvokerFactory factory = ((WebApplicationConfiguration) context.getConfiguration()).getRequestHandlerInvokerFactory();
+        Context context = Context.getCurrentThreadContext();
+        RequestHandlerInvokerFactory factory = WebApplicationConfiguration.getWebApplicationConfiguration()
+                .getRequestHandlerInvokerFactory();
         RequestHandlerInvoker invoker = factory.getInvoker();
 
         Object requestHandlerResult;

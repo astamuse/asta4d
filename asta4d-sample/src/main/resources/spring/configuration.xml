@@ -53,10 +53,6 @@
         </property>
     </bean>
 
-    <bean id="asta4dContext" class="com.astamuse.asta4d.web.WebApplicationContext" scope="prototype">
-        <property name="configuration" ref="asta4dConfiguration"/>
-    </bean>
-
     <bean id="snippetInvoker" class="com.astamuse.asta4d.snippet.DefaultSnippetInvoker">
         <property name="snippetInterceptorList">
             <list>

@@ -25,7 +25,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
@@ -54,8 +54,7 @@ public class ListConvertPolicyTest extends BaseTest {
     }
 
     private void tryConvert(final ParallelRecursivePolicy policy) {
-        Context context = Context.getCurrentThreadContext();
-        context.getConfiguration().setParallelRecursivePolicyForListRendering(policy);
+        Configuration.getConfiguration().setParallelRecursivePolicyForListRendering(policy);
 
         List<Integer> list = new ArrayList<>();
         list.add(1);

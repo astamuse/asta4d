@@ -38,6 +38,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.template.TemplateResolver;
@@ -57,7 +58,7 @@ public class RequestDispatcherTest {
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
-    private WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
+    private static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
             setTemplateResolver(new TemplateResolver() {
                 @Override
@@ -67,13 +68,14 @@ public class RequestDispatcherTest {
             });
         }
     };
+    static {
+        Configuration.setConfiguration(configuration);
+    }
 
     @BeforeTest
     public void setConf() {
         WebApplicationContext context = new WebApplicationContext();
         Context.setCurrentThreadContext(context);
-        context.setConfiguration(configuration);
-
     }
 
     @BeforeMethod
@@ -81,7 +83,6 @@ public class RequestDispatcherTest {
         Context context = Context.getCurrentThreadContext();
         if (context == null) {
             context = new WebApplicationContext();
-            context.setConfiguration(configuration);
             Context.setCurrentThreadContext(context);
         }
         context.clear();

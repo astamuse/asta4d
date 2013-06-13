@@ -50,6 +50,10 @@ public class WebApplicationConfiguration extends Configuration {
 
     }
 
+    public final static WebApplicationConfiguration getWebApplicationConfiguration() {
+        return (WebApplicationConfiguration) getConfiguration();
+    }
+
     public RequestHandlerInvokerFactory getRequestHandlerInvokerFactory() {
         return requestHandlerInvokerFactory;
     }

@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.builtin.String2Bool;
 import com.astamuse.asta4d.data.builtin.String2Int;
@@ -147,7 +148,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private Object convertData(Class<?> srcType, Class<?> targetType, Object data) throws DataOperationException {
         try {
-            if (Context.getCurrentThreadContext().getConfiguration().isCacheEnable()) {
+            if (Configuration.getConfiguration().isCacheEnable()) {
                 Object convertedData = convertFromCachedConverter(srcType, targetType, data);
                 if (convertedData != null) {
                     return convertedData;

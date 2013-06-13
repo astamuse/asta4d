@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
 import com.astamuse.asta4d.render.Renderer;
@@ -44,7 +43,7 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
 
     @Override
     public Renderer invoke(String renderDeclaration) throws SnippetNotResovlableException, SnippetInvokeException {
-        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
 
         SnippetExtractor extractor = conf.getSnippetExtractor();
         SnippetDeclarationInfo declaration = extractor.extract(renderDeclaration);

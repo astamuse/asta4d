@@ -153,7 +153,6 @@ public class WebApplicationContext extends Context {
 
     public Context clone() {
         Context newCtx = new WebApplicationContext();
-        newCtx.setConfiguration(this.getConfiguration());
         copyScopesTo(newCtx);
         return newCtx;
     }

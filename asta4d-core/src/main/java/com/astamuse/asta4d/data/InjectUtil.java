@@ -100,7 +100,7 @@ public class InjectUtil {
 
             Context context = Context.getCurrentThreadContext();
             InstanceWireTarget target = getInstanceTarget(instance);
-            ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
+            ContextDataFinder dataFinder = Configuration.getConfiguration().getContextDataFinder();
             Object value;
             for (FieldInfo fi : target.setFieldList) {
                 value = dataFinder.findDataInContext(context, fi.scope, fi.name, fi.type);
@@ -150,7 +150,7 @@ public class InjectUtil {
     }
 
     private final static InstanceWireTarget getInstanceTarget(Object instance) throws DataOperationException {
-        boolean cacheEnable = Context.getCurrentThreadContext().getConfiguration().isCacheEnable();
+        boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
         InstanceWireTarget target = null;
         if (cacheEnable) {
             String key = instance.getClass().getName();
@@ -166,7 +166,7 @@ public class InjectUtil {
     }
 
     private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException {
-        List<String> reverseTargetScopes = Context.getCurrentThreadContext().getConfiguration().getReverseInjectableScopes();
+        List<String> reverseTargetScopes = Configuration.getConfiguration().getReverseInjectableScopes();
 
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();
@@ -313,8 +313,7 @@ public class InjectUtil {
      * @throws DataOperationException
      */
     public final static Object[] getMethodInjectParams(Method method) throws DataOperationException {
-        Context context = Context.getCurrentThreadContext();
-        ContextDataFinder dataFinder = context.getConfiguration().getContextDataFinder();
+        ContextDataFinder dataFinder = Configuration.getConfiguration().getContextDataFinder();
         return getMethodInjectParams(method, dataFinder);
     }
 
@@ -349,7 +348,7 @@ public class InjectUtil {
     }
 
     private final static List<TargetInfo> getMethodTarget(Method method) {
-        boolean cacheEnable = Context.getCurrentThreadContext().getConfiguration().isCacheEnable();
+        boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
         List<TargetInfo> targetList = null;
         if (cacheEnable) {
             targetList = MethodTargetCache.get(method);

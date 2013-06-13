@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.jsoup.nodes.Document;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.Renderer;
@@ -46,7 +47,7 @@ public class ConcurrentRenderHelper {
         String key = INSTANCE_KEY + docRef;
         ConcurrentRenderHelper instance = context.getData(key);
         if (instance == null) {
-            instance = new ConcurrentRenderHelper(context.getConfiguration().getSnippetExecutorFactory().getExecutorService());
+            instance = new ConcurrentRenderHelper(Configuration.getConfiguration().getSnippetExecutorFactory().getExecutorService());
             context.setData(key, instance);
         }
         return instance;

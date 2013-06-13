@@ -82,6 +82,16 @@ public class Configuration {
 
     private boolean saveCallstackInfoOnRendererCreation = false;
 
+    private static Configuration instance;
+
+    public final static Configuration getConfiguration() {
+        return instance;
+    }
+
+    public final static void setConfiguration(Configuration configuration) {
+        instance = configuration;
+    }
+
     public TemplateResolver getTemplateResolver() {
         return templateResolver;
     }

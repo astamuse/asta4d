@@ -40,7 +40,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
 
     private Map<String, Template> getCachedTemplateMap() {
         Context context = Context.getCurrentThreadContext();
-        Configuration conf = context.getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
         if (conf.isCacheEnable()) {
             return defaultCachedTemplateMap;
         } else {

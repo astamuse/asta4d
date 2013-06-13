@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.LocaleUtils;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
 import com.astamuse.asta4d.format.PlaceholderFormatter;
@@ -43,7 +44,7 @@ public class ResourceBundleUtil {
 
     public static String getMessage(ParamOrderDependentFormatter formatter, Locale locale, String key, Object... params)
             throws InvalidMessageException {
-        List<String> resourceNames = Context.getCurrentThreadContext().getConfiguration().getResourceNames();
+        List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
         MissingResourceException ex = null;
         for (String resourceName : resourceNames) {
             try {
@@ -62,7 +63,7 @@ public class ResourceBundleUtil {
 
     public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key, Map<String, Object> paramMap)
             throws InvalidMessageException {
-        List<String> resourceNames = Context.getCurrentThreadContext().getConfiguration().getResourceNames();
+        List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
         MissingResourceException ex = null;
         for (String resourceName : resourceNames) {
             try {
@@ -77,7 +78,7 @@ public class ResourceBundleUtil {
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {
         Context context = Context.getCurrentThreadContext();
-        if (!context.getConfiguration().isCacheEnable()) {
+        if (!Configuration.getConfiguration().isCacheEnable()) {
             ResourceBundle.clearCache();
         }
         if (locale != null || LocaleUtils.isAvailableLocale(locale)) {

@@ -30,9 +30,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
-import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
@@ -50,14 +48,10 @@ public class GenericController implements ApplicationContextAware {
     private List<UrlMappingRule> ruleList;
 
     public void init() {
-        Context templateContext = Context.getCurrentThreadContext();
-        if (templateContext == null) {
-            templateContext = beanCtx.getBean(WebApplicationContext.class);
-            Context.setCurrentThreadContext(templateContext);
-        }
+        WebApplicationConfiguration conf = beanCtx.getBean(WebApplicationConfiguration.class);
+        WebApplicationConfiguration.setConfiguration(conf);
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        UrlMappingRuleInitializer ruleInitializer = ((WebApplicationConfiguration) templateContext.getConfiguration())
-                .getUrlMappingRuleInitializer();
+        UrlMappingRuleInitializer ruleInitializer = conf.getUrlMappingRuleInitializer();
         ruleInitializer.initUrlMappingRules(helper);
         ruleList = helper.getArrangedRuleList();
         logger.info("url mapping rules are initialized.");

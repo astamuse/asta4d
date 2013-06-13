@@ -46,8 +46,6 @@ public class Context {
 
     private final static Map<String, Object> globalMap = new ConcurrentHashMap<>();
 
-    private Configuration configuration;
-
     // this map is not thought to be used in multi threads since the instance of
     // Context is thread single.
     private Map<String, Map<String, Object>> scopeMap = new HashMap<>();
@@ -61,14 +59,6 @@ public class Context {
 
     public final static void setCurrentThreadContext(Context context) {
         instanceHolder.set(context);
-    }
-
-    public Configuration getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
     }
 
     public void setCurrentRenderingElement(Element elem) {
@@ -183,7 +173,6 @@ public class Context {
 
     public Context clone() {
         Context newCtx = new Context();
-        newCtx.configuration = configuration;
         copyScopesTo(newCtx);
         return newCtx;
     }

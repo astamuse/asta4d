@@ -68,7 +68,7 @@ public class ListConvertUtil {
 
     public final static <S, T> List<Future<T>> transformToFuture(final Iterable<S> sourceList, final ParallelRowConvertor<S, T> convertor) {
         final Context context = Context.getCurrentThreadContext();
-        final Configuration conf = context.getConfiguration();
+        final Configuration conf = Configuration.getConfiguration();
         Boolean isInParallelConverting = context.getData(ParallelListConversionMark);
 
         if (isInParallelConverting != null) {// recursive converting
