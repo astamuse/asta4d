@@ -10,6 +10,10 @@ public class GenericPathTemplateHandler extends AbstractGenericPathHandler {
     public GenericPathTemplateHandler() {
     }
 
+    public GenericPathTemplateHandler(String basePath) {
+        super(basePath);
+    }
+
     @RequestHandler
     public String handle(HttpServletRequest request, UrlMappingRule currentRule) {
         return super.convertPath(request, currentRule);

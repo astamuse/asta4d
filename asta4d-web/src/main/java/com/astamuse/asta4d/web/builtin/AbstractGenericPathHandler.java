@@ -4,6 +4,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
@@ -13,7 +15,13 @@ public abstract class AbstractGenericPathHandler {
 
     private final static ConcurrentHashMap<String, String> genericMapResult = new ConcurrentHashMap<>();
 
+    private String _basePath = null;
+
     public AbstractGenericPathHandler() {
+    }
+
+    public AbstractGenericPathHandler(String basePath) {
+        this._basePath = basePath;
     }
 
     public String convertPath(HttpServletRequest request, UrlMappingRule currentRule) {
@@ -25,6 +33,9 @@ public abstract class AbstractGenericPathHandler {
         } else {
             Context context = Context.getCurrentThreadContext();
             String basePath = context.getData(WebApplicationContext.SCOPE_PATHVAR, VAR_BASEPATH);
+            if (basePath == null) {
+                basePath = _basePath;
+            }
 
             if (basePath == null) {// default from web context root
                 targetPath = uri;
@@ -49,9 +60,18 @@ public abstract class AbstractGenericPathHandler {
                 }
             }
 
-            genericMapResult.put(uri, targetPath);
-
-            return targetPath;
+            if (fileNameSecurityCheck(targetPath)) {
+                genericMapResult.put(uri, targetPath);
+                return targetPath;
+            } else {
+                return null;
+            }
         }
+    }
+
+    private boolean fileNameSecurityCheck(String path) {
+        // we do not allow any unnormalized path for security reason
+        String normalizedPath = FilenameUtils.normalize(path);
+        return path.equals(normalizedPath);
     }
 }

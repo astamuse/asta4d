@@ -14,7 +14,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +24,13 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.BinaryDataProvider;
 import com.astamuse.asta4d.web.util.BinaryDataUtil;
 
-public class StaticFileHandler extends AbstractGenericPathHandler {
+public class StaticResourceHandler extends AbstractGenericPathHandler {
 
     public final static String VAR_CONTENT_TYPE = "content_type";
 
     public final static String VAR_CONTENT_CACHE = "content_cache";
 
-    private final static Logger logger = LoggerFactory.getLogger(StaticFileHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(StaticResourceHandler.class);
 
     @SuppressWarnings("deprecation")
     private final static long Year_1970 = new Date(1970 - 1900, 0, 1).getTime();
@@ -56,10 +55,23 @@ public class StaticFileHandler extends AbstractGenericPathHandler {
 
     private final static ConcurrentHashMap<String, StaticFileInfoHolder> StaticFileInfoMap = new ConcurrentHashMap<>();
 
+    public StaticResourceHandler() {
+        super();
+    }
+
+    public StaticResourceHandler(String basePath) {
+        super(basePath);
+    }
+
     @RequestHandler
     public Object handler(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext,
             UrlMappingRule currentRule) throws FileNotFoundException, IOException {
         String path = convertPath(request, currentRule);
+
+        if (path == null) {
+            response.setStatus(404);
+            return null;
+        }
 
         StaticFileInfoHolder info = StaticFileInfoMap.get(path);
 
@@ -115,17 +127,6 @@ public class StaticFileHandler extends AbstractGenericPathHandler {
         }
     }
 
-    private boolean fileNameSecurityCheck(String path) {
-        if (path.startsWith("file://")) {
-            // we do not allow any unnormalized file name for security reason
-            String name = path.substring("file://".length());
-            String normalizedName = FilenameUtils.normalize(name);
-            return name.equals(normalizedName);
-        } else {
-            return true;
-        }
-    }
-
     private long retrieveClientCachedTime(HttpServletRequest request) {
         try {
             return request.getDateHeader("If-Modified-Since");
@@ -137,10 +138,6 @@ public class StaticFileHandler extends AbstractGenericPathHandler {
 
     private StaticFileInfoHolder createInfo(ServletContext servletContext, String path, boolean cache) throws FileNotFoundException,
             IOException {
-
-        if (!fileNameSecurityCheck(path)) {
-            return NoContent;
-        }
 
         InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
 
