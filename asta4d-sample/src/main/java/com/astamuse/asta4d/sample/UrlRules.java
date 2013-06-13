@@ -28,6 +28,7 @@ import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
 import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
+import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
@@ -45,6 +46,9 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
     private void initSampleRules(UrlMappingRuleHelper rules) {
         //@formatter:off
+        
+        rules.add("/js/**/*").handler(new StaticResourceHandler());
+        
         rules.add("/app/", "/templates/index.html");
         rules.add("/app/index", "/templates/index.html");
 
@@ -84,5 +88,4 @@ public class UrlRules implements UrlMappingRuleInitializer {
         rules.add("/app/localize", "/templates/localize.html");
         //@formatter:on
     }
-
 }

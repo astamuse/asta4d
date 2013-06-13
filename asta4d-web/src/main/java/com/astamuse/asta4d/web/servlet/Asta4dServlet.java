@@ -42,7 +42,7 @@ import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
  * need a url mapping algorithm too.
  * 
  */
-public abstract class Asta4dServlet extends HttpServlet {
+public class Asta4dServlet extends HttpServlet {
 
     /**
      * 
@@ -64,7 +64,8 @@ public abstract class Asta4dServlet extends HttpServlet {
 
     private List<UrlMappingRule> createRuleList() {
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        initUrlMappingRules(helper);
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
+        conf.getUrlMappingRuleInitializer().initUrlMappingRules(helper);
         logger.info("url mapping rules are initialized.");
         return helper.getArrangedRuleList();
     }
@@ -106,7 +107,5 @@ public abstract class Asta4dServlet extends HttpServlet {
     protected WebApplicationConfiguration createConfiguration() {
         return new WebApplicationConfiguration();
     }
-
-    protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);
 
 }

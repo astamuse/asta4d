@@ -59,6 +59,10 @@ public class WebApplicationContext extends Context {
 
     private final static String SESSIONKEY_DATAMAP = WebApplicationContext.class.getName() + "##SESSIONKEY_DATAMAP";
 
+    public final static WebApplicationContext getCurrentThreadWebApplicationContext() {
+        return Context.getCurrentThreadContext();
+    }
+
     public HttpServletRequest getRequest() {
         return this.getData(SAVEKEY_REQUEST);
     }
