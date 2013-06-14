@@ -24,6 +24,8 @@ public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
 
     private HeaderInfo info;
 
+    private boolean continuable = true;
+
     public HeaderInfoProvider() {
         this(null);
     }
@@ -47,7 +49,11 @@ public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
 
     @Override
     public boolean isContinuable() {
-        return true;
+        return continuable;
+    }
+
+    public void setContinuable(boolean continuable) {
+        this.continuable = continuable;
     }
 
     @Override
