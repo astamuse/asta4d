@@ -7,21 +7,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.URLConnection;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FilenameUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.BinaryDataProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 import com.astamuse.asta4d.web.util.BinaryDataUtil;
 
 public class StaticResourceHandler extends AbstractGenericPathHandler {
@@ -32,21 +39,15 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(StaticResourceHandler.class);
 
-    @SuppressWarnings("deprecation")
-    private final static long Year_1970 = new Date(1970 - 1900, 0, 1).getTime();
-
-    @SuppressWarnings("deprecation")
-    private final static long Year_3000 = new Date(3000 - 1900, 0, 1).getTime();
-
-    // system start up
-    private final static long defaultLastModified = System.currentTimeMillis();
-    private final static long defaultExpires = Year_3000;
+    private final static long EPOCH_START = DateTime.parse("1970-01-01").getMillis();
+    private final static long DefaultLastModified = getCurrentSystemTimeInGMT();
+    // one hour
+    private final static long DefaultCacheTime = 1000 * 60 * 60;
 
     private final static class StaticFileInfoHolder {
         String contentType;
         String path;
         long lastModified;
-        long expires;
         SoftReference<byte[]> content;
         InputStream firstTimeInput;
     }
@@ -63,17 +64,30 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         super(basePath);
     }
 
+    private final static long getCurrentSystemTimeInGMT() {
+        DateTime current = DateTime.now();
+        return DateTimeZone.getDefault().convertLocalToUTC(current.getMillis(), false);
+    }
+
+    private HeaderInfoProvider createSimpleHeaderResponse(int status) {
+        HeaderInfo header = new HeaderInfo(status);
+        HeaderInfoProvider provider = new HeaderInfoProvider(header);
+        provider.setContinuable(false);
+        return provider;
+    }
+
     @RequestHandler
     public Object handler(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext,
             UrlMappingRule currentRule) throws FileNotFoundException, IOException {
         String path = convertPath(request, currentRule);
 
         if (path == null) {
-            response.setStatus(404);
-            return null;
+            return createSimpleHeaderResponse(404);
         }
 
-        StaticFileInfoHolder info = StaticFileInfoMap.get(path);
+        boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
+
+        StaticFileInfoHolder info = cacheEnable ? StaticFileInfoMap.get(path) : null;
 
         if (info == null) {
             Context context = Context.getCurrentThreadContext();
@@ -86,23 +100,24 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         }
 
         if (info == NoContent) {
-            response.setStatus(404);
-            return null;
+            return createSimpleHeaderResponse(404);
         }
 
-        long clientTime = retrieveClientCachedTime(request);
+        if (cacheEnable) {
+            long clientTime = retrieveClientCachedTime(request);
 
-        if (clientTime >= info.lastModified) {
-            response.setStatus(304);
-            return null;
+            if (clientTime >= info.lastModified) {
+                return createSimpleHeaderResponse(304);
+            }
         }
 
+        // our header provider is not convenient for date header... hope we can
+        // improve it in future
         response.setStatus(200);
         response.setHeader("Content-Type", info.contentType);
-        response.setDateHeader("Expires", info.expires - Year_1970);
-        response.setDateHeader("Last-Modified", info.lastModified - Year_1970);
-        // one day
-        response.setHeader("Cache-control", "max-age=" + (60 * 60 * 24));
+        response.setDateHeader("Expires", getCurrentSystemTimeInGMT() + DefaultCacheTime - EPOCH_START);
+        response.setDateHeader("Last-Modified", info.lastModified - EPOCH_START);
+        response.setHeader("Cache-control", "max-age=" + DefaultCacheTime);
 
         // here we do not synchronize threads because we do not matter
 
@@ -129,7 +144,8 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
     private long retrieveClientCachedTime(HttpServletRequest request) {
         try {
-            return request.getDateHeader("If-Modified-Since");
+            long time = request.getDateHeader("If-Modified-Since");
+            return DateTimeZone.getDefault().convertLocalToUTC(time, false);
         } catch (Exception e) {
             logger.debug("retrieve If-Modified-Since failed", e);
             return -1;
@@ -151,9 +167,11 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         if (path.startsWith("file://")) {
             info.lastModified = new File(path).lastModified();
         } else {
-            info.lastModified = defaultLastModified;
+            info.lastModified = DefaultLastModified;
         }
-        info.expires = defaultExpires;
+
+        // cut the milliseconds
+        info.lastModified = info.lastModified / 1000 * 1000;
 
         if (cache) {
             try {
@@ -170,6 +188,12 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         return info;
     }
 
+    private final static Map<String, String> MimeTypeMap = new HashMap<>();
+    static {
+        MimeTypeMap.put("js", "application/javascript");
+        MimeTypeMap.put("css", "text/css");
+    }
+
     protected String judgContentType(String path) {
 
         Context context = Context.getCurrentThreadContext();
@@ -179,8 +203,15 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
             return forceContentType;
         }
 
+        String fileName = FilenameUtils.getName(path);
+
         // guess the type by file name extension
-        return URLConnection.guessContentTypeFromName(path);
+        String type = URLConnection.guessContentTypeFromName(fileName);
+
+        if (type == null) {
+            type = MimeTypeMap.get(FilenameUtils.getExtension(fileName));
+        }
+        return type;
     }
 
     private byte[] retrieveBytesFromInputStream(InputStream input) throws IOException {

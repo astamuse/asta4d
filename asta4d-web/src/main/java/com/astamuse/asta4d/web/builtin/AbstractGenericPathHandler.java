@@ -71,7 +71,7 @@ public abstract class AbstractGenericPathHandler {
 
     private boolean fileNameSecurityCheck(String path) {
         // we do not allow any unnormalized path for security reason
-        String normalizedPath = FilenameUtils.normalize(path);
+        String normalizedPath = FilenameUtils.normalize(path, true);
         return path.equals(normalizedPath);
     }
 }
