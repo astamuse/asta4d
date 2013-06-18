@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.data.ContextBindData;
+import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 public class Context {
@@ -93,6 +94,21 @@ public class Context {
         } else {
             Map<String, Object> dataMap = acquireMapForScope(scope);
             return (T) dataMap.get(key);
+        }
+    }
+
+    public <T> ContextDataHolder<T> getDataHolder(String key) {
+        return getDataHolder(SCOPE_DEFAULT, key);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ContextDataHolder<T> getDataHolder(String scope, String key) {
+        Object v = getData(scope, key);
+        if (v == null) {
+            return null;
+        } else {
+            ContextDataHolder<T> holder = new ContextDataHolder<T>(key, scope, (T) v);
+            return holder;
         }
     }
 

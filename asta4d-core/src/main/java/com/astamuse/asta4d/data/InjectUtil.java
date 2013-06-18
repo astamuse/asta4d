@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
+import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.util.Asta4DWarningException;
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
@@ -59,6 +60,7 @@ public class InjectUtil {
         String scope;
         Class<?> type;
         Object defaultValue;
+        boolean isContextDataSet;
 
         void fixForPrimitiveType() {
             TypeInfo typeInfo = new TypeInfo(type);
@@ -95,26 +97,92 @@ public class InjectUtil {
      * @param instance
      * @throws DataOperationException
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public final static void injectToInstance(Object instance) throws DataOperationException {
         try {
-
             Context context = Context.getCurrentThreadContext();
             InstanceWireTarget target = getInstanceTarget(instance);
             ContextDataFinder dataFinder = Configuration.getConfiguration().getContextDataFinder();
+            ContextDataHolder searchHolder, valueHolder;
             Object value;
             for (FieldInfo fi : target.setFieldList) {
-                value = dataFinder.findDataInContext(context, fi.scope, fi.name, fi.type);
-                FieldUtils.writeField(fi.field, instance, value, true);
+                if (fi.isContextDataSet) {
+                    value = fi.type.newInstance();
+                    injectToInstance(value);
+                    FieldUtils.writeField(fi.field, instance, value, true);
+                } else if (ContextDataHolder.class.isAssignableFrom(fi.type)) {
+                    Object hi = FieldUtils.readField(fi.field, instance);
+                    if (hi == null) {
+                        hi = fi.type.newInstance();
+                        FieldUtils.writeField(fi.field, instance, hi, true);
+                    }
+                    valueHolder = (ContextDataHolder) hi;
+                    Class searchType = valueHolder.getTypeCls();
+                    if (searchType == null) {
+                        throw new DataOperationException(
+                                fi.field.getName() +
+                                        " should be initialized at first or we can not retrieve the type you want since it is a type of CotnextDataHolder. " +
+                                        "You can also define an extended class to return the type class, in this case, you do not need to initialized it by your self");
+                    }
+                    searchHolder = dataFinder.findDataInContext(context, fi.scope, fi.name, searchType);
+                    if (searchHolder != null) {// found data!!!
+                        valueHolder.setName(searchHolder.getName());
+                        valueHolder.setScope(searchHolder.getScope());
+                        valueHolder.setValue(searchHolder.getValue());
+                    } else {
+                        valueHolder.setName(fi.name);
+                        valueHolder.setScope("#DefaultValue");
+                        valueHolder.setValue(fi.defaultValue);
+                    }
+                } else {
+                    searchHolder = dataFinder.findDataInContext(context, fi.scope, fi.name, fi.type);
+                    if (searchHolder != null) {
+                        FieldUtils.writeField(fi.field, instance, searchHolder.getValue(), true);
+                    } else {
+                        FieldUtils.writeField(fi.field, instance, fi.defaultValue, true);
+                    }
+                }
             }
 
             for (MethodInfo mi : target.setMethodList) {
-                value = dataFinder.findDataInContext(context, mi.scope, mi.name, mi.type);
-                if (value == null && mi.defaultValue != null) {
+                if (mi.isContextDataSet) {
+                    value = mi.type.newInstance();
+                    injectToInstance(value);
+                } else if (ContextDataHolder.class.isAssignableFrom(mi.type)) {
+                    Object hi = mi.type.newInstance();
+                    valueHolder = (ContextDataHolder) hi;
+                    Class searchType = valueHolder.getTypeCls();
+                    if (searchType == null) {
+                        throw new DataOperationException(mi.method.getName() + " cannot initialize an instance of " +
+                                valueHolder.getClass().getName() + ". You should define an extended class to return the type class");
+                    }
+                    searchHolder = dataFinder.findDataInContext(context, mi.scope, mi.name, searchType);
+                    if (searchHolder != null) {// found data!!!
+                        valueHolder.setName(searchHolder.getName());
+                        valueHolder.setScope(searchHolder.getScope());
+                        valueHolder.setValue(searchHolder.getValue());
+                    } else {
+                        valueHolder.setName(mi.name);
+                        valueHolder.setScope("#DefaultValue");
+                        valueHolder.setValue(mi.defaultValue);
+                    }
+                    value = valueHolder;
+                } else {
+                    searchHolder = dataFinder.findDataInContext(context, mi.scope, mi.name, mi.type);
+                    if (searchHolder != null) {
+                        value = searchHolder.getValue();
+                    } else {
+                        value = mi.defaultValue;
+                    }
+                }
+
+                if (value == null) {
                     value = mi.defaultValue;
                 }
+
                 mi.method.invoke(instance, value);
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
             throw new DataOperationException("Exception when inject value to instance of " + instance.getClass().toString(), e);
         }
     }
@@ -170,6 +238,7 @@ public class InjectUtil {
 
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();
+
         ContextData cd;
 
         // at first, retrieve methods information
@@ -179,7 +248,7 @@ public class InjectUtil {
         // whether it is a problem?
         Method[] mtds = cls.getMethods();
         for (Method method : mtds) {
-            cd = findAnnotation(method.getAnnotations());
+            cd = findContextDataAnnotation(method.getAnnotations());
             if (cd != null) {
                 // cd = method.getAnnotation(ContextData.class);
                 MethodInfo mi = new MethodInfo();
@@ -188,7 +257,9 @@ public class InjectUtil {
 
                 boolean isGet = false;
                 boolean isSet = false;
-                if (StringUtils.isEmpty(cd.name())) {
+                String declaredName = cd.name();
+
+                if (StringUtils.isEmpty(declaredName)) {
                     String name = method.getName();
                     if (name.startsWith("set")) {
                         name = name.substring(3);
@@ -212,6 +283,7 @@ public class InjectUtil {
                             String msg = String.format("Method [%s]:[%s] can not be treated as a getter or setter method.", cls.getName(),
                                     method.toGenericString());
                             throw new DataOperationException(msg);
+
                         }
                     }
                     char[] cs = name.toCharArray();
@@ -219,7 +291,7 @@ public class InjectUtil {
                     mi.name = new String(cs);
 
                 } else {
-                    mi.name = cd.name();
+                    mi.name = declaredName;
                     int typeLength = method.getParameterTypes().length;
                     if (typeLength == 0) {
                         isGet = true;
@@ -256,6 +328,14 @@ public class InjectUtil {
                 if (isSet) {
                     mi.type = method.getParameterTypes()[0];
                     mi.fixForPrimitiveType();
+
+                    ContextDataSet cdSet = findContextDataSetAnnotation(mi.type.getAnnotations());
+                    if (cdSet == null) {
+                        mi.isContextDataSet = false;
+                    } else {
+                        mi.isContextDataSet = true;
+                    }
+
                     target.setMethodList.add(mi);
                 }
 
@@ -269,21 +349,31 @@ public class InjectUtil {
         while (!cls.getName().equals(objCls)) {
             flds = cls.getDeclaredFields();
             for (Field field : flds) {
-                cd = findAnnotation(field.getAnnotations());
+                cd = findContextDataAnnotation(field.getAnnotations());
                 if (cd != null) {
                     fi = new FieldInfo();
                     fi.field = field;
                     fi.type = field.getType();
-                    if (StringUtils.isEmpty(cd.name())) {
+
+                    String delcaredName = cd == null ? "" : cd.name();
+                    if (StringUtils.isEmpty(delcaredName)) {
                         fi.name = field.getName();
                     } else {
                         fi.name = cd.name();
                     }
-                    fi.scope = cd.scope();
+                    fi.scope = cd == null ? "" : cd.scope();
                     fi.fixForPrimitiveType();
+
+                    ContextDataSet cdSet = findContextDataSetAnnotation(fi.type.getAnnotations());
+                    if (cdSet == null) {
+                        fi.isContextDataSet = false;
+                    } else {
+                        fi.isContextDataSet = true;
+                    }
+
                     target.setFieldList.add(fi);
 
-                    if (cd.reverse()) {
+                    if (cd.reverse()) {//
                         if (reverseTargetScopes.contains(fi.scope)) {
                             target.getFieldList.add(fi);
                         } else {
@@ -339,9 +429,21 @@ public class InjectUtil {
 
         TargetInfo target;
 
-        for (int i = 0; i < params.length; i++) {
-            target = targetList.get(i);
-            params[i] = dataFinder.findDataInContext(context, target.scope, target.name, target.type);
+        try {
+            for (int i = 0; i < params.length; i++) {
+                target = targetList.get(i);
+                if (target.isContextDataSet) {
+                    Object obj = target.type.newInstance();
+                    injectToInstance(obj);
+                    params[i] = obj;
+                } else {
+                    // TODO allow log output for search information from
+                    // ContextDataHolder
+                    params[i] = dataFinder.findDataInContext(context, target.scope, target.name, target.type).getValue();
+                }
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new DataOperationException("create instance failed.", e);
         }
 
         return params;
@@ -372,22 +474,32 @@ public class InjectUtil {
         String[] parameterNames = paranamer.lookupParameterNames(method);
         TargetInfo target;
         ContextData cd;
+        ContextDataSet cdSet;
         for (int i = 0; i < types.length; i++) {
             target = new TargetInfo();
-            cd = findAnnotation(annotations[i]);
+            target.type = types[i];
+
+            cd = findContextDataAnnotation(annotations[i]);
+            cdSet = findContextDataSetAnnotation(target.type.getAnnotations());
             target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
             if (StringUtils.isEmpty(target.name)) {
                 target.name = parameterNames[i];
             }
-            target.type = types[i];
+
+            if (cdSet == null) {
+                target.isContextDataSet = false;
+            } else {
+                target.isContextDataSet = true;
+            }
+
             target.fixForPrimitiveType();
             targetList.add(target);
         }
         return targetList;
     }
 
-    private final static ContextData findAnnotation(Annotation[] annotations) {
+    private final static ContextData findContextDataAnnotation(Annotation[] annotations) {
         ContextData cd = null;
         Class<?> cls;
         for (Annotation annotation : annotations) {
@@ -401,6 +513,22 @@ public class InjectUtil {
             }
         }
         return cd;
+    }
+
+    private final static ContextDataSet findContextDataSetAnnotation(Annotation[] annotations) {
+        ContextDataSet cdset = null;
+        Class<?> cls;
+        for (Annotation annotation : annotations) {
+            cls = annotation.annotationType();
+            if (cls.equals(ContextDataSet.class)) {
+                cdset = (ContextDataSet) annotation;
+                break;
+            } else if (cls.isAnnotationPresent(ContextDataSet.class)) {
+                cdset = cls.getAnnotation(ContextDataSet.class);
+                break;
+            }
+        }
+        return cdset;
     }
 
 }

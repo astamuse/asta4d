@@ -44,6 +44,8 @@ import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
  */
 public class DefaultContextDataFinder implements ContextDataFinder {
 
+    private final static String ByTypeScope = DefaultContextDataFinder.class.getName() + "#findByType";
+
     private ConcurrentHashMap<DataConvertorKey, ArrayDataConvertor<?, ?>> dataConvertorCache = new ConcurrentHashMap<>();
 
     private List<ArrayDataConvertor<?, ?>> dataConvertorList = getDefaultDataConvertorList();
@@ -84,64 +86,70 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         this.dataSearchScopeOrder = dataSearchScopeOrder;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public Object findDataInContext(Context context, String scope, String name, Class<?> targetType) throws DataOperationException {
-        Object data = findByType(context, scope, name, targetType);
+    public ContextDataHolder findDataInContext(Context context, String scope, String name, Class<?> targetType)
+            throws DataOperationException {
+        ContextDataHolder dataHolder = findByType(context, scope, name, targetType);
 
-        if (data != null) {
-            return data;
+        if (dataHolder != null) {
+            return dataHolder;
         }
 
         if (StringUtils.isEmpty(scope)) {
-            data = findDataByScopeOrder(context, 0, name);
+            dataHolder = findDataByScopeOrder(context, 0, name);
         } else {
-            data = context.getData(scope, name);
+            dataHolder = context.getDataHolder(scope, name);
         }
 
-        if (data == null) {
+        if (dataHolder == null) {
             return null;
         }
+
+        Object data = dataHolder.getValue();
 
         Class<?> srcType = new TypeInfo(data.getClass()).getType();
         if (targetType.isAssignableFrom(srcType)) {
-            return data;
-        }
-
-        if (srcType.isArray() && targetType.isAssignableFrom(srcType.getComponentType())) {
-            return Array.get(data, 0);
-        }
-
-        if (targetType.isArray() && targetType.getComponentType().isAssignableFrom(srcType)) {
+            // do nothing
+        } else if (srcType.isArray() && targetType.isAssignableFrom(srcType.getComponentType())) {
+            data = Array.get(data, 0);
+        } else if (targetType.isArray() && targetType.getComponentType().isAssignableFrom(srcType)) {
             Object array = Array.newInstance(srcType, 1);
             Array.set(array, 0, data);
-            return array;
+            data = array;
+        } else {
+            data = convertData(srcType, targetType, data);
         }
 
-        return convertData(srcType, targetType, data);
+        dataHolder.setValue(data);
+        return dataHolder;
     }
 
-    private Object findByType(Context context, String scope, String name, Class<?> targetType) {
+    @SuppressWarnings("rawtypes")
+    private ContextDataHolder findByType(Context context, String scope, String name, Class<?> targetType) {
         if (Context.class.isAssignableFrom(targetType)) {
-            return context;
+            return new ContextDataHolder<>(Context.class.getName(), ByTypeScope, context);
         }
         if (targetType.equals(ResourceBundleHelper.class)) {
-            return new ResourceBundleHelper();
+            return new ContextDataHolder<>(ResourceBundleHelper.class.getName(), ByTypeScope, new ResourceBundleHelper());
         } else if (targetType.equals(ParamMapResourceBundleHelper.class)) {
-            return new ParamMapResourceBundleHelper();
+            return new ContextDataHolder<>(ParamMapResourceBundleHelper.class.getName(), ByTypeScope, new ParamMapResourceBundleHelper());
         } else {
             return null;
         }
     }
 
-    private Object findDataByScopeOrder(Context context, int scopeIndex, String name) {
+    @SuppressWarnings("rawtypes")
+    private ContextDataHolder findDataByScopeOrder(Context context, int scopeIndex, String name) {
         if (scopeIndex >= dataSearchScopeOrder.size()) {
             return null;
         } else {
-            Object data = context.getData(dataSearchScopeOrder.get(scopeIndex), name);
-            if (data == null) {
-                data = findDataByScopeOrder(context, scopeIndex + 1, name);
+            String searchScope = dataSearchScopeOrder.get(scopeIndex);
+            ContextDataHolder<?> holder = context.getDataHolder(searchScope, name);
+            if (holder == null) {
+                holder = findDataByScopeOrder(context, scopeIndex + 1, name);
             }
-            return data;
+            return holder;
         }
     }
 

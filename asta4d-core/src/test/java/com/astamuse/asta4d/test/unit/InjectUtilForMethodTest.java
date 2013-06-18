@@ -28,7 +28,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
-public class InjectUtilTest extends BaseTest {
+public class InjectUtilForMethodTest extends BaseTest {
 
     @Test
     public void string2string() throws Exception {
@@ -292,6 +292,6 @@ public class InjectUtilTest extends BaseTest {
     }
 
     private static Method getMethod(String name, Class<?>... parameterTypes) throws NoSuchMethodException {
-        return InjectUtilTest.class.getMethod(name, parameterTypes);
+        return InjectUtilForMethodTest.class.getMethod(name, parameterTypes);
     }
 }

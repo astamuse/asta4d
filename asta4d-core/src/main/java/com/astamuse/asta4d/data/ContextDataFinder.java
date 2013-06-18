@@ -43,5 +43,6 @@ public interface ContextDataFinder {
      * @return the data saved in context or null if not found
      * @throws DataOperationException
      */
-    public Object findDataInContext(Context context, String scope, String name, Class<?> type) throws DataOperationException;
+    @SuppressWarnings("rawtypes")
+    public ContextDataHolder findDataInContext(Context context, String scope, String name, Class<?> type) throws DataOperationException;
 }
