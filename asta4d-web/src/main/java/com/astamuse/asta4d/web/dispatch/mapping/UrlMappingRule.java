@@ -216,7 +216,7 @@ public class UrlMappingRule {
         }
 
         public Map<String, Object> getExtraVarMap() {
-            return rule.getExtraVarMap();
+            return Collections.unmodifiableMap(rule.getExtraVarMap());
         }
 
         public void setExtraVarMap(Map<String, Object> extraVarMap) {
