@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.web.builtin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,11 +29,52 @@ import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 import com.astamuse.asta4d.web.util.BinaryDataUtil;
 
+/**
+ * A static resouce handler for service static resources such as js, css or
+ * static html files.
+ * 
+ * The following path vars can be configured for specializing response headers:
+ * 
+ * <ul>
+ * <li>{@link #VAR_CONTENT_TYPE}
+ * <li>{@link #VAR_CONTENT_CACHE_SIZE_LIMIT_K}
+ * <li>{@link #VAR_CACHE_TIME}
+ * <li>{@link #VAR_LAST_MODIFIED}
+ * </ul>
+ * 
+ * Or the following methods can be override for more complex calculations:
+ * 
+ * <ul>
+ * <li>{@link #judgContentType(String)}
+ * <li>{@link #getContentCacheSizeLimit(String)}
+ * <li>{@link #decideCacheTime(String)}
+ * <li>{@link #getLastModifiedTime(String)}
+ * </ul>
+ * 
+ * @author e-ryu
+ * 
+ */
 public class StaticResourceHandler extends AbstractGenericPathHandler {
 
-    public final static String VAR_CONTENT_TYPE = "content_type";
+    /**
+     * see {@link #judgContentType(String)}
+     */
+    public final static String VAR_CONTENT_TYPE = StaticResourceHandler.class.getName() + "#content_type";
 
-    public final static String VAR_CONTENT_CACHE = "content_cache";
+    /**
+     * see {@link #getContentCacheSizeLimit(String)}
+     */
+    public final static String VAR_CONTENT_CACHE_SIZE_LIMIT_K = StaticResourceHandler.class.getName() + "#content_cache_size_limit_k";
+
+    /**
+     * see {@link #decideCacheTime(String)}
+     */
+    public final static String VAR_CACHE_TIME = StaticResourceHandler.class.getName() + "#cache_time";
+
+    /**
+     * see {@link #getLastModifiedTime(String)}
+     */
+    public final static String VAR_LAST_MODIFIED = StaticResourceHandler.class.getName() + "#last_modified";
 
     private final static Logger logger = LoggerFactory.getLogger(StaticResourceHandler.class);
 
@@ -47,6 +86,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         String contentType;
         String path;
         long lastModified;
+        int cacheLimit;
         SoftReference<byte[]> content;
         InputStream firstTimeInput;
     }
@@ -89,12 +129,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         StaticFileInfoHolder info = cacheEnable ? StaticFileInfoMap.get(path) : null;
 
         if (info == null) {
-            Context context = Context.getCurrentThreadContext();
-            Boolean contentCache = context.getData(WebApplicationContext.SCOPE_PATHVAR, VAR_CONTENT_CACHE);
-            if (contentCache == null) {
-                contentCache = Boolean.TRUE;
-            }
-            info = createInfo(servletContext, path, contentCache);
+            info = createInfo(servletContext, path);
             StaticFileInfoMap.put(path, info);
         }
 
@@ -112,11 +147,12 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
         // our header provider is not convenient for date header... hope we can
         // improve it in future
+        long cacheTime = decideCacheTime(path);
         response.setStatus(200);
         response.setHeader("Content-Type", info.contentType);
-        response.setDateHeader("Expires", getCurrentSystemTimeInGMT() + DefaultCacheTime);
+        response.setDateHeader("Expires", getCurrentSystemTimeInGMT() + cacheTime);
         response.setDateHeader("Last-Modified", info.lastModified);
-        response.setHeader("Cache-control", "max-age=" + DefaultCacheTime);
+        response.setHeader("Cache-control", "max-age=" + cacheTime);
 
         // here we do not synchronize threads because we do not matter
 
@@ -134,7 +170,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
             data = info.content.get();
             if (data == null) {
                 InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
-                data = retrieveBytesFromInputStream(input);
+                data = retrieveBytesFromInputStream(input, info.cacheLimit);
                 info.content = new SoftReference<byte[]>(data);
             }
             return new BinaryDataProvider(data);
@@ -151,8 +187,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         }
     }
 
-    private StaticFileInfoHolder createInfo(ServletContext servletContext, String path, boolean cache) throws FileNotFoundException,
-            IOException {
+    private StaticFileInfoHolder createInfo(ServletContext servletContext, String path) throws FileNotFoundException, IOException {
 
         InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
 
@@ -163,28 +198,39 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         StaticFileInfoHolder info = new StaticFileInfoHolder();
         info.contentType = judgContentType(path);
         info.path = path;
-        if (path.startsWith("file://")) {
-            info.lastModified = new File(path).lastModified();
-        } else {
-            info.lastModified = DefaultLastModified;
-        }
+        info.lastModified = getLastModifiedTime(path);
 
         // cut the milliseconds
         info.lastModified = info.lastModified / 1000 * 1000;
 
-        if (cache) {
+        info.cacheLimit = getContentCacheSizeLimit(path);
+
+        if (info.cacheLimit == 0) {// don't cache
+            info.content = null;
+            info.firstTimeInput = input;
+        } else {
+            byte[] contentData = retrieveBytesFromInputStream(input, info.cacheLimit);
             try {
-                info.content = new SoftReference<byte[]>(retrieveBytesFromInputStream(input));
+                info.content = new SoftReference<byte[]>(contentData);
             } finally {
                 input.close();
             }
             info.firstTimeInput = null;
-        } else {
-            info.content = null;
-            info.firstTimeInput = input;
         }
-
         return info;
+    }
+
+    private byte[] retrieveBytesFromInputStream(InputStream input, int cacheSize) throws IOException {
+        int bufferSize = cacheSize + 1;
+        byte[] b = new byte[bufferSize];
+        int len = input.read(b);
+        if (len > cacheSize) {// over the limit of cache size
+            return null;
+        } else {
+            byte[] rtn = new byte[len];
+            System.arraycopy(b, 0, rtn, 0, len);
+            return rtn;
+        }
     }
 
     private final static Map<String, String> MimeTypeMap = new HashMap<>();
@@ -193,6 +239,13 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         MimeTypeMap.put("css", "text/css");
     }
 
+    /**
+     * The header value of Content-Type
+     * 
+     * @param path
+     * @return a guess of the content type by file name extension,
+     *         "application/octet-stream" when not matched
+     */
     protected String judgContentType(String path) {
 
         Context context = Context.getCurrentThreadContext();
@@ -210,17 +263,79 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         if (type == null) {
             type = MimeTypeMap.get(FilenameUtils.getExtension(fileName));
         }
+
+        if (type == null) {
+            type = "application/octet-stream";
+        }
         return type;
     }
 
-    private byte[] retrieveBytesFromInputStream(InputStream input) throws IOException {
-        int bufferSize = 4096;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(bufferSize);
-        byte[] b = new byte[bufferSize];
-        int len;
-        while ((len = input.read(b)) != -1) {
-            bos.write(b, 0, len);
+    /**
+     * The header value of Cache-control and Expires.
+     * 
+     * override this method to supply the specialized cache time.
+     * 
+     * @param path
+     * @return cache time in millisecond unit
+     */
+    protected long decideCacheTime(String path) {
+        Long varCacheTime = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_CACHE_TIME);
+        if (varCacheTime != null) {
+            return varCacheTime;
+        } else {
+            return DefaultCacheTime;
         }
-        return bos.toByteArray();
     }
+
+    /**
+     * 
+     * The header value of Last-Modified.
+     * 
+     * override this method to supply the specialized last modified time
+     * 
+     * @param path
+     * @return the time of last modified time in millisecond unit(In http
+     *         protocol, the time unit should be second, but we will cope with
+     *         this matter)
+     */
+    protected long getLastModifiedTime(String path) {
+        WebApplicationContext context = Context.getCurrentThreadContext();
+        Long varLastModified = context.getData(WebApplicationContext.SCOPE_PATHVAR, VAR_LAST_MODIFIED);
+        if (varLastModified != null) {
+            return varLastModified;
+        } else {
+            long retrieveTime = BinaryDataUtil.retrieveLastModifiedByPath(context.getServletContext(), this.getClass().getClassLoader(),
+                    path);
+            if (retrieveTime == 0L) {
+                return DefaultLastModified;
+            } else {
+                return retrieveTime;
+            }
+        }
+    }
+
+    /**
+     * Retrieve the max cachable size limit for a certain path in byte unit.Be
+     * care of that the path var is set by kilobyte unit for convenience but
+     * this method will return in byte unit. <br>
+     * This is a default implementation which does not see the path and will
+     * return 0 for not caching when path var is not set.
+     * <p>
+     * Note: we do not cache it by default because the resources in war should
+     * have been cached by the servlet container.
+     * 
+     * 
+     * @param path
+     * @return the max cachable size limit for a certain path in byte unit.
+     */
+    protected int getContentCacheSizeLimit(String path) {
+        Integer varCacheSize = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR,
+                VAR_CONTENT_CACHE_SIZE_LIMIT_K);
+        if (varCacheSize != null) {
+            return varCacheSize;
+        } else {
+            return 0;
+        }
+    }
+
 }
