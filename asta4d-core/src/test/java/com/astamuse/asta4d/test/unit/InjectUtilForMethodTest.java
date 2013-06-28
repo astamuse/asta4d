@@ -31,6 +31,14 @@ import com.astamuse.asta4d.test.render.infra.BaseTest;
 public class InjectUtilForMethodTest extends BaseTest {
 
     @Test
+    public void stringNotFound() throws Exception {
+        setData(null);
+        Object[] params = InjectUtil.getMethodInjectParams(getMethod("requireString", String.class));
+        assertEquals(params.length, 1);
+        assertEquals(params[0], null);
+    }
+
+    @Test
     public void string2string() throws Exception {
         setData("value");
         Object[] params = InjectUtil.getMethodInjectParams(getMethod("requireString", String.class));

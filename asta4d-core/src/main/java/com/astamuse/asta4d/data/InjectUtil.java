@@ -429,6 +429,9 @@ public class InjectUtil {
 
         TargetInfo target;
 
+        @SuppressWarnings("rawtypes")
+        ContextDataHolder holder;
+
         try {
             for (int i = 0; i < params.length; i++) {
                 target = targetList.get(i);
@@ -439,7 +442,8 @@ public class InjectUtil {
                 } else {
                     // TODO allow log output for search information from
                     // ContextDataHolder
-                    params[i] = dataFinder.findDataInContext(context, target.scope, target.name, target.type).getValue();
+                    holder = dataFinder.findDataInContext(context, target.scope, target.name, target.type);
+                    params[i] = holder == null ? null : holder.getValue();
                 }
             }
         } catch (InstantiationException | IllegalAccessException e) {
