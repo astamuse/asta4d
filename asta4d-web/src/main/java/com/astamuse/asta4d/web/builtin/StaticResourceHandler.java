@@ -39,7 +39,6 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(StaticResourceHandler.class);
 
-    private final static long EPOCH_START = DateTime.parse("1970-01-01").getMillis();
     private final static long DefaultLastModified = getCurrentSystemTimeInGMT();
     // one hour
     private final static long DefaultCacheTime = 1000 * 60 * 60;
@@ -115,8 +114,8 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         // improve it in future
         response.setStatus(200);
         response.setHeader("Content-Type", info.contentType);
-        response.setDateHeader("Expires", getCurrentSystemTimeInGMT() + DefaultCacheTime - EPOCH_START);
-        response.setDateHeader("Last-Modified", info.lastModified - EPOCH_START);
+        response.setDateHeader("Expires", getCurrentSystemTimeInGMT() + DefaultCacheTime);
+        response.setDateHeader("Last-Modified", info.lastModified);
         response.setHeader("Cache-control", "max-age=" + DefaultCacheTime);
 
         // here we do not synchronize threads because we do not matter
