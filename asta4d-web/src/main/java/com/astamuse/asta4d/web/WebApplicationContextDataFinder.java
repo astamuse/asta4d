@@ -25,12 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
+
+    private final static String ByTypeScope = WebApplicationContextDataFinder.class.getName() + "#ByType";
 
     public WebApplicationContextDataFinder() {
         List<String> dataScopeOrder = new ArrayList<>();
@@ -46,17 +49,20 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
         this.setDataSearchScopeOrder(dataScopeOrder);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    public Object findDataInContext(Context context, String scope, String name, Class<?> type) throws DataOperationException {
+    public ContextDataHolder findDataInContext(Context context, String scope, String name, Class<?> type) throws DataOperationException {
         // TODO class equals is not reliable
         if (type.equals(HttpServletRequest.class)) {
-            return ((WebApplicationContext) context).getRequest();
+            return new ContextDataHolder<>(HttpServletRequest.class.getName(), ByTypeScope, ((WebApplicationContext) context).getRequest());
         } else if (type.equals(HttpServletResponse.class)) {
-            return ((WebApplicationContext) context).getResponse();
+            return new ContextDataHolder<>(HttpServletResponse.class.getName(), ByTypeScope,
+                    ((WebApplicationContext) context).getResponse());
         } else if (type.equals(ServletContext.class)) {
-            return ((WebApplicationContext) context).getServletContext();
+            return new ContextDataHolder<>(ServletContext.class.getName(), ByTypeScope,
+                    ((WebApplicationContext) context).getServletContext());
         } else if (type.equals(UrlMappingRule.class)) {
-            return context.getData(RequestDispatcher.KEY_CURRENT_RULE);
+            return new ContextDataHolder<>(UrlMappingRule.class.getName(), ByTypeScope, context.getData(RequestDispatcher.KEY_CURRENT_RULE));
         } else {
             return super.findDataInContext(context, scope, name, type);
         }
