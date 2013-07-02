@@ -59,6 +59,18 @@ public class UrlMappingRuleHelper {
 
     }
 
+    private final static class RequestHandlerHolder {
+        String attribute;
+        Object handler;
+
+        public RequestHandlerHolder(String attribute, Object handler) {
+            super();
+            this.attribute = attribute;
+            this.handler = handler;
+        }
+
+    }
+
     private final static class GlobalForwardHolder {
         Object result;
         String targetPath;
@@ -107,9 +119,13 @@ public class UrlMappingRuleHelper {
 
     private List<InterceptorHolder> interceptorHolderList = new ArrayList<>();
 
+    private List<RequestHandlerHolder> defaultHandlerList = new ArrayList<>();
+
     private List<GlobalForwardHolder> forwardHolderList = new ArrayList<>();
 
     private List<UrlMappingRule> ruleList = new ArrayList<>();
+
+    private List<UrlMappingRuleRewriter> ruleRewriterList = new ArrayList<>();
 
     public void setDefaultMethod(HttpMethod defaultMethod) {
         this.defaultMethod = defaultMethod;
@@ -133,6 +149,20 @@ public class UrlMappingRuleHelper {
 
     public void addRequestHandlerInterceptor(Object... interceptorList) {
         addRequestHandlerInterceptor(null, interceptorList);
+    }
+
+    public void addDefaultRequestHandler(String attrute, Object... handlerList) {
+        for (Object handler : handlerList) {
+            defaultHandlerList.add(new RequestHandlerHolder(attrute, handler));
+        }
+    }
+
+    public void addDefaultRequestHandler(Object... handlerList) {
+        addDefaultRequestHandler(null, handlerList);
+    }
+
+    public void addRuleRewriter(UrlMappingRuleRewriter ruleRewriter) {
+        ruleRewriterList.add(ruleRewriter);
     }
 
     public void addGlobalForward(Object result, String targetPath, int status) {
@@ -169,7 +199,14 @@ public class UrlMappingRuleHelper {
     public List<UrlMappingRule> getArrangedRuleList() {
         List<UrlMappingRule> arrangedRuleList = new ArrayList<>(ruleList);
 
-        // config remapped rule at first
+        // rewrite rules at first
+        for (UrlMappingRule rule : arrangedRuleList) {
+            for (UrlMappingRuleRewriter rewriter : ruleRewriterList) {
+                rewriter.rewrite(rule);
+            }
+        }
+
+        // config remapped rule
         Object reMapId;
         UrlMappingRule copyFromRule;
         for (UrlMappingRule rule : arrangedRuleList) {
@@ -223,6 +260,21 @@ public class UrlMappingRuleHelper {
                 }
             }
             rule.setInterceptorList(interceptorList);
+        }
+
+        // set default request handler
+        List<Object> requestHandlerList;
+        for (UrlMappingRule rule : arrangedRuleList) {
+            requestHandlerList = new ArrayList<>();
+            for (RequestHandlerHolder handlerHolder : defaultHandlerList) {
+                if (handlerHolder.attribute == null) {
+                    requestHandlerList.add(handlerHolder.handler);
+                } else if (rule.hasAttribute(handlerHolder.attribute)) {
+                    requestHandlerList.add(handlerHolder.handler);
+                }
+            }
+            requestHandlerList.addAll(rule.getHandlerList());
+            rule.setHandlerList(requestHandlerList);
         }
 
         // set global result forward

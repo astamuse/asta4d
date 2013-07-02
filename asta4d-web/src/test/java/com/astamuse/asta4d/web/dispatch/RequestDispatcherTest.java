@@ -46,6 +46,7 @@ import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
@@ -95,6 +96,17 @@ public class RequestDispatcherTest {
 
     private void initTestRules(UrlMappingRuleHelper rules) {
 
+        rules.addRuleRewriter(new UrlMappingRuleRewriter() {
+            @Override
+            public void rewrite(UrlMappingRule rule) {
+                if (rule.getSourcePath().equals("/rewrite-attr")) {
+                    rule.getAttributeList().add("rewrite-attr");
+                }
+            }
+        });
+
+        rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(358));
+
         rules.addGlobalForward(NullPointerException.class, "/NullPointerException", 501);
         rules.addGlobalForward(Exception.class, "/Exception", 500);
 
@@ -112,7 +124,9 @@ public class RequestDispatcherTest {
         
         rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
         
-        rules.add("/getjson").handler(TestJsonQuery.class).json();
+        rules.add("/getjson").handler(new TestJsonHandler(123)).json();
+        rules.add("/rewrite-attr").json();
+        
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
         
@@ -130,6 +144,7 @@ public class RequestDispatcherTest {
                 { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
                 { "delete", "/restapi", 401, null, null }, 
                 { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
+                { "get", "/rewrite-attr", 0, new TestJsonObject(358), new JsonWriter() },
                 { "get", "/nofile", 404, new Page("/notfound"), new Asta4DPageWriter() },
                 { "get", "/thrownep", 501, new Page("/NullPointerException"), new Asta4DPageWriter() },
                 { "get", "/throwexception", 500, new Page("/Exception"), new Asta4DPageWriter() },
@@ -217,11 +232,17 @@ public class RequestDispatcherTest {
         }
     }
 
-    public static class TestJsonQuery {
+    public static class TestJsonHandler {
+
+        private int value;
+
+        public TestJsonHandler(int value) {
+            this.value = value;
+        }
 
         @RequestHandler
-        public TestJsonObject query() {
-            TestJsonObject obj = new TestJsonObject(123);
+        public TestJsonObject handle() {
+            TestJsonObject obj = new TestJsonObject(value);
             return obj;
         }
     }
