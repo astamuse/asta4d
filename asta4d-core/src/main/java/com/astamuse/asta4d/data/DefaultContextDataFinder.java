@@ -121,7 +121,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             data = convertData(srcType, targetType, data);
         }
 
-        dataHolder.setValue(data);
+        dataHolder.setValue(dataHolder.getScope(), dataHolder.getName(), data);
         return dataHolder;
     }
 

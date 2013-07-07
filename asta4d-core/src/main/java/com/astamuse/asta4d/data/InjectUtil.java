@@ -126,13 +126,9 @@ public class InjectUtil {
                     }
                     searchHolder = dataFinder.findDataInContext(context, fi.scope, fi.name, searchType);
                     if (searchHolder != null) {// found data!!!
-                        valueHolder.setName(searchHolder.getName());
-                        valueHolder.setScope(searchHolder.getScope());
-                        valueHolder.setValue(searchHolder.getValue());
+                        valueHolder.setValue(searchHolder.getScope(), searchHolder.getName(), searchHolder.getValue());
                     } else {
-                        valueHolder.setName(fi.name);
-                        valueHolder.setScope("#DefaultValue");
-                        valueHolder.setValue(fi.defaultValue);
+                        valueHolder.setValue("#DefaultValue", fi.name, fi.defaultValue);
                     }
                 } else {
                     searchHolder = dataFinder.findDataInContext(context, fi.scope, fi.name, fi.type);
@@ -158,13 +154,9 @@ public class InjectUtil {
                     }
                     searchHolder = dataFinder.findDataInContext(context, mi.scope, mi.name, searchType);
                     if (searchHolder != null) {// found data!!!
-                        valueHolder.setName(searchHolder.getName());
-                        valueHolder.setScope(searchHolder.getScope());
-                        valueHolder.setValue(searchHolder.getValue());
+                        valueHolder.setValue(searchHolder.getScope(), searchHolder.getName(), searchHolder.getValue());
                     } else {
-                        valueHolder.setName(mi.name);
-                        valueHolder.setScope("#DefaultValue");
-                        valueHolder.setValue(mi.defaultValue);
+                        valueHolder.setValue("#DefaultValue", mi.name, mi.defaultValue);
                     }
                     value = valueHolder;
                 } else {
@@ -329,7 +321,7 @@ public class InjectUtil {
                     mi.type = method.getParameterTypes()[0];
                     mi.fixForPrimitiveType();
 
-                    ContextDataSet cdSet = findContextDataSetAnnotation(mi.type.getAnnotations());
+                    ContextDataSet cdSet = findContextDataSetAnnotation(mi.type);
                     if (cdSet == null) {
                         mi.isContextDataSet = false;
                     } else {
@@ -364,7 +356,7 @@ public class InjectUtil {
                     fi.scope = cd == null ? "" : cd.scope();
                     fi.fixForPrimitiveType();
 
-                    ContextDataSet cdSet = findContextDataSetAnnotation(fi.type.getAnnotations());
+                    ContextDataSet cdSet = findContextDataSetAnnotation(fi.type);
                     if (cdSet == null) {
                         fi.isContextDataSet = false;
                     } else {
@@ -484,7 +476,7 @@ public class InjectUtil {
             target.type = types[i];
 
             cd = findContextDataAnnotation(annotations[i]);
-            cdSet = findContextDataSetAnnotation(target.type.getAnnotations());
+            cdSet = findContextDataSetAnnotation(target.type);
             target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
             if (StringUtils.isEmpty(target.name)) {
@@ -519,8 +511,31 @@ public class InjectUtil {
         return cd;
     }
 
-    private final static ContextDataSet findContextDataSetAnnotation(Annotation[] annotations) {
+    private final static ContextDataSet findContextDataSetAnnotation(Class<?> type) {
         ContextDataSet cdset = null;
+        Class<?> c = type;
+        while (c != null) {
+            cdset = iterateContextDataSetAnnotation(c.getAnnotations());
+            if (cdset == null) {
+                Class<?>[] ifs = c.getInterfaces();
+                for (Class<?> ifcls : ifs) {
+                    cdset = findContextDataSetAnnotation(ifcls);
+                    if (cdset != null) {
+                        break;
+                    }
+                }// for ifcls
+            }// cdset == null
+            if (cdset != null) {
+                break;
+            }
+            c = c.getSuperclass();
+        }// while parent != null
+        return cdset;
+    }
+
+    private final static ContextDataSet iterateContextDataSetAnnotation(Annotation[] annotations) {
+        ContextDataSet cdset = null;
+
         Class<?> cls;
         for (Annotation annotation : annotations) {
             cls = annotation.annotationType();
