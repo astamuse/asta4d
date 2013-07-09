@@ -78,7 +78,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(StaticResourceHandler.class);
 
-    private final static long DefaultLastModified = getCurrentSystemTimeInGMT();
+    private final static long DefaultLastModified = DateTime.now().getMillis();
     // one hour
     private final static long DefaultCacheTime = 1000 * 60 * 60;
 
@@ -101,11 +101,6 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
     public StaticResourceHandler(String basePath) {
         super(basePath);
-    }
-
-    private final static long getCurrentSystemTimeInGMT() {
-        DateTime current = DateTime.now();
-        return DateTimeZone.getDefault().convertLocalToUTC(current.getMillis(), false);
     }
 
     private HeaderInfoProvider createSimpleHeaderResponse(int status) {
@@ -150,9 +145,9 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         long cacheTime = decideCacheTime(path);
         response.setStatus(200);
         response.setHeader("Content-Type", info.contentType);
-        response.setDateHeader("Expires", getCurrentSystemTimeInGMT() + cacheTime);
+        response.setDateHeader("Expires", DateTime.now().getMillis() + cacheTime);
         response.setDateHeader("Last-Modified", info.lastModified);
-        response.setHeader("Cache-control", "max-age=" + cacheTime);
+        response.setHeader("Cache-control", "max-age=" + (cacheTime / 1000));
 
         // here we do not synchronize threads because we do not matter
 
