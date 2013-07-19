@@ -19,17 +19,10 @@ package com.astamuse.asta4d.web.dispatch;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 /**
- * 
- * Implementation of this interface should respect the return value of
- * {@link WebApplicationContext#getAccessURI()} before retrieve the real access
- * uri from request directly.
  * 
  * @author e-ryu
  * 
@@ -38,14 +31,10 @@ public interface DispatcherRuleExtractor {
 
     /**
      * 
-     * Implementation of this method should respect the return value of
-     * {@link WebApplicationContext#getAccessURI()} before retrieve the real
-     * access uri from request directly.
-     * 
      * @param request
      * @param ruleList
      * @return
      */
-    public UrlMappingResult findMappedRule(HttpServletRequest request, List<UrlMappingRule> ruleList);
+    public UrlMappingResult findMappedRule(List<UrlMappingRule> ruleList, HttpMethod method, String uri, String queryString);
 
 }

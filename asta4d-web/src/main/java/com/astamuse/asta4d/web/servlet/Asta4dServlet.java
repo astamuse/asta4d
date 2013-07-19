@@ -33,7 +33,6 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
@@ -104,8 +103,6 @@ public class Asta4dServlet extends HttpServlet {
      * eg. {@link WebApplicationContext#setAccessURI(String)} can be called
      * before this method to rewrite access uri.
      * 
-     * @see {@link WebApplicationContext#setAccessURI(String)}
-     * @see {@link DispatcherRuleExtractor#findMappedRule(HttpServletRequest, List)}
      * @throws Exception
      */
     protected void service() throws Exception {

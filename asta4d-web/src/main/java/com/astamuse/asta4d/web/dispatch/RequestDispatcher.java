@@ -18,6 +18,7 @@
 package com.astamuse.asta4d.web.dispatch;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,13 +57,23 @@ public class RequestDispatcher {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void dispatchAndProcess(List<UrlMappingRule> ruleList) throws Exception {
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
 
-        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
+        HttpMethod method = HttpMethod.valueOf(request.getMethod().toUpperCase());
+        String uri = context.getAccessURI();
+        if (uri == null) {
+            uri = URLDecoder.decode(request.getRequestURI(), "UTF-8");
+            String contextPath = request.getContextPath();
+            uri = uri.substring(contextPath.length());
+            context.setAccessURI(uri);
+        }
 
-        UrlMappingResult result = conf.getRuleExtractor().findMappedRule(request, ruleList);
+        String queryString = request.getQueryString();
+
+        UrlMappingResult result = conf.getRuleExtractor().findMappedRule(ruleList, method, uri, queryString);
 
         // if not found result, we do not need return 404, instead of user
         // defining all match rule
