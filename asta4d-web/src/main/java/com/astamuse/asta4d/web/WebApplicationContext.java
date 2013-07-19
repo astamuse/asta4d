@@ -57,6 +57,8 @@ public class WebApplicationContext extends Context {
 
     private final static String SAVEKEY_SERVLET_CONTEXT = WebApplicationContext.class.getName() + "##SAVEKEY-SERVLET-CONTEXT";
 
+    private final static String SAVEKEY_ACCESS_URI = WebApplicationContext.class.getName() + "##SAVEKEY-ACCESS-URI";
+
     private final static String SESSIONKEY_DATAMAP = WebApplicationContext.class.getName() + "##SESSIONKEY_DATAMAP";
 
     public final static WebApplicationContext getCurrentThreadWebApplicationContext() {
@@ -85,6 +87,14 @@ public class WebApplicationContext extends Context {
 
     public void setServletContext(ServletContext servletContext) {
         this.setData(SAVEKEY_SERVLET_CONTEXT, servletContext);
+    }
+
+    public void setAccessURI(String uri) {
+        this.setData(SAVEKEY_ACCESS_URI, uri);
+    }
+
+    public String getAccessURI() {
+        return this.getData(SAVEKEY_ACCESS_URI);
     }
 
     @SuppressWarnings("unchecked")

@@ -33,6 +33,7 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
@@ -48,6 +49,8 @@ public class Asta4dServlet extends HttpServlet {
      * 
      */
     private static final long serialVersionUID = 1L;
+
+    private final static Logger accessLogger = LoggerFactory.getLogger("com.astamuse.asta4d.accesslog");
 
     private final static Logger logger = LoggerFactory.getLogger(Asta4dServlet.class);
 
@@ -71,7 +74,7 @@ public class Asta4dServlet extends HttpServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+    protected final void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         WebApplicationContext context = null;
         try {
             context = Context.getCurrentThreadContext();
@@ -84,11 +87,7 @@ public class Asta4dServlet extends HttpServlet {
             context.setResponse(res);
             context.setServletContext(getServletContext());
 
-            if (Configuration.getConfiguration().isCacheEnable()) {
-                dispatcher.dispatchAndProcess(ruleList);
-            } else {
-                dispatcher.dispatchAndProcess(createRuleList());
-            }
+            service();
 
         } catch (Exception e) {
             throw new ServletException(e);
@@ -96,6 +95,25 @@ public class Asta4dServlet extends HttpServlet {
             if (context != null) {
                 context.clear();
             }
+        }
+    }
+
+    /**
+     * Subclass can override this method to do something before or after real
+     * service process.
+     * 
+     * eg. {@link WebApplicationContext#setAccessURI(String)} can be called
+     * before this method to rewrite access uri.
+     * 
+     * @see {@link WebApplicationContext#setAccessURI(String)}
+     * @see {@link DispatcherRuleExtractor#findMappedRule(HttpServletRequest, List)}
+     * @throws Exception
+     */
+    protected void service() throws Exception {
+        if (Configuration.getConfiguration().isCacheEnable()) {
+            dispatcher.dispatchAndProcess(ruleList);
+        } else {
+            dispatcher.dispatchAndProcess(createRuleList());
         }
     }
 

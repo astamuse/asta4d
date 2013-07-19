@@ -139,6 +139,7 @@ public class RequestDispatcherTest {
         //@formatter:off
         return new Object[][] { 
                 { "get", "/index", 0, new Page("/index.html"), new Asta4DPageWriter() },
+                { "get", "/index-rewrite", 0, new Page("/index.html"), new Asta4DPageWriter() },
                 { "get", "/index-duplicated", 0, new Page("/index.html"), new Asta4DPageWriter() },
                 { "get", "/body-only", 0, new Page("/bodyOnly.html"), new Asta4DPageWriter() },
                 { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
@@ -178,6 +179,10 @@ public class RequestDispatcherTest {
 
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
         initTestRules(helper);
+
+        if (url.equals("/index-rewrite")) {
+            context.setAccessURI("/index");
+        }
 
         dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
 
