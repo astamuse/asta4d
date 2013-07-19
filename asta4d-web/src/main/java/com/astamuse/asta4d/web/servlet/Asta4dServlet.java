@@ -50,8 +50,6 @@ public class Asta4dServlet extends HttpServlet {
      */
     private static final long serialVersionUID = 1L;
 
-    private final static Logger accessLogger = LoggerFactory.getLogger("com.astamuse.asta4d.accesslog");
-
     private final static Logger logger = LoggerFactory.getLogger(Asta4dServlet.class);
 
     protected RequestDispatcher dispatcher = new RequestDispatcher();
@@ -75,6 +73,7 @@ public class Asta4dServlet extends HttpServlet {
 
     @Override
     protected final void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        logger.debug("access for:{}", req.getRequestURI());
         WebApplicationContext context = null;
         try {
             context = Context.getCurrentThreadContext();

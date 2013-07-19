@@ -60,8 +60,6 @@ public class RequestDispatcher {
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
 
-        logger.info("access for:" + request.getRequestURI());
-
         WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
 
         UrlMappingResult result = conf.getRuleExtractor().findMappedRule(request, ruleList);
