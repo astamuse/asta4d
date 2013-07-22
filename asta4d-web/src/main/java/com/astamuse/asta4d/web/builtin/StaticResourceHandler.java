@@ -232,6 +232,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     static {
         MimeTypeMap.put("js", "application/javascript");
         MimeTypeMap.put("css", "text/css");
+        MimeTypeMap.put("ico", "image/x-icon");
     }
 
     /**
