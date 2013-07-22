@@ -4,7 +4,7 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.5.16</version>
+      <version>0.7.22</version>
   </parent>
   
   <groupId>com.astamuse</groupId>
@@ -44,7 +44,19 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.1.0</version>
-    </dependency>     
+    </dependency>
+    
+    <dependency>
+	    <groupId>org.apache.directory.studio</groupId>
+	    <artifactId>org.apache.commons.io</artifactId>
+	    <version>2.4</version>
+	</dependency>
+
+	<dependency>
+	    <groupId>joda-time</groupId>
+	    <artifactId>joda-time</artifactId>
+	    <version>2.2</version>
+	</dependency>
 
     <dependency>
       <groupId>org.mockito</groupId>

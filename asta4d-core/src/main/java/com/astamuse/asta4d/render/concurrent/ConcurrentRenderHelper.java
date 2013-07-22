@@ -24,12 +24,17 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 
 import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.Renderer;
 
 public class ConcurrentRenderHelper {
+
+    private final static Logger logger = LoggerFactory.getLogger(ConcurrentRenderHelper.class);
 
     private final static String INSTANCE_KEY = ConcurrentRenderHelper.class.getName() + "##instance-key##";
 
@@ -46,7 +51,7 @@ public class ConcurrentRenderHelper {
         String key = INSTANCE_KEY + docRef;
         ConcurrentRenderHelper instance = context.getData(key);
         if (instance == null) {
-            instance = new ConcurrentRenderHelper(context.getConfiguration().getSnippetExecutorFactory().getExecutorService());
+            instance = new ConcurrentRenderHelper(Configuration.getConfiguration().getSnippetExecutorFactory().getExecutorService());
             context.setData(key, instance);
         }
         return instance;
@@ -56,8 +61,25 @@ public class ConcurrentRenderHelper {
         cs.submit(new Callable<FutureRendererHolder>() {
             @Override
             public FutureRendererHolder call() throws Exception {
-                Renderer renderer = Context.with(context, caller);
-                return new FutureRendererHolder(snippetRef, renderer);
+                /*
+                 * An exception from paralleled snippet may be ignored when there is another exception 
+                 * being thrown on head.
+                 * 
+                 * In multiple threads, the original exception may cause some other exceptions in other threads, 
+                 * which may be identified before the original exception so that the following #take()
+                 * method will never be called thus the original exception will never be identified.
+                 * 
+                 * Commonly, it is not a problem, but it is difficult to debug since the original exception had been
+                 * ignored and there is no any information about it at anywhere. So at least, we output the exception
+                 * in log to help debug.
+                 */
+                try {
+                    Renderer renderer = Context.with(context, caller);
+                    return new FutureRendererHolder(snippetRef, renderer);
+                } catch (Exception ex) {
+                    logger.error("", ex);
+                    throw ex;
+                }
             }
         });
         executionCount++;

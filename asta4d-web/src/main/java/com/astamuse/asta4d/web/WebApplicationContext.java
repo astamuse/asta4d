@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,7 +55,15 @@ public class WebApplicationContext extends Context {
 
     private final static String SAVEKEY_RESPONSE = WebApplicationContext.class.getName() + "##SAVEKEY-RESPONSE";
 
+    private final static String SAVEKEY_SERVLET_CONTEXT = WebApplicationContext.class.getName() + "##SAVEKEY-SERVLET-CONTEXT";
+
+    private final static String SAVEKEY_ACCESS_URI = WebApplicationContext.class.getName() + "##SAVEKEY-ACCESS-URI";
+
     private final static String SESSIONKEY_DATAMAP = WebApplicationContext.class.getName() + "##SESSIONKEY_DATAMAP";
+
+    public final static WebApplicationContext getCurrentThreadWebApplicationContext() {
+        return Context.getCurrentThreadContext();
+    }
 
     public HttpServletRequest getRequest() {
         return this.getData(SAVEKEY_REQUEST);
@@ -70,6 +79,22 @@ public class WebApplicationContext extends Context {
 
     public void setResponse(HttpServletResponse response) {
         this.setData(SAVEKEY_RESPONSE, response);
+    }
+
+    public ServletContext getServletContext() {
+        return this.getData(SAVEKEY_SERVLET_CONTEXT);
+    }
+
+    public void setServletContext(ServletContext servletContext) {
+        this.setData(SAVEKEY_SERVLET_CONTEXT, servletContext);
+    }
+
+    public void setAccessURI(String uri) {
+        this.setData(SAVEKEY_ACCESS_URI, uri);
+    }
+
+    public String getAccessURI() {
+        return this.getData(SAVEKEY_ACCESS_URI);
     }
 
     @SuppressWarnings("unchecked")
@@ -142,7 +167,6 @@ public class WebApplicationContext extends Context {
 
     public Context clone() {
         Context newCtx = new WebApplicationContext();
-        newCtx.setConfiguration(this.getConfiguration());
         copyScopesTo(newCtx);
         return newCtx;
     }

@@ -15,13 +15,12 @@
  * 
  */
 
-package com.astamuse.asta4d.sample.controller;
+package com.astamuse.asta4d.sample;
 
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.GET;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.POST;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.PUT;
 
-import com.astamuse.asta4d.misc.spring.mvc.controller.GenericControllerBase;
 import com.astamuse.asta4d.sample.forward.LoginFailure;
 import com.astamuse.asta4d.sample.handler.AddUserHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
@@ -29,12 +28,14 @@ import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
 import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
+import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
-public class SampleController extends GenericControllerBase {
+public class UrlRules implements UrlMappingRuleInitializer {
 
     @Override
-    protected void initUrlMappingRules(UrlMappingRuleHelper rules) {
+    public void initUrlMappingRules(UrlMappingRuleHelper rules) {
         //@formatter:off
         rules.add(GET, "/")
              .redirect("/app/index");
@@ -42,9 +43,12 @@ public class SampleController extends GenericControllerBase {
         initSampleRules(rules);
         //@formatter:on
     }
-    
-    private void initSampleRules(UrlMappingRuleHelper rules){
+
+    private void initSampleRules(UrlMappingRuleHelper rules) {
         //@formatter:off
+        
+        rules.add("/js/**/*").handler(new StaticResourceHandler());
+        
         rules.add("/app/", "/templates/index.html");
         rules.add("/app/index", "/templates/index.html");
 

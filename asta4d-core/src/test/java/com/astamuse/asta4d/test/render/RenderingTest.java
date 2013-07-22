@@ -44,6 +44,7 @@ public class RenderingTest extends BaseTest {
 
         public Renderer textRendering() {
             Renderer renderer = Renderer.create("div#test", "Prometheus");
+            renderer.add("#testspace-not-exists", "I love this game!");
             renderer.add("#testspace", "I love this game!");
             renderer.add("#testnbsp", new ChildReplacer(ElementUtil.parseAsSingle("<span>three space here(&nbsp;&nbsp;&nbsp;)</span>")));
             renderer.add("#testgreatermark", "3 > 2 or 3 < 2, it's a question.");

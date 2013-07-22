@@ -66,7 +66,7 @@ public class Component {
     }
 
     public Component(String path, AttributesRequire attrs) throws Exception {
-        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
         Template template = templateResolver.findTemplate(path);
         renderedElement = renderTemplate(template.getDocumentClone(), attrs);

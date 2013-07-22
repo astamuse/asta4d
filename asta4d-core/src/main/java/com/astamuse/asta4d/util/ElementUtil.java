@@ -43,10 +43,17 @@ public class ElementUtil {
         return wrap;
     }
 
-    public final static Elements parse(String html) {
-        return Jsoup.parseBodyFragment(html).select("body");
-    }
-
+    /**
+     * parse given html source to a single Element
+     * <p>
+     * <b>ATTENTION</b>: this method will cause a potential XSS problem, so be
+     * sure that you have escaped the passed html string if necessary.
+     * 
+     * @param html
+     *            the html source
+     * @return a Element object which contains the dom tree created from passed
+     *         html source
+     */
     public final static Element parseAsSingle(String html) {
         Element body = Jsoup.parseBodyFragment(html).body();
         List<Node> children = body.childNodes();

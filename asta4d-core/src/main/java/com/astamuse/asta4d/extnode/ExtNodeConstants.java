@@ -17,12 +17,12 @@
 
 package com.astamuse.asta4d.extnode;
 
-import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 public class ExtNodeConstants {
 
-    public final static String ID_PREFIX = Context.getCurrentThreadContext().getConfiguration().getTagNameSpace();
+    public final static String ID_PREFIX = Configuration.getConfiguration().getTagNameSpace();
 
     private final static String addNS(String name) {
         return ID_PREFIX + ":" + name;

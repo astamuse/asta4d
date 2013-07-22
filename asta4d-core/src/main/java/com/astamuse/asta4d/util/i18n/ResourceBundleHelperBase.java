@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.format.PlaceholderFormatter;
 import com.astamuse.asta4d.util.InvalidMessageException;
@@ -31,7 +32,7 @@ public abstract class ResourceBundleHelperBase {
 
     private Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
 
-    private PlaceholderFormatter formatter = Context.getCurrentThreadContext().getConfiguration().getPlaceholderFormatter();
+    private PlaceholderFormatter formatter = Configuration.getConfiguration().getPlaceholderFormatter();
 
     public ResourceBundleHelperBase(Locale locale, PlaceholderFormatter formatter) {
         this.locale = locale;
@@ -39,7 +40,7 @@ public abstract class ResourceBundleHelperBase {
     }
 
     public ResourceBundleHelperBase(Locale locale) {
-        this(locale, Context.getCurrentThreadContext().getConfiguration().getPlaceholderFormatter());
+        this(locale, Configuration.getConfiguration().getPlaceholderFormatter());
     }
 
     public ResourceBundleHelperBase(PlaceholderFormatter formatter) {
@@ -47,8 +48,7 @@ public abstract class ResourceBundleHelperBase {
     }
 
     public ResourceBundleHelperBase() {
-        this(Context.getCurrentThreadContext().getCurrentLocale(), Context.getCurrentThreadContext().getConfiguration()
-                .getPlaceholderFormatter());
+        this(Context.getCurrentThreadContext().getCurrentLocale(), Configuration.getConfiguration().getPlaceholderFormatter());
     }
 
     protected Locale getLocale() {

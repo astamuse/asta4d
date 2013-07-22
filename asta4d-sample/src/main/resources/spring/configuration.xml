@@ -12,8 +12,9 @@
     <import resource="snippet.xml"/>
 
     <!-- Configures the @Controller programming model -->
+    <!--  
     <mvc:annotation-driven/>
-    <bean class="com.astamuse.asta4d.sample.controller.SampleController"/>
+    <bean class="com.astamuse.asta4d.misc.spring.mvc.controller.GenericController"/>
 
     <mvc:interceptors>
         <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateContextInitializer" />
@@ -22,11 +23,10 @@
     <mvc:resources mapping="/css/**" location="/css/" order="-100"/>
     <mvc:resources mapping="/js/**" location="/js/" order="-100"/>
 
+	-->
+	
     <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
         <property name="cacheEnable" value="false"/>
-        <property name="templateResolver">
-            <bean class="com.astamuse.asta4d.misc.spring.mvc.SpringWebApplicationTemplateResolver"/>
-        </property>
         <property name="snippetResolver">
             <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
         </property>
@@ -48,10 +48,9 @@
                 <constructor-arg index="1"><value>200</value></constructor-arg>
             </bean>
         </property>
-    </bean>
-
-    <bean id="asta4dContext" class="com.astamuse.asta4d.web.WebApplicationContext" scope="prototype">
-        <property name="configuration" ref="asta4dConfiguration"/>
+        <property name="urlMappingRuleInitializer">
+            <bean class="com.astamuse.asta4d.sample.UrlRules"/>
+        </property>
     </bean>
 
     <bean id="snippetInvoker" class="com.astamuse.asta4d.snippet.DefaultSnippetInvoker">

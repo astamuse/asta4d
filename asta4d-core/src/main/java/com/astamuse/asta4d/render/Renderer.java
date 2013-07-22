@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
@@ -49,11 +50,18 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
  */
 public class Renderer {
 
+    private final static boolean saveCallstackInfo;
+    static {
+        saveCallstackInfo = Configuration.getConfiguration().isSaveCallstackInfoOnRendererCreation();
+    }
+
     private String selector;
 
     private List<Transformer<?>> transformerList;
 
     private List<Renderer> chain;
+
+    private String creationSiteInfo = null;
 
     /**
      * Create a Renderer by given css selector and {@link Transformer}
@@ -90,6 +98,24 @@ public class Renderer {
         this.transformerList = transformerList;
         chain = new ArrayList<>();
         chain.add(this);
+
+        if (saveCallstackInfo) {
+            StackTraceElement[] Stacks = Thread.currentThread().getStackTrace();
+            StackTraceElement callSite = null;
+            boolean myClsStarted = false;
+            for (StackTraceElement stackTraceElement : Stacks) {
+                if (stackTraceElement.getClassName().equals(Renderer.class.getName())) {
+                    myClsStarted = true;
+                    continue;
+                } else if (myClsStarted) {
+                    callSite = stackTraceElement;
+                    break;
+                }
+            }
+            if (callSite != null) {
+                creationSiteInfo = callSite.toString();
+            }
+        }
     }
 
     public String getSelector() {
@@ -103,6 +129,14 @@ public class Renderer {
     @Override
     public String toString() {
         return "\n\"" + selector + "\"#>\n{" + this.transformerList + "}\n\n";
+    }
+
+    RendererType getRendererType() {
+        return RendererType.COMMON;
+    }
+
+    String getCreationSiteInfo() {
+        return creationSiteInfo;
     }
 
     /**
@@ -682,7 +716,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (Context.getCurrentThreadContext().getConfiguration().isBlockParallelListRendering()) {
+        if (Configuration.getConfiguration().isBlockParallelListRendering()) {
             return create(selector, ListConvertUtil.transform(list, convertor));
         } else {
             return create(selector, ListConvertUtil.transformToFuture(list, convertor));
@@ -735,4 +769,15 @@ public class Renderer {
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelDataConvertor<S, T> convertor) {
         return create(selector, ListConvertUtil.transformToFuture(list, convertor));
     }
+
+    // Render action control
+
+    public Renderer disableMissingSelectorWarning() {
+        return this.add(new RenderActionRenderer(RenderActionStyle.DISABLE_MISSING_SELECTOR_WARNING));
+    }
+
+    public Renderer eableMissingSelectorWarning() {
+        return this.add(new RenderActionRenderer(RenderActionStyle.ENABLE_MISSING_SELECTOR_WARNING));
+    }
+
 }

@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.data.ContextBindData;
+import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 public class Context {
@@ -46,8 +47,6 @@ public class Context {
 
     private final static Map<String, Object> globalMap = new ConcurrentHashMap<>();
 
-    private Configuration configuration;
-
     // this map is not thought to be used in multi threads since the instance of
     // Context is thread single.
     private Map<String, Map<String, Object>> scopeMap = new HashMap<>();
@@ -61,14 +60,6 @@ public class Context {
 
     public final static void setCurrentThreadContext(Context context) {
         instanceHolder.set(context);
-    }
-
-    public Configuration getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(Configuration configuration) {
-        this.configuration = configuration;
     }
 
     public void setCurrentRenderingElement(Element elem) {
@@ -103,6 +94,21 @@ public class Context {
         } else {
             Map<String, Object> dataMap = acquireMapForScope(scope);
             return (T) dataMap.get(key);
+        }
+    }
+
+    public <T> ContextDataHolder<T> getDataHolder(String key) {
+        return getDataHolder(SCOPE_DEFAULT, key);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ContextDataHolder<T> getDataHolder(String scope, String key) {
+        Object v = getData(scope, key);
+        if (v == null) {
+            return null;
+        } else {
+            ContextDataHolder<T> holder = new ContextDataHolder<T>(key, scope, (T) v);
+            return holder;
         }
     }
 
@@ -183,7 +189,6 @@ public class Context {
 
     public Context clone() {
         Context newCtx = new Context();
-        newCtx.configuration = configuration;
         copyScopesTo(newCtx);
         return newCtx;
     }

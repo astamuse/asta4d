@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.SnippetDeclarationInfo;
@@ -81,7 +82,7 @@ public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Object
     }
 
     protected Method retrieveMethod(SnippetDeclarationInfo declaration) throws SnippetNotResovlableException {
-        Method m = Context.getCurrentThreadContext().getConfiguration().isCacheEnable() ? MethodCache.get(declaration) : null;
+        Method m = Configuration.getConfiguration().isCacheEnable() ? MethodCache.get(declaration) : null;
         if (m == null) {
             Object instance = retrieveInstance(declaration);
             m = findSnippetMethod(instance, declaration.getSnippetHandler());

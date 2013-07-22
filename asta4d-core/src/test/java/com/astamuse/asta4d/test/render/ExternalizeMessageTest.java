@@ -100,7 +100,7 @@ public class ExternalizeMessageTest extends BaseTest {
     }
 
     private static void setUpResourceBundleManager(String fileName, PlaceholderFormatter formatter) {
-        Configuration configuration = Context.getCurrentThreadContext().getConfiguration();
+        Configuration configuration = Configuration.getConfiguration();
         configuration.setPlaceholderFormatter(formatter);
         configuration.setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
     }

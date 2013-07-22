@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.extnode.GroupNode;
 import com.astamuse.asta4d.extnode.SnippetNode;
@@ -190,7 +189,7 @@ public class TemplateUtil {
 
     public final static Element getEmbedNodeContent(Element elem) throws TemplateException {
         String target;
-        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
         target = elem.attr(ExtNodeConstants.EMBED_NODE_ATTR_TARGET);
         if (target == null || target.isEmpty()) {

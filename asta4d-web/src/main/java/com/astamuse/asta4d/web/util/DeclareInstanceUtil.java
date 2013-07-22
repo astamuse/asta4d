@@ -19,7 +19,6 @@ package com.astamuse.asta4d.web.util;
 
 import java.util.List;
 
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
 public class DeclareInstanceUtil {
@@ -28,7 +27,7 @@ public class DeclareInstanceUtil {
 
     @SuppressWarnings("unchecked")
     public final static <T> T createInstance(Object declaration) {
-        WebApplicationConfiguration conf = (WebApplicationConfiguration) Context.getCurrentThreadContext().getConfiguration();
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
         List<DeclareInstanceResolver> resolverList = conf.getInstanceResolverList();
         Object handler = null;
         for (DeclareInstanceResolver resolver : resolverList) {

@@ -27,7 +27,6 @@ import org.jsoup.parser.BlockTagSupportHtmlTreeBuilder;
 import org.jsoup.parser.Parser;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.util.IdGenerator;
 
@@ -69,7 +68,7 @@ public class Template {
             if (parentPath == null || parentPath.isEmpty()) {
                 throw new TemplateException(String.format("You must specify the parent of an extension (%s).", this.path));
             }
-            Configuration conf = Context.getCurrentThreadContext().getConfiguration();
+            Configuration conf = Configuration.getConfiguration();
             Template parent = conf.getTemplateResolver().findTemplate(parentPath);
             Document parentDoc = parent.getDocumentClone();
             TemplateUtil.mergeBlock(parentDoc, extension);

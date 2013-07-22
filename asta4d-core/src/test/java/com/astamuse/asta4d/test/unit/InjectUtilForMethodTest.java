@@ -28,7 +28,15 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
-public class InjectUtilTest extends BaseTest {
+public class InjectUtilForMethodTest extends BaseTest {
+
+    @Test
+    public void stringNotFound() throws Exception {
+        setData(null);
+        Object[] params = InjectUtil.getMethodInjectParams(getMethod("requireString", String.class));
+        assertEquals(params.length, 1);
+        assertEquals(params[0], null);
+    }
 
     @Test
     public void string2string() throws Exception {
@@ -292,6 +300,6 @@ public class InjectUtilTest extends BaseTest {
     }
 
     private static Method getMethod(String name, Class<?>... parameterTypes) throws NoSuchMethodException {
-        return InjectUtilTest.class.getMethod(name, parameterTypes);
+        return InjectUtilForMethodTest.class.getMethod(name, parameterTypes);
     }
 }

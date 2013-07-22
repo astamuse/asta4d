@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.misc.spring.mvc.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,38 +30,36 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
-//TODO need to cache the mapped result
 @Controller
-public abstract class GenericControllerBase implements ApplicationContextAware {
+public class GenericController implements ApplicationContextAware {
 
-    private final static Logger logger = LoggerFactory.getLogger(GenericControllerBase.class);
+    private final static Logger logger = LoggerFactory.getLogger(GenericController.class);
 
     private ApplicationContext beanCtx = null;
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
+    private List<UrlMappingRule> ruleList;
+
     public void init() {
-        Context templateContext = Context.getCurrentThreadContext();
-        if (templateContext == null) {
-            templateContext = beanCtx.getBean(WebApplicationContext.class);
-            Context.setCurrentThreadContext(templateContext);
-        }
+        WebApplicationConfiguration conf = beanCtx.getBean(WebApplicationConfiguration.class);
+        WebApplicationConfiguration.setConfiguration(conf);
         UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        initUrlMappingRules(helper);
-        dispatcher.setRuleExtractor(new AntPathRuleExtractor());
-        dispatcher.setRuleList(helper.getArrangedRuleList());
+        UrlMappingRuleInitializer ruleInitializer = conf.getUrlMappingRuleInitializer();
+        ruleInitializer.initUrlMappingRules(helper);
+        ruleList = helper.getArrangedRuleList();
         logger.info("url mapping rules are initialized.");
     }
 
     @RequestMapping(value = "/**")
     public void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        dispatcher.dispatchAndProcess(request, response);
+        dispatcher.dispatchAndProcess(ruleList);
         /*
         Object contentProvider = dispatcher.handleRequest(request);
         return contentProvider == null ? null : convertSpringView(contentProvider);
@@ -71,12 +71,11 @@ public abstract class GenericControllerBase implements ApplicationContextAware {
         this.beanCtx = context;
         // we have to inovke init here because the
         // SpringManagedRequestHandlerResolver need to call application context.
-        // And there is no matter that dispatcher is initialized in multi times,
+        // And there is no matter that rule list is initialized in multi times,
         // so we do not apply a lock here.
         init();
     }
 
-    protected abstract void initUrlMappingRules(UrlMappingRuleHelper rules);
     /*
         private View convertSpringView(ContentProvider contentProvider) throws TemplateException {
             if (contentProvider instanceof Asta4DPageProvider) {

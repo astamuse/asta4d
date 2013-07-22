@@ -44,8 +44,12 @@ public class WebApplicationTemplateResolver extends TemplateResolver {
 
     @Override
     protected TemplateInfo loadResource(String path) {
-        // TODO test whether it can work well in an unpacked war deployment
-        return createTemplateInfo(path, servletContext.getResourceAsStream(path));
+        if (servletContext == null) {
+            ServletContext sc = WebApplicationContext.getCurrentThreadWebApplicationContext().getServletContext();
+            return createTemplateInfo(path, sc.getResourceAsStream(path));
+        } else {
+            return createTemplateInfo(path, servletContext.getResourceAsStream(path));
+        }
     }
 
 }

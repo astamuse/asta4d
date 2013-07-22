@@ -18,6 +18,7 @@
 package com.astamuse.asta4d.web.dispatch;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +40,6 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.HeaderWriter;
 import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 
@@ -51,36 +51,29 @@ public class RequestDispatcher {
 
     private final static Logger logger = LoggerFactory.getLogger(RequestDispatcher.class);
 
-    private final static HeaderWriter headerWriter = new HeaderWriter();
-
-    private DispatcherRuleExtractor ruleExtractor;
-
-    private List<UrlMappingRule> ruleList;
-
     public RequestDispatcher() {
 
     }
 
-    public DispatcherRuleExtractor getRuleExtractor() {
-        return ruleExtractor;
-    }
-
-    public void setRuleExtractor(DispatcherRuleExtractor ruleExtractor) {
-        this.ruleExtractor = ruleExtractor;
-    }
-
-    public List<UrlMappingRule> getRuleList() {
-        return ruleList;
-    }
-
-    public void setRuleList(List<UrlMappingRule> ruleList) {
-        this.ruleList = ruleList;
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void dispatchAndProcess(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.info("access for:" + request.getRequestURI());
-        UrlMappingResult result = ruleExtractor.findMappedRule(request, ruleList);
+    public void dispatchAndProcess(List<UrlMappingRule> ruleList) throws Exception {
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
+        WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
+        HttpServletRequest request = context.getRequest();
+        HttpServletResponse response = context.getResponse();
+
+        HttpMethod method = HttpMethod.valueOf(request.getMethod().toUpperCase());
+        String uri = context.getAccessURI();
+        if (uri == null) {
+            uri = URLDecoder.decode(request.getRequestURI(), "UTF-8");
+            String contextPath = request.getContextPath();
+            uri = uri.substring(contextPath.length());
+            context.setAccessURI(uri);
+        }
+
+        String queryString = request.getQueryString();
+
+        UrlMappingResult result = conf.getRuleExtractor().findMappedRule(ruleList, method, uri, queryString);
 
         // if not found result, we do not need return 404, instead of user
         // defining all match rule
@@ -95,7 +88,6 @@ public class RequestDispatcher {
             logger.debug("apply rule at :" + result.getRule());
         }
 
-        WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         writePathVarToContext(context, result.getPathVarMap());
 
         UrlMappingRule rule = result.getRule();
@@ -119,8 +111,9 @@ public class RequestDispatcher {
      */
     private List<ContentProvider<?>> handleRequest(UrlMappingRule currentRule) throws Exception {
         // TODO should we handle the exceptions?
-        WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
-        RequestHandlerInvokerFactory factory = ((WebApplicationConfiguration) context.getConfiguration()).getRequestHandlerInvokerFactory();
+        Context context = Context.getCurrentThreadContext();
+        RequestHandlerInvokerFactory factory = WebApplicationConfiguration.getWebApplicationConfiguration()
+                .getRequestHandlerInvokerFactory();
         RequestHandlerInvoker invoker = factory.getInvoker();
 
         Object requestHandlerResult;

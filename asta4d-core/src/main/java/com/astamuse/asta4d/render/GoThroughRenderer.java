@@ -46,4 +46,9 @@ public class GoThroughRenderer extends Renderer {
         return "GoThroughRenderer";
     }
 
+    @Override
+    RendererType getRendererType() {
+        return RendererType.GO_THROUGH;
+    }
+
 }

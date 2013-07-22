@@ -70,6 +70,11 @@ public class RedirectActionWriter implements ContentWriter<RedirectDescriptor> {
                 url = context.getRequest().getContextPath() + url;
             }
             url = RedirectUtil.setFlashScopeData(url, dataMap);
+
+            if (url.indexOf('\n') >= 0 || url.indexOf('\r') >= 0) {
+                throw new RuntimeException("illegal redirct url:" + url);
+            }
+
             response.sendRedirect(url);
         }
     }

@@ -27,6 +27,7 @@ import java.util.Map;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.format.NamedPlaceholderFormatter;
 import com.astamuse.asta4d.format.NumberPlaceholderFormatter;
@@ -131,6 +132,6 @@ public class ResourceBundleUtilTest extends BaseTest {
     private void setUp(String fileName) {
         Context context = Context.getCurrentThreadContext();
         context.setCurrentLocale(Locale.US);
-        context.getConfiguration().setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
+        Configuration.getConfiguration().setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
     }
 }

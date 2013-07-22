@@ -38,6 +38,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.template.TemplateResolver;
@@ -45,6 +46,7 @@ import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
@@ -57,7 +59,7 @@ public class RequestDispatcherTest {
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
-    private WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
+    private static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
             setTemplateResolver(new TemplateResolver() {
                 @Override
@@ -67,19 +69,14 @@ public class RequestDispatcherTest {
             });
         }
     };
+    static {
+        Configuration.setConfiguration(configuration);
+    }
 
     @BeforeTest
     public void setConf() {
         WebApplicationContext context = new WebApplicationContext();
         Context.setCurrentThreadContext(context);
-        context.setConfiguration(configuration);
-
-        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        initTestRules(helper);
-
-        dispatcher.setRuleExtractor(new AntPathRuleExtractor());
-        dispatcher.setRuleList(helper.getArrangedRuleList());
-
     }
 
     @BeforeMethod
@@ -99,6 +96,17 @@ public class RequestDispatcherTest {
 
     private void initTestRules(UrlMappingRuleHelper rules) {
 
+        rules.addRuleRewriter(new UrlMappingRuleRewriter() {
+            @Override
+            public void rewrite(UrlMappingRule rule) {
+                if (rule.getSourcePath().equals("/rewrite-attr")) {
+                    rule.getAttributeList().add("rewrite-attr");
+                }
+            }
+        });
+
+        rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(358));
+
         rules.addGlobalForward(NullPointerException.class, "/NullPointerException", 501);
         rules.addGlobalForward(Exception.class, "/Exception", 500);
 
@@ -116,7 +124,9 @@ public class RequestDispatcherTest {
         
         rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
         
-        rules.add("/getjson").handler(TestJsonQuery.class).json();
+        rules.add("/getjson").handler(new TestJsonHandler(123)).json();
+        rules.add("/rewrite-attr").json();
+        
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
         
@@ -129,11 +139,13 @@ public class RequestDispatcherTest {
         //@formatter:off
         return new Object[][] { 
                 { "get", "/index", 0, new Page("/index.html"), new Asta4DPageWriter() },
+                { "get", "/index-rewrite", 0, new Page("/index.html"), new Asta4DPageWriter() },
                 { "get", "/index-duplicated", 0, new Page("/index.html"), new Asta4DPageWriter() },
                 { "get", "/body-only", 0, new Page("/bodyOnly.html"), new Asta4DPageWriter() },
                 { "get", "/go-redirect", 0, new RedirectDescriptor("/go-redirect/ok", null), new RedirectActionWriter() },
                 { "delete", "/restapi", 401, null, null }, 
                 { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
+                { "get", "/rewrite-attr", 0, new TestJsonObject(358), new JsonWriter() },
                 { "get", "/nofile", 404, new Page("/notfound"), new Asta4DPageWriter() },
                 { "get", "/thrownep", 501, new Page("/NullPointerException"), new Asta4DPageWriter() },
                 { "get", "/throwexception", 500, new Page("/Exception"), new Asta4DPageWriter() },
@@ -164,7 +176,15 @@ public class RequestDispatcherTest {
                 bos.write(b);
             }
         });
-        dispatcher.dispatchAndProcess(request, response);
+
+        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
+        initTestRules(helper);
+
+        if (url.equals("/index-rewrite")) {
+            context.setAccessURI("/index");
+        }
+
+        dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
 
         if (status != 0) {
             verify(response).setStatus(status);
@@ -217,11 +237,17 @@ public class RequestDispatcherTest {
         }
     }
 
-    public static class TestJsonQuery {
+    public static class TestJsonHandler {
+
+        private int value;
+
+        public TestJsonHandler(int value) {
+            this.value = value;
+        }
 
         @RequestHandler
-        public TestJsonObject query() {
-            TestJsonObject obj = new TestJsonObject(123);
+        public TestJsonObject handle() {
+            TestJsonObject obj = new TestJsonObject(value);
             return obj;
         }
     }

@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectUtil;
 
@@ -42,7 +42,7 @@ public class AnnotationMethodHelper {
     public final static Method findMethod(Object obj, Class<? extends Annotation> annotation) {
         Method m = null;
         String cacheKey = getCacheKey(obj.getClass(), annotation);
-        if (Context.getCurrentThreadContext().getConfiguration().isCacheEnable()) {
+        if (Configuration.getConfiguration().isCacheEnable()) {
             m = methodCache.get(cacheKey);
             if (m != null) {
                 return m;

@@ -75,22 +75,22 @@ public class Page {
 
     }
 
-    private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper.buildList(Context
-            .getCurrentThreadContext().getConfiguration().getPageInterceptorList());
+    private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper.buildList(Configuration
+            .getConfiguration().getPageInterceptorList());
 
     private Template template;
 
     private Document renderedDocument;
 
     public Page(String path) throws Exception {
-        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
         template = templateResolver.findTemplate(path);
         renderedDocument = renderTemplate(template);
     }
 
     protected Document renderTemplate(Template template) throws Exception {
-        Configuration conf = Context.getCurrentThreadContext().getConfiguration();
+        Configuration conf = Configuration.getConfiguration();
         Document doc = template.getDocumentClone();
         doc.outputSettings().prettyPrint(conf.isOutputAsPrettyPrint());
         InterceptorUtil.executeWithInterceptors(doc, WrapperPageInterceptorList, new Executor<Document>() {
