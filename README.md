@@ -182,6 +182,17 @@ which includes more detailed user guide which is for our employees.
     we believe now is a good time to push a preview version of Asta4D to the public and we are still making effort to complete the 
     functionalities of Asta4D.
 
+    
+## Release Note
+-   0.7.22
+    
+    1. Remove depencies of Spring MVC. Asta4dServlet can be used for handling http requests and StaticResourceHandler can be used for static resource files.
+    1. A request handler can be set as generic as request interceptor.
+    1. Access URL can be rewritten.
+    1. URL Rule can be rewritten.
+    1. A @ContextDataSet can be used for collecting context variables in a single class, eg. form parameters.(This is a base for form validation mechanism in furture)
+
+
 ## LICENSE
 
 Apache License, Version 2.0
