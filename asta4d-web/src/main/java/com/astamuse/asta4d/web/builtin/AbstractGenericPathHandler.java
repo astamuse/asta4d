@@ -25,13 +25,13 @@ public abstract class AbstractGenericPathHandler {
     }
 
     public String convertPath(HttpServletRequest request, UrlMappingRule currentRule) {
-        String uri = request.getRequestURI();
+        WebApplicationContext context = Context.getCurrentThreadContext();
+        String uri = context.getAccessURI();
 
         String targetPath = genericMapResult.get(uri);
         if (targetPath != null) {
             return targetPath;
         } else {
-            Context context = Context.getCurrentThreadContext();
             String basePath = context.getData(WebApplicationContext.SCOPE_PATHVAR, VAR_BASEPATH);
             if (basePath == null) {
                 basePath = _basePath;
