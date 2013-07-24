@@ -3,7 +3,7 @@
 
   <groupId>com.asta4d.sample</groupId>
   <artifactId>asta4d-sample</artifactId>
-  <version>0.7.22.1</version>
+  <version>0.7.24.1</version>
   <packaging>war</packaging>
 
   <name>com.asta4d.sample.asta4d-sample</name>
@@ -16,7 +16,7 @@
       <dependency>
         <groupId>com.astamuse</groupId>
         <artifactId>asta4d-spring</artifactId>
-        <version>0.7.22</version>
+        <version>0.7.24</version>
       </dependency>
       
       <dependency>
