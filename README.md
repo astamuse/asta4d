@@ -183,14 +183,28 @@ which includes more detailed user guide which is for our employees.
     functionalities of Asta4D.
 
     
-## Release Note
+## Release Notes
+-   0.7.24
+    
+    ADD
+    - ico MIME type
+    - A empty content provider which can be used to stop the request handler chain
+    
+    FIX
+    - GenericPathHandler should get access url from Context
+    - A bug when selector not found on rendering
+
 -   0.7.22
     
-    - Remove depencies of Spring MVC. Asta4dServlet can be used for handling http requests and StaticResourceHandler can be used for static resource files.
+    ADD
     - A request handler can be set as generic as request interceptor.
     - Access URL can be rewritten.
     - URL Rule can be rewritten.
     - A @ContextDataSet can be used for collecting context variables in a single class, eg. form parameters.(This is a base for form validation mechanism in furture)
+    
+    Remove
+    - Depencies of Spring MVC is no longer necessary. Asta4dServlet can be used for handling http requests and StaticResourceHandler can be used for static resource files.
+
 
 
 ## LICENSE
