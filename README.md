@@ -3,7 +3,7 @@
 It is a web application framework which is friendly to design and flexible to development.
 It is inspired by lift which is a famous scala web application framework. Asta4D is therefore 
 developed as an alternative of [lift](http://liftweb.net/) for Java. If you like scala, we strongly recommend lift 
-for you and if youÅed like to enjoy the benefit of lift while still staying with Java, we believe 
+for you and if you‚Äòd like to enjoy the benefit of lift while still staying with Java, we believe 
 our Asta4D is your best fit.
 
 
@@ -117,7 +117,7 @@ Thus, we created Asta4D.
 
 -   Multi-Thread rendering
 
-    parallel snippet rendering: All the snippet marked as afd:parallelÅh or ÅgparallelÅh will be executed parallel.
+    parallel snippet rendering: All the snippet marked as afd:parallel‚Äù or ‚Äúparallel‚Äù will be executed parallel.
     
     ```html
     <div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
@@ -177,20 +177,34 @@ which includes more detailed user guide which is for our employees.
 -   **Q**: Why are there Spring MVC Framework dependencies in Asta4D?
     
     **A**: Our initial purpose is to drive up our new service development, so we have to consider a balance of progression and schedule 
-    between Asta4DÅfs development and our serviceÅfs development. So we decided to start Asta4DÅfs work basing on Spring MVC 
+    between Asta4D‚Äôs development and our service‚Äôs development. So we decided to start Asta4D‚Äôs work basing on Spring MVC 
     therefore Spring MVC can do the things that we have no time to do. Currently, we have removed 90% dependencies from Spring MVC, 
     we believe now is a good time to push a preview version of Asta4D to the public and we are still making effort to complete the 
     functionalities of Asta4D.
 
     
-## Release Note
+## Release Notes
+-   0.7.24
+    
+    ADD
+    - ico MIME type
+    - A empty content provider which can be used to stop the request handler chain
+    
+    FIX
+    - GenericPathHandler should get access url from Context
+    - A bug when selector not found on rendering
+
 -   0.7.22
     
-    1. Remove depencies of Spring MVC. Asta4dServlet can be used for handling http requests and StaticResourceHandler can be used for static resource files.
-    1. A request handler can be set as generic as request interceptor.
-    1. Access URL can be rewritten.
-    1. URL Rule can be rewritten.
-    1. A @ContextDataSet can be used for collecting context variables in a single class, eg. form parameters.(This is a base for form validation mechanism in furture)
+    ADD
+    - A request handler can be set as generic as request interceptor.
+    - Access URL can be rewritten.
+    - URL Rule can be rewritten.
+    - A @ContextDataSet can be used for collecting context variables in a single class, eg. form parameters.(This is a base for form validation mechanism in furture)
+    
+    Remove
+    - Depencies of Spring MVC is no longer necessary. Asta4dServlet can be used for handling http requests and StaticResourceHandler can be used for static resource files.
+
 
 
 ## LICENSE

@@ -316,6 +316,7 @@ public class RenderUtil {
                                 + "your renderer chain", selector, creationInfo);
             }
             apply(target, rendererList, renderAction, startIndex + 1, count);
+            return;
         }
 
         List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
