@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.template;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
@@ -34,9 +35,11 @@ import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 //TODO internationalization
 public abstract class TemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo> {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private final static ConcurrentHashMap<String, Template> defaultCachedTemplateMap = new ConcurrentHashMap<String, Template>();
+
+    private static Template NotFoundHolder;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, Template> getCachedTemplateMap() {
         Context context = Context.getCurrentThreadContext();
@@ -58,6 +61,18 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
         }
     }
 
+    private static Template getNotFoundHolder() {
+        if (NotFoundHolder == null) {
+            try {
+                String dummyHolderContent = "##NOT-FOUND-HOLDER##";
+                NotFoundHolder = new Template(dummyHolderContent, new ByteArrayInputStream(dummyHolderContent.getBytes()));
+            } catch (TemplateException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return NotFoundHolder;
+    }
+
     public Template findTemplate(String path) throws TemplateException {
         try {
 
@@ -67,16 +82,22 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
             String cacheKey = LocalizeUtil.createLocalizedKey(path, locale);
             Template t = cachedTemplateMap.get(cacheKey);
             if (t != null) {
-                return t;
+                if (t == NotFoundHolder) {
+                    return null;
+                } else {
+                    return t;
+                }
             }
             logger.info("Initializing template " + path);
             TemplateInfo info = searchResource("/", LocalizeUtil.getCandidatePaths(path, locale));
+            if (info == null) {
+                cachedTemplateMap.put(cacheKey, getNotFoundHolder());
+                return null;
+            }
             InputStream input = info.getInput();
             if (input == null) {
-                // TODO mayby we should return a null? So that caller can
-                // identify the situation of template load error or template not
-                // found.
-                throw new TemplateException(String.format("Template %s not found.", path));
+                cachedTemplateMap.put(cacheKey, getNotFoundHolder());
+                return null;
             }
             t = new Template(info.getPath(), input);
             cachedTemplateMap.put(cacheKey, t);
