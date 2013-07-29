@@ -57,7 +57,8 @@ public class ConcurrentRenderHelper {
         return instance;
     }
 
-    public void submitWithContext(final Context context, final String snippetRef, final Callable<Renderer> caller) {
+    public void submitWithContext(final Context context, final String renderDeclaration, final String snippetRef,
+            final Callable<Renderer> caller) {
         cs.submit(new Callable<FutureRendererHolder>() {
             @Override
             public FutureRendererHolder call() throws Exception {
@@ -75,10 +76,11 @@ public class ConcurrentRenderHelper {
                  */
                 try {
                     Renderer renderer = Context.with(context, caller);
-                    return new FutureRendererHolder(snippetRef, renderer);
+                    return new FutureRendererHolder(renderDeclaration, snippetRef, renderer);
                 } catch (Exception ex) {
-                    logger.error("", ex);
-                    throw ex;
+                    Exception nex = new Exception("Error occured when execute rendering:[" + renderDeclaration + "]", ex);
+                    logger.error("", nex);
+                    throw nex;
                 }
             }
         });
