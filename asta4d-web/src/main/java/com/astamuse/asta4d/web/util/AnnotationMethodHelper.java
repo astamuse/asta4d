@@ -51,6 +51,7 @@ public class AnnotationMethodHelper {
 
         m = findMethod(obj.getClass(), annotation);
         if (m != null) {
+            m.setAccessible(true);
             methodCache.put(cacheKey, m);
         }
         return m;
