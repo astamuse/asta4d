@@ -18,10 +18,13 @@
 package com.astamuse.asta4d.interceptor.base;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.astamuse.asta4d.util.GroupedException;
 
 public class InterceptorUtil {
 
@@ -96,6 +99,7 @@ public class InterceptorUtil {
             List<GenericInterceptor<H>> interceptorList, ExceptionHandler eh) {
         GenericInterceptor<H> interceptor = null;
         boolean foundStoppedPoint = false;
+        List<Exception> exList = new LinkedList<>();
         for (int i = interceptorList.size() - 1; i >= 0; i--) {
             interceptor = interceptorList.get(i);
             if (!foundStoppedPoint) {
@@ -106,8 +110,17 @@ public class InterceptorUtil {
                     interceptor.afterProcess(execution, eh);
                 } catch (Exception afterEx) {
                     logger.warn("There is an exception occured in after process of interceptors.", afterEx);
+                    exList.add(afterEx);
                 }
             }
+        }
+
+        // if there are exceptions in after process, we should throw them.
+        if (!exList.isEmpty()) {
+            GroupedException ge = new GroupedException();
+            ge.setExceptionList(exList);
+            logger.error("There are exception(s) orrcured on after interceptor process", ge);
+            throw ge;
         }
     }
 }
