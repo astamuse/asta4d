@@ -41,9 +41,12 @@ import org.testng.annotations.Test;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
+import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
+import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
@@ -54,6 +57,7 @@ import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.JsonWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.RedirectActionWriter;
+import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
 
@@ -106,6 +110,9 @@ public class RequestDispatcherTest {
         });
 
         rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(358));
+
+        rules.addRequestHandlerInterceptor(new CounterInterceptorAdapter());
+        rules.addRequestHandlerInterceptor(new CounterInterceptorAdapter());
 
         rules.addGlobalForward(NullPointerException.class, "/NullPointerException", 501);
         rules.addGlobalForward(Exception.class, "/Exception", 500);
@@ -264,6 +271,40 @@ public class RequestDispatcherTest {
         public Object foo() {
             throw new RuntimeException();
         }
+    }
+
+    public static class CounterInterceptor implements RequestHandlerInterceptor {
+
+        private int counter = 0;
+
+        @Override
+        public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
+            if (counter > 0) {
+                throw new RuntimeException("request intercepter preHandler are executed twice");
+            }
+            counter++;
+        }
+
+        @Override
+        public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
+            counter--;
+            if (counter < 0) {
+                throw new RuntimeException("request intercepter postHandler are executed twice");
+            }
+
+        }
+
+    }
+
+    public static class CounterInterceptorAdapter implements DeclareInstanceAdapter {
+
+        private CounterInterceptor interceptor = new CounterInterceptor();
+
+        @Override
+        public Object asTargetInstance() {
+            return interceptor;
+        }
+
     }
 
     /*

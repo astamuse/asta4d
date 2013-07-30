@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
+import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
@@ -92,21 +93,24 @@ public class UrlMappingRuleHelper {
 
         DeclareInstanceAdapter adapter;
 
+        String id;
+
         InterceptorWrapper(DeclareInstanceAdapter adapter) {
             this.adapter = adapter;
+            this.id = InterceptorInstanceCacheKey + "##" + IdGenerator.createId();
         }
 
         @Override
         public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
             RequestHandlerInterceptor interceptor = (RequestHandlerInterceptor) adapter.asTargetInstance();
-            Context.getCurrentThreadContext().setData(InterceptorInstanceCacheKey, interceptor);
+            Context.getCurrentThreadContext().setData(id, interceptor);
             interceptor.preHandle(rule, holder);
         }
 
         @Override
         public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
             // retrieve the instance that actually was executed
-            RequestHandlerInterceptor interceptor = Context.getCurrentThreadContext().getData(InterceptorInstanceCacheKey);
+            RequestHandlerInterceptor interceptor = Context.getCurrentThreadContext().getData(id);
             interceptor.postHandle(rule, holder, exceptionHandler);
         }
     }
