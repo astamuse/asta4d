@@ -2,8 +2,6 @@ package com.astamuse.asta4d.web.builtin;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.io.FilenameUtils;
 
 import com.astamuse.asta4d.Context;
@@ -24,7 +22,7 @@ public abstract class AbstractGenericPathHandler {
         this._basePath = basePath;
     }
 
-    public String convertPath(HttpServletRequest request, UrlMappingRule currentRule) {
+    public String convertPath(UrlMappingRule currentRule) {
         WebApplicationContext context = Context.getCurrentThreadContext();
         String uri = context.getAccessURI();
 
@@ -40,6 +38,9 @@ public abstract class AbstractGenericPathHandler {
             if (basePath == null) {// default from web context root
                 targetPath = uri;
             } else {
+
+                basePath = FilenameUtils.normalize(basePath, true);
+
                 String src = currentRule.getSourcePath();
                 // convert for /**/*
                 String mask = "/**/*";

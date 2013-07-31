@@ -113,7 +113,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     @RequestHandler
     public Object handler(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext,
             UrlMappingRule currentRule) throws FileNotFoundException, IOException {
-        String path = convertPath(request, currentRule);
+        String path = convertPath(currentRule);
 
         if (path == null) {
             return createSimpleHeaderResponse(404);
