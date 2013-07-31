@@ -14,7 +14,7 @@ import javax.servlet.ServletContext;
 public class BinaryDataUtil {
 
     public final static InputStream retrieveInputStreamByPath(ServletContext servletContext, ClassLoader classLoader, String path) {
-        if (path.startsWith("file://")) {
+        if (path.startsWith("file:")) {
             try {
                 return new FileInputStream(path);
             } catch (FileNotFoundException e) {
@@ -37,7 +37,7 @@ public class BinaryDataUtil {
      *         resource for given path
      */
     public final static long retrieveLastModifiedByPath(ServletContext servletContext, ClassLoader classLoader, String path) {
-        if (path.startsWith("file://")) {
+        if (path.startsWith("file:")) {
             return new File(path).lastModified();
         } else if (path.startsWith("classpath:")) {
             String cls = path.substring("classpath".length());
