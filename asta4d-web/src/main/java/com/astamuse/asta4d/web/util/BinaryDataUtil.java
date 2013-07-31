@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.web.util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +14,11 @@ public class BinaryDataUtil {
     public final static InputStream retrieveInputStreamByPath(ServletContext servletContext, ClassLoader classLoader, String path) {
         if (path.startsWith("file:")) {
             try {
-                return new FileInputStream(path);
+                return new URL(path).openStream();
             } catch (FileNotFoundException e) {
                 return null;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         } else if (path.startsWith("classpath:")) {
             String cls = path.substring("classpath".length());
@@ -38,7 +38,12 @@ public class BinaryDataUtil {
      */
     public final static long retrieveLastModifiedByPath(ServletContext servletContext, ClassLoader classLoader, String path) {
         if (path.startsWith("file:")) {
-            return new File(path).lastModified();
+            try {
+                URL url = new URL(path);
+                return retriveLastModifiedFromURL(url);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
         } else if (path.startsWith("classpath:")) {
             String cls = path.substring("classpath".length());
             return retriveLastModifiedFromURL(classLoader.getResource(cls));
