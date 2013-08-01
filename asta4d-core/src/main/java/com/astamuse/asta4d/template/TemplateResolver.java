@@ -61,14 +61,10 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
         }
     }
 
-    private static Template getNotFoundHolder() {
+    private static Template getNotFoundHolder() throws TemplateException {
         if (NotFoundHolder == null) {
-            try {
-                String dummyHolderContent = "##NOT-FOUND-HOLDER##";
-                NotFoundHolder = new Template(dummyHolderContent, new ByteArrayInputStream(dummyHolderContent.getBytes()));
-            } catch (TemplateException e) {
-                throw new RuntimeException(e);
-            }
+            String dummyHolderContent = "##NOT-FOUND-HOLDER##";
+            NotFoundHolder = new Template(dummyHolderContent, new ByteArrayInputStream(dummyHolderContent.getBytes()));
         }
         return NotFoundHolder;
     }

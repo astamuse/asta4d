@@ -17,11 +17,18 @@
 
 package com.astamuse.asta4d.web.dispatch.request;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.SerialProvider;
 
 public class ResultTransformerUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(ResultTransformerUtil.class);
 
     public final static ContentProvider<?> transform(Object result, List<ResultTransformer> transformerList) {
 
@@ -32,8 +39,23 @@ public class ResultTransformerUtil {
         ContentProvider<?> cp = null;
         Object before, after;
         before = result;
-        for (ResultTransformer resultTransformer : transformerList) {
-            after = resultTransformer.transformToContentProvider(before);
+        ResultTransformer resultTransformer;
+        int size = transformerList.size();
+        for (int i = 0; i < size; i++) {
+
+            if (before instanceof MultiResultHolder) {
+                List<ResultTransformer> subList = transformerList.subList(i, size);
+                return transformMultiResult((MultiResultHolder) before, subList);
+            }
+
+            resultTransformer = transformerList.get(i);
+            try {
+                after = resultTransformer.transformToContentProvider(before);
+            } catch (Exception ex) {
+                logger.error("Error occured on result transform.", ex);
+                after = ex;
+            }
+
             if (after == null) {
                 continue;
             } else if (after instanceof ContentProvider) {
@@ -44,14 +66,28 @@ public class ResultTransformerUtil {
                 continue;
             }
         }
-
         if (cp == null) {
             String msg = "Cannot recognize the result type of:%s. Maybe a ResultTransformer is neccessory.";
             String.format(msg, result.getClass().getName());
             throw new UnsupportedOperationException(msg);
         } else {
-
             return cp;
         }
+    }
+
+    private final static ContentProvider<?> transformMultiResult(MultiResultHolder resultHolder, List<ResultTransformer> transformerList) {
+        List<Object> resultList = resultHolder.getResultList();
+        if (resultList == null || resultList.isEmpty()) {
+            String msg = "MultiResultHolder should must hold some result but we got one with an empty list.";
+            throw new UnsupportedOperationException(msg);
+        }
+
+        List<ContentProvider<?>> cpList = new ArrayList<>(resultList.size());
+        for (Object object : resultList) {
+            cpList.add(transform(object, transformerList));
+        }
+
+        ContentProvider<?> sp = new SerialProvider(cpList);
+        return sp;
     }
 }

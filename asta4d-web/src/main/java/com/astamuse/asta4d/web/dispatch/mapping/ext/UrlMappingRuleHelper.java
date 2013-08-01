@@ -32,9 +32,12 @@ import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.Asta4DPageTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultExceptionTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultStringTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultTemplateNotFoundExceptionTransformer;
+import com.astamuse.asta4d.web.dispatch.request.transformer.HeaderInfoTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
-import com.astamuse.asta4d.web.dispatch.request.transformer.String2Asta4DPageTransformer;
-import com.astamuse.asta4d.web.dispatch.request.transformer.String2RedirctTransformer;
 import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
@@ -114,10 +117,6 @@ public class UrlMappingRuleHelper {
             interceptor.postHandle(rule, holder, exceptionHandler);
         }
     }
-
-    private final static String2Asta4DPageTransformer asta4dPageTransformer = new String2Asta4DPageTransformer();
-
-    private final static String2RedirctTransformer redirectTransformer = new String2RedirctTransformer();
 
     private HttpMethod defaultMethod = HttpMethod.GET;
 
@@ -281,29 +280,15 @@ public class UrlMappingRuleHelper {
             rule.setHandlerList(requestHandlerList);
         }
 
-        // set global result forward
+        // reoganize the transformer list
+        boolean hasHandler = false;
         for (UrlMappingRule rule : arrangedRuleList) {
-            // add global forward
-            HandyRuleWithForward hf = new HandyRuleWithForward(rule);
-            for (GlobalForwardHolder forwardHolder : forwardHolderList) {
-                if (forwardHolder.isRedirect) {
-                    hf.redirect(forwardHolder.result, forwardHolder.targetPath);
-                } else if (forwardHolder.status == null) {
-                    hf.forward(forwardHolder.result, forwardHolder.targetPath);
-                } else {
-                    hf.forward(forwardHolder.result, forwardHolder.targetPath, forwardHolder.status);
-                }
-            }
 
-            // add default transformer
             List<ResultTransformer> transformerList = rule.getResultTransformerList();
-            transformerList.add(redirectTransformer);
-            transformerList.add(asta4dPageTransformer);
-
-            // move the default forward rule to the last of the result list
+            // find out the default forward rule
             ResultTransformer transformer, defaultTransformer = null;
-            int size = transformerList.size();
 
+            int size = transformerList.size();
             for (int i = size - 1; i >= 0; i--) {
                 transformer = transformerList.get(i);
                 if (transformer instanceof SimpleTypeMatchTransformer) {
@@ -315,9 +300,68 @@ public class UrlMappingRuleHelper {
                 }
             }
 
+            hasHandler = !rule.getHandlerList().isEmpty();
+            HandyRuleWithForward hf = new HandyRuleWithForward(rule);
+
+            if (hasHandler) {
+                // add global forward
+                for (GlobalForwardHolder forwardHolder : forwardHolderList) {
+                    if (forwardHolder.isRedirect) {
+                        hf.redirect(forwardHolder.result, forwardHolder.targetPath);
+                    } else if (forwardHolder.status == null) {
+                        hf.forward(forwardHolder.result, forwardHolder.targetPath);
+                    } else {
+                        hf.forward(forwardHolder.result, forwardHolder.targetPath, forwardHolder.status);
+                    }
+                }
+                // add String transformers for non default forward rules(forward
+                // by result)
+                transformerList.add(new DefaultStringTransformer());
+
+                // add global forward again for possible
+                // exceptions on the above transformers
+                for (GlobalForwardHolder forwardHolder : forwardHolderList) {
+                    if (forwardHolder.isRedirect) {
+                        hf.redirect(forwardHolder.result, forwardHolder.targetPath);
+                    } else if (forwardHolder.status == null) {
+                        hf.forward(forwardHolder.result, forwardHolder.targetPath);
+                    } else {
+                        hf.forward(forwardHolder.result, forwardHolder.targetPath, forwardHolder.status);
+                    }
+                }
+
+                // add String transformers for the global forword rules
+                transformerList.add(new DefaultStringTransformer());
+            }
+
+            // add default forward rule
             if (defaultTransformer != null) {
                 transformerList.add(defaultTransformer);
+                // add default String transformers for the default forward rule
+                transformerList.add(new DefaultStringTransformer());
+
+                // add global forward of Throwable result again again (!!!) for
+                // possible exceptions on the above transformers
+                for (GlobalForwardHolder forwardHolder : forwardHolderList) {
+                    if (forwardHolder.isRedirect) {
+                        hf.redirect(forwardHolder.result, forwardHolder.targetPath);
+                    } else if (forwardHolder.status == null) {
+                        hf.forward(forwardHolder.result, forwardHolder.targetPath);
+                    } else {
+                        hf.forward(forwardHolder.result, forwardHolder.targetPath, forwardHolder.status);
+                    }
+                }
+
+                // add String transformers for the global throwable result
+                // forword rules
+                transformerList.add(new DefaultStringTransformer());
             }
+
+            // add the last insured transformers
+            transformerList.add(new DefaultTemplateNotFoundExceptionTransformer());
+            transformerList.add(new DefaultExceptionTransformer());
+            transformerList.add(new HeaderInfoTransformer());
+            transformerList.add(new Asta4DPageTransformer());
 
             rule.setResultTransformerList(transformerList);
         }// sortedRuleList loop

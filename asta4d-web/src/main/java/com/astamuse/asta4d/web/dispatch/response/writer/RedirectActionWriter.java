@@ -75,7 +75,8 @@ public class RedirectActionWriter implements ContentWriter<RedirectDescriptor> {
                 throw new RuntimeException("illegal redirct url:" + url);
             }
 
-            response.sendRedirect(url);
+            response.setStatus(content.getStatus());
+            response.addHeader("Location", url);
         }
     }
 

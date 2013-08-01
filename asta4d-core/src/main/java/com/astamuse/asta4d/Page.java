@@ -78,15 +78,21 @@ public class Page {
     private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper.buildList(Configuration
             .getConfiguration().getPageInterceptorList());
 
-    private Template template;
-
     private Document renderedDocument;
 
-    public Page(String path) throws Exception {
+    public Page(Template template) throws Exception {
+        renderedDocument = renderTemplate(template);
+    }
+
+    public final static Page buildFromPath(String path) throws Exception {
         Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
-        template = templateResolver.findTemplate(path);
-        renderedDocument = renderTemplate(template);
+        Template template = templateResolver.findTemplate(path);
+        if (template == null) {
+            return null;
+        } else {
+            return new Page(template);
+        }
     }
 
     protected Document renderTemplate(Template template) throws Exception {

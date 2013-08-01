@@ -23,22 +23,18 @@ import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
 
 public class Asta4DPageProvider implements ContentProvider<Page> {
 
-    private String path;
+    private Page page;
 
     public Asta4DPageProvider() {
-        this("");
+        this.page = null;
     }
 
-    public Asta4DPageProvider(String path) {
-        this.path = path;
+    public Asta4DPageProvider(Page page) {
+        this.page = page;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public void setPage(Page page) {
+        this.page = page;
     }
 
     @Override
@@ -48,7 +44,7 @@ public class Asta4DPageProvider implements ContentProvider<Page> {
 
     @Override
     public Page produce() throws Exception {
-        return new Page(path);
+        return page;
     }
 
     @Override

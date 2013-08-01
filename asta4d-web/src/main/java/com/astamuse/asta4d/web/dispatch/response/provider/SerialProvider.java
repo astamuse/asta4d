@@ -40,6 +40,10 @@ public class SerialProvider implements ContentProvider<List<Pair<Object, Content
         }
     }
 
+    public SerialProvider(List<ContentProvider<?>> contentProviders) {
+        contentProviderList.addAll(contentProviders);
+    }
+
     public List<ContentProvider<?>> getContentProviderList() {
         return contentProviderList;
     }

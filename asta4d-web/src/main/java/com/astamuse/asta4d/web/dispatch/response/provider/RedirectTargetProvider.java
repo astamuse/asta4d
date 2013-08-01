@@ -17,58 +17,33 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
-import java.util.Map;
-
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.RedirectActionWriter;
 
 public class RedirectTargetProvider implements ContentProvider<RedirectDescriptor> {
 
-    private String targetPath;
-
-    private Map<String, Object> flashScopeData;
+    private RedirectDescriptor descriptor;
 
     public RedirectTargetProvider() {
-        this(null, null);
+        //
     }
 
-    public RedirectTargetProvider(String targetPath) {
-        this(targetPath, null);
+    public RedirectTargetProvider(RedirectDescriptor descriptor) {
+        this.descriptor = descriptor;
     }
 
-    public RedirectTargetProvider(String targetPath, Map<String, Object> flashScopeData) {
-        this.targetPath = targetPath;
-        this.flashScopeData = flashScopeData;
-    }
-
-    public RedirectTargetProvider(Map<String, Object> flashScopeData) {
-        this(null, flashScopeData);
-    }
-
-    public String getTargetPath() {
-        return targetPath;
-    }
-
-    public void setTargetPath(String targetPath) {
-        this.targetPath = targetPath;
-    }
-
-    public Map<String, Object> getFlashScopeData() {
-        return flashScopeData;
-    }
-
-    public void setFlashScopeData(Map<String, Object> flashScopeData) {
-        this.flashScopeData = flashScopeData;
+    public void setDescriptor(RedirectDescriptor descriptor) {
+        this.descriptor = descriptor;
     }
 
     @Override
     public boolean isContinuable() {
-        return targetPath == null;
+        return descriptor.getTargetPath() == null;
     }
 
     @Override
     public RedirectDescriptor produce() {
-        return new RedirectDescriptor(targetPath, flashScopeData);
+        return descriptor;
     }
 
     @Override
