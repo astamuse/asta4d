@@ -42,6 +42,7 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
@@ -59,6 +60,7 @@ import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import com.astamuse.asta4d.web.dispatch.response.writer.JsonWriter;
 import com.astamuse.asta4d.web.dispatch.response.writer.RedirectActionWriter;
 import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 
@@ -140,7 +142,11 @@ public class RequestDispatcherTest {
 
         rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageWriter.AttrBodyOnly);
         
-        rules.add("/go-redirect").redirect("301:/go-redirect/ok");
+        rules.add("/go-redirect").redirect("/go-redirect/ok");
+        rules.add("/go-redirect-301").redirect("301:/go-redirect/301");
+        rules.add("/go-redirect-302").redirect("302:/go-redirect/302");
+        rules.add("/go-redirect-p").redirect("p:/go-redirect/p");
+        rules.add("/go-redirect-t").redirect("t:/go-redirect/t");
         
         rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
         
@@ -160,19 +166,28 @@ public class RequestDispatcherTest {
         //@formatter:off
         return new Object[][] { 
                 
-//                { "get", "/index", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
-//                
-//                { "get", "/index-rewrite", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
-//                { "get", "/index-duplicated", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
-//                { "get", "/body-only", 0, Page.buildFromPath("/bodyOnly.html"), new Asta4DPageWriter() },
-                { "get", "/go-redirect", 301, new RedirectDescriptor(301, "/go-redirect/ok", null), new RedirectActionWriter() },
-//                { "delete", "/restapi", 401, null, null }, 
-//                { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
-//                { "get", "/rewrite-attr", 0, new TestJsonObject(358), new JsonWriter() },
-//                { "get", "/nofile", 404, Page.buildFromPath("/notfound"), new Asta4DPageWriter() },
-//                { "get", "/template-not-exists", 404, Page.buildFromPath("/notfound"), new Asta4DPageWriter() },
-//                { "get", "/thrownep", 501, Page.buildFromPath("/NullPointerException"), new Asta4DPageWriter() },
-//                { "get", "/throwexception", 500, Page.buildFromPath("/Exception"), new Asta4DPageWriter() },
+                { "get", "/index", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
+                
+                { "get", "/index-rewrite", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
+                { "get", "/index-duplicated", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
+                { "get", "/body-only", 0, Page.buildFromPath("/bodyOnly.html"), new Asta4DPageWriter() },
+                
+                { "get", "/go-redirect", 302, new RedirectDescriptor(302, "/go-redirect/ok", null), new RedirectActionWriter() },
+                { "get", "/go-redirect-301", 301, new RedirectDescriptor(301, "/go-redirect/301", null), new RedirectActionWriter() },
+                { "get", "/go-redirect-302", 302, new RedirectDescriptor(302, "/go-redirect/302", null), new RedirectActionWriter() },
+                { "get", "/go-redirect-p", 301, new RedirectDescriptor(301, "/go-redirect/p", null), new RedirectActionWriter() },
+                { "get", "/go-redirect-t", 302, new RedirectDescriptor(302, "/go-redirect/t", null), new RedirectActionWriter() },
+                
+                
+                { "delete", "/restapi", 401, null, null }, 
+                { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
+                { "get", "/rewrite-attr", 0, new TestJsonObject(358), new JsonWriter() },
+
+                { "get", "/nofile", 404, Page.buildFromPath("/notfound"), new Asta4DPageWriter() },
+                { "get", "/template-not-exists", 404, Page.buildFromPath("/notfound"), new Asta4DPageWriter() },
+
+                { "get", "/thrownep", 501, Page.buildFromPath("/NullPointerException"), new Asta4DPageWriter() },
+                { "get", "/throwexception", 500, Page.buildFromPath("/Exception"), new Asta4DPageWriter() },
 
                 };
         //@formatter:on

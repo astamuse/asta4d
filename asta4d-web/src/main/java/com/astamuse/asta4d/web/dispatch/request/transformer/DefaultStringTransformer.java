@@ -34,13 +34,23 @@ public class DefaultStringTransformer implements ResultTransformer {
             String target = result.toString();
             if (target.startsWith("redirect:")) {// redirect
                 String path = target.substring("redirect:".length());
-                String possibleStatus = path.substring(0, path.indexOf(":"));
                 int status = HttpURLConnection.HTTP_MOVED_TEMP;
-                try {
-                    status = Integer.parseInt(possibleStatus);
-                    path = path.substring(possibleStatus.length());
-                } catch (NumberFormatException nfe) {
-                    // do nothing
+
+                int nextColonIndex = path.indexOf(":");
+                if (nextColonIndex >= 0) {
+                    String possibleStatus = path.substring(0, nextColonIndex);
+                    if (possibleStatus.equalsIgnoreCase("p")) {
+                        status = HttpURLConnection.HTTP_MOVED_PERM;
+                    } else if (possibleStatus.equalsIgnoreCase("t")) {
+                        status = HttpURLConnection.HTTP_MOVED_TEMP;
+                    } else {
+                        try {
+                            status = Integer.parseInt(possibleStatus);
+                            path = path.substring(possibleStatus.length());
+                        } catch (NumberFormatException nfe) {
+                            // do nothing
+                        }
+                    }
                 }
                 RedirectDescriptor rd = new RedirectDescriptor(status, path, null);
                 RedirectTargetProvider provider = DeclareInstanceUtil.createInstance(RedirectTargetProvider.class);
