@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectUtil;
 
 public class AnnotationMethodHelper {
@@ -76,8 +75,7 @@ public class AnnotationMethodHelper {
         }
     }
 
-    public final static Object invokeMethodForAnnotation(Object obj, Class<? extends Annotation> annotation)
-            throws InvocationTargetException, DataOperationException, IllegalAccessException, IllegalArgumentException {
+    public final static Object invokeMethodForAnnotation(Object obj, Class<? extends Annotation> annotation) throws Exception {
         Object targetObj = obj instanceof DeclareInstanceAdapter ? ((DeclareInstanceAdapter) obj).asTargetInstance() : obj;
         Method m = findMethod(targetObj, annotation);
         if (m == null) {
@@ -94,11 +92,21 @@ public class AnnotationMethodHelper {
 
         try {
             return m.invoke(targetObj, params);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (Exception e) {
+
+            Exception throwEx = e;
+            if (e instanceof InvocationTargetException) {
+                Throwable t = ((InvocationTargetException) e).getTargetException();
+                if (t instanceof Exception) {
+                    throwEx = (Exception) t;
+                }
+            }
+
             String msg = "Error occured when invoke method for annotiona %s on %s with params:%s";
             msg = String.format(msg, annotation.getName(), targetObj.getClass().getName(), params);
-            logger.error(msg, e);
-            throw e;
+            logger.error(msg, throwEx);
+
+            throw throwEx;
         }
     }
 }

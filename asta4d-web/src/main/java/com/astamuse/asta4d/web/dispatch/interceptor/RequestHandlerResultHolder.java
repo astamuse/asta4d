@@ -17,24 +17,23 @@
 
 package com.astamuse.asta4d.web.dispatch.interceptor;
 
+import java.util.List;
+
+import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
+
 public class RequestHandlerResultHolder {
 
-    private Object result;
+    private List<ContentProvider<?>> contentProviderList = null;
 
     public RequestHandlerResultHolder() {
     }
 
-    public RequestHandlerResultHolder(Object result) {
-        super();
-        this.result = result;
+    public List<ContentProvider<?>> getContentProviderList() {
+        return contentProviderList;
     }
 
-    public Object getResult() {
-        return result;
-    }
-
-    public void setResult(Object result) {
-        this.result = result;
+    public void setContentProviderList(List<ContentProvider<?>> contentProviderList) {
+        this.contentProviderList = contentProviderList;
     }
 
 }

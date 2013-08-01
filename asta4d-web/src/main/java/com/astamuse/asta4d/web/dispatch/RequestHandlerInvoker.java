@@ -17,10 +17,13 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
+import java.util.List;
+
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 
 public interface RequestHandlerInvoker {
 
-    public Object invoke(UrlMappingRule rule) throws Exception;
+    public List<ContentProvider<?>> invoke(UrlMappingRule rule) throws Exception;
 
 }
