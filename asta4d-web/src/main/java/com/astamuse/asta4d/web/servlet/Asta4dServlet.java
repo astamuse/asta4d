@@ -80,7 +80,7 @@ public class Asta4dServlet extends HttpServlet {
                 context = createAsta4dContext();
                 Context.setCurrentThreadContext(context);
             }
-
+            context.init();
             context.setRequest(req);
             context.setResponse(res);
             context.setServletContext(getServletContext());
