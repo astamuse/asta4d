@@ -56,12 +56,12 @@ import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
+import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
-import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.JsonWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.RedirectActionWriter;
+import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
@@ -82,17 +82,15 @@ public class RequestDispatcherTest {
             });
         }
     };
-    static {
+
+    @BeforeClass
+    public void setConf() {
+        Locale.setDefault(Locale.ROOT);
         Configuration.setConfiguration(configuration);
     }
 
-    @BeforeClass
-    public void setLocale() {
-        Locale.setDefault(Locale.ROOT);
-    }
-
     @BeforeTest
-    public void setConf() {
+    public void setContext() {
         WebApplicationContext context = new WebApplicationContext();
         Context.setCurrentThreadContext(context);
     }
@@ -140,7 +138,7 @@ public class RequestDispatcherTest {
         
         rules.add("/index-duplicated").reMapTo("index-page");
 
-        rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageWriter.AttrBodyOnly);
+        rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageProvider.AttrBodyOnly);
         
         rules.add("/go-redirect").redirect("/go-redirect/ok");
         rules.add("/go-redirect-301").redirect("301:/go-redirect/301");
@@ -161,40 +159,43 @@ public class RequestDispatcherTest {
       //@formatter:on
     }
 
+    private final static Asta4DPageProvider getExpectedPage(String path) throws Exception {
+        return new Asta4DPageProvider(Page.buildFromPath(path));
+    }
+
     @DataProvider(name = "data")
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
                 
-                { "get", "/index", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
+                { "get", "/index", 0, getExpectedPage("/index.html")},
                 
-                { "get", "/index-rewrite", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
-                { "get", "/index-duplicated", 0, Page.buildFromPath("/index.html"), new Asta4DPageWriter() },
-                { "get", "/body-only", 0, Page.buildFromPath("/bodyOnly.html"), new Asta4DPageWriter() },
+                { "get", "/index-rewrite", 0, getExpectedPage("/index.html") },
+                { "get", "/index-duplicated", 0, getExpectedPage("/index.html") },
+                { "get", "/body-only", 0, getExpectedPage("/bodyOnly.html") },
                 
-                { "get", "/go-redirect", 302, new RedirectDescriptor(302, "/go-redirect/ok", null), new RedirectActionWriter() },
-                { "get", "/go-redirect-301", 301, new RedirectDescriptor(301, "/go-redirect/301", null), new RedirectActionWriter() },
-                { "get", "/go-redirect-302", 302, new RedirectDescriptor(302, "/go-redirect/302", null), new RedirectActionWriter() },
-                { "get", "/go-redirect-p", 301, new RedirectDescriptor(301, "/go-redirect/p", null), new RedirectActionWriter() },
-                { "get", "/go-redirect-t", 302, new RedirectDescriptor(302, "/go-redirect/t", null), new RedirectActionWriter() },
+                { "get", "/go-redirect", 302, new RedirectTargetProvider(new RedirectDescriptor(302, "/go-redirect/ok", null))},
+                { "get", "/go-redirect-301", 301, new RedirectTargetProvider(new RedirectDescriptor(301, "/go-redirect/301", null))},
+                { "get", "/go-redirect-302", 302, new RedirectTargetProvider(new RedirectDescriptor(302, "/go-redirect/302", null))},
+                { "get", "/go-redirect-p", 301, new RedirectTargetProvider(new RedirectDescriptor(301, "/go-redirect/p", null))},
+                { "get", "/go-redirect-t", 302, new RedirectTargetProvider(new RedirectDescriptor(302, "/go-redirect/t", null))},
                 
-                
-                { "delete", "/restapi", 401, null, null }, 
-                { "get", "/getjson", 0, new TestJsonObject(123), new JsonWriter() },
-                { "get", "/rewrite-attr", 0, new TestJsonObject(358), new JsonWriter() },
+                { "delete", "/restapi", 401, null }, 
+                { "get", "/getjson", 0, new JsonDataProvider(new TestJsonObject(123))},
+                { "get", "/rewrite-attr", 0, new JsonDataProvider(new TestJsonObject(358)) },
 
-                { "get", "/nofile", 404, Page.buildFromPath("/notfound"), new Asta4DPageWriter() },
-                { "get", "/template-not-exists", 404, Page.buildFromPath("/notfound"), new Asta4DPageWriter() },
+                { "get", "/nofile", 404, getExpectedPage("/notfound")},
+                { "get", "/template-not-exists", 404, getExpectedPage("/notfound")},
 
-                { "get", "/thrownep", 501, Page.buildFromPath("/NullPointerException"), new Asta4DPageWriter() },
-                { "get", "/throwexception", 500, Page.buildFromPath("/Exception"), new Asta4DPageWriter() },
+                { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
+                { "get", "/throwexception", 500, getExpectedPage("/Exception")},
 
                 };
         //@formatter:on
     }
 
     @Test(dataProvider = "data")
-    public void execute(String method, String url, int status, Object expectedContent, ContentWriter cw) throws Exception {
+    public void execute(String method, String url, int status, ContentProvider<?> contentProvider) throws Exception {
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
@@ -230,7 +231,7 @@ public class RequestDispatcherTest {
             verify(response).setStatus(status);
         }
 
-        if (expectedContent == null) {
+        if (contentProvider == null) {
             return;
         }
 
@@ -242,15 +243,12 @@ public class RequestDispatcherTest {
                 expectedBos.write(b);
             }
         });
-        if (expectedContent instanceof RedirectDescriptor) {
-            // how test?
-        } else {
-            UrlMappingRule currentRule = context.getData(RequestDispatcher.KEY_CURRENT_RULE);
-            cw.writeResponse(currentRule, expectedResponse, expectedContent);
 
-            Assert.assertEquals(new String(bos.toByteArray()), new String(expectedBos.toByteArray()));
+        UrlMappingRule currentRule = context.getData(RequestDispatcher.KEY_CURRENT_RULE);
+        contentProvider.produce(currentRule, expectedResponse);
 
-        }
+        Assert.assertEquals(new String(bos.toByteArray()), new String(expectedBos.toByteArray()));
+
     }
 
     public static class TestRestApiHandler {

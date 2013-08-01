@@ -20,14 +20,12 @@ package com.astamuse.asta4d.web.dispatch.response.provider;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
+import javax.servlet.http.HttpServletResponse;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.SerialWriter;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 @SuppressWarnings("rawtypes")
-public class SerialProvider implements ContentProvider<List<Pair<Object, ContentWriter>>> {
+public class SerialProvider implements ContentProvider<Object> {
 
     private List<ContentProvider<?>> contentProviderList = new ArrayList<>();
 
@@ -59,20 +57,10 @@ public class SerialProvider implements ContentProvider<List<Pair<Object, Content
     }
 
     @Override
-    public List<Pair<Object, ContentWriter>> produce() throws Exception {
-        List<Pair<Object, ContentWriter>> list = new ArrayList<>(contentProviderList.size());
-        Pair<Object, ContentWriter> p;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
         for (ContentProvider<?> cp : contentProviderList) {
-            p = Pair.of((Object) cp.produce(), (ContentWriter) DeclareInstanceUtil.createInstance(cp.getContentWriter()));
-            list.add(p);
+            cp.produce(currentRule, response);
         }
-        return list;
-
-    }
-
-    @Override
-    public Class<? extends ContentWriter<List<Pair<Object, ContentWriter>>>> getContentWriter() {
-        return SerialWriter.class;
     }
 
 }

@@ -7,9 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.BinaryDataWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.util.BinaryDataUtil;
 
 public class BinaryDataProvider implements ContentProvider<InputStream> {
@@ -50,13 +51,21 @@ public class BinaryDataProvider implements ContentProvider<InputStream> {
     }
 
     @Override
-    public InputStream produce() throws Exception {
-        return input;
-    }
-
-    @Override
-    public Class<? extends ContentWriter<InputStream>> getContentWriter() {
-        return BinaryDataWriter.class;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
+        try {
+            byte[] bs = new byte[4096];
+            ServletOutputStream out = response.getOutputStream();
+            int len = 0;
+            while ((len = input.read(bs)) != -1) {
+                out.write(bs, 0, len);
+            }
+            // we do not need to close servlet output stream since the container
+            // will close it.
+        } finally {
+            // since we have depleted this stream, there is no reason for not
+            // closing it.
+            input.close();
+        }
     }
 
 }

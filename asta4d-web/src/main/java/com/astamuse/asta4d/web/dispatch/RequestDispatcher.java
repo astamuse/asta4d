@@ -36,8 +36,6 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 import com.astamuse.asta4d.web.util.RedirectUtil;
 
 public class RequestDispatcher {
@@ -93,10 +91,8 @@ public class RequestDispatcher {
         retrieveFlashScopeData(request);
 
         List<ContentProvider<?>> requestResult = handleRequest(rule);
-        ContentWriter cw;
         for (ContentProvider<?> cp : requestResult) {
-            cw = (ContentWriter<?>) DeclareInstanceUtil.createInstance(cp.getContentWriter());
-            cw.writeResponse(rule, response, cp.produce());
+            cp.produce(rule, response);
         }
     }
 

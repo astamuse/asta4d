@@ -17,8 +17,14 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.HeaderWriter;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
 
@@ -43,11 +49,6 @@ public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
     }
 
     @Override
-    public HeaderInfo produce() {
-        return info;
-    }
-
-    @Override
     public boolean isContinuable() {
         return continuable;
     }
@@ -57,7 +58,23 @@ public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
     }
 
     @Override
-    public Class<? extends ContentWriter<HeaderInfo>> getContentWriter() {
-        return HeaderWriter.class;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
+        if (info == null) {
+            return;
+        }
+        Integer status = info.getStatus();
+        if (status != null) {
+            response.setStatus(status);
+        }
+
+        Set<Entry<String, String>> headers = info.getHeaderMap().entrySet();
+        for (Entry<String, String> h : headers) {
+            response.addHeader(h.getKey(), h.getValue());
+        }
+
+        List<Cookie> cookies = info.getCookieList();
+        for (Cookie c : cookies) {
+            response.addCookie(c);
+        }
     }
 }

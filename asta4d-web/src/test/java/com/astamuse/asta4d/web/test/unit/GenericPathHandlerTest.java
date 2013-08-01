@@ -21,11 +21,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
@@ -51,12 +53,15 @@ public class GenericPathHandlerTest {
             });
         }
     };
-    static {
+
+    @BeforeClass
+    public void setConf() {
+        Locale.setDefault(Locale.ROOT);
         Configuration.setConfiguration(configuration);
     }
 
     @BeforeTest
-    public void setConf() {
+    public void setContext() {
         WebApplicationContext context = new WebApplicationContext();
         Context.setCurrentThreadContext(context);
     }

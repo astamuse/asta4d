@@ -17,8 +17,10 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.JsonWriter;
+import javax.servlet.http.HttpServletResponse;
+
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.util.JsonUtil;
 
 public class JsonDataProvider implements ContentProvider<Object> {
 
@@ -46,13 +48,9 @@ public class JsonDataProvider implements ContentProvider<Object> {
     }
 
     @Override
-    public Object produce() throws Exception {
-        return data;
-    }
-
-    @Override
-    public Class<? extends ContentWriter<Object>> getContentWriter() {
-        return JsonWriter.class;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
+        response.setContentType("application/json");
+        JsonUtil.toJson(response.getOutputStream(), data);
     }
 
 }
