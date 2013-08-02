@@ -35,9 +35,9 @@ import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
 import com.astamuse.asta4d.snippet.resolve.SnippetResolver;
 import com.astamuse.asta4d.template.FileTemplateResolver;
 import com.astamuse.asta4d.template.TemplateResolver;
-import com.astamuse.asta4d.util.DefaultExecutorServiceFactory;
-import com.astamuse.asta4d.util.ExecutorServiceFactory;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
+import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
+import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
 
 public class Configuration {
 

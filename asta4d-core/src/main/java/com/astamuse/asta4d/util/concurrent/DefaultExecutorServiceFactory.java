@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.util.concurrent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,7 +28,9 @@ public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
 
     private AtomicInteger counter = new AtomicInteger();
 
-    private ExecutorService es = null;
+    private String threadName;
+
+    private int poolSize;
 
     public DefaultExecutorServiceFactory() {
         this(200);
@@ -38,26 +40,37 @@ public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
         this("asta4d", poolSize);
     }
 
-    public DefaultExecutorServiceFactory(final String threadName, int poolSize) {
+    public DefaultExecutorServiceFactory(String threadName, int poolSize) {
+        this.threadName = threadName;
+        this.poolSize = poolSize;
+    }
+
+    public String getThreadName() {
+        return threadName;
+    }
+
+    public void setThreadName(String threadName) {
+        this.threadName = threadName;
+    }
+
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
+    }
+
+    @Override
+    public ExecutorService createExecutorService() {
         final int instanceId = instanceCounter.incrementAndGet();
-        es = Executors.newFixedThreadPool(poolSize, new ThreadFactory() {
+        return Executors.newFixedThreadPool(poolSize, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 String name = threadName + "-" + instanceId + "-t-" + counter.incrementAndGet();
                 return new Thread(r, name);
             }
         });
-    }
-
-    @Override
-    public ExecutorService getExecutorService() {
-        return es;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        es.shutdown();
-        super.finalize();
     }
 
 }

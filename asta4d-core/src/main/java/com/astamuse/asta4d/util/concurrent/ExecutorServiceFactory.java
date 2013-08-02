@@ -15,10 +15,10 @@
  * 
  */
 
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.util.concurrent;
 
 import java.util.concurrent.ExecutorService;
 
 public interface ExecutorServiceFactory {
-    public ExecutorService getExecutorService();
+    public ExecutorService createExecutorService();
 }

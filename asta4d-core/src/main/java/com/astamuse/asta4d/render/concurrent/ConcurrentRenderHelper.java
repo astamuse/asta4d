@@ -27,10 +27,10 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.concurrent.SnippetExecutorServiceUtil;
 
 public class ConcurrentRenderHelper {
 
@@ -51,7 +51,7 @@ public class ConcurrentRenderHelper {
         String key = INSTANCE_KEY + docRef;
         ConcurrentRenderHelper instance = context.getData(key);
         if (instance == null) {
-            instance = new ConcurrentRenderHelper(Configuration.getConfiguration().getSnippetExecutorFactory().getExecutorService());
+            instance = new ConcurrentRenderHelper(SnippetExecutorServiceUtil.getExecutorService());
             context.setData(key, instance);
         }
         return instance;
