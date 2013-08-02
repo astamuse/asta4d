@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.redirect;
 
 import java.util.ArrayList;
 import java.util.Collections;

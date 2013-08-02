@@ -24,7 +24,7 @@ import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class DefaultStringTransformer implements ResultTransformer {
 

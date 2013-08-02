@@ -19,7 +19,7 @@ package com.astamuse.asta4d.misc.spring;
 
 import org.springframework.context.ApplicationContext;
 
-import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class SpringManagedInstanceAdapter implements DeclareInstanceAdapter {
 

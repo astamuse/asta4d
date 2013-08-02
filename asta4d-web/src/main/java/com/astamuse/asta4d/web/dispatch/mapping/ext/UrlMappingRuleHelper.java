@@ -38,8 +38,8 @@ import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultStringTransfo
 import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultTemplateNotFoundExceptionTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.HeaderInfoTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
-import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class UrlMappingRuleHelper {
 

@@ -27,7 +27,7 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.BinaryDataProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
-import com.astamuse.asta4d.web.util.BinaryDataUtil;
+import com.astamuse.asta4d.web.util.data.BinaryDataUtil;
 
 /**
  * A static resouce handler for service static resources such as js, css or

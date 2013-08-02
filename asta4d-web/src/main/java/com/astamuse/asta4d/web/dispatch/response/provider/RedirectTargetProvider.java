@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.util.RedirectUtil;
+import com.astamuse.asta4d.web.util.redirect.RedirectUtil;
 
 public class RedirectTargetProvider implements ContentProvider<RedirectDescriptor> {
 

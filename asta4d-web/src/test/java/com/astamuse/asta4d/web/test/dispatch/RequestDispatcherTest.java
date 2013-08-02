@@ -62,7 +62,7 @@ import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
-import com.astamuse.asta4d.web.util.DeclareInstanceAdapter;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
 

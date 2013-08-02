@@ -20,7 +20,7 @@ package com.astamuse.asta4d.web.dispatch.request.transformer;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class Asta4DPageTransformer implements ResultTransformer {
 

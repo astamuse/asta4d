@@ -20,7 +20,7 @@ package com.astamuse.asta4d.web.dispatch.mapping.ext;
 import java.util.List;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class HandyRuleWithHandler extends HandyRuleWithForward {
 

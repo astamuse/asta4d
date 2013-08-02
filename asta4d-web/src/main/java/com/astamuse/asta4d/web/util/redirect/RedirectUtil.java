@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.redirect;
 
 import static com.astamuse.asta4d.web.WebApplicationContext.SCOPE_FLASH;
 

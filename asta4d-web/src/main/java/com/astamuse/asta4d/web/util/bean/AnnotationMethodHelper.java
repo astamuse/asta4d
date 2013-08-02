@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.bean;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;

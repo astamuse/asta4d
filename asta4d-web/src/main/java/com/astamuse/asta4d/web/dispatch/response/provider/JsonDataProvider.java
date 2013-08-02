@@ -20,7 +20,7 @@ package com.astamuse.asta4d.web.dispatch.response.provider;
 import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.util.JsonUtil;
+import com.astamuse.asta4d.web.util.data.JsonUtil;
 
 public class JsonDataProvider implements ContentProvider<Object> {
 

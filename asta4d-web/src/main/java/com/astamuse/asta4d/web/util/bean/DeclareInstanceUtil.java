@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.bean;
 
 import java.util.List;
 

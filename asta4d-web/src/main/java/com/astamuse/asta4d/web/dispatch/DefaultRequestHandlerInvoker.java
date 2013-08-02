@@ -31,7 +31,7 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
-import com.astamuse.asta4d.web.util.AnnotationMethodHelper;
+import com.astamuse.asta4d.web.util.bean.AnnotationMethodHelper;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 

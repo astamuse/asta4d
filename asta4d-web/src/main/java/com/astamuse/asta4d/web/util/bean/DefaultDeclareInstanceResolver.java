@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.bean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
