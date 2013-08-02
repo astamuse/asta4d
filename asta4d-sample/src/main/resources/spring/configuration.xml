@@ -37,13 +37,13 @@
         </property>
         <property name="snippetInvoker" ref="snippetInvoker"/>
         <property name="snippetExecutorFactory">
-            <bean class="com.astamuse.asta4d.util.DefaultExecutorServiceFactory">
+            <bean class="com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory">
                 <constructor-arg index="0"><value>asta4d-sample-snippet</value></constructor-arg>
                 <constructor-arg index="1"><value>100</value></constructor-arg>
             </bean>
         </property>
         <property name="listExecutorFactory">
-            <bean class="com.astamuse.asta4d.util.DefaultExecutorServiceFactory">
+            <bean class="com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory">
                 <constructor-arg index="0"><value>asta4d-sample-snippet</value></constructor-arg>
                 <constructor-arg index="1"><value>200</value></constructor-arg>
             </bean>
