@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -156,31 +156,22 @@ public class Asta4dServlet extends HttpServlet {
         // I can do goto by while loop :)
         while (input == null) {
 
-            // find folder
-            String folderKey = retrieveConfigurationFileFolderKey();
-            if (folderKey == null) {
-                break;
-            }
-            String folder = retrieveConfigurationFileFolder(sc, folderKey);
-            if (folder == null) {
+            // find key
+            String fileKey = retrieveConfigurationFileNameKey();
+            if (fileKey == null) {
                 break;
             }
 
-            if (folder.endsWith("/") || folder.endsWith("\\")) {
-                // do nothing
-            } else {
-                folder = folder + "/";
+            // get path
+            String filePath = retrieveConfigurationFileName(sc, fileKey);
+            if (filePath == null) {
+                break;
             }
 
-            // retrieve files
-            for (String name : fileNames) {
-                File f = new File(folder + name);
-                if (f.exists() && f.isFile()) {
-                    input = new FileInputStream(f);
-                    fileType = FilenameUtils.getExtension(name);
-                    break;
-                }
-            }
+            // load file
+            File f = new File(filePath);
+            input = new FileInputStream(f);
+            fileType = FilenameUtils.getExtension(filePath);
             break;
         }
 
@@ -194,7 +185,7 @@ public class Asta4dServlet extends HttpServlet {
                     Enumeration<Object> keys = ps.keys();
                     while (keys.hasMoreElements()) {
                         String key = keys.nextElement().toString();
-                        PropertyUtils.setProperty(conf, key, ps.get(key));
+                        BeanUtils.setProperty(conf, key, ps.get(key));
                     }
                     break;
                 default:
@@ -213,11 +204,11 @@ public class Asta4dServlet extends HttpServlet {
         return new String[] { "asta4d.conf.properties" };
     }
 
-    protected String retrieveConfigurationFileFolderKey() {
-        return "asta4d.conf.folder.key";
+    protected String retrieveConfigurationFileNameKey() {
+        return "asta4d.conf";
     }
 
-    protected String retrieveConfigurationFileFolder(ServletConfig sc, String key) {
+    protected String retrieveConfigurationFileName(ServletConfig sc, String key) {
         return SystemPropertyUtil.retrievePropertyValue(sc, key, PropertyScope.ServletConfig, PropertyScope.JNDI,
                 PropertyScope.SystemProperty);
     }
