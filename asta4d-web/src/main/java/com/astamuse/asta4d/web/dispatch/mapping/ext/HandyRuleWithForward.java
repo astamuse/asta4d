@@ -19,15 +19,12 @@ package com.astamuse.asta4d.web.dispatch.mapping.ext;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.MultiResultHolder;
-import com.astamuse.asta4d.web.dispatch.request.transformer.HeaderInfoTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.JsonTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.request.transformer.StopTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 
 public class HandyRuleWithForward {
-
-    private final static HeaderInfoTransformer headerTransformer = new HeaderInfoTransformer();
 
     private final static JsonTransformer jsonTransformer = new JsonTransformer();
 
@@ -48,7 +45,7 @@ public class HandyRuleWithForward {
 
     public HandyRuleWithForward forward(Object result, String targetPath, int status) {
         MultiResultHolder mrh = new MultiResultHolder();
-        mrh.addResult(new HeaderInfoProvider(new HeaderInfo(status)));
+        mrh.addResult(new HeaderInfoProvider(status));
         mrh.addResult(targetPath);
         return this._forward(result, mrh);
     }
@@ -74,6 +71,6 @@ public class HandyRuleWithForward {
     }
 
     public void rest() {
-        rule.getResultTransformerList().add(headerTransformer);
+        rule.getResultTransformerList().add(new StopTransformer());
     }
 }

@@ -25,7 +25,6 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.BinaryDataProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 import com.astamuse.asta4d.web.util.data.BinaryDataUtil;
 
@@ -104,8 +103,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     }
 
     private HeaderInfoProvider createSimpleHeaderResponse(int status) {
-        HeaderInfo header = new HeaderInfo(status);
-        HeaderInfoProvider provider = new HeaderInfoProvider(header);
+        HeaderInfoProvider provider = new HeaderInfoProvider(status);
         provider.setContinuable(false);
         return provider;
     }

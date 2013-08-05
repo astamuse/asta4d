@@ -58,9 +58,8 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
@@ -174,11 +173,11 @@ public class RequestDispatcherTest {
                 { "get", "/index-duplicated", 0, getExpectedPage("/index.html") },
                 { "get", "/body-only", 0, getExpectedPage("/bodyOnly.html") },
                 
-                { "get", "/go-redirect", 302, new RedirectTargetProvider(new RedirectDescriptor(302, "/go-redirect/ok", null))},
-                { "get", "/go-redirect-301", 301, new RedirectTargetProvider(new RedirectDescriptor(301, "/go-redirect/301", null))},
-                { "get", "/go-redirect-302", 302, new RedirectTargetProvider(new RedirectDescriptor(302, "/go-redirect/302", null))},
-                { "get", "/go-redirect-p", 301, new RedirectTargetProvider(new RedirectDescriptor(301, "/go-redirect/p", null))},
-                { "get", "/go-redirect-t", 302, new RedirectTargetProvider(new RedirectDescriptor(302, "/go-redirect/t", null))},
+                { "get", "/go-redirect", 302, new RedirectTargetProvider(302, "/go-redirect/ok", null)},
+                { "get", "/go-redirect-301", 301, new RedirectTargetProvider(301, "/go-redirect/301", null)},
+                { "get", "/go-redirect-302", 302, new RedirectTargetProvider(302, "/go-redirect/302", null)},
+                { "get", "/go-redirect-p", 301, new RedirectTargetProvider(301, "/go-redirect/p", null)},
+                { "get", "/go-redirect-t", 302, new RedirectTargetProvider(302, "/go-redirect/t", null)},
                 
                 { "delete", "/restapi", 401, null }, 
                 { "get", "/getjson", 0, new JsonDataProvider(new TestJsonObject(123))},
@@ -254,8 +253,8 @@ public class RequestDispatcherTest {
     public static class TestRestApiHandler {
 
         @RequestHandler
-        public HeaderInfo doDelete() {
-            return new HeaderInfo(401);
+        public HeaderInfoProvider doDelete() {
+            return new HeaderInfoProvider(401);
         }
     }
 

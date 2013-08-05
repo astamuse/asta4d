@@ -18,14 +18,14 @@
 package com.astamuse.asta4d.web.dispatch.request.transformer;
 
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 
 public class DefaultTemplateNotFoundExceptionTransformer implements ResultTransformer {
 
     @Override
     public Object transformToContentProvider(Object result) {
         if (result instanceof TemplateNotFoundException) {
-            return new HeaderInfo(404);
+            return new HeaderInfoProvider(404, false);
         } else {
             return null;
         }

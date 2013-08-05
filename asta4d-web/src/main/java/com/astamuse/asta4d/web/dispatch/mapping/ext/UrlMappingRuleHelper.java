@@ -36,7 +36,6 @@ import com.astamuse.asta4d.web.dispatch.request.transformer.Asta4DPageTransforme
 import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultExceptionTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultStringTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultTemplateNotFoundExceptionTransformer;
-import com.astamuse.asta4d.web.dispatch.request.transformer.HeaderInfoTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
@@ -360,7 +359,6 @@ public class UrlMappingRuleHelper {
             // add the last insured transformers
             transformerList.add(new DefaultTemplateNotFoundExceptionTransformer());
             transformerList.add(new DefaultExceptionTransformer());
-            transformerList.add(new HeaderInfoTransformer());
             transformerList.add(new Asta4DPageTransformer());
 
             rule.setResultTransformerList(transformerList);

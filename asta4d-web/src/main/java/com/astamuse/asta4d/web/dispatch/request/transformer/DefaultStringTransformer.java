@@ -22,7 +22,6 @@ import java.net.HttpURLConnection;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
@@ -52,9 +51,9 @@ public class DefaultStringTransformer implements ResultTransformer {
                         }
                     }
                 }
-                RedirectDescriptor rd = new RedirectDescriptor(status, path, null);
                 RedirectTargetProvider provider = DeclareInstanceUtil.createInstance(RedirectTargetProvider.class);
-                provider.setDescriptor(rd);
+                provider.setStatus(status);
+                provider.setTargetPath(path);
                 return provider;
             } else {// asta4d page
                 try {

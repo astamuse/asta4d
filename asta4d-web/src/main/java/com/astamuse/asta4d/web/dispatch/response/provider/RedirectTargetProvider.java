@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
+import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,30 +47,64 @@ public class RedirectTargetProvider implements ContentProvider<RedirectDescripto
         dataList.add(flashScopeData);
     }
 
-    private RedirectDescriptor descriptor;
+    private int status;
+    private String targetPath;
+    private Map<String, Object> flashScopeData;
 
     public RedirectTargetProvider() {
         //
     }
 
-    public RedirectTargetProvider(RedirectDescriptor descriptor) {
-        this.descriptor = descriptor;
+    public RedirectTargetProvider(String targetPath) {
+        this(targetPath, null);
     }
 
-    public void setDescriptor(RedirectDescriptor descriptor) {
-        this.descriptor = descriptor;
+    public RedirectTargetProvider(String targetPath, Map<String, Object> flashScopeData) {
+        this(HttpURLConnection.HTTP_MOVED_TEMP, targetPath, flashScopeData);
+    }
+
+    public RedirectTargetProvider(int status, String targetPath, Map<String, Object> flashScopeData) {
+        this.targetPath = targetPath;
+        this.flashScopeData = flashScopeData;
+        this.setStatus(status);
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        if (status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_MOVED_TEMP) {
+            this.status = status;
+        } else {
+            this.status = HttpURLConnection.HTTP_MOVED_TEMP;
+        }
+    }
+
+    public String getTargetPath() {
+        return targetPath;
+    }
+
+    public void setTargetPath(String targetPath) {
+        this.targetPath = targetPath;
+    }
+
+    public Map<String, Object> getFlashScopeData() {
+        return flashScopeData;
+    }
+
+    public void setFlashScopeData(Map<String, Object> flashScopeData) {
+        this.flashScopeData = flashScopeData;
     }
 
     @Override
     public boolean isContinuable() {
-        return descriptor.getTargetPath() == null;
+        return targetPath == null;
     }
 
     @Override
     public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
-        RedirectDescriptor rd = (RedirectDescriptor) descriptor;
-        String url = rd.getTargetPath();
-        Map<String, Object> flashScopeData = rd.getFlashScopeData();
+        String url = targetPath;
         if (url == null) {
             addFlashScopeData(flashScopeData);
         } else {
@@ -93,7 +128,7 @@ public class RedirectTargetProvider implements ContentProvider<RedirectDescripto
                 throw new RuntimeException("illegal redirct url:" + url);
             }
 
-            response.setStatus(descriptor.getStatus());
+            response.setStatus(status);
             response.addHeader("Location", url);
         }
     }
