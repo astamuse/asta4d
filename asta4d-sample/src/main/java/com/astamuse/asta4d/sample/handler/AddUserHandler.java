@@ -18,14 +18,14 @@
 package com.astamuse.asta4d.sample.handler;
 
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 
 public class AddUserHandler {
 
     @RequestHandler
-    public HeaderInfo doAdd(String newUserName) {
+    public HeaderInfoProvider doAdd(String newUserName) {
         // some logic that should add a new user by the given name
         // ...
-        return new HeaderInfo(200);
+        return new HeaderInfoProvider(200);
     }
 }

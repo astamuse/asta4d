@@ -23,7 +23,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectDescriptor;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 
 public class FormValidateHandler {
@@ -53,7 +52,7 @@ public class FormValidateHandler {
             flashScopeData.put("bloodtype", bloodtype);
             flashScopeData.put("nameErrMsg", nameErrMsg);
             flashScopeData.put("ageErrMsg", ageErrMsg);
-            return new RedirectTargetProvider(new RedirectDescriptor("/app/form/input", flashScopeData));
+            return new RedirectTargetProvider("/app/form/input", flashScopeData);
         }
     }
 }
