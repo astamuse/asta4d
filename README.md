@@ -183,6 +183,19 @@ which includes more detailed user guide which is for our employees.
 
     
 ## Release Notes
+-   0.8.6
+    
+    ADD
+    - Some debug friendly message
+    - Redirect now can specify code 301 or 302
+    - Allow initialize asta4d Configuration from external properties file
+    
+    FIX
+    - Refactor request chain process, now we can perfectly handle request chain
+    - A bug that post process of request interceptor will be executed multiple times
+    - BinaryDataUtil does not handle file path correctly
+    - Context does not be initialized before dispatch
+
 -   0.7.24
     
     ADD
