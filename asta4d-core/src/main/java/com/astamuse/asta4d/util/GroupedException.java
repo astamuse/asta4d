@@ -23,6 +23,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * we use this Exception to combine multiple exceptions to a single one
+ * 
+ * @author e-ryu
+ * 
+ */
 public class GroupedException extends RuntimeException {
 
     /**
@@ -38,18 +44,18 @@ public class GroupedException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer("There are multiple exceptions ocurred. Please check them one by one.\n");
         for (Exception ex : exceptionList) {
-            sb.append(ex.getMessage()).append("\n");
+            sb.append(ex.getClass().getName()).append(":").append(ex.getMessage()).append("\n");
         }
         return sb.toString();
     }
 
     @Override
     public String getLocalizedMessage() {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer("There are multiple exceptions ocurred. Please check them one by one.\n");
         for (Exception ex : exceptionList) {
-            sb.append(ex.getLocalizedMessage()).append("\n");
+            sb.append(ex.getClass().getName()).append(":").append(ex.getLocalizedMessage()).append("\n");
         }
         return sb.toString();
     }
@@ -57,22 +63,28 @@ public class GroupedException extends RuntimeException {
     @Override
     public void printStackTrace() {
         for (Exception ex : exceptionList) {
+            System.err.println(ex.getClass().getName() + ":");
             ex.printStackTrace();
         }
+        System.err.println();
     }
 
     @Override
     public void printStackTrace(PrintStream s) {
         for (Exception ex : exceptionList) {
+            s.println(ex.getClass().getName() + ":");
             ex.printStackTrace(s);
         }
+        s.println();
     }
 
     @Override
     public void printStackTrace(PrintWriter s) {
         for (Exception ex : exceptionList) {
+            s.println(ex.getClass().getName() + ":");
             ex.printStackTrace(s);
         }
+        s.println();
     }
 
     @Override
