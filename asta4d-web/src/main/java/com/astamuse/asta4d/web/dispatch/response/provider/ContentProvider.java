@@ -17,13 +17,14 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import javax.servlet.http.HttpServletResponse;
+
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public interface ContentProvider<T> {
 
     public boolean isContinuable();
 
-    public T produce() throws Exception;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception;
 
-    public Class<? extends ContentWriter<T>> getContentWriter();
 }

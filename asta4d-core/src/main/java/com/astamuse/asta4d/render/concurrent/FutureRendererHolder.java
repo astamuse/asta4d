@@ -21,13 +21,22 @@ import com.astamuse.asta4d.render.Renderer;
 
 public class FutureRendererHolder {
 
+    String renderDeclaration;
     String snippetRefId;
     Renderer renderer;
 
-    public FutureRendererHolder(String snippetRefId, Renderer renderer) {
+    public FutureRendererHolder(String renderDeclaration, String snippetRefId, Renderer renderer) {
         super();
         this.snippetRefId = snippetRefId;
         this.renderer = renderer;
+    }
+
+    public String getRenderDeclaration() {
+        return renderDeclaration;
+    }
+
+    public void setRenderDeclaration(String renderDeclaration) {
+        this.renderDeclaration = renderDeclaration;
     }
 
     public String getSnippetRefId() {

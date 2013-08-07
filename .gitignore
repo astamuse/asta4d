@@ -1,5 +1,11 @@
 /target
 
+/asta4d-archetype/target
+/asta4d-archetype/src
+
+/asta4d-archetype-prototype/target
+/asta4d-archetype-prototype/src
+
 /asta4d-core/target
 /asta4d-core/test-output
 

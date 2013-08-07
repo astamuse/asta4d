@@ -19,7 +19,7 @@ package com.astamuse.asta4d.web.dispatch.request.transformer;
 
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class JsonTransformer implements ResultTransformer {
 

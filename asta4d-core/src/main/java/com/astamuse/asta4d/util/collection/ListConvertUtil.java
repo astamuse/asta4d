@@ -34,6 +34,7 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
+import com.astamuse.asta4d.util.concurrent.ListExecutorServiceUtil;
 
 public class ListConvertUtil {
 
@@ -128,7 +129,7 @@ public class ListConvertUtil {
                 return Context.with(newContext, new Callable<List<Future<T>>>() {
                     @Override
                     public List<Future<T>> call() throws Exception {
-                        ExecutorService executor = conf.getListExecutorFactory().getExecutorService();
+                        ExecutorService executor = ListExecutorServiceUtil.getExecutorService();
                         List<Future<T>> futureList = new LinkedList<>();
                         int index = 0;
                         for (S obj : sourceList) {

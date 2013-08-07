@@ -15,8 +15,8 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.bean;
 
-public interface DeclareInstanceAdapter {
-    public Object asTargetInstance();
+public interface DeclareInstanceResolver {
+    public Object resolve(Object declaration);
 }

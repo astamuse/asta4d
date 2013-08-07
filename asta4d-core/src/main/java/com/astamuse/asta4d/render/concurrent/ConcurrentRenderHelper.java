@@ -27,10 +27,10 @@ import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.concurrent.SnippetExecutorServiceUtil;
 
 public class ConcurrentRenderHelper {
 
@@ -51,13 +51,14 @@ public class ConcurrentRenderHelper {
         String key = INSTANCE_KEY + docRef;
         ConcurrentRenderHelper instance = context.getData(key);
         if (instance == null) {
-            instance = new ConcurrentRenderHelper(Configuration.getConfiguration().getSnippetExecutorFactory().getExecutorService());
+            instance = new ConcurrentRenderHelper(SnippetExecutorServiceUtil.getExecutorService());
             context.setData(key, instance);
         }
         return instance;
     }
 
-    public void submitWithContext(final Context context, final String snippetRef, final Callable<Renderer> caller) {
+    public void submitWithContext(final Context context, final String renderDeclaration, final String snippetRef,
+            final Callable<Renderer> caller) {
         cs.submit(new Callable<FutureRendererHolder>() {
             @Override
             public FutureRendererHolder call() throws Exception {
@@ -75,10 +76,11 @@ public class ConcurrentRenderHelper {
                  */
                 try {
                     Renderer renderer = Context.with(context, caller);
-                    return new FutureRendererHolder(snippetRef, renderer);
+                    return new FutureRendererHolder(renderDeclaration, snippetRef, renderer);
                 } catch (Exception ex) {
-                    logger.error("", ex);
-                    throw ex;
+                    Exception nex = new Exception("Error occured when execute rendering:[" + renderDeclaration + "]", ex);
+                    logger.error("", nex);
+                    throw nex;
                 }
             }
         });

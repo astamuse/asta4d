@@ -15,8 +15,10 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.util.concurrent;
 
-public interface DeclareInstanceResolver {
-    public Object resolve(Object declaration);
+import java.util.concurrent.ExecutorService;
+
+public interface ExecutorServiceFactory {
+    public ExecutorService createExecutorService();
 }

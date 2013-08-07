@@ -1,7 +1,8 @@
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.EmptyContentWriter;
+import javax.servlet.http.HttpServletResponse;
+
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class EmptyContentProvider implements ContentProvider<Object> {
 
@@ -11,13 +12,8 @@ public class EmptyContentProvider implements ContentProvider<Object> {
     }
 
     @Override
-    public Object produce() throws Exception {
-        return null;
-    }
-
-    @Override
-    public Class<? extends ContentWriter<Object>> getContentWriter() {
-        return EmptyContentWriter.class;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
+        // do nothing
     }
 
 }

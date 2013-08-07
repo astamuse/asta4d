@@ -21,7 +21,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.astamuse.asta4d.web.util.DeclareInstanceResolver;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 
 public class SpringManagedInstanceResolver implements DeclareInstanceResolver, ApplicationContextAware {
 

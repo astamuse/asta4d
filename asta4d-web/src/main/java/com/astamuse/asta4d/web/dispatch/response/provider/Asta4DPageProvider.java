@@ -17,28 +17,30 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import com.astamuse.asta4d.Page;
-import com.astamuse.asta4d.web.dispatch.response.writer.Asta4DPageWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class Asta4DPageProvider implements ContentProvider<Page> {
 
-    private String path;
+    public final static String AttrBodyOnly = Asta4DPageProvider.class.getName() + "##bodyOnly";
+
+    private Page page;
 
     public Asta4DPageProvider() {
-        this("");
+        this.page = null;
     }
 
-    public Asta4DPageProvider(String path) {
-        this.path = path;
+    public Asta4DPageProvider(Page page) {
+        this.page = page;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
+    public void setPage(Page page) {
+        this.page = page;
     }
 
     @Override
@@ -46,14 +48,28 @@ public class Asta4DPageProvider implements ContentProvider<Page> {
         return false;
     }
 
-    @Override
-    public Page produce() throws Exception {
-        return new Page(path);
+    protected final static String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
+
+    protected String getContentType(Document doc) {
+        Elements elems = doc.select("meta[http-equiv=Content-Type]");
+        if (elems.size() == 0) {
+            return DEFAULT_CONTENT_TYPE;
+        } else {
+            return elems.get(0).attr("content");
+        }
     }
 
     @Override
-    public Class<? extends ContentWriter<Page>> getContentWriter() {
-        return Asta4DPageWriter.class;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
+        Document doc = page.getRenderedDocument();
+        response.setContentType(getContentType(doc));
+
+        // TODO we should try to retrieve the content type
+        if (currentRule.hasAttribute(AttrBodyOnly)) {
+            response.getOutputStream().write(doc.body().html().getBytes("UTF-8"));
+        } else {
+            response.getOutputStream().write(doc.outerHtml().getBytes("UTF-8"));
+        }
     }
 
 }

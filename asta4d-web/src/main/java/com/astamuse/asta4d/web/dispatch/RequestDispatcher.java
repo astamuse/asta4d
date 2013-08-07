@@ -17,9 +17,7 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +35,8 @@ import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
-import com.astamuse.asta4d.web.util.RedirectUtil;
+import com.astamuse.asta4d.web.util.redirect.RedirectUtil;
 
 public class RequestDispatcher {
 
@@ -96,10 +91,8 @@ public class RequestDispatcher {
         retrieveFlashScopeData(request);
 
         List<ContentProvider<?>> requestResult = handleRequest(rule);
-        ContentWriter cw;
         for (ContentProvider<?> cp : requestResult) {
-            cw = (ContentWriter<?>) DeclareInstanceUtil.createInstance(cp.getContentWriter());
-            cw.writeResponse(rule, response, cp.produce());
+            cp.produce(rule, response);
         }
     }
 
@@ -110,89 +103,16 @@ public class RequestDispatcher {
      * @throws Exception
      */
     private List<ContentProvider<?>> handleRequest(UrlMappingRule currentRule) throws Exception {
-        // TODO should we handle the exceptions?
         Context context = Context.getCurrentThreadContext();
         RequestHandlerInvokerFactory factory = WebApplicationConfiguration.getWebApplicationConfiguration()
                 .getRequestHandlerInvokerFactory();
         RequestHandlerInvoker invoker = factory.getInvoker();
 
-        Object requestHandlerResult;
-        try {
-            requestHandlerResult = invoker.invoke(currentRule);
-        } catch (InvocationTargetException ex) {
-            logger.error(currentRule.toString(), ex);
-            requestHandlerResult = ex.getTargetException();
-        } catch (Exception ex) {
-            logger.error(currentRule.toString(), ex);
-            requestHandlerResult = ex;
-        }
+        List<ContentProvider<?>> cpList = invoker.invoke(currentRule);
+        context.setData(KEY_REQUEST_HANDLER_RESULT, cpList);
 
-        context.setData(KEY_REQUEST_HANDLER_RESULT, requestHandlerResult);
-
-        List<ContentProvider<?>> cpList = new ArrayList<>();
-
-        if (requestHandlerResult instanceof List) {
-            List<?> resultList = (List<?>) requestHandlerResult;
-            ContentProvider<?> cp;
-            for (Object result : resultList) {
-                if (result instanceof ContentProvider<?>) {
-                    cpList.add((ContentProvider<?>) result);
-                } else {
-                    cp = ResultTransformerUtil.transform(requestHandlerResult, currentRule.getResultTransformerList());
-                    cpList.add(cp);
-                }
-            }
-        } else {
-            ContentProvider<?> cp = ResultTransformerUtil.transform(requestHandlerResult, currentRule.getResultTransformerList());
-            cpList.add(cp);
-        }
         return cpList;
-        /*
-                Method m = requestHandlerResult == null ? null : AnnotationMethodHelper.findMethod(requestHandlerResult, ContentProvider.class);
-                if (m == null) {
-                    List<ResultDescriptor> list = currentRule.getContentProviderMap();
-                    Class<?> cls;
-                    Object instanceIdentifier;
-                    ResultDescriptor matchResult = null;
-                    for (ResultDescriptor rd : list) {
-                        cls = rd.getResultTypeIdentifier();
-                        instanceIdentifier = rd.getResultInstanceIdentifier();
-                        if (cls == null && instanceIdentifier == null) {
-                            // if there is an exception, it should no be matched to the
-                            // default rule.
-                            if (requestHandlerResult instanceof Exception) {
-                                continue;
-                            } else {
-                                matchResult = rd;
-                                break;
-                            }
-                        } else if (requestHandlerResult == null) {
-                            continue;
-                        } else if (cls == null) {
-                            if (instanceIdentifier.equals(requestHandlerResult)) {
-                                matchResult = rd;
-                                break;
-                            }
-                        } else if (cls.isAssignableFrom(requestHandlerResult.getClass())) {
-                            matchResult = rd;
-                            break;
-                        }
-                    }
-                    if (matchResult == null) {
-                        if (requestHandlerResult instanceof Exception) {
-                            throw (Exception) requestHandlerResult;
-                        } else {
-                            throw new NullPointerException("request result should not be null!!![" + currentRule.toString() + "]");
-                        }
-                    } else {
-                        return matchResult;
-                    }
-                } else {
-                    ContentProvider cp = m.getAnnotation(ContentProvider.class);
-                    ContentWriter cw = cp.writer().newInstance();
-                    return new ResultDescriptor(requestHandlerResult, requestHandlerResult, cw);
-                }
-        */
+
     }
 
     private void writePathVarToContext(WebApplicationContext context, Map<String, Object> pathVarMap) {

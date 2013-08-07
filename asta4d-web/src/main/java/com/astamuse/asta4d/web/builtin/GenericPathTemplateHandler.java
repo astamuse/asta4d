@@ -1,9 +1,9 @@
 package com.astamuse.asta4d.web.builtin;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
 
 public class GenericPathTemplateHandler extends AbstractGenericPathHandler {
 
@@ -15,7 +15,14 @@ public class GenericPathTemplateHandler extends AbstractGenericPathHandler {
     }
 
     @RequestHandler
-    public String handle(HttpServletRequest request, UrlMappingRule currentRule) {
-        return super.convertPath(request, currentRule);
+    public Object handle(UrlMappingRule currentRule) {
+        String path = super.convertPath(currentRule);
+        if (path == null) {
+            WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
+            String url = context.getAccessURI();
+            return new TemplateNotFoundException("Generically convert from path:" + url);
+        } else {
+            return path;
+        }
     }
 }

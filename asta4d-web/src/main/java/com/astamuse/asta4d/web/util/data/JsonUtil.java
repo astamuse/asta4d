@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util;
+package com.astamuse.asta4d.web.util.data;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -9,7 +9,7 @@
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>0.7.24</version>
+  <version>0.8.6</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
@@ -52,6 +52,7 @@
       <module>asta4d-web</module>
       <module>asta4d-spring</module>
       <module>asta4d-sample</module>
+      <module>asta4d-archetype-prototype</module>
       <module>asta4d-archetype</module>
       <module>asta4d-doc</module>
   </modules>

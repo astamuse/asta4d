@@ -35,7 +35,7 @@ public class SimpleCase {
         String ostr = null;
         String cstr = null;
         try {
-            Page originPage = new Page("/com/astamuse/asta4d/test/render/templates/" + templateFileName);
+            Page originPage = Page.buildFromPath("/com/astamuse/asta4d/test/render/templates/" + templateFileName);
             ostr = revert2comparableString(originPage);
 
             cstr = revert2comparableString("/com/astamuse/asta4d/test/render/confirms/" + confirmFileName);

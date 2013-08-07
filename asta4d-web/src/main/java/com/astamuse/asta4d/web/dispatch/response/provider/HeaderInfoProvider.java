@@ -17,12 +17,24 @@
 
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
-import com.astamuse.asta4d.web.dispatch.response.writer.ContentWriter;
-import com.astamuse.asta4d.web.dispatch.response.writer.HeaderWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
-public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
-    private HeaderInfo info;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+
+public class HeaderInfoProvider implements ContentProvider<Object> {
+
+    private HashMap<String, String> headerMap;
+
+    private List<Cookie> cookieList;
+
+    private Integer status;
 
     private boolean continuable = true;
 
@@ -30,21 +42,41 @@ public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
         this(null);
     }
 
-    public HeaderInfoProvider(HeaderInfo result) {
-        this.info = result;
+    public HeaderInfoProvider(Integer status) {
+        this.status = status;
+        headerMap = new HashMap<>();
+        cookieList = new ArrayList<>();
     }
 
-    public HeaderInfo getInfo() {
-        return info;
+    public HeaderInfoProvider(Integer status, boolean continuable) {
+        this.status = status;
+        this.continuable = continuable;
+        headerMap = new HashMap<>();
+        cookieList = new ArrayList<>();
     }
 
-    public void setInfo(HeaderInfo info) {
-        this.info = info;
+    public Integer getStatus() {
+        return status;
     }
 
-    @Override
-    public HeaderInfo produce() {
-        return info;
+    public void addHeader(String name, String value) {
+        headerMap.put(name, value);
+    }
+
+    public void addCookie(String name, String value) {
+        cookieList.add(new Cookie(name, value));
+    }
+
+    public void addCookie(Cookie cookie) {
+        cookieList.add(cookie);
+    }
+
+    public HashMap<String, String> getHeaderMap() {
+        return headerMap;
+    }
+
+    public List<Cookie> getCookieList() {
+        return cookieList;
     }
 
     @Override
@@ -57,7 +89,18 @@ public class HeaderInfoProvider implements ContentProvider<HeaderInfo> {
     }
 
     @Override
-    public Class<? extends ContentWriter<HeaderInfo>> getContentWriter() {
-        return HeaderWriter.class;
+    public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
+        if (status != null) {
+            response.setStatus(status);
+        }
+
+        Set<Entry<String, String>> headers = headerMap.entrySet();
+        for (Entry<String, String> h : headers) {
+            response.addHeader(h.getKey(), h.getValue());
+        }
+
+        for (Cookie c : cookieList) {
+            response.addCookie(c);
+        }
     }
 }

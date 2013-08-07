@@ -15,22 +15,20 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.response.writer;
+package com.astamuse.asta4d.web.dispatch.request.transformer;
 
-import javax.servlet.http.HttpServletResponse;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
+import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 
-import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-
-public class DefaultContentWriter implements ContentWriter {
+public class DefaultTemplateNotFoundExceptionTransformer implements ResultTransformer {
 
     @Override
-    public void writeResponse(UrlMappingRule currentRule, HttpServletResponse response, Object content) throws Exception {
-        if (content != null) {
-            response.getOutputStream().write(content.toString().getBytes());
+    public Object transformToContentProvider(Object result) {
+        if (result instanceof TemplateNotFoundException) {
+            return new HeaderInfoProvider(404, false);
         } else {
-            response.getOutputStream().write("##null##".getBytes());
+            return null;
         }
-
     }
 
 }

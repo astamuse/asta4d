@@ -18,18 +18,14 @@
 package com.astamuse.asta4d.web.dispatch.request.transformer;
 
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
-import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfo;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
-import com.astamuse.asta4d.web.util.DeclareInstanceUtil;
 
-public class HeaderInfoTransformer implements ResultTransformer {
+public class DefaultExceptionTransformer implements ResultTransformer {
 
     @Override
     public Object transformToContentProvider(Object result) {
-        if (result instanceof HeaderInfo) {
-            HeaderInfoProvider provider = DeclareInstanceUtil.createInstance(HeaderInfoProvider.class);
-            provider.setInfo((HeaderInfo) result);
-            return provider;
+        if (result instanceof Throwable) {
+            return new HeaderInfoProvider(500, false);
         } else {
             return null;
         }

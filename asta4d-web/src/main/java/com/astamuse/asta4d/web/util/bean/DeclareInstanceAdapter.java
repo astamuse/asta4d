@@ -15,10 +15,8 @@
  * 
  */
 
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.web.util.bean;
 
-import java.util.concurrent.ExecutorService;
-
-public interface ExecutorServiceFactory {
-    public ExecutorService getExecutorService();
+public interface DeclareInstanceAdapter {
+    public Object asTargetInstance();
 }

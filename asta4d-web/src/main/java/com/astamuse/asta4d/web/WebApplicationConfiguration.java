@@ -26,7 +26,7 @@ import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
-import com.astamuse.asta4d.web.util.DeclareInstanceResolver;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 
 public class WebApplicationConfiguration extends Configuration {
 

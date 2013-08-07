@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
+import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
@@ -30,7 +31,7 @@ public class SpringWebPageViewResolver implements ViewResolver {
     @Override
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         try {
-            return new SpringWebPageView(new Asta4DPageProvider(viewName));
+            return new SpringWebPageView(new Asta4DPageProvider(Page.buildFromPath(viewName)));
         } catch (TemplateException e) {
             return null;
         }

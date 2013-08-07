@@ -148,7 +148,7 @@ Thus, we created Asta4D.
 
 ## Quick start
 We are working for creating a maven archetype, before it finished, the quickest way to start with Asta4D is 
-[download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_0.4.2.zip)
+[download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_0.8.6.zip)
 as a prototype. Asta4D projects is structured by Maven 3, so you have to install Maven 3 at first. After install Maven 3, extract your
 downloaded file and go to the root foler(the folder with pom.xml file), start the sample project by the following command:
 
@@ -157,7 +157,7 @@ downloaded file and go to the root foler(the folder with pom.xml file), start th
     ```
 
 Then you can access the sample project by http://localhost:8080, there are source samples shown, it is a good start from reading the samples.
-After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/com/astamuse/asta4d/sample/controller/SampleController.java,
+After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/com/astamuse/asta4d/sample/UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
 One last thing, do not forget modify the groupId and artifactId in pom file, as well as the version. 
@@ -171,19 +171,31 @@ which includes more detailed user guide which is for our employees.
 -   **Q**: Who developed Asta4D and what its current status is?
     
     **A**: Asta4D is powered by [astamuse company Ltd.](http://www.astamuse.co.jp/) locating at Tokyo Japan. We are concentrating on global innovation support 
-    and develop Asta4D for our own services. Currently, Asta4D is used by our new service development and is still in earlier 
-    alpha release status.
+    and develop Asta4D for our own services. Currently, Asta4D is used by our new service development and is still in alpha release status.
 
--   **Q**: Why are there Spring MVC Framework dependencies in Asta4D?
+-   **Q**: Why are there Spring dependencies in Asta4D?
     
     **A**: Our initial purpose is to drive up our new service development, so we have to consider a balance of progression and schedule 
     between Asta4D’s development and our service’s development. So we decided to start Asta4D’s work basing on Spring MVC 
-    therefore Spring MVC can do the things that we have no time to do. Currently, we have removed 90% dependencies from Spring MVC, 
-    we believe now is a good time to push a preview version of Asta4D to the public and we are still making effort to complete the 
-    functionalities of Asta4D.
+    therefore Spring MVC can do the things that we have no time to do. Currently, we have removed dependencies from Spring, but since we
+    started our work from Spring MVC and therefore Asta4D can work perfectly with Spring, so our sample project is still using Spring as a sample of
+    integration of Spring bean management. If you don't need Spring, simply change the dependency of "asta4d-spring" to "asta4d-web".
 
     
 ## Release Notes
+-   0.8.6
+    
+    ADD
+    - Some debug friendly message
+    - Redirect now can specify code 301 or 302
+    - Allow initialize asta4d Configuration from external properties file
+    
+    FIX
+    - Refactor request chain process, now we can perfectly handle request chain
+    - A bug that post process of request interceptor will be executed multiple times
+    - BinaryDataUtil does not handle file path correctly
+    - Context does not be initialized before dispatch
+
 -   0.7.24
     
     ADD

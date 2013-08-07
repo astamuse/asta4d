@@ -129,26 +129,33 @@ public class RenderUtil {
                 context.setCurrentRenderingElement(renderTarget);
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
                 refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
-                if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL)) {
-                    ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
-                    final Context newContext = context.clone();
-                    final String declaration = renderDeclaration;
-                    crHelper.submitWithContext(newContext, refId, new Callable<Renderer>() {
-                        @Override
-                        public Renderer call() throws Exception {
-                            return invoker.invoke(declaration);
-                        }
-                    });
-                    element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_WAITING);
-                } else {
-                    renderer = invoker.invoke(renderDeclaration);
-                    applySnippetResultToElement(doc, refId, element, renderTarget, renderer);
+                try {
+                    if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL)) {
+                        ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
+                        final Context newContext = context.clone();
+                        final String declaration = renderDeclaration;
+                        crHelper.submitWithContext(newContext, declaration, refId, new Callable<Renderer>() {
+                            @Override
+                            public Renderer call() throws Exception {
+                                return invoker.invoke(declaration);
+                            }
+                        });
+                        element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_WAITING);
+                    } else {
+                        renderer = invoker.invoke(renderDeclaration);
+                        applySnippetResultToElement(doc, refId, element, renderTarget, renderer);
+                    }
+                } catch (SnippetNotResovlableException | SnippetInvokeException e) {
+                    throw e;
+                } catch (Exception e) {
+                    SnippetInvokeException se = new SnippetInvokeException("Error occured when executing rendering on [" +
+                            renderDeclaration + "]", e);
+                    throw se;
                 }
                 context.setCurrentRenderingElement(null);
             } else {// if skip snippet
                 element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
             }
-
         }
 
         // load embed nodes which blocking parents has finished
@@ -174,9 +181,12 @@ public class RenderUtil {
             applySnippets(doc);
         } else {
             ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
+            String delcaration = null;
             if (crHelper.hasUnCompletedTask()) {
+                delcaration = null;
                 try {
                     FutureRendererHolder holder = crHelper.take();
+                    delcaration = holder.getRenderDeclaration();
                     String ref = holder.getSnippetRefId();
                     String reSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF,
                             ref);
@@ -190,7 +200,8 @@ public class RenderUtil {
                     applySnippetResultToElement(doc, ref, element, target, holder.getRenderer());
                     applySnippets(doc);
                 } catch (InterruptedException | ExecutionException e) {
-                    throw new SnippetInvokeException("Concurrent snippet invocation failed.", e);
+                    throw new SnippetInvokeException("Concurrent snippet invocation failed" +
+                            (delcaration == null ? "" : " on [" + delcaration + "]"), e);
                 }
             }
         }

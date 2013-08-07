@@ -4,15 +4,15 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.7.24</version>
+      <version>0.8.6</version>
   </parent>
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-sample</artifactId>
-  <version>0.7.24.1</version>
+  <version>0.8.6.1</version>
   <packaging>war</packaging>
 
-  <name>com.asta4d.sample.asta4d-sample</name>
+  <name>com.astamuse.asta4d-sample</name>
   <description>sample of asta4d framework, shows how to use asta4d</description>
 
     <dependencies>
@@ -45,21 +45,6 @@
 
         <build>
           <plugins>
-	        <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-archetype-plugin</artifactId>
-              <version>2.2</version>
-              <executions>
-                <execution>
-                  <id>archetype-run</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>create-from-project</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-
             <plugin>
               <artifactId>maven-antrun-plugin</artifactId>
               <version>1.7</version>
@@ -71,23 +56,16 @@
                   </goals>
                   <configuration>
                     <target>
-                      <copy todir="../asta4d-archetype/src/test">
-                        <fileset dir="target/generated-sources/archetype/src/test" includes="**/*" />
+                      <delete dir="../asta4d-archetype-prototype/src"/>
+                      <copy todir="../asta4d-archetype-prototype/src">
+                        <fileset dir="src" includes="**/*" />
                       </copy>
-                      <copy todir="../asta4d-archetype/src/main/resources/META-INF">
-                        <fileset dir="target/generated-sources/archetype/src/main/resources/META-INF" includes="**/*" />
-                      </copy>
-                      <copy todir="../asta4d-archetype/src/main/resources/archetype-resources/src">
-                        <fileset dir="target/generated-sources/archetype/src/main/resources/archetype-resources/src" includes="**/*" />
-                      </copy>
-                      <copy tofile="../asta4d-archetype/src/main/resources/archetype-resources/pom.xml" file="target/generated-sources/archetype/src/main/resources/archetype-resources/kickoff.pom.xml" />
                     </target>
                   </configuration>
                 </execution>
               </executions>
             </plugin>
-			
-			<plugin>
+            <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-resources-plugin</artifactId>
               <version>2.6</version>
