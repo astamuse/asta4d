@@ -21,7 +21,7 @@ public class BinaryDataUtil {
                 throw new RuntimeException(e);
             }
         } else if (path.startsWith("classpath:")) {
-            String cls = path.substring("classpath".length());
+            String cls = path.substring("classpath:".length());
             return classLoader.getResourceAsStream(cls);
         } else {
             return servletContext.getResourceAsStream(path);
