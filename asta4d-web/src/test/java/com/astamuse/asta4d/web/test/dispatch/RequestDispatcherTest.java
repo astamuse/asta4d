@@ -65,6 +65,8 @@ import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
 
+    private NullPointerException TestExceptionInstance = new NullPointerException();
+
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
     private static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
@@ -153,6 +155,12 @@ public class RequestDispatcherTest {
         
         rules.add("/getjson").handler(new TestJsonHandler(123)).json();
         rules.add("/rewrite-attr").json();
+        rules.add("/jsonerror").handler(new Object(){
+            @RequestHandler
+            public Object foo(){
+                throw TestExceptionInstance;
+            }
+        }).json();
         
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
@@ -186,7 +194,11 @@ public class RequestDispatcherTest {
                 { "delete", "/restapi", 401, null }, 
                 { "get", "/getjson", 0, new JsonDataProvider(new TestJsonObject(123))},
                 { "get", "/rewrite-attr", 0, new JsonDataProvider(new TestJsonObject(358)) },
-
+                { "get", "/jsonerror", 0, new JsonDataProvider(TestExceptionInstance) },
+                
+                //TODO it seems that there is missing the way to declare return status for json transforming when exceptions occur 
+                //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
+                
                 { "get", "/nofile", 404, getExpectedPage("/notfound")},
                 { "get", "/template-not-exists", 404, getExpectedPage("/notfound")},
 
