@@ -20,6 +20,9 @@ package com.astamuse.asta4d.web.dispatch;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.GenericInterceptor;
@@ -93,6 +96,8 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
         private final List<ResultTransformer> resultTransformerList;
 
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
         public RequestHandlerInvokeExecutor(List<Object> requestHandlerList, List<ResultTransformer> resultTransformerList) {
             this.requestHandlerList = requestHandlerList;
             this.resultTransformerList = resultTransformerList;
@@ -107,6 +112,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
                 try {
                     result = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);
                 } catch (Throwable t) {
+                    logger.error(t.getMessage(), t);
                     result = t;
                 }
                 if (result != null) {
