@@ -269,10 +269,11 @@ public class UrlMappingRuleHelper {
         for (UrlMappingRule rule : arrangedRuleList) {
             requestHandlerList = new ArrayList<>();
             for (RequestHandlerHolder handlerHolder : defaultHandlerList) {
+                Object handler = DeclareInstanceUtil.createInstance(handlerHolder.handler);
                 if (handlerHolder.attribute == null) {
-                    requestHandlerList.add(handlerHolder.handler);
+                    requestHandlerList.add(handler);
                 } else if (rule.hasAttribute(handlerHolder.attribute)) {
-                    requestHandlerList.add(handlerHolder.handler);
+                    requestHandlerList.add(handler);
                 }
             }
             requestHandlerList.addAll(rule.getHandlerList());

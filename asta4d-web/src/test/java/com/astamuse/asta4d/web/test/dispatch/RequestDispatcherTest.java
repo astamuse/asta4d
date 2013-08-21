@@ -120,6 +120,10 @@ public class RequestDispatcherTest {
             }
         });
 
+        // this is for a bug that missing DelcaredInstanceUtil.createInstance
+        // calling when add default handler
+        rules.addDefaultRequestHandler("rewrite-attr", DoNothingHandler.class);
+
         rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(358));
 
         rules.addRequestHandlerInterceptor(new CounterInterceptorAdapter());
@@ -300,6 +304,13 @@ public class RequestDispatcherTest {
         @RequestHandler
         public Object foo() {
             throw new RuntimeException();
+        }
+    }
+
+    public static class DoNothingHandler {
+        @RequestHandler
+        public void foo() {
+            //
         }
     }
 
