@@ -20,14 +20,16 @@ package com.astamuse.asta4d;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.util.DelegatedContextMap;
 
 public class Context {
 
@@ -45,11 +47,11 @@ public class Context {
 
     private final static ThreadLocal<Context> instanceHolder = new ThreadLocal<>();
 
-    private final static Map<String, Object> globalMap = new ConcurrentHashMap<>();
+    private final static ContextMap globalMap = DelegatedContextMap.createBySingletonConcurrentHashMap();
 
     // this map is not thought to be used in multi threads since the instance of
     // Context is thread single.
-    private Map<String, Map<String, Object>> scopeMap = new HashMap<>();
+    private Map<String, ContextMap> scopeMap = new HashMap<>();
 
     // private List
 
@@ -75,12 +77,8 @@ public class Context {
     }
 
     public void setData(String scope, String key, Object data) {
-        Map<String, Object> dataMap = acquireMapForScope(scope);
-        if (data == null) {
-            dataMap.remove(key);
-        } else {
-            dataMap.put(key, data);
-        }
+        ContextMap dataMap = acquireMapForScope(scope);
+        dataMap.put(key, data);
     }
 
     public <T> T getData(String key) {
@@ -92,7 +90,7 @@ public class Context {
         if (scope.equals(SCOPE_ATTR)) {
             return (T) retrieveElementAttr(key);
         } else {
-            Map<String, Object> dataMap = acquireMapForScope(scope);
+            ContextMap dataMap = acquireMapForScope(scope);
             return (T) dataMap.get(key);
         }
     }
@@ -148,12 +146,12 @@ public class Context {
         return value;
     }
 
-    protected final Map<String, Object> acquireMapForScope(String scope) {
-        Map<String, Object> dataMap = scopeMap.get(scope);
+    protected final ContextMap acquireMapForScope(String scope) {
+        ContextMap dataMap = scopeMap.get(scope);
         if (dataMap == null) {
             dataMap = createMapForScope(scope);
             if (dataMap == null) {
-                dataMap = new HashMap<>();
+                dataMap = DelegatedContextMap.createByNonThreadSafeHashMap();
             }
             scopeMap.put(scope, dataMap);
         }
@@ -166,14 +164,17 @@ public class Context {
      * @param scope
      * @return
      */
-    protected Map<String, Object> createMapForScope(String scope) {
-        Map<String, Object> map = null;
+    protected ContextMap createMapForScope(String scope) {
+        ContextMap map = null;
         switch (scope) {
         case SCOPE_GLOBAL:
             map = globalMap;
             break;
+        case SCOPE_EXT_ATTR:
+            map = DelegatedContextMap.createBySingletonConcurrentHashMap();
+            break;
         default:
-            map = new HashMap<>();
+            map = DelegatedContextMap.createByNonThreadSafeHashMap();
         }
         return map;
     }
@@ -194,14 +195,10 @@ public class Context {
     }
 
     protected void copyScopesTo(Context newCtx) {
-        for (String scope : scopeMap.keySet()) {
-            newCtx.scopeMap.put(scope, getScopeDataMapCopy(scope));
+        Set<Entry<String, ContextMap>> entrys = scopeMap.entrySet();
+        for (Entry<String, ContextMap> entry : entrys) {
+            newCtx.scopeMap.put(entry.getKey(), entry.getValue().createClone());
         }
-    }
-
-    protected Map<String, Object> getScopeDataMapCopy(String scope) {
-        Map<String, Object> map = acquireMapForScope(scope);
-        return new HashMap<>(map);
     }
 
     public final static void with(Context context, Runnable runner) {
