@@ -108,6 +108,16 @@ public class AttributeSetter implements ElementSetter {
         protected abstract void configure(Element elem, String attrName, Object attrValue);
     }
 
+    /**
+     * this value is for test purpose
+     */
+    private String originalAttrName;
+
+    /**
+     * this value is for test purpose
+     */
+    private Object originalValue;
+
     private String attrName;
 
     private Object attrValue;
@@ -124,6 +134,10 @@ public class AttributeSetter implements ElementSetter {
      */
     public AttributeSetter(String attr, Object value) {
         super();
+
+        this.originalAttrName = attr;
+        this.originalValue = value;
+
         if (attr.equalsIgnoreCase("+class")) {
             this.actionType = ActionType.ADDCLASS;
             this.attrName = "class";
@@ -173,6 +187,14 @@ public class AttributeSetter implements ElementSetter {
     @Override
     public String toString() {
         return actionType + " attribute " + attrName + " for value [" + attrValue + "]";
+    }
+
+    public String getOriginalAttrName() {
+        return originalAttrName;
+    }
+
+    public Object getOriginalValue() {
+        return originalValue;
     }
 
 }

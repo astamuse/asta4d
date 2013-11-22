@@ -69,4 +69,25 @@ public class TextSetter implements ElementSetter {
         return text;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TextSetter other = (TextSetter) obj;
+        if (text == null) {
+            if (other.text != null)
+                return false;
+        } else if (!text.equals(other.text))
+            return false;
+        return true;
+    }
+
 }
