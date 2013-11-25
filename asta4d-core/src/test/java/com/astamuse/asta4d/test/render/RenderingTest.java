@@ -107,11 +107,21 @@ public class RenderingTest extends BaseTest {
         }
 
         public Renderer listTextRendering() {
-            List<String> list = Arrays.asList("a", "b", "c");
             Renderer renderer = new GoThroughRenderer();
             // there was a bug when a selector was not found in list rendering
             renderer.add("#not-exists-element", "I love this game!");
-            renderer.add("div#test", list);
+
+            List<String> textList = Arrays.asList("a", "b", "c");
+            renderer.add("div#test-text", textList);
+
+            List<Long> longList = Arrays.asList(1L, 2L, 3L);
+            renderer.add("div#test-long", longList);
+
+            List<Integer> integerList = Arrays.asList(10, 20, 30);
+            renderer.add("div#test-integer", integerList);
+
+            List<Boolean> booleanList = Arrays.asList(true, false, false);
+            renderer.add("div#test-boolean", booleanList);
             return renderer;
         }
 

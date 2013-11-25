@@ -36,6 +36,10 @@ public class TransformerFactory {
         Transformer<?> transformer;
         if (action instanceof String) {
             transformer = new ElementSetterTransformer(new TextSetter(action.toString()));
+        } else if (action instanceof Long) {
+            transformer = new ElementSetterTransformer(new TextSetter(action.toString()));
+        } else if (action instanceof Integer) {
+            transformer = new ElementSetterTransformer(new TextSetter(action.toString()));
         } else if (action instanceof ElementSetter) {
             transformer = new ElementSetterTransformer((ElementSetter) action);
         } else if (action instanceof Renderer) {
@@ -44,6 +48,9 @@ public class TransformerFactory {
             transformer = new FutureTransformer((Future<?>) action);
         } else if (action instanceof Element) {
             transformer = new ElementTransformer((Element) action);
+        } else if (action instanceof Boolean) {// we think this case is rare, so
+                                               // put it at last
+            transformer = new ElementSetterTransformer(new TextSetter(action.toString()));
         } else {
             String msg = "Unsupported type found in transformer generation:" + action.getClass().getName();
             Asta4DWarningException awe = new Asta4DWarningException(msg);
