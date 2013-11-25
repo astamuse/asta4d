@@ -454,6 +454,22 @@ public class Renderer {
         return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer(logMessage)) : this;
     }
 
+    private static String convert2String(Long value) {
+        return value == null ? null : String.valueOf(value);
+    }
+
+    private static String convert2String(Integer value) {
+        return value == null ? null : String.valueOf(value);
+    }
+
+    private static String convert2String(Boolean value) {
+        return value == null ? null : String.valueOf(value);
+    }
+
+    private static String convert2String(Object value) {
+        return value == null ? null : String.valueOf(value);
+    }
+
     /**
      * See {@link #create(String, String)}.
      * 
@@ -464,7 +480,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Long value) {
-        return create(selector, String.valueOf(value));
+        return create(selector, convert2String(value));
     }
 
     /**
@@ -477,7 +493,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Integer value) {
-        return create(selector, String.valueOf(value));
+        return create(selector, convert2String(value));
     }
 
     /**
@@ -490,7 +506,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Boolean value) {
-        return create(selector, String.valueOf(value));
+        return create(selector, convert2String(value));
     }
 
     /**
@@ -525,8 +541,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        String s = value == null ? null : value.toString();
-        return create(selector, new TextSetter(s));
+        return create(selector, convert2String(value));
     }
 
     /**
@@ -540,8 +555,8 @@ public class Renderer {
      *            a long value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, long value) {
-        return create(selector, attr, String.valueOf(value));
+    public final static Renderer create(String selector, String attr, Long value) {
+        return create(selector, attr, convert2String(value));
     }
 
     /**
@@ -555,8 +570,8 @@ public class Renderer {
      *            an int value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, int value) {
-        return create(selector, attr, String.valueOf(value));
+    public final static Renderer create(String selector, String attr, Integer value) {
+        return create(selector, attr, convert2String(value));
     }
 
     /**
@@ -570,8 +585,8 @@ public class Renderer {
      *            a boolean value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, boolean value) {
-        return create(selector, attr, String.valueOf(value));
+    public final static Renderer create(String selector, String attr, Boolean value) {
+        return create(selector, attr, convert2String(value));
     }
 
     /**
