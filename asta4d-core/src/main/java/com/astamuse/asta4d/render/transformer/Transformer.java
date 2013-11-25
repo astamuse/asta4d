@@ -35,7 +35,7 @@ public abstract class Transformer<T> {
 
     @Override
     public String toString() {
-        return "[" + this.content.toString() + "]";
+        return this.getClass().getName() + ":[" + this.content.toString() + "]";
     }
 
     public T getContent() {
