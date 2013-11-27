@@ -555,8 +555,8 @@ public class Renderer {
      *            a long value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, Long value) {
-        return create(selector, attr, convert2String(value));
+    public final static Renderer create(String selector, String attr, long value) {
+        return create(selector, attr, String.valueOf(value));
     }
 
     /**
@@ -570,8 +570,8 @@ public class Renderer {
      *            an int value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, Integer value) {
-        return create(selector, attr, convert2String(value));
+    public final static Renderer create(String selector, String attr, int value) {
+        return create(selector, attr, String.valueOf(value));
     }
 
     /**
@@ -585,8 +585,8 @@ public class Renderer {
      *            a boolean value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, Boolean value) {
-        return create(selector, attr, convert2String(value));
+    public final static Renderer create(String selector, String attr, boolean value) {
+        return create(selector, attr, String.valueOf(value));
     }
 
     /**
