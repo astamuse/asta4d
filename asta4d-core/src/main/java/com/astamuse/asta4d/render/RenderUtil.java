@@ -319,7 +319,7 @@ public class RenderUtil {
                 if (creationInfo == null) {
                     creationInfo = "";
                 } else {
-                    creationInfo = " at [" + creationInfo + "]";
+                    creationInfo = " at [ " + creationInfo + " ]";
                 }
                 logger.warn(
                         "There is no element found for selector [{}]{}, if it is deserved, try Renderer#disableMissingSelectorWarning() "
