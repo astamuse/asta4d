@@ -165,59 +165,6 @@ public class Renderer {
     }
 
     /**
-     * See {@link #add(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            a long value that will be treated as a String
-     * @return the created renderer for chain calling
-     */
-    public Renderer add(String selector, Long value) {
-        return add(create(selector, value));
-    }
-
-    /**
-     * See {@link #add(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            an int value that will be treated as a String
-     * @return the created renderer for chain calling
-     */
-    public Renderer add(String selector, Integer value) {
-        return add(create(selector, value));
-    }
-
-    /**
-     * See {@link #add(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            a boolean value that will be treated as a String
-     * @return the created renderer for chain calling
-     */
-    public Renderer add(String selector, boolean value) {
-        return add(create(selector, value));
-    }
-
-    /**
-     * Create a renderer for text rendering by given parameter and add it to the
-     * current renderer. See {@link #create(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            a String value that will be rendered
-     * @return the created renderer for chain calling
-     */
-    public Renderer add(String selector, String value) {
-        return add(create(selector, value));
-    }
-
-    /**
      * Create a renderer for text rendering by given parameter and add it to the
      * current renderer. See {@link #create(String, Object)}.
      * 
@@ -471,67 +418,11 @@ public class Renderer {
     }
 
     /**
-     * See {@link #create(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            a long value that will be treated as a String
-     * @return the created renderer
-     */
-    public final static Renderer create(String selector, Long value) {
-        return create(selector, convert2String(value));
-    }
-
-    /**
-     * See {@link #create(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            an int value that will be treated as a String
-     * @return the created renderer
-     */
-    public final static Renderer create(String selector, Integer value) {
-        return create(selector, convert2String(value));
-    }
-
-    /**
-     * See {@link #create(String, String)}.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            a boolean value that will be treated as a String
-     * @return the created renderer
-     */
-    public final static Renderer create(String selector, Boolean value) {
-        return create(selector, convert2String(value));
-    }
-
-    /**
      * Create a renderer for text by given parameter.
      * <p>
      * All child nodes of the target element specified by selector will be
-     * emptied and the given String value will be rendered as a single text node
-     * of the target element.
-     * 
-     * @param selector
-     *            a css selector
-     * @param value
-     *            a String value that will be rendered
-     * @return the created renderer
-     */
-    public final static Renderer create(String selector, String value) {
-        return create(selector, new TextSetter(value));
-    }
-
-    /**
-     * Create a renderer for text by given parameter.
-     * <p>
-     * All child nodes of the target element specified by selector will be
-     * emptied and the given String value will be rendered as a single text node
-     * of the target element.
+     * emptied and the given String value(Object#toString) will be rendered as a
+     * single text node of the target element.
      * 
      * @param selector
      *            a css selector
@@ -541,7 +432,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        return create(selector, convert2String(value));
+        return create(selector, new TextSetter(value));
     }
 
     /**

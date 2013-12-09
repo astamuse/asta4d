@@ -19,6 +19,8 @@ package com.astamuse.asta4d.render;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.render.test.TestableElementSetter;
+
 /**
  * A ChildReplacer will empty the target Element first, then add the new child
  * node to the target element.
@@ -26,7 +28,7 @@ import org.jsoup.nodes.Element;
  * @author e-ryu
  * 
  */
-public class ChildReplacer implements ElementSetter {
+public class ChildReplacer implements ElementSetter, TestableElementSetter {
 
     private Element newChild;
 
@@ -50,6 +52,11 @@ public class ChildReplacer implements ElementSetter {
     public String toString() {
         String s = "replace the children to:{\n" + newChild.toString() + "\n}";
         return s;
+    }
+
+    @Override
+    public Object retrieveTestableData() {
+        return newChild;
     }
 
 }

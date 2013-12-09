@@ -17,10 +17,12 @@
 
 package com.astamuse.asta4d.render;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.render.test.TestableElementSetter;
 import com.astamuse.asta4d.util.IdGenerator;
 
 /**
@@ -55,7 +57,7 @@ import com.astamuse.asta4d.util.IdGenerator;
  * @author e-ryu
  * 
  */
-public class AttributeSetter implements ElementSetter {
+public class AttributeSetter implements ElementSetter, TestableElementSetter {
 
     private static enum ActionType {
         SET {
@@ -189,12 +191,9 @@ public class AttributeSetter implements ElementSetter {
         return actionType + " attribute " + attrName + " for value [" + attrValue + "]";
     }
 
-    public String getOriginalAttrName() {
-        return originalAttrName;
-    }
-
-    public Object getOriginalValue() {
-        return originalValue;
+    @Override
+    public Object retrieveTestableData() {
+        return Pair.of(originalAttrName, originalValue);
     }
 
 }

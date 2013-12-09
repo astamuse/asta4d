@@ -35,8 +35,8 @@
 package com.astamuse.asta4d.render;
 
 /**
- * This Renderer will do nothing, the Rendering process will jump over a render
- * if it is a GoThroughRenderer.
+ * This Renderer will not do any actual rendering but change the rendering style
+ * in rendering process flow.
  * 
  * @author e-ryu
  * 
