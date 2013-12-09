@@ -1,10 +1,10 @@
 package com.astamuse.asta4d.render.test;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.render.AttributeSetter;
 import com.astamuse.asta4d.render.Renderer;
@@ -15,39 +15,71 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 public class RendererTester {
     private Renderer renderer;
 
-    public RendererTester(Renderer renderer) {
+    private RendererTester(Renderer renderer) {
         this.renderer = renderer;
     }
 
-    private List<Transformer<?>> retrieveNonAttrTransformer(String selector) {
+    public final static RendererTester forRenderer(Renderer renderer) {
+        return new RendererTester(renderer);
+    }
+
+    public final static List<RendererTester> forRendererList(List<Renderer> rendererList) {
+
+        return ListConvertUtil.transform(rendererList, new RowConvertor<Renderer, RendererTester>() {
+            @Override
+            public RendererTester convert(int rowIndex, Renderer obj) {
+                return new RendererTester(obj);
+            }
+        });
+
+    }
+
+    private List<List<Transformer<?>>> retrieveNonAttrTransformer(String selector) {
+
+        List<List<Transformer<?>>> rtnList = new LinkedList<>();
 
         List<Renderer> rendererList = renderer.asUnmodifiableList();
         for (Renderer r : rendererList) {
             if (r.getSelector().equals(selector)) {
                 List<Transformer<?>> list = r.getTransformerList();
                 if (list.isEmpty()) {
-                    return list;
+                    rtnList.add(list);
                 } else {
                     Transformer<?> t = list.get(0);
                     if (t.getContent() instanceof AttributeSetter) {
                         continue;
                     } else {
-                        return list;
+                        rtnList.add(list);
                     }
                 }
             }
         }
-        return Collections.emptyList();
+        return rtnList;
     }
 
-    // following are simple render value accessores for simple test cases
-    private Transformer<?> retrieveSingleTransformerOnSelector(String selector) {
-        List<Transformer<?>> list = retrieveNonAttrTransformer(selector);
+    private List<Transformer<?>> retrieveSingleTransformerListOnSelector(String selector) {
+        List<List<Transformer<?>>> list = retrieveNonAttrTransformer(selector);
         if (list.isEmpty()) {
             throw new RendererTestException("There is no value to be rendered for selector:[" + selector + "]");
         } else if (list.size() > 1) {
             throw new RendererTestException("There are more than one value to be rendered for selector:[" + selector +
-                    "], may be it is rendered as a list?");
+                    "], maybe it is rendered multiple times?");
+        } else {
+            return list.get(0);
+        }
+    }
+
+    // following are simple render value accessores for simple test cases
+    private Transformer<?> retrieveSingleTransformerOnSelector(String selector) {
+        List<Transformer<?>> list = retrieveSingleTransformerListOnSelector(selector);
+
+        if (list.isEmpty()) {
+            throw new RendererTestException("There is no value to be rendered for selector:[" + selector +
+                    "], maybe it is rendered as a empty list?");
+        } else if (list.size() > 1) {
+
+            throw new RendererTestException("There are more than one value to be rendered for selector:[" + selector +
+                    "], maybe it is rendered as a list?");
         } else {
             return list.get(0);
         }
@@ -56,10 +88,7 @@ public class RendererTester {
     @SuppressWarnings("rawtypes")
     public Object get(String selector) {
         Transformer t = retrieveSingleTransformerOnSelector(selector);
-        Object content = t.getContent();
-        if (content != null && content instanceof TestableElementSetter) {
-            content = ((TestableElementSetter) content).retrieveTestableData();
-        }
+        Object content = retrieveContentFromTransformer(t);
         return content;
     }
 
@@ -68,18 +97,27 @@ public class RendererTester {
     }
 
     public <T> List<T> getAsList(String selector, final Class<T> targetCls) {
-        List<Transformer<?>> list = retrieveNonAttrTransformer(selector);
+        List<Transformer<?>> list = retrieveSingleTransformerListOnSelector(selector);
         return ListConvertUtil.transform(list, new RowConvertor<Transformer<?>, T>() {
             @SuppressWarnings("unchecked")
             @Override
             public T convert(int rowIndex, Transformer<?> transformer) {
-                Object content = transformer.getContent();
-                if (content != null && content instanceof TestableElementSetter) {
-                    content = ((TestableElementSetter) content).retrieveTestableData();
-                }
+                Object content = retrieveContentFromTransformer(transformer);
                 return (T) content;
             }
         });
+    }
+
+    private Object retrieveContentFromTransformer(Transformer<?> transformer) {
+        Object content = transformer.getContent();
+        if (content != null && content instanceof TestableElementSetter) {
+            content = ((TestableElementSetter) content).retrieveTestableData();
+        }
+
+        if (content != null && content instanceof Element) {
+            content = new TestableElementWrapper((Element) content);
+        }
+        return content;
     }
 
     public String getAttr(String selector, String attr) {

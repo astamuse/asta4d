@@ -28,7 +28,6 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
-import com.astamuse.asta4d.render.test.RendererTester;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;
@@ -685,11 +684,6 @@ public class Renderer {
 
     public Renderer eableMissingSelectorWarning() {
         return this.add(new RenderActionRenderer(RenderActionStyle.ENABLE_MISSING_SELECTOR_WARNING));
-    }
-
-    // to Tester
-    public RendererTester toTester() {
-        return new RendererTester(this);
     }
 
 }
