@@ -120,11 +120,29 @@ public class RendererTester {
         return content;
     }
 
-    public String getAttr(String selector, String attr) {
-        return (String) getAttrAsObject(selector, attr);
+    public Object getAttr(String selector, String attr) {
+        return getAttrAsObject(selector, attr, false);
     }
 
-    public Object getAttrAsObject(String selector, String attr) {
+    /**
+     * This method is only for retrieving rendered value of "+class" and
+     * "-class" attr action
+     * 
+     * @param selector
+     * @param attr
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<String> getAttrAsList(String selector, String attr) {
+        if (attr.equals("+class") || attr.equals("-class")) {
+            return (List<String>) getAttrAsObject(selector, attr, true);
+        } else {
+            throw new RendererTestException("This method is only for retrieving rendered value of \"+class\" and \"-class\" attr action");
+        }
+
+    }
+
+    private Object getAttrAsObject(String selector, String attr, boolean allowList) {
         List<Renderer> rendererList = renderer.asUnmodifiableList();
         List<Object> valueList = new LinkedList<>();
         for (Renderer r : rendererList) {
@@ -152,10 +170,18 @@ public class RendererTester {
         if (valueList.isEmpty()) {
             throw new RendererTestException("There is no value to be rendered for attr:[" + attr + "] of selector:[" + selector + "]");
         } else if (valueList.size() > 1) {
-            throw new RendererTestException("There are more than one values(" + valueList.toString() + ") to be rendered for attr:[" +
-                    attr + "] of selector:[" + selector + "]");
+            if (allowList) {
+                return valueList;
+            } else {
+                throw new RendererTestException("There are more than one values(" + valueList.toString() + ") to be rendered for attr:[" +
+                        attr + "] of selector:[" + selector + "]");
+            }
         } else {
-            return valueList.get(0);
+            if (allowList) {
+                return valueList;
+            } else {
+                return valueList.get(0);
+            }
         }
 
     }

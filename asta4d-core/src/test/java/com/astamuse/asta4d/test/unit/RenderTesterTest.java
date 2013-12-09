@@ -2,6 +2,7 @@ package com.astamuse.asta4d.test.unit;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
@@ -146,4 +147,62 @@ public class RenderTesterTest extends BaseTest {
         }
 
     }
+
+    @Test
+    public void testGetAttr() {
+        Renderer render = new GoThroughRenderer();
+        render.add("#id", "+class", "yyy");
+        render.add("#id", "-class", "zzz");
+
+        render.add("#id", "+class", "xxx");
+
+        render.add("#id", "value", "hg");
+        render.add("#id", "href", null);
+
+        render.add("#X", "value", new Date(123456L));
+
+        RendererTester tester = RendererTester.forRenderer(render);
+        Assert.assertEquals(tester.getAttrAsList("#id", "+class"), Arrays.asList("yyy", "xxx"));
+        Assert.assertEquals(tester.getAttr("#id", "-class"), "zzz");
+        Assert.assertEquals(tester.getAttr("#id", "value"), "hg");
+        Assert.assertEquals(tester.getAttr("#id", "href"), null);
+        Assert.assertEquals(tester.getAttr("#X", "value"), new Date(123456L));
+
+    }
+
+    @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "There is no value to be rendered for attr(.*)")
+    public void testGetAttrNotFound() {
+        Renderer render = new GoThroughRenderer();
+        render.add("#id", "+class", "yyy");
+
+        RendererTester tester = RendererTester.forRenderer(render);
+
+        Assert.assertEquals(tester.getAttr("#id", "href"), null);
+
+    }
+
+    @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "(.*)more than one values(.*)")
+    public void testGetAttrFindMore() {
+        Renderer render = new GoThroughRenderer();
+        render.add("#id", "value", "yyy");
+        render.add("#id", "value", "zzz");
+
+        RendererTester tester = RendererTester.forRenderer(render);
+
+        Assert.assertEquals(tester.getAttr("#id", "value"), "zzz");
+
+    }
+
+    @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "This method is only for retrieving rendered value of \"\\+class\" and \"\\-class\" attr action")
+    public void testGetAttrFindMore2() {
+        Renderer render = new GoThroughRenderer();
+        render.add("#id", "value", "yyy");
+        render.add("#id", "value", "zzz");
+
+        RendererTester tester = RendererTester.forRenderer(render);
+
+        Assert.assertEquals(tester.getAttrAsList("#id", "value"), Arrays.asList("yyy", "zzz"));
+
+    }
+
 }
