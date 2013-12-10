@@ -50,6 +50,24 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
  */
 public class Renderer {
 
+    /**
+     * This value is for old source compatibility.set it to false will return to
+     * the old style action which require a ClearNode to remove node and will
+     * also throw NullPointerException if the specified value is null.
+     * 
+     * We will remove this flag at sometime after we migrated all of our
+     * existing sources.
+     */
+    private final static boolean treatNullAsRemoveNode;
+    static {
+        String treat = System.getProperty("com.astamuse.asta4d.render.treatNullAsRemoveNode");
+        if (treat == null) {
+            treatNullAsRemoveNode = true;
+        } else {
+            treatNullAsRemoveNode = Boolean.parseBoolean(treat);
+        }
+    }
+
     private final static boolean saveCallstackInfo;
     static {
         saveCallstackInfo = Configuration.getConfiguration().isSaveCallstackInfoOnRendererCreation();
@@ -164,6 +182,59 @@ public class Renderer {
     }
 
     /**
+     * See {@link #add(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a long value that will be treated as a String
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Long value) {
+        return add(create(selector, value));
+    }
+
+    /**
+     * See {@link #add(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            an int value that will be treated as a String
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Integer value) {
+        return add(create(selector, value));
+    }
+
+    /**
+     * See {@link #add(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a boolean value that will be treated as a String
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, boolean value) {
+        return add(create(selector, value));
+    }
+
+    /**
+     * Create a renderer for text rendering by given parameter and add it to the
+     * current renderer. See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a String value that will be rendered
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, String value) {
+        return add(create(selector, value));
+    }
+
+    /**
      * Create a renderer for text rendering by given parameter and add it to the
      * current renderer. See {@link #create(String, Object)}.
      * 
@@ -175,6 +246,19 @@ public class Renderer {
      */
     public Renderer add(String selector, Object value) {
         return add(create(selector, value));
+    }
+
+    /**
+     * Create a renderer for predefined {@link SpecialRenderer}s.
+     * 
+     * @param selector
+     *            a css selector
+     * @param specialRenderer
+     *            a predefined special renderer
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, SpecialRenderer specialRenderer) {
+        return add(create(selector, specialRenderer));
     }
 
     /**
@@ -400,20 +484,60 @@ public class Renderer {
         return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer(logMessage)) : this;
     }
 
-    private static String convert2String(Long value) {
-        return value == null ? null : String.valueOf(value);
+    /**
+     * See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a long value that will be treated as a String
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Long value) {
+        return createForObject(selector, value);
     }
 
-    private static String convert2String(Integer value) {
-        return value == null ? null : String.valueOf(value);
+    /**
+     * See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            an int value that will be treated as a String
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Integer value) {
+        return createForObject(selector, value);
     }
 
-    private static String convert2String(Boolean value) {
-        return value == null ? null : String.valueOf(value);
+    /**
+     * See {@link #create(String, String)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a boolean value that will be treated as a String
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Boolean value) {
+        return createForObject(selector, value);
     }
 
-    private static String convert2String(Object value) {
-        return value == null ? null : String.valueOf(value);
+    /**
+     * Create a renderer for text by given parameter.
+     * <p>
+     * All child nodes of the target element specified by selector will be
+     * emptied and the given String value will be rendered as a single text node
+     * of the target element.
+     * 
+     * @param selector
+     *            a css selector
+     * @param value
+     *            a String value that will be rendered
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, String value) {
+        return createForObject(selector, value);
     }
 
     /**
@@ -431,7 +555,28 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        return create(selector, new TextSetter(value));
+        return createForObject(selector, value);
+    }
+
+    private final static Renderer createForObject(String selector, Object value) {
+        if (treatNullAsRemoveNode && value == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, new TextSetter(value));
+        }
+    }
+
+    /**
+     * Create a renderer for predefined {@link SpecialRenderer}s.
+     * 
+     * @param selector
+     *            a css selector
+     * @param specialRenderer
+     *            a predefined special renderer
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, SpecialRenderer specialRenderer) {
+        return new Renderer(selector, specialRenderer.getTransformer());
     }
 
     /**
@@ -529,7 +674,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Element elem) {
-        return new Renderer(selector, new ElementTransformer(elem));
+        if (treatNullAsRemoveNode && elem == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new ElementTransformer(elem));
+        }
     }
 
     /**
@@ -545,7 +694,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, ElementSetter setter) {
-        return new Renderer(selector, new ElementSetterTransformer(setter));
+        if (treatNullAsRemoveNode && setter == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new ElementSetterTransformer(setter));
+        }
     }
 
     /**
@@ -561,7 +714,21 @@ public class Renderer {
      * @return the created renderer for chain calling
      */
     public final static Renderer create(String selector, Renderer renderer) {
-        return new Renderer(selector, new RendererTransformer(renderer));
+        if (treatNullAsRemoveNode && renderer == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new RendererTransformer(renderer));
+        }
+    }
+
+    /**
+     * This method is a convenience to creating an instance of
+     * {@link GoThroughRenderer}
+     * 
+     * @return a {@link GoThroughRenderer} instance
+     */
+    public final static Renderer create() {
+        return new GoThroughRenderer();
     }
 
     /**
@@ -579,11 +746,15 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Iterable<?> list) {
-        List<Transformer<?>> transformerList = new LinkedList<>();
-        for (Object obj : list) {
-            transformerList.add(TransformerFactory.generateTransformer(obj));
+        if (treatNullAsRemoveNode && list == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            List<Transformer<?>> transformerList = new LinkedList<>();
+            for (Object obj : list) {
+                transformerList.add(TransformerFactory.generateTransformer(obj));
+            }
+            return new Renderer(selector, transformerList);
         }
-        return new Renderer(selector, transformerList);
     }
 
     /**
@@ -601,7 +772,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, RowConvertor<S, T> convertor) {
-        return create(selector, ListConvertUtil.transform(list, convertor));
+        if (treatNullAsRemoveNode && list == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, ListConvertUtil.transform(list, convertor));
+        }
     }
 
     /**
@@ -622,10 +797,14 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (Configuration.getConfiguration().isBlockParallelListRendering()) {
-            return create(selector, ListConvertUtil.transform(list, convertor));
+        if (treatNullAsRemoveNode && list == null) {
+            return new Renderer(selector, new ElementRemover());
         } else {
-            return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+            if (Configuration.getConfiguration().isBlockParallelListRendering()) {
+                return create(selector, ListConvertUtil.transform(list, convertor));
+            } else {
+                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+            }
         }
     }
 
@@ -648,7 +827,11 @@ public class Renderer {
      */
     @Deprecated
     public final static <S, T> Renderer create(String selector, Iterable<S> list, DataConvertor<S, T> convertor) {
-        return create(selector, ListConvertUtil.transform(list, convertor));
+        if (treatNullAsRemoveNode && list == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, ListConvertUtil.transform(list, convertor));
+        }
     }
 
     /**
@@ -673,15 +856,37 @@ public class Renderer {
      */
     @Deprecated
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelDataConvertor<S, T> convertor) {
-        return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+        if (treatNullAsRemoveNode && list == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            if (Configuration.getConfiguration().isBlockParallelListRendering()) {
+                return create(selector, ListConvertUtil.transform(list, convertor));
+            } else {
+                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+            }
+        }
     }
 
     // Render action control
 
+    /**
+     * 
+     * @return a renderer reference for chain calling
+     * 
+     * @see {@link RenderActionStyle#DISABLE_MISSING_SELECTOR_WARNING}
+     * 
+     */
     public Renderer disableMissingSelectorWarning() {
         return this.add(new RenderActionRenderer(RenderActionStyle.DISABLE_MISSING_SELECTOR_WARNING));
     }
 
+    /**
+     * 
+     * @return a renderer reference for chain calling
+     * 
+     * @see {@link RenderActionStyle#ENABLE_MISSING_SELECTOR_WARNING}
+     * 
+     */
     public Renderer eableMissingSelectorWarning() {
         return this.add(new RenderActionRenderer(RenderActionStyle.ENABLE_MISSING_SELECTOR_WARNING));
     }

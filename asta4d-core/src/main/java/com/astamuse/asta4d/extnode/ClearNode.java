@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.extnode;
 
+import com.astamuse.asta4d.render.SpecialRenderer;
+
 /**
  * 
  * A ClearNode will be removed after rendering. There is no warranty about when
@@ -25,9 +27,15 @@ package com.astamuse.asta4d.extnode;
  * Further, a formal html element with attribute "afd:clear" will be treated as
  * a ClearNode too.
  * 
- * @author e-ryu
+ * This class has been deprecated and you don't need to use this class for
+ * removing nodes, {@link SpecialRenderer#Clear} can be used for remove a
+ * certain node, and a null value passed to Renderer will remove the target node
+ * too.
  * 
+ * @author e-ryu
+ * @see SpecialRenderer#Clear
  */
+@Deprecated
 public class ClearNode extends GroupNode {
 
     public ClearNode() {
