@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.sample.snippet;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +31,6 @@ import org.jsoup.parser.Tag;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
-import com.astamuse.asta4d.extnode.ClearNode;
 import com.astamuse.asta4d.extnode.EmbedNode;
 import com.astamuse.asta4d.extnode.SnippetNode;
 import com.astamuse.asta4d.render.ChildReplacer;
@@ -51,7 +52,7 @@ public class ComplicatedSnippet {
         render.add("ul#childreplacer", replacer);
 
         // 該当 Element を削除します。
-        render.add("ul#clearnode", new ClearNode());
+        render.add("ul#clearnode", Clear);
 
         // レンダリング結果をデバッグ出力します。
         render.addDebugger("current element");

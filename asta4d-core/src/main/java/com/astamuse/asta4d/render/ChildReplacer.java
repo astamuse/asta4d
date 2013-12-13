@@ -52,4 +52,29 @@ public class ChildReplacer implements ElementSetter {
         return s;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((newChild == null) ? 0 : newChild.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ChildReplacer other = (ChildReplacer) obj;
+        if (newChild == null) {
+            if (other.newChild != null)
+                return false;
+        } else if (!newChild.outerHtml().equals(other.newChild.outerHtml()))
+            return false;
+        return true;
+    }
+
 }

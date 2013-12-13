@@ -21,6 +21,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.render.test.TestableElementSetter;
 import com.astamuse.asta4d.util.Asta4DWarningException;
 
 /**
@@ -30,23 +31,26 @@ import com.astamuse.asta4d.util.Asta4DWarningException;
  * @author e-ryu
  * 
  */
-public class TextSetter implements ElementSetter {
+public class TextSetter implements ElementSetter, TestableElementSetter {
 
     private final static Logger logger = LoggerFactory.getLogger(TextSetter.class);
 
-    private String text;
+    private Object originContent;
+
+    private String renderText;
 
     /**
      * Constructor
      * 
-     * @param text
-     *            the text wanted to be rendered
+     * @param content
+     *            the content wanted to be rendered
      */
-    public TextSetter(String text) {
-        this.text = fixContent(text);
+    public TextSetter(Object content) {
+        this.originContent = content;
+        this.renderText = content2Str(content);
     }
 
-    private final static String fixContent(String content) {
+    private final static String content2Str(Object content) {
         if (content == null) {
             String msg = "Trying to render a null String";
             // we want to get a information of where the null is passed, so we
@@ -54,19 +58,48 @@ public class TextSetter implements ElementSetter {
             Exception ex = new Asta4DWarningException(msg);
             logger.warn(msg, ex);
         }
-
-        return content == null ? "" : content;
+        return content == null ? "" : content.toString();
     }
 
     @Override
     public void set(Element elem) {
         elem.empty();
-        elem.appendText(text);
+        elem.appendText(renderText);
     }
 
     @Override
     public String toString() {
-        return text;
+        return renderText;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((originContent == null) ? 0 : originContent.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TextSetter other = (TextSetter) obj;
+        if (originContent == null) {
+            if (other.originContent != null)
+                return false;
+        } else if (!originContent.equals(other.originContent))
+            return false;
+        return true;
+    }
+
+    @Override
+    public Object retrieveTestableData() {
+        return originContent;
     }
 
 }

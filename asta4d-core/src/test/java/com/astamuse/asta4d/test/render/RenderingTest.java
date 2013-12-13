@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.test.render;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,13 +26,13 @@ import java.util.List;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.data.DataConvertor;
-import com.astamuse.asta4d.extnode.ClearNode;
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.collection.RowConvertor;
 
 public class RenderingTest extends BaseTest {
 
@@ -75,20 +77,21 @@ public class RenderingTest extends BaseTest {
 
         public Renderer removeClassInListRendering() {
             List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-            return Renderer.create(".item", list, new DataConvertor<Integer, Renderer>() {
+            return Renderer.create(".item", list, new RowConvertor<Integer, Renderer>() {
                 @Override
-                public Renderer convert(Integer i) {
+                public Renderer convert(int rowIndex, Integer i) {
                     Renderer render = Renderer.create(".x-num", i);
                     int idx = (i % 3) + 1;
                     render.add(".x-idx-" + idx, "-class", "x-remove");
-                    render.add(".x-remove", new ClearNode());
+                    render.add(".x-remove", (Object) null);
                     return render;
                 }
             });
         }
 
         public Renderer clearNode() {
-            Renderer render = Renderer.create("#byClearNode", new ClearNode());
+            Renderer render = Renderer.create("#byClearNode", Clear);
+
             render.addDebugger("ClearNode");
             render.addDebugger("ClearNode");
             return render;
@@ -107,11 +110,21 @@ public class RenderingTest extends BaseTest {
         }
 
         public Renderer listTextRendering() {
-            List<String> list = Arrays.asList("a", "b", "c");
             Renderer renderer = new GoThroughRenderer();
             // there was a bug when a selector was not found in list rendering
             renderer.add("#not-exists-element", "I love this game!");
-            renderer.add("div#test", list);
+
+            List<String> textList = Arrays.asList("a", "b", "c");
+            renderer.add("div#test-text", textList);
+
+            List<Long> longList = Arrays.asList(1L, 2L, 3L);
+            renderer.add("div#test-long", longList);
+
+            List<Integer> integerList = Arrays.asList(10, 20, 30);
+            renderer.add("div#test-integer", integerList);
+
+            List<Boolean> booleanList = Arrays.asList(true, false, false);
+            renderer.add("div#test-boolean", booleanList);
             return renderer;
         }
 

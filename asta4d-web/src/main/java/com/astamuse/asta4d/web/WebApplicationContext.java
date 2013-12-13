@@ -18,20 +18,19 @@
 package com.astamuse.asta4d.web;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.ContextMap;
+import com.astamuse.asta4d.util.DelegatedContextMap;
+import com.astamuse.asta4d.util.UnmodifiableContextMap;
+import com.astamuse.asta4d.web.util.context.SessionMap;
 
 public class WebApplicationContext extends Context {
 
@@ -99,37 +98,29 @@ public class WebApplicationContext extends Context {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Map<String, Object> createMapForScope(String scope) {
-        Map<String, Object> map = null;
+    protected ContextMap createMapForScope(String scope) {
+        ContextMap map = null;
         switch (scope) {
-        case SCOPE_SESSION:
-            HttpSession session = getRequest().getSession(true);
-            Map<String, Object> dataMap = (Map<String, Object>) session.getAttribute(SESSIONKEY_DATAMAP);
-            if (dataMap == null) {
-                // TODO I think there would be a visibility problem across
-                // threads, so we must fix it at sometime.
-                synchronized (SESSIONKEY_DATAMAP) {
-                    dataMap = new ConcurrentHashMap<>();
-                    session.setAttribute(SESSIONKEY_DATAMAP, dataMap);
-                }
-            }
-            map = dataMap;
+        case SCOPE_SESSION: {
+            HttpServletRequest request = getRequest();
+            map = new SessionMap(request);
+        }
             break;
         case SCOPE_HEADER: {
-            map = new HashMap<>();
             HttpServletRequest request = getRequest();
+            map = DelegatedContextMap.createByNonThreadSafeHashMap();
             Enumeration<String> headerNames = request.getHeaderNames();
             while (headerNames.hasMoreElements()) {
                 String name = headerNames.nextElement();
                 String[] values = getHeaderValues(request.getHeaders(name));
                 map.put(name, values);
             }
-            map = Collections.unmodifiableMap(map);
+            map = new UnmodifiableContextMap(map);
         }
             break;
         case SCOPE_COOKIE: {
-            map = new HashMap<>();
             HttpServletRequest request = getRequest();
+            map = DelegatedContextMap.createByNonThreadSafeHashMap();
             Cookie[] cookies = request.getCookies();
             if (cookies != null) {
                 for (Cookie cookie : cookies) {
@@ -138,27 +129,29 @@ public class WebApplicationContext extends Context {
                     map.put(name, values);
                 }
             }
-            map = Collections.unmodifiableMap(map);
+            map = new UnmodifiableContextMap(map);
         }
             break;
-        case SCOPE_QUERYPARAM_ALIAS:
-            map = super.acquireMapForScope(SCOPE_QUERYPARAM);
-            break;
+
         case SCOPE_REQUEST:
             map = super.acquireMapForScope(SCOPE_DEFAULT);
             break;
-        case SCOPE_QUERYPARAM:
-            map = new HashMap<>();
+        case SCOPE_QUERYPARAM_ALIAS:
+        case SCOPE_QUERYPARAM: {
             HttpServletRequest request = getRequest();
+            map = DelegatedContextMap.createByNonThreadSafeHashMap();
             Enumeration<String> paramNames = request.getParameterNames();
             while (paramNames.hasMoreElements()) {
                 String name = paramNames.nextElement();
                 String[] values = request.getParameterValues(name);
                 map.put(name, values);
             }
-            map = Collections.unmodifiableMap(map);
+            map = new UnmodifiableContextMap(map);
+        }
             break;
         case SCOPE_PATHVAR:
+            map = DelegatedContextMap.createByNonThreadSafeHashMap();
+            break;
         default:
             map = super.createMapForScope(scope);
         }
@@ -169,20 +162,6 @@ public class WebApplicationContext extends Context {
         Context newCtx = new WebApplicationContext();
         copyScopesTo(newCtx);
         return newCtx;
-    }
-
-    protected Map<String, Object> getScopeDataMapCopy(String scope) {
-        Map<String, Object> map;
-        switch (scope) {
-        case SCOPE_HEADER:
-        case SCOPE_COOKIE:
-        case SCOPE_QUERYPARAM:
-            map = acquireMapForScope(scope);
-            break;
-        default:
-            map = super.getScopeDataMapCopy(scope);
-        }
-        return map;
     }
 
     private static String[] getHeaderValues(Enumeration<String> headers) {

@@ -17,10 +17,12 @@
 
 package com.astamuse.asta4d.render;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.render.test.TestableElementSetter;
 import com.astamuse.asta4d.util.IdGenerator;
 
 /**
@@ -55,7 +57,7 @@ import com.astamuse.asta4d.util.IdGenerator;
  * @author e-ryu
  * 
  */
-public class AttributeSetter implements ElementSetter {
+public class AttributeSetter implements ElementSetter, TestableElementSetter {
 
     private static enum ActionType {
         SET {
@@ -108,6 +110,16 @@ public class AttributeSetter implements ElementSetter {
         protected abstract void configure(Element elem, String attrName, Object attrValue);
     }
 
+    /**
+     * this value is for test purpose
+     */
+    private String originalAttrName;
+
+    /**
+     * this value is for test purpose
+     */
+    private Object originalValue;
+
     private String attrName;
 
     private Object attrValue;
@@ -124,6 +136,10 @@ public class AttributeSetter implements ElementSetter {
      */
     public AttributeSetter(String attr, Object value) {
         super();
+
+        this.originalAttrName = attr;
+        this.originalValue = value;
+
         if (attr.equalsIgnoreCase("+class")) {
             this.actionType = ActionType.ADDCLASS;
             this.attrName = "class";
@@ -173,6 +189,11 @@ public class AttributeSetter implements ElementSetter {
     @Override
     public String toString() {
         return actionType + " attribute " + attrName + " for value [" + attrValue + "]";
+    }
+
+    @Override
+    public Object retrieveTestableData() {
+        return Pair.of(originalAttrName, originalValue);
     }
 
 }
