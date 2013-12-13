@@ -181,7 +181,7 @@ Thus, we created Asta4D.
 
 ## Quick start
 We are working for creating a maven archetype, before it finished, the quickest way to start with Asta4D is 
-[download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_0.8.6.zip)
+[download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_newest.zip)
 as a prototype. Asta4D projects is structured by Maven 3, so you have to install Maven 3 at first. After install Maven 3, extract your
 downloaded file and go to the root foler(the folder with pom.xml file), start the sample project by the following command:
 
@@ -198,6 +198,11 @@ One last thing, do not forget modify the groupId and artifactId in pom file, as 
 Additionally, there is an [English document](http://astamuse.github.com/asta4d/userguide/index.html) which describes how 
 Asta4D works in more details, and there is also a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html)
 which includes more detailed user guide which is for our employees.
+
+- JavaDoc
+    - [asta4d-core](http://astamuse.github.io/asta4d/javadoc/newest/asta4d-core/)
+    - [asta4d-web](http://astamuse.github.io/asta4d/javadoc/newest/asta4d-web/)
+    - [asta4d-spring](http://astamuse.github.io/asta4d/javadoc/newest/asta4d-spring/)
 
 ## Todo list
 
