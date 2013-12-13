@@ -231,6 +231,19 @@ Immediate tasks:
 
     
 ## Release Notes
+-   0.12.13
+    
+    ADD
+    - RendererTest can be used for unit test of Renderer now
+    - Treat null rendering value as removing target node
+    - More debug-friendly log messages
+    - Some tests
+    
+    FIX
+    - BinaryDataUtil does not handle file path of "classpath:" correctly
+    - Does not handle default request handler instance correctly
+    - Refactor for context map for scopes, the Session scope will not create new session any more
+
 -   0.8.6
     
     ADD
