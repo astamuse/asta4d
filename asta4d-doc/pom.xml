@@ -4,12 +4,12 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.12.13</version>
+      <version>0.12.14-SNAPSHOT</version>
   </parent>
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-doc</artifactId>
-  <version>0.12.13</version>
+  <version>0.12.14-SNAPSHOT</version>
   <packaging>jar</packaging>
   
   <name>com.astamuse.asta4d-doc</name>

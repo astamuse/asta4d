@@ -7,10 +7,7 @@
         <dependent-module archiveName="asta4d-spring-0.8.7-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-spring/asta4d-spring">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="asta4d-web-0.8.7-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-web/asta4d-web">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="asta4d-core-0.8.7-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-core/asta4d-core">
+        <dependent-module archiveName="asta4d-core-0.12.13.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-core/asta4d-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="asta4d-sample"/>
