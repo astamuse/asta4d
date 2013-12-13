@@ -64,7 +64,40 @@ Thus, we created Asta4D.
         }
     }
     ```
+-   Testable Rendering logic
 
+    Since all the rendering logics are being held by a Renderer instance which can be simply retrieved by invoking the target method of snippet class, unit test can be simply performed.
+
+    ```java
+        // prepare test target
+        Renderer render = new GoThroughRenderer();
+        render.add("#someIdForInt", 12345);
+
+        // perform test
+        RendererTester tester = RendererTester.forRenderer(render);
+        Assert.assertEquals(tester.get("#someIdForInt"), 12345);
+
+    ```
+
+    Rendering for list data can be performed as well
+
+    ```java
+        // prepare test target
+        Renderer render = new GoThroughRenderer();
+        render.add("#someIdForInt", Arrays.asList(123, 456, 789));
+
+        // perform test
+        RendererTester tester = RendererTester.forRenderer(render);
+        Assert.assertEquals(tester.getAsList("#someIdForInt"), Arrays.asList(123, 456, 789));
+
+    ```
+
+    [Further samples for test](https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java)
+
+-   High security of being immune from cross-site(XSS/CSRF)
+    
+    Asta4D is, by nature, immune from cross-site problems. You do not need to take care of cross-site any more. All the rendered value would be escaped by default and your clients have no chance to put malicious contents to your server.
+    
 -   View first and URL matching
 
     There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined 
@@ -165,6 +198,19 @@ One last thing, do not forget modify the groupId and artifactId in pom file, as 
 Additionally, there is an [English document](http://astamuse.github.com/asta4d/userguide/index.html) which describes how 
 Asta4D works in more details, and there is also a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html)
 which includes more detailed user guide which is for our employees.
+
+## Todo list
+
+Immediate tasks: 
+
+-   cachable snippet
+
+    (a rendered snippet result should can be cached)
+
+-   Rendering helper for validation
+    
+    (not implementing validaiton which should use third-party implementations such as [JSR 303](http://beanvalidation.org/), just help rendering validation result easier)
+
 
 ## Questions and answers
 
