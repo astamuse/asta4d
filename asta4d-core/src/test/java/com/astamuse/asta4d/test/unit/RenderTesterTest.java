@@ -23,6 +23,8 @@ public class RenderTesterTest extends BaseTest {
 
     @Test
     public void testGetSingle() {
+
+        // prepare test target
         Renderer render = new GoThroughRenderer();
         render.add("#someIdForInt", 12345);
         render.add("#someIdForLong", 12345L);
@@ -36,6 +38,7 @@ public class RenderTesterTest extends BaseTest {
 
         render.add("#someIdForRenderer", Renderer.create("#value", "value"));
 
+        // perform test
         RendererTester tester = RendererTester.forRenderer(render);
         Assert.assertEquals(tester.get("#someIdForInt"), 12345);
         Assert.assertEquals(tester.get("#someIdForLong"), 12345L);
@@ -90,6 +93,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test
     public void testGetList() {
+        // prepare test target
         Renderer render = new GoThroughRenderer();
         render.add("#someIdForInt", Arrays.asList(123, 456, 789));
         render.add("#someIdForLong", Arrays.asList(123L, 456L, 789L));
@@ -103,8 +107,7 @@ public class RenderTesterTest extends BaseTest {
 
         render.add("#someIdForElement", Arrays.asList(newChild1, newChild2));
 
-        // render.add("#someIdForRenderer", Renderer.create("#value", "value"));
-
+        // perform test
         RendererTester tester = RendererTester.forRenderer(render);
         Assert.assertEquals(tester.getAsList("#someIdForInt"), Arrays.asList(123, 456, 789));
         Assert.assertEquals(tester.getAsList("#someIdForLong"), Arrays.asList(123L, 456L, 789L));
