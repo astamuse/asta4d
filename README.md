@@ -201,6 +201,20 @@ Additionally, there is an [English document](http://astamuse.github.com/asta4d/u
 Asta4D works in more details, and there is also a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html)
 which includes more detailed user guide which is for our employees.
 
+## Best practices
+
+-   Use class name selectors instead of others in most cases
+
+    Frontend designers would change html structures frequently, using class selector can avoid modifying the backend sources every time the html changed.
+
+    We made a convention that all the classes with prefix "X-" are faked and used by backend logics to mark the anchor points of data.
+
+-   Use request handler to normalize requests
+
+    Some pages holds multiple url patterns, you can normalize all the patterns by a request handler. 
+
+    We also use request hanlders to prepare the "target data" for the target page. A significant point is that preparing "target data" does not mean MVC architecture, we just query a simple entity or build a pojo to **represent the normalized condition** of the target page. 
+
 ## Todo list
 
 Immediate tasks: 
