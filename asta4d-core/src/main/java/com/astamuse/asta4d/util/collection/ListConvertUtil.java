@@ -147,6 +147,13 @@ public class ListConvertUtil {
 
     }
 
+    /**
+     * use {@link ListConvertUtil#transform(Iterable, RowConvertor)} instead.
+     * 
+     * @param sourceList
+     * @param convertor
+     * @return
+     */
     @Deprecated
     public final static <S, T> List<T> transform(Iterable<S> sourceList, final DataConvertor<S, T> convertor) {
         RowConvertor<S, T> rc = new RowConvertor<S, T>() {
@@ -158,6 +165,13 @@ public class ListConvertUtil {
         return transform(sourceList, rc);
     }
 
+    /**
+     * use {@link ListConvertUtil#transform(Iterable, ParallelRowConvertor)} instead.
+     * 
+     * @param sourceList
+     * @param convertor
+     * @return
+     */
     @Deprecated
     public final static <S, T> List<T> transform(Iterable<S> sourceList, final ParallelDataConvertor<S, T> convertor) {
         ParallelRowConvertor<S, T> rc = new ParallelRowConvertor<S, T>() {
@@ -169,6 +183,13 @@ public class ListConvertUtil {
         return transform(sourceList, rc);
     }
 
+    /**
+     * use {@link ListConvertUtil#transformToFuture(Iterable, ParallelRowConvertor)} instead.
+     * 
+     * @param sourceList
+     * @param convertor
+     * @return
+     */
     @Deprecated
     public final static <S, T> List<Future<T>> transformToFuture(Iterable<S> sourceList, final ParallelDataConvertor<S, T> convertor) {
         ParallelRowConvertor<S, T> rc = new ParallelRowConvertor<S, T>() {
