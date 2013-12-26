@@ -40,6 +40,9 @@ public class UrlRules implements UrlMappingRuleInitializer {
         rules.add(GET, "/")
              .redirect("/app/index");
         
+        rules.add(GET, "/redirect-to-index")
+        .redirect("p:/app/index");
+        
         initSampleRules(rules);
         //@formatter:on
     }
