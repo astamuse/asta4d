@@ -100,8 +100,7 @@ Thus, we created Asta4D.
     
 -   View first and URL matching
 
-    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined 
-    URL matching rules and all the data query logic should be implemented at the snippet class which we mentioned above.
+    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
 
     ```java
     rules.add("/app/", "/templates/index.html");
@@ -148,7 +147,11 @@ Thus, we created Asta4D.
         }
     ```
 
--   Multi-Thread rendering
+-   Isolate side effect with request handler and multi-threaded page rendering
+
+    There are two types of action in a system, one is with “side effect”, another one is without “side effect”. “actions with side effect” are ones that will change the system status once they are performed. For instance, for the same URL, a login request (if succeeded) will cause a client’s privilege to be changed and the client could probably get a different page view from what the client get before login, because of which we say a login request is an action with side effect. Another obvious example is a database update operation. Once an update is committed, all the related clients will get a different output from the result before the update, which is also classified as “an action with side effect”. How about a query? We consider a query as an operation without side effect, it means that a client will always get the same result regardless of how many times the query is executed.
+
+    We believe the actions with side effect should be managed seriously and we do that by putting all the actions with side effect to request handlers so that the view layer is purified and this makes the source more clear and maintainable. This is also means with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free. 
 
     parallel snippet rendering: All the snippet marked as afd:parallel” or “parallel” will be executed parallel.
     
@@ -197,9 +200,7 @@ and also you can add your own html template files to /src/main/webapp.
 
 One last thing, do not forget modify the groupId and artifactId in pom file, as well as the version. 
 
-Additionally, there is an [English document](http://astamuse.github.com/asta4d/userguide/index.html) which describes how 
-Asta4D works in more details, and there is also a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html)
-which includes more detailed user guide which is for our employees.
+Additionally, there is a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) which includes more detailed user guide which is for our employees.
 
 ## Best practices
 
