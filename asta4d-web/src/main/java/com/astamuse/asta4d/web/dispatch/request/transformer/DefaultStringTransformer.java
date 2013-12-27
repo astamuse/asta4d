@@ -45,11 +45,11 @@ public class DefaultStringTransformer implements ResultTransformer {
                     } else {
                         try {
                             status = Integer.parseInt(possibleStatus);
-                            path = path.substring(possibleStatus.length());
                         } catch (NumberFormatException nfe) {
                             // do nothing
                         }
                     }
+                    path = path.substring(possibleStatus.length() + 1);
                 }
                 RedirectTargetProvider provider = DeclareInstanceUtil.createInstance(RedirectTargetProvider.class);
                 provider.setStatus(status);
