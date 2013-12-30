@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.render.ElementRemover;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.render.SpecialRenderer;
 import com.astamuse.asta4d.render.TextSetter;
 
 public class TransformerFactory {
@@ -49,6 +50,8 @@ public class TransformerFactory {
         } else if (action instanceof Renderer) {// most of list rendering will return a
                                                 // list of Renderer, so put it at first
             transformer = new RendererTransformer((Renderer) action);
+        } else if (action instanceof SpecialRenderer) {
+            transformer = SpecialRenderer.retrieveTransformer((SpecialRenderer) action);
         } else if (action instanceof ElementSetter) {
             transformer = new ElementSetterTransformer((ElementSetter) action);
         } else if (action instanceof Future) {
@@ -60,5 +63,4 @@ public class TransformerFactory {
         }
         return transformer;
     }
-
 }

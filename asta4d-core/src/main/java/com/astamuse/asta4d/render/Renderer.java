@@ -40,9 +40,8 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 /**
  * A renderer is for describing rendering actions.
  * <p>
- * Developers usually do not need to create a Renderer by constructors directly,
- * alternatively a renderer can be created by calling the static {@code create}
- * methods or the {@code add} methods.
+ * Developers usually do not need to create a Renderer by constructors directly, alternatively a renderer can be created by calling the
+ * static {@code create} methods or the {@code add} methods.
  * 
  * 
  * @author e-ryu
@@ -51,12 +50,10 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 public class Renderer {
 
     /**
-     * This value is for old source compatibility.set it to false will return to
-     * the old style action which require a ClearNode to remove node and will
-     * also throw NullPointerException if the specified value is null.
+     * This value is for old source compatibility.set it to false will return to the old style action which require a ClearNode to remove
+     * node and will also throw NullPointerException if the specified value is null.
      * 
-     * We will remove this flag at sometime after we migrated all of our
-     * existing sources.
+     * We will remove this flag at sometime after we migrated all of our existing sources.
      */
     private final static boolean treatNullAsRemoveNode;
     static {
@@ -96,15 +93,13 @@ public class Renderer {
     }
 
     /**
-     * Create a Renderer by given css selector and List of {@link Transformer}.
-     * By given a list, the target element will be duplicated to the same count
-     * of Transformer list size.
+     * Create a Renderer by given css selector and List of {@link Transformer}. By given a list, the target element will be duplicated to
+     * the same count of Transformer list size.
      * 
      * @param selector
      *            a selector that describes the rendering target element
      * @param transformerList
-     *            the action list that describes how to render the target
-     *            element
+     *            the action list that describes how to render the target element
      */
 
     public Renderer(String selector, List<Transformer<?>> transformerList) {
@@ -221,8 +216,7 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for text rendering by given parameter and add it to the
-     * current renderer. See {@link #create(String, String)}.
+     * Create a renderer for text rendering by given parameter and add it to the current renderer. See {@link #create(String, String)}.
      * 
      * @param selector
      *            a css selector
@@ -235,8 +229,7 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for text rendering by given parameter and add it to the
-     * current renderer. See {@link #create(String, Object)}.
+     * Create a renderer for text rendering by given parameter and add it to the current renderer. See {@link #create(String, Object)}.
      * 
      * @param selector
      *            a css selector
@@ -307,8 +300,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for attribute setting by given parameter and add it to
-     * the current renderer. See {@link #create(String, String, String)}.
+     * Create a renderer for attribute setting by given parameter and add it to the current renderer. See
+     * {@link #create(String, String, String)}.
      * 
      * @param selector
      *            a css selector
@@ -323,8 +316,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for attribute setting by given parameter and add it to
-     * the current renderer. See {@link #create(String, String, Object)}.
+     * Create a renderer for attribute setting by given parameter and add it to the current renderer. See
+     * {@link #create(String, String, Object)}.
      * 
      * @param selector
      *            a css selector
@@ -339,8 +332,7 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for element rendering by given parameter and add it to
-     * the current renderer. See {@link #create(String, Element)}.
+     * Create a renderer for element rendering by given parameter and add it to the current renderer. See {@link #create(String, Element)}.
      * 
      * @param selector
      *            a css selector
@@ -353,8 +345,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for element setting by given parameter and add it to
-     * the current renderer. See {@link #create(String, ElementSetter)}.
+     * Create a renderer for element setting by given parameter and add it to the current renderer. See
+     * {@link #create(String, ElementSetter)}.
      * 
      * @param selector
      *            a css selector
@@ -367,8 +359,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for recursive renderer rendering by given parameter and
-     * add it to the current renderer. See {@link #create(String, Renderer)}.
+     * Create a renderer for recursive renderer rendering by given parameter and add it to the current renderer. See
+     * {@link #create(String, Renderer)}.
      * 
      * @param selector
      *            a css selector
@@ -381,14 +373,12 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter and add it to the
-     * current renderer. See {@link #create(String, List)}.
+     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, List)}.
      * 
      * @param selector
      *            a css selector
      * @param list
-     *            a list that can contain all the types that supported by the
-     *            non-list add methods of Renderer.
+     *            a list that can contain all the types that supported by the non-list add methods of Renderer.
      * @return the created renderer for chain calling
      */
     public Renderer add(String selector, Iterable<?> list) {
@@ -396,8 +386,7 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link RowConvertor} and add it to the current renderer. See
+     * Create a renderer for list rendering by given parameter with given {@link RowConvertor} and add it to the current renderer. See
      * {@link #create(String, List)}.
      * 
      * @param selector
@@ -410,8 +399,7 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link DataConvertor} and add it to the current renderer. See
+     * Create a renderer for list rendering by given parameter with given {@link DataConvertor} and add it to the current renderer. See
      * {@link #create(String, Iterable, ParallelRowConvertor)}.
      * 
      * @param selector
@@ -424,12 +412,10 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link DataConvertor} and add it to the current renderer. See
+     * Create a renderer for list rendering by given parameter with given {@link DataConvertor} and add it to the current renderer. See
      * {@link #create(String, List)}.
      * 
-     * This method has been deprecated. Use
-     * {@link #add(String, Iterable, RowConvertor)} instead.
+     * This method has been deprecated. Use {@link #add(String, Iterable, RowConvertor)} instead.
      * 
      * @param selector
      * @param list
@@ -442,12 +428,10 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link ParallelDataConvertor} and add it to the current renderer. See
-     * {@link #create(String, List)}.
+     * Create a renderer for list rendering by given parameter with given {@link ParallelDataConvertor} and add it to the current renderer.
+     * See {@link #create(String, List)}.
      * 
-     * This method has been deprecated. Use
-     * {@link #add(String, Iterable, ParallelRowConvertor)} instead.
+     * This method has been deprecated. Use {@link #add(String, Iterable, ParallelRowConvertor)} instead.
      * 
      * @param selector
      * @param list
@@ -460,9 +444,8 @@ public class Renderer {
     }
 
     /**
-     * add a {@link DebugRenderer} to the current Renderer and when this
-     * renderer is applied, the target element specified by the given selector
-     * will be output by logger.
+     * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the target element specified by the given
+     * selector will be output by logger.
      * 
      * @param selector
      *            a css selector
@@ -473,10 +456,8 @@ public class Renderer {
     }
 
     /**
-     * add a {@link DebugRenderer} to the current Renderer and when this
-     * renderer is applied, the current rendering element (see
-     * {@link Context#setCurrentRenderingElement(Element)}) will be output by
-     * logger.
+     * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the current rendering element (see
+     * {@link Context#setCurrentRenderingElement(Element)}) will be output by logger.
      * 
      * @return the created renderer or the current renderer for chain calling
      */
@@ -494,7 +475,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Long value) {
-        return createForObject(selector, value);
+        if (treatNullAsRemoveNode && value == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, new TextSetter(value));
+        }
     }
 
     /**
@@ -507,7 +492,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Integer value) {
-        return createForObject(selector, value);
+        if (treatNullAsRemoveNode && value == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, new TextSetter(value));
+        }
     }
 
     /**
@@ -520,15 +509,18 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Boolean value) {
-        return createForObject(selector, value);
+        if (treatNullAsRemoveNode && value == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, new TextSetter(value));
+        }
     }
 
     /**
      * Create a renderer for text by given parameter.
      * <p>
-     * All child nodes of the target element specified by selector will be
-     * emptied and the given String value will be rendered as a single text node
-     * of the target element.
+     * All child nodes of the target element specified by selector will be emptied and the given String value will be rendered as a single
+     * text node of the target element.
      * 
      * @param selector
      *            a css selector
@@ -537,32 +529,30 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, String value) {
-        return createForObject(selector, value);
+        if (treatNullAsRemoveNode && value == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, new TextSetter(value));
+        }
     }
 
     /**
      * Create a renderer for text by given parameter.
      * <p>
-     * All child nodes of the target element specified by selector will be
-     * emptied and the given String value(Object#toString) will be rendered as a
-     * single text node of the target element.
+     * All child nodes of the target element specified by selector will be emptied and the given String value(Object#toString) will be
+     * rendered as a single text node of the target element.
      * 
      * @param selector
      *            a css selector
      * @param value
-     *            a Object that will be rendered. toString() will be called for
-     *            generating a String
+     *            a Object that will be rendered. toString() will be called for generating a String
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        return createForObject(selector, value);
-    }
-
-    private final static Renderer createForObject(String selector, Object value) {
         if (treatNullAsRemoveNode && value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            return create(selector, new TextSetter(value));
+            return new Renderer(selector, TransformerFactory.generateTransformer(value));
         }
     }
 
@@ -576,7 +566,11 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, SpecialRenderer specialRenderer) {
-        return new Renderer(selector, specialRenderer.getTransformer());
+        if (treatNullAsRemoveNode && specialRenderer == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, specialRenderer.getTransformer());
+        }
     }
 
     /**
@@ -627,8 +621,7 @@ public class Renderer {
     /**
      * Create a renderer for attribute setting by given parameter.
      * <p>
-     * An additional character of "+" or "-" can be used as a prefix of
-     * attribute name. See detail at {@link AttributeSetter}.
+     * An additional character of "+" or "-" can be used as a prefix of attribute name. See detail at {@link AttributeSetter}.
      * 
      * @param selector
      *            a css selector
@@ -645,8 +638,7 @@ public class Renderer {
     /**
      * Create a renderer for attribute setting by given parameter.
      * <p>
-     * An additional character of "+" or "-" can be used as a prefix of
-     * attribute name. There is also a special logic for an instance with
+     * An additional character of "+" or "-" can be used as a prefix of attribute name. There is also a special logic for an instance with
      * arbitrary type. See detail at {@link AttributeSetter}.
      * 
      * @param selector
@@ -664,8 +656,7 @@ public class Renderer {
     /**
      * Create a renderer for element rendering by given parameter.
      * <p>
-     * The target element specified by the selector will be completely replaced
-     * by the given element.
+     * The target element specified by the selector will be completely replaced by the given element.
      * 
      * @param selector
      *            a css selector
@@ -684,8 +675,8 @@ public class Renderer {
     /**
      * Create a renderer for element setting by given parameter.
      * <p>
-     * The target element specified by the given selector will not be replaced
-     * and will be passed to the given {@link ElementSetter} as a parameter.
+     * The target element specified by the given selector will not be replaced and will be passed to the given {@link ElementSetter} as a
+     * parameter.
      * 
      * @param selector
      *            a css selector
@@ -704,8 +695,7 @@ public class Renderer {
     /**
      * Create a renderer for recursive renderer rendering by given parameter.
      * <p>
-     * The given renderer will be applied to element specified by the given
-     * selector.
+     * The given renderer will be applied to element specified by the given selector.
      * 
      * @param selector
      *            a css selector
@@ -722,8 +712,7 @@ public class Renderer {
     }
 
     /**
-     * This method is a convenience to creating an instance of
-     * {@link GoThroughRenderer}
+     * This method is a convenience to creating an instance of {@link GoThroughRenderer}
      * 
      * @return a {@link GoThroughRenderer} instance
      */
@@ -734,15 +723,13 @@ public class Renderer {
     /**
      * Create a renderer for list rendering by given parameter.
      * <p>
-     * The target Element specified by the given selector will be duplicated
-     * times as the count of the given list and the contents of the list will be
-     * applied to the target Element too.
+     * The target Element specified by the given selector will be duplicated times as the count of the given list and the contents of the
+     * list will be applied to the target Element too.
      * 
      * @param selector
      *            a css selector
      * @param list
-     *            a list that can contain all the types supported by the
-     *            non-list add methods of Renderer
+     *            a list that can contain all the types supported by the non-list add methods of Renderer
      * @return the created renderer
      */
     public final static Renderer create(String selector, Iterable<?> list) {
@@ -758,16 +745,14 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link RowConvertor}. See {@link #create(String, List)}.
+     * Create a renderer for list rendering by given parameter with given {@link RowConvertor}. See {@link #create(String, List)}.
      * 
      * @param selector
      *            a css selector
      * @param list
      *            a list with arbitrary type data
      * @param convertor
-     *            a convertor that can convert the arbitrary types of the list
-     *            data to the types supported by the non-list create methods of
+     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
      *            Renderer
      * @return the created renderer
      */
@@ -780,9 +765,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link ParallelRowConvertor}. This method will not block the current
-     * thread and will return immediately.
+     * Create a renderer for list rendering by given parameter with given {@link ParallelRowConvertor}. This method will not block the
+     * current thread and will return immediately.
      * 
      * See {@link #create(String, List)}.
      * 
@@ -791,8 +775,7 @@ public class Renderer {
      * @param list
      *            a list with arbitrary type data
      * @param convertor
-     *            a convertor that can convert the arbitrary types of the list
-     *            data to the types supported by the non-list create methods of
+     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
      *            Renderer
      * @return the created renderer
      */
@@ -809,19 +792,16 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link DataConvertor}. See {@link #create(String, List)}.
+     * Create a renderer for list rendering by given parameter with given {@link DataConvertor}. See {@link #create(String, List)}.
      * 
-     * This method has been deprecated. Use
-     * {@link #create(String, Iterable, RowConvertor)} instead.
+     * This method has been deprecated. Use {@link #create(String, Iterable, RowConvertor)} instead.
      * 
      * @param selector
      *            a css selector
      * @param list
      *            a list with arbitrary type data
      * @param convertor
-     *            a convertor that can convert the arbitrary types of the list
-     *            data to the types supported by the non-list create methods of
+     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
      *            Renderer
      * @return the created renderer
      */
@@ -835,22 +815,19 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given
-     * {@link ParallelDataConvertor}. This method will not block the current
-     * thread and will return immediately.
+     * Create a renderer for list rendering by given parameter with given {@link ParallelDataConvertor}. This method will not block the
+     * current thread and will return immediately.
      * 
      * See {@link #create(String, List)}.
      * 
-     * This method has been deprecated. Use
-     * {@link #create(String, Iterable, ParallelRowConvertor)} instead.
+     * This method has been deprecated. Use {@link #create(String, Iterable, ParallelRowConvertor)} instead.
      * 
      * @param selector
      *            a css selector
      * @param list
      *            a list with arbitrary type data
      * @param convertor
-     *            a convertor that can convert the arbitrary types of the list
-     *            data to the types supported by the non-list create methods of
+     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
      *            Renderer
      * @return the created renderer
      */
