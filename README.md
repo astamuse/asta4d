@@ -188,20 +188,32 @@ Thus, we created Asta4D.
 
 [JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
 
-We are working for creating a maven archetype, before it finished, the quickest way to start with Asta4D is 
-[download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_newest.zip)
-as a prototype. Asta4D projects is structured by Maven 3, so you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After install Maven 3, extract your
-downloaded file and go to the root foler(the folder with pom.xml file), start the sample project by the following command:
+There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
 
     ```
-    maven jetty:run
+    mvn archetype:generate                       \
+        -DarchetypeGroupId=com.astamuse          \
+        -DarchetypeArtifactId=asta4d-archetype   \
+        -DarchetypeVersion=0.12.30               \
+        -DgroupId=<your.groupid>                 \
+        -DartifactId=<your-artifactId>
     ```
 
+or simply follow the wizard by filtered list:
+
+    ```
+    mvn archetype:generate -Dfilter=com.astamuse:asta4d-archetype
+    ```
+
+After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
+
+    ```
+    mvn jetty:run
+    ```
+ 
 Then you can access the sample project by http://localhost:8080, there are source samples shown, it is a good start from reading the samples.
-After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/com/astamuse/asta4d/sample/UrlRules.java,
+After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
-
-One last thing, do not forget modify the groupId and artifactId in pom file, as well as the version. 
 
 Additionally, there is a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) which includes more detailed user guide which is for our employees.
 
