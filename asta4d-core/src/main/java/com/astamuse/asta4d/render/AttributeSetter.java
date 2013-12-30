@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.render;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
@@ -26,33 +28,31 @@ import com.astamuse.asta4d.render.test.TestableElementSetter;
 import com.astamuse.asta4d.util.IdGenerator;
 
 /**
- * An AttributeSetter is used to set attribute value of an element. The
- * specified attribute name can be a plain text representing the target
+ * An AttributeSetter is used to set attribute value of an element. The specified attribute name can be a plain text representing the target
  * attribute, and it can also be prefixed by an additional character: + or -.
  * <p>
- * There are several cases about how AttributeSetter perform its action by
- * different attribute name and value.<br>
+ * There are several cases about how AttributeSetter perform its action by different attribute name and value.<br>
  * 
- * <li>new AttriuteSetter("+class", value): call addClass(value) on target
- * Element, null value will be treated as "null".
+ * <li>new AttriuteSetter("+class", value): call addClass(value) on target Element, null value will be treated as "null".
  * 
- * <li>new AttriuteSetter("-class", value): call removeClass(value) on target
- * Element, null value will be treated as "null".
+ * <li>new AttriuteSetter("-class", value): call removeClass(value) on target Element, null value will be treated as "null".
  * 
- * <li>new AttriuteSetter("class", value): call attr("class", value) on target
- * Element if value is not null, for a null value, removeAttr("class") will be
- * called.
+ * <li>new AttriuteSetter("class", value): call attr("class", value) on target Element if value is not null, for a null value,
+ * removeAttr("class") will be called.
  * 
- * <li>new AttriuteSetter("anyattr", value): call attr("anyattr", value) on
- * target Element if value is not null, for a null value, removeAttr("anyattr")
- * will be called.
+ * <li>new AttriuteSetter("anyattr", value): call attr("anyattr", value) on target Element if value is not null, for a null value,
+ * removeAttr("anyattr") will be called.
  * 
- * <li>new AttriuteSetter("+anyattr", value): call attr("anyattr", value) on
- * target Element if value is not null, for a null value, removeAttr("anyattr")
- * will be called.
+ * <li>new AttriuteSetter("anyattr", {@link SpecialRenderer#Clear}): call removeAttr("anyattr") on target Element.
  * 
- * <li>new AttriuteSetter("-anyattr", value): call removeAttr("anyattr") on
- * target Element.
+ * <li>new AttriuteSetter("+anyattr", value): call attr("anyattr", value) on target Element if value is not null, for a null value,
+ * removeAttr("anyattr") will be called.
+ * 
+ * <li>new AttriuteSetter("+anyattr", {@link SpecialRenderer#Clear}): call removeAttr("anyattr") on target Element.
+ * 
+ * <li>new AttriuteSetter("-anyattr", value): call removeAttr("anyattr") on target Element.
+ * 
+ * 
  * 
  * @author e-ryu
  * 
@@ -165,6 +165,8 @@ public class AttributeSetter implements ElementSetter, TestableElementSetter {
                     this.attrName = attr;
                 }
                 if (value == null) {
+                    this.actionType = ActionType.REMOVE;
+                } else if (value == Clear) {
                     this.actionType = ActionType.REMOVE;
                 } else {
                     this.actionType = ActionType.SET;

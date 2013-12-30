@@ -249,6 +249,17 @@ Immediate tasks:
 
     
 ## Release Notes
+-   0.12.30
+    
+    ADD
+    - more sample references to sample projects
+    - add fixVersion.sh to make release simpler
+    
+    FIX
+    - minor bugs on handling SpecialRenderer#Clear
+    - bugs in archetype
+    - format of asta4d-doc(make it prettier)
+
 -   0.12.13
     
     ADD

@@ -4,12 +4,12 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.12.13</version>
+      <version>0.12.30</version>
   </parent>
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-doc</artifactId>
-  <version>0.12.13</version>
+  <version>0.12.30</version>
   <packaging>jar</packaging>
   
   <name>com.astamuse.asta4d-doc</name>
@@ -26,64 +26,81 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
-        <build>
-                <plugins>
-                        <plugin>
-                                <groupId>com.agilejava.docbkx</groupId>
-                                <artifactId>docbkx-maven-plugin</artifactId>
-                                <version>2.0.14</version>
-                                <executions>
-                                        <execution>
-                                                <goals>
-                                                        <!--<goal>generate-pdf</goal>-->
-                                                        <goal>generate-html</goal>
-                                                </goals>
-                                                <phase>generate-sources</phase>
-                                        </execution>
-                                </executions>
-                                <configuration>
-                                <!--
-                                        <imgSrcPath>file:///${basedir}/src/docbkx/img/</imgSrcPath>
-                                        <preProcess>
-                                                <copy todir="${basedir}/target/docbkx/html">
-                                                        <fileset dir="${basedir}/src/docbkx/img" />
-                                                </copy>
-                                        </preProcess>
-                                        -->
-                                        <highlightSource>1</highlightSource>
-                                        <foCustomization>${basedir}/src/fo/pdf.xsl</foCustomization>
-                                        <htmlCustomization>${basedir}/src/fo/html.xsl</htmlCustomization>
-                                        <highlightSource>1</highlightSource>
-                                        <highlightDefaultLanguage />
-                                        <xincludeSupported>true</xincludeSupported>
-                                        <tocMaxDepth>3</tocMaxDepth>
-                                </configuration>
-                                <dependencies>
-                                        <dependency>
-                                                <groupId>net.sf.docbook</groupId>
-                                                <artifactId>docbook-xml</artifactId>
-                                                <version>5.0-all</version>
-                                                <type>zip</type>
-                                                <classifier>resources</classifier>
-                                        </dependency>
-                                        <dependency>
-                                                <groupId>net.sf.docbook</groupId>
-                                                <artifactId>docbook-xsl</artifactId>
-                                                <version>1.77.1</version>
-                                                <type>zip</type>
-                                                <classifier>ns-resources</classifier>
-                                        </dependency>
-                                </dependencies>
-                        </plugin>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-deploy-plugin</artifactId>
-                                <version>2.5</version>
-                                <configuration>
-                                        <skip>true</skip>
-                                </configuration>
-                        </plugin>
-                </plugins>
-        </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.14</version>
+        <executions>
+          <execution>
+            <id>html</id>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-singlepage.xsl</htmlCustomization>
+                <postProcess>
+                    <copy todir="${basedir}/target/docbkx/html">
+                        <fileset dir="${basedir}/src/resources/docbkx">
+                            <include name="**/*.css" />
+                            <include name="**/*.png" />
+                            <include name="**/*.gif" />
+                            <include name="**/*.jpg" />
+                        </fileset>
+                    </copy>
+                </postProcess>
+            </configuration>
+          </execution>
+          
+          <!-- pdf cannot work correctly yet
+          <execution>
+            <id>pdf</id>
+            <goals>
+              <goal>generate-pdf</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <admonGraphicsPath>${basedir}/src/resources/docbkx/images/</admonGraphicsPath>
+              <imgSrcPath>${basedir}/src/resources/docbkx</imgSrcPath>
+            </configuration>
+          </execution>
+          -->
+        </executions>
+        <dependencies>
+            <dependency>
+                <groupId>org.docbook</groupId>
+                <artifactId>docbook-xml</artifactId>
+                <version>4.4</version>
+                <scope>runtime</scope>
+            </dependency>
+        </dependencies>
+        <!-- Common Docbook configuration -->
+        <configuration>
+            <xincludeSupported>true</xincludeSupported>
+            <chunkedOutput>false</chunkedOutput>
+            <foCustomization>${basedir}/src/resources/docbkx/xsl/pdf.xsl</foCustomization>
+            <useExtensions>1</useExtensions>
+            <highlightSource>1</highlightSource>
+            <tocMaxDepth>3</tocMaxDepth>
+            <entities>
+                <entity>
+                    <name>version</name>
+                    <value>${project.version}</value>
+                </entity>
+            </entities>
+        </configuration>
+      </plugin>
+      <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-deploy-plugin</artifactId>
+              <version>2.5</version>
+              <configuration>
+                      <skip>true</skip>
+              </configuration>
+      </plugin>
+    </plugins>
+  </build>
   
 </project>

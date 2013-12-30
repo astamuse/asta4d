@@ -23,19 +23,35 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.render.ElementRemover;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.render.SpecialRenderer;
 import com.astamuse.asta4d.render.TextSetter;
 
 public class TransformerFactory {
+
+    private final static boolean treatNullAsRemoveNode;
+    static {
+        String treat = System.getProperty("com.astamuse.asta4d.render.treatNullAsRemoveNode");
+        if (treat == null) {
+            treatNullAsRemoveNode = true;
+        } else {
+            treatNullAsRemoveNode = Boolean.parseBoolean(treat);
+        }
+    }
 
     private final static Logger logger = LoggerFactory.getLogger(TransformerFactory.class);
 
     public final static Transformer<?> generateTransformer(Object action) {
         Transformer<?> transformer;
-        if (action instanceof Renderer) {// most of list rendering will return a
-                                         // list of Renderer, so put it at first
+        if (action == null && treatNullAsRemoveNode) {
+            transformer = new ElementRemover();
+        } else if (action instanceof Renderer) {// most of list rendering will return a
+                                                // list of Renderer, so put it at first
             transformer = new RendererTransformer((Renderer) action);
+        } else if (action instanceof SpecialRenderer) {
+            transformer = SpecialRenderer.retrieveTransformer((SpecialRenderer) action);
         } else if (action instanceof ElementSetter) {
             transformer = new ElementSetterTransformer((ElementSetter) action);
         } else if (action instanceof Future) {
@@ -47,5 +63,4 @@ public class TransformerFactory {
         }
         return transformer;
     }
-
 }

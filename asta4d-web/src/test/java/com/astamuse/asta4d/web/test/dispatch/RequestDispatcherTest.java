@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.web.test.dispatch;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +27,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -33,6 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -178,13 +185,11 @@ public class RequestDispatcherTest {
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
-                
                 { "get", "/index", 0, getExpectedPage("/index.html")},
                 
                 { "get", "/index-rewrite", 0, getExpectedPage("/index.html") },
                 { "get", "/index-duplicated", 0, getExpectedPage("/index.html") },
                 { "get", "/body-only", 0, getExpectedPage("/bodyOnly.html") },
-                
                 { "get", "/go-redirect", 302, new RedirectTargetProvider(302, "/go-redirect/ok", null)},
                 { "get", "/go-redirect-301", 301, new RedirectTargetProvider(301, "/go-redirect/301", null)},
                 { "get", "/go-redirect-302", 302, new RedirectTargetProvider(302, "/go-redirect/302", null)},
@@ -200,6 +205,8 @@ public class RequestDispatcherTest {
                 //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
                 
                 { "get", "/nofile", 404, getExpectedPage("/notfound")},
+                
+                
                 { "get", "/template-not-exists", 404, getExpectedPage("/notfound")},
 
                 { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
@@ -225,11 +232,11 @@ public class RequestDispatcherTest {
         when(request.getContextPath()).thenReturn("");
         when(request.getMethod()).thenReturn(method);
 
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream responseBos = new ByteArrayOutputStream();
         when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
-                bos.write(b);
+                responseBos.write(b);
             }
         });
 
@@ -242,6 +249,7 @@ public class RequestDispatcherTest {
 
         dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
 
+        // verify status at first then when contentProvider is null, we do not need to do more verification
         if (status != 0) {
             verify(response).setStatus(status);
         }
@@ -250,8 +258,10 @@ public class RequestDispatcherTest {
             return;
         }
 
-        final ByteArrayOutputStream expectedBos = new ByteArrayOutputStream();
+        // prepare expected results
         HttpServletResponse expectedResponse = mock(HttpServletResponse.class);
+
+        final ByteArrayOutputStream expectedBos = new ByteArrayOutputStream();
         when(expectedResponse.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -259,10 +269,26 @@ public class RequestDispatcherTest {
             }
         });
 
+        final List<Pair<String, String>> expectedHeaderList = new LinkedList<>();
+
+        doAnswer(new Answer<Object>() {
+            public Object answer(InvocationOnMock invocation) {
+                Object[] args = invocation.getArguments();
+                expectedHeaderList.add(Pair.of((String) args[0], (String) args[1]));
+                return null;
+            }
+        }).when(expectedResponse).addHeader(anyString(), anyString());
+
         UrlMappingRule currentRule = context.getData(RequestDispatcher.KEY_CURRENT_RULE);
         contentProvider.produce(currentRule, expectedResponse);
 
-        Assert.assertEquals(new String(bos.toByteArray()), new String(expectedBos.toByteArray()));
+        // verify extra contents like headers and output stream
+
+        for (Pair<String, String> pair : expectedHeaderList) {
+            verify(response).addHeader(pair.getKey(), pair.getValue());
+        }
+
+        Assert.assertEquals(new String(responseBos.toByteArray()), new String(expectedBos.toByteArray()));
 
     }
 

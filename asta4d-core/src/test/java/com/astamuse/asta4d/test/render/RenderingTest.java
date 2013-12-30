@@ -57,8 +57,10 @@ public class RenderingTest extends BaseTest {
             renderer.add("#testadd", "+v", "2");
             renderer.add("#testaddexisted", "+v", "2");
             renderer.add("#testremovebynull", "v", null);
+            renderer.add("#testremovebyClear", "v", Clear);
             renderer.add("#testremovebyminus", "-v", "");
             renderer.add("#testremovebyaddnull", "+v", null);
+            renderer.add("#testremovebyaddClear", "+v", Clear);
             renderer.add("#testset", "v", "2");
             return renderer;
         }
@@ -90,10 +92,14 @@ public class RenderingTest extends BaseTest {
         }
 
         public Renderer clearNode() {
-            Renderer render = Renderer.create("#byClearNode", Clear);
+            Renderer render = Renderer.create("#byClearRenderer", Clear);
 
-            render.addDebugger("ClearNode");
-            render.addDebugger("ClearNode");
+            render.add("#byNullObj", (Object) null);
+
+            render.add("#byNullString", (String) null);
+
+            render.add("#byClearRenderer2", 1 == 1 ? Clear : "XX");
+
             return render;
         }
 
