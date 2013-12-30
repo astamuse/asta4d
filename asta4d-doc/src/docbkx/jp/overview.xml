@@ -52,7 +52,7 @@
 	  90%以上減らすことができます。
 	  </para>
       
-      <programlisting language="php">
+      <programlisting language="xml">
 <![CDATA[
 <section>
 	<article>
