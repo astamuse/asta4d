@@ -190,7 +190,7 @@ Thus, we created Asta4D.
 
 We are working for creating a maven archetype, before it finished, the quickest way to start with Asta4D is 
 [download our sample project](http://astamuse.github.io/asta4d/download/asta4d-sample_newest.zip)
-as a prototype. Asta4D projects is structured by Maven 3, so you have to install Maven 3 at first. After install Maven 3, extract your
+as a prototype. Asta4D projects is structured by Maven 3, so you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After install Maven 3, extract your
 downloaded file and go to the root foler(the folder with pom.xml file), start the sample project by the following command:
 
     ```
