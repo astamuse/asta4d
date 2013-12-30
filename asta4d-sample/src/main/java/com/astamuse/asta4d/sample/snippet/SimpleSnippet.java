@@ -40,11 +40,12 @@ public class SimpleSnippet {
     public Renderer setProfile() {
         Renderer render = new GoThroughRenderer();
         render.add("p#name span", "asta4d");
-        render.add("p#age span", "20");
+        render.add("p#age span", 20);
         return render;
     }
 
     // @ShowCode:showSnippetEnd
+
     // @ShowCode:showVariableinjectionStart
     public Renderer setProfileByVariableInjection(String name, int age) {
         Renderer render = new GoThroughRenderer();

@@ -56,7 +56,11 @@ public class UrlRules implements UrlMappingRuleInitializer {
         rules.add("/app/index", "/templates/index.html");
 
         rules.add("/app/snippet", "/templates/snippet.html");
+        
+        // @ShowCode:showVariableinjectionStart
         rules.add("/app/{name}/{age}", "/templates/variableinjection.html").priority(1);
+        // @ShowCode:showVariableinjectionEnd
+        
         rules.add("/app/attributevalues", "/templates/attributevalues.html");
 
         rules.add("/app/extend/appendchild", "/templates/extend/appendchild.html");
@@ -71,11 +75,13 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add("/app/", "/templates/index.html");
 
+        // @ShowCode:showSuccessStart
         rules.add("/app/handler")
              .handler(LoginHandler.class)
              .handler(EchoHandler.class)
              .forward(LoginFailure.class, "/templates/error.html")
              .forward("/templates/success.html");
+        // @ShowCode:showSuccessEnd
         
 
         rules.add("/app/renderertypes", "/templates/renderertypes.html");

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.astamuse.asta4d.sample.forward.LoginFailure;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 
+//@ShowCode:showSuccessStart
 public class LoginHandler {
 
     @RequestHandler
@@ -38,3 +39,4 @@ public class LoginHandler {
         return null;
     }
 }
+// @ShowCode:showSuccessEnd
