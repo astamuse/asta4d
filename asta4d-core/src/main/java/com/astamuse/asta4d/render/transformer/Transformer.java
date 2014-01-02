@@ -19,12 +19,25 @@ package com.astamuse.asta4d.render.transformer;
 
 import org.jsoup.nodes.Element;
 
-public abstract class Transformer<T> {
+import com.astamuse.asta4d.render.test.TestableRendering;
+
+public abstract class Transformer<T> implements TestableRendering {
+
+    // I want Optional in java 8
+    private boolean originalDataConfigured = false;
+
+    private Object originalData = null;
 
     private T content;
 
     public Transformer(T content) {
         this.content = content;
+    }
+
+    public Transformer(T content, Object originalData) {
+        this.content = content;
+        this.originalDataConfigured = true;
+        this.originalData = originalData;
     }
 
     public Element invoke(Element elem) {
@@ -40,6 +53,20 @@ public abstract class Transformer<T> {
 
     public T getContent() {
         return content;
+    }
+
+    @Override
+    public Object retrieveTestableData() {
+        if (originalDataConfigured) {
+            return originalData;
+        } else {
+            return content;
+        }
+    }
+
+    public void setOringialData(Object originalData) {
+        this.originalData = originalData;
+        this.originalDataConfigured = true;
     }
 
     @Override

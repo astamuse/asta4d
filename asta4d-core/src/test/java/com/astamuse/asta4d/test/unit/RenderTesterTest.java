@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.test.unit;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -30,6 +32,8 @@ public class RenderTesterTest extends BaseTest {
         render.add("#someIdForLong", 12345L);
         render.add("#someIdForBool", true);
         render.add("#someIdForStr", "a str");
+        render.add("#someIdForNull", (Object) null);
+        render.add("#someIdForClear", Clear);
 
         Element newChild = ElementUtil.parseAsSingle("<div></div>");
         render.add("#someIdForElementSetter", new ChildReplacer(newChild));
@@ -44,6 +48,9 @@ public class RenderTesterTest extends BaseTest {
         Assert.assertEquals(tester.get("#someIdForLong"), 12345L);
         Assert.assertEquals(tester.get("#someIdForBool"), true);
         Assert.assertEquals(tester.get("#someIdForStr"), "a str");
+        Assert.assertEquals(tester.get("#someIdForNull"), null);
+        Assert.assertEquals(tester.get("#someIdForClear"), Clear);
+
         Assert.assertEquals(tester.get("#someIdForElementSetter"), new ChildReplacer(ElementUtil.parseAsSingle("<div></div>")));
 
         Assert.assertEquals(tester.get("#someIdForElement"), TestableElementWrapper.parse("<div>eee</div>"));

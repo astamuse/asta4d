@@ -21,17 +21,16 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.render.test.TestableElementSetter;
+import com.astamuse.asta4d.render.test.TestableRendering;
 import com.astamuse.asta4d.util.Asta4DWarningException;
 
 /**
- * A TextSetter will empty the target element at first, then add a new text node
- * to the target element
+ * A TextSetter will empty the target element at first, then add a new text node to the target element
  * 
  * @author e-ryu
  * 
  */
-public class TextSetter implements ElementSetter, TestableElementSetter {
+public class TextSetter implements ElementSetter, TestableRendering {
 
     private final static Logger logger = LoggerFactory.getLogger(TextSetter.class);
 

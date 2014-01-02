@@ -24,7 +24,7 @@ import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
-import com.astamuse.asta4d.render.test.TestableElementSetter;
+import com.astamuse.asta4d.render.test.TestableRendering;
 import com.astamuse.asta4d.util.IdGenerator;
 
 /**
@@ -57,7 +57,7 @@ import com.astamuse.asta4d.util.IdGenerator;
  * @author e-ryu
  * 
  */
-public class AttributeSetter implements ElementSetter, TestableElementSetter {
+public class AttributeSetter implements ElementSetter, TestableRendering {
 
     private static enum ActionType {
         SET {

@@ -23,6 +23,10 @@ import com.astamuse.asta4d.util.ElementUtil;
 
 public class ElementTransformer extends Transformer<Element> {
 
+    public ElementTransformer(Element content, Object originalData) {
+        super(content, originalData);
+    }
+
     public ElementTransformer(Element content) {
         super(content);
     }

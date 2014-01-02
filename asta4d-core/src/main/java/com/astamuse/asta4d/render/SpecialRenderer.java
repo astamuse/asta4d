@@ -14,7 +14,7 @@ public enum SpecialRenderer {
     Clear {
         @Override
         Transformer<?> getTransformer() {
-            return new ElementRemover();
+            return new ElementRemover(Clear);
         }
 
     };

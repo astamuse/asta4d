@@ -88,7 +88,7 @@ public class RendererTester {
     @SuppressWarnings("rawtypes")
     public Object get(String selector) {
         Transformer t = retrieveSingleTransformerOnSelector(selector);
-        Object content = retrieveContentFromTransformer(t);
+        Object content = retrieveTestContentFromTransformer(t);
         return content;
     }
 
@@ -102,16 +102,20 @@ public class RendererTester {
             @SuppressWarnings("unchecked")
             @Override
             public T convert(int rowIndex, Transformer<?> transformer) {
-                Object content = retrieveContentFromTransformer(transformer);
+                Object content = retrieveTestContentFromTransformer(transformer);
                 return (T) content;
             }
         });
     }
 
-    private Object retrieveContentFromTransformer(Transformer<?> transformer) {
-        Object content = transformer.getContent();
-        if (content != null && content instanceof TestableElementSetter) {
-            content = ((TestableElementSetter) content).retrieveTestableData();
+    private Object retrieveTestContentFromTransformer(Transformer<?> transformer) {
+        Object content = null;
+        if (transformer instanceof TestableRendering) {
+            content = ((TestableRendering) transformer).retrieveTestableData();
+        }
+
+        if (content != null && content instanceof TestableRendering) {
+            content = ((TestableRendering) content).retrieveTestableData();
         }
 
         if (content != null && content instanceof Element) {
@@ -125,8 +129,7 @@ public class RendererTester {
     }
 
     /**
-     * This method is only for retrieving rendered value of "+class" and
-     * "-class" attr action
+     * This method is only for retrieving rendered value of "+class" and "-class" attr action
      * 
      * @param selector
      * @param attr
