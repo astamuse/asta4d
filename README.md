@@ -231,17 +231,28 @@ Additionally, there is a [Japanese document](http://astamuse.github.com/asta4d/u
 
     We also use request hanlders to prepare the "target data" for the target page. A significant point is that preparing "target data" does not mean MVC architecture, we just query a simple entity or build a pojo to **represent the normalized condition** of the target page. 
 
-## Todo list
+## Todo
 
 Immediate tasks: 
 
 -   cachable snippet
 
-    (a rendered snippet result should can be cached)
+    A rendered snippet result should can be cached.
 
 -   Rendering helper for validation
     
-    (not implementing validaiton which should use third-party implementations such as [JSR 303](http://beanvalidation.org/), just help rendering validation result easier)
+    Not implementing validaiton which should use third-party implementations such as [JSR 303/349](http://beanvalidation.org/), just help rendering validation result easier.
+
+Want to do: 
+
+-   convertable context data annotation
+
+    Since Java does not support inheriting from annotation, we nned a mechanism to convert any annotation to the default @ContextData annotation for better producibility.
+
+-   default value of context data
+    
+    The current @ContextData does not support declaring default value, we need support it and additionally Unified EL([JSR341](https://jcp.org/en/jsr/detail?id=341)) is desired.
+
 
 
 ## Questions and answers
