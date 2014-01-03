@@ -55,8 +55,7 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 
 /**
  * 
- * This class is a functions holder which supply the ability of applying
- * rendereres to certain Element.
+ * This class is a functions holder which supply the ability of applying rendereres to certain Element.
  * 
  * @author e-ryu
  * 
@@ -74,13 +73,10 @@ public class RenderUtil {
     }
 
     /**
-     * Find out all the snippet in the passed Document and execute them. The
-     * Containing embed tag of the passed Document will be exactly mixed in here
-     * too. <br>
-     * Recursively contained snippets will be executed from outside to inside,
-     * thus the inner snippets will not be executed until all of their outer
-     * snippets are finished. Also, the dynamically created snippets and embed
-     * tags will comply with this rule too.
+     * Find out all the snippet in the passed Document and execute them. The Containing embed tag of the passed Document will be exactly
+     * mixed in here too. <br>
+     * Recursively contained snippets will be executed from outside to inside, thus the inner snippets will not be executed until all of
+     * their outer snippets are finished. Also, the dynamically created snippets and embed tags will comply with this rule too.
      * 
      * @param doc
      *            the Document to apply snippets
@@ -314,7 +310,12 @@ public class RenderUtil {
         List<Element> elemList = new ArrayList<>(target.select(selector));
 
         if (elemList.isEmpty()) {
-            if (renderAction.isOutputMissingSelectorWarning()) {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                Renderer alternativeRenderer = ((ElementNotFoundHandler) currentRenderer).alternativeRenderer();
+                if (alternativeRenderer != null) {
+                    apply(target, alternativeRenderer);
+                }
+            } else if (renderAction.isOutputMissingSelectorWarning()) {
                 String creationInfo = currentRenderer.getCreationSiteInfo();
                 if (creationInfo == null) {
                     creationInfo = "";
@@ -328,6 +329,11 @@ public class RenderUtil {
             }
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
+        } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
+            }
         }
 
         List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
@@ -373,8 +379,7 @@ public class RenderUtil {
     }
 
     /**
-     * Clear the redundant elements which are usually created by
-     * snippet/renderer applying.If the forFinalClean is true, all the finished
+     * Clear the redundant elements which are usually created by snippet/renderer applying.If the forFinalClean is true, all the finished
      * snippet tags will be removed too.
      * 
      * @param target

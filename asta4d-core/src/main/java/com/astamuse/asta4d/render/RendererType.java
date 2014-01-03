@@ -42,5 +42,10 @@ enum RendererType {
     /**
      * a renderer which will change the action style of rendering process
      */
-    RENDER_ACTION
+    RENDER_ACTION,
+
+    /**
+     * a renderer which will handle the case that the specified selector is not found
+     */
+    ELEMENT_NOT_FOUND_HANDLER
 }
