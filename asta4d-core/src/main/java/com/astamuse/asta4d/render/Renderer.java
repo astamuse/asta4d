@@ -864,7 +864,7 @@ public class Renderer {
      * @see {@link RenderActionStyle#ENABLE_MISSING_SELECTOR_WARNING}
      * 
      */
-    public Renderer eableMissingSelectorWarning() {
+    public Renderer enableMissingSelectorWarning() {
         return this.add(new RenderActionRenderer(RenderActionStyle.ENABLE_MISSING_SELECTOR_WARNING));
     }
 
