@@ -3,26 +3,33 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
       , <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
-    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction of Asta4D</a></span></dt><dt><span class="part"><a href="#asta4d-functionality">II. Functions of Asta4D</a></span></dt></dl></div>
+    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">2. Inheritable template and parameterized embed file</a></span></dt><dt><span class="chapter"><a href="#overview">3. Splitted rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#overview">4. Renderer: easy to use, secure, testable</a></span></dt><dt><span class="chapter"><a href="#overview">5. View first URL mapping and variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e76">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e78">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e80">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e82">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e86">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e88">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e90">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e92">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
   
 
   
 
   
 
-  <div class="part"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-introduction"></a>Part&nbsp;I.&nbsp;Introduction of Asta4D</h1></div></div></div>
+  <div class="part"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-introduction"></a>Part&nbsp;I.&nbsp;Introduction</h1></div></div></div>
     
 
+    
     <div class="partintro"><div></div>
-      <p>Asta4D is a web application framework which is friendly to design and flexible to development.</p>
+      <p>
+      Asta4D is a web application framework which is friendly to designer and flexible to developer. Asta4D affords
+      high productivity than traditional MVC architecture by View First architecture. It also allows front-end engineers 
+      and back-end engineers work independently without interference by separating rendering logic from template files.
+      </p>
       
-      <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>1.&nbsp;Overview of Asta4D</h2></div></div></div>
-  
+      <p>
+      Asta4D is inspired by lift which is a famous scala web application framework and it is developed by astamuse company Ltd.
+      locating at Tokyo Japan. We are concentrating on global innovation support and developing Asta4D for our own services.
+      Currently, Asta4D is driving our new service development.
 
-  <p>Asta4D is inspired by lift which is a famous scala web application framework. Asta4D is therefore 
-  developed as an alternative of lift for Java. If you like scala, we strongly recommend lift for you 
-  and if you&#8216;d like to enjoy the benefit of lift while still staying with Java, we believe our Asta4D 
-  is your best fit.</p>
+      </p>
+    </div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>1.&nbsp;Why Asta4D</h2></div></div></div>
+  
   
   <p>In the past decade, plenty of Java based web application frameworks are generated. Especially the MVC 
   architecture and JSP tag libs (or other traditional template technologies) that has greatly released our productivity. 
@@ -42,207 +49,155 @@
       approach like traditional PHP/ASP development.</p>
     </li></ul></div>
   
-  <p>Asta4D is our solution to combat those issues. Thanks to lift, from where we learn a lot, and try to bring them into the Java&#8217;s world. 
-  We designed Asta4D complying with the following points:
+  <p>Asta4D is our solution to combat those issues. Thanks to lift, from where we learn a lot. We designed Asta4D complying
+  with the following points:
   </p>
   
   <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
       <p>Separate template and rendering logic</p>
-	  <p>There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily maintained by 
-      front-end developers, it is very design friendly and we can reduce the workload for source refactoring by over 90%. 
-	  </p>
-      
-      <pre class="programlisting">
-
-&lt;section&gt;
-	&lt;article&gt;
-		&lt;div afd:render=<span class="hl-string">"SimpleSnippet"</span>&gt;dummy text&lt;/div&gt;
-		&lt;afd:snippet render=<span class="hl-string">"SimpleSnippet:setProfile"</span>&gt;
-			&lt;p id=<span class="hl-string">"name"</span>&gt;name:&lt;span&gt;dummy name&lt;/span&gt;&lt;/p&gt;
-			&lt;p id=<span class="hl-string">"age"</span>&gt;age:&lt;span&gt;<span class="hl-number">0</span>&lt;/span&gt;&lt;/p&gt;
-		&lt;/afd:snippet&gt;
-	&lt;/article&gt;
-&lt;/section&gt;
-
-      </pre>      
-      
-      
-	  <p>The rendering logic is secluded to an independent java class, developers do not need to learn any new template language, they can continue to use 
-      their familiar Java to describe how they want to render the page with the full power of Java language.
-	  </p>
-	  
-      <pre class="programlisting">
-
-
-<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SimpleSnippet {
-
-    <span class="hl-keyword">public</span> Renderer render(String name) {
-        <span class="hl-keyword">if</span> (StringUtils.isEmpty(name)) {
-            name = <span class="hl-string">"Asta4D"</span>;
-        }
-        Element element = 
-ElementUtil.parseAsSingle(<span class="hl-string">"&lt;span&gt;Hello "</span> + name + <span class="hl-string">"!&lt;/span&gt;"</span>);
-        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"*"</span>, element);
-    }
-
-    <span class="hl-keyword">public</span> Renderer setProfile() {
-        Renderer render = <span class="hl-keyword">new</span> GoThroughRenderer();
-        render.add(<span class="hl-string">"p#name span"</span>, <span class="hl-string">"asta4d"</span>);
-        render.add(<span class="hl-string">"p#age span"</span>, <span class="hl-string">"20"</span>);
-        <span class="hl-keyword">return</span> render;
-    }
-}
-
-
-      </pre>
-	  
-    </li><li class="listitem">
-      <p>View first without controller and a powerful and easy to use URL matching mechanism</p>
-      <p>We agree with that MVC is a great and powerful architecture, but it is counterproductive. For years, Java programmers have been 
-      desiring for a solution that is efficient to develop like traditional PHP/ASP development. The essential reason of why traditional 
-      PHP/ASP development is efficient is the answer called &#8220;View First&#8221;. In a view first developing style, a developer will implement the 
-      logic at where the result is supposed to be shown, which is how the traditional PHP/ASP development performs. 
+      <p>Asta4D affords front-end engineers a friendly environment by separating rendering logic from template files which
+      are pure html files. At the mean time, back-end engineers can use the powerful Java language to implement the rendering
+      logic without being suffering from the "poor and sometimes magic" template languages.
       </p>
-      
-      <p>Many people would argue that the implementation on site will cause the source becomes more complex and hard to understand. 
-      This is not wrong, but we have separated our template file from rendering logic, so it is no longer a problem. In terms of productivity, 
-      the developers can therefore concentrate on the real development without worrying about complicating source structure.
-      </p>
-      
-      <p>We also supply a powerful and easy way to configure URL matching rules with a sort of human friendly configuration api.</p>
-
-      <pre class="programlisting">
-
-
-        rules.add(<span class="hl-string">"/app/"</span>, <span class="hl-string">"/templates/index.html"</span>);
-
-        rules.add(<span class="hl-string">"/app/handler"</span>)
-             .handler(LoginHandler.<span class="hl-keyword">class</span>)
-             .handler(EchoHandler.<span class="hl-keyword">class</span>)
-             .forward(LoginFailure.<span class="hl-keyword">class</span>, <span class="hl-string">"/templates/error.html"</span>)
-             .forward(<span class="hl-string">"/templates/success.html"</span>);
-
-
-
-      </pre>
-      
     </li><li class="listitem">
-      <p>Simple but flexible process flow</p>
-      
-      <p>There is no controller in our framework, we believe there should be a certain party which should take the responsibility of 
-      a certain request, we called the certain party as request handlers. We assume that a sort of request handlers will try to supply 
-      certain content to the client who sends the request, so a request handler will supply a content provider which will produce the real 
-      content and then a content writer will take the obligation of writing the content back to the client.</p>
-      
-      <p>Thus, an ajax or Restful request can be simply forwarded to a request handler which will supply the result. </p>
-      
-      <p>JSON:</p>
-      <pre class="programlisting">
-
-
-rules.add(<span class="hl-string">"/app/ajax/getUserList"</span>).handler(GetUserListHandler.<span class="hl-keyword">class</span>).json();
-
-<span class="hl-comment">//...</span>
-
-<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> GetUserListHandler {
-
-    <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>
-    <span class="hl-keyword">public</span> List&lt;String&gt; queryUserList() {
-        <span class="hl-keyword">return</span> Arrays.asList(<span class="hl-string">"otani"</span>, <span class="hl-string">"ryu"</span>, <span class="hl-string">"mizuhara"</span>);
-    }
-}
-
-
-
-      </pre>
-
-      <p>Restful:</p>
-      <pre class="programlisting">
-
-
-rules.add(PUT, <span class="hl-string">"/app/ajax/addUser"</span>).handler(AddUserHandler.<span class="hl-keyword">class</span>).rest();
-
-<span class="hl-comment">//...</span>
-
-<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> AddUserHandler {
-
-    <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>
-    <span class="hl-keyword">public</span> HeaderInfo doAdd(String newUserName) {
-        <span class="hl-comment">// some logic that should add a new user by the given name</span>
-        <span class="hl-comment">// ...</span>
-        <span class="hl-keyword">return</span> <span class="hl-keyword">new</span> HeaderInfo(<span class="hl-number">200</span>);
-    }
-}
-
-
-
-      </pre>
-
+      <p>View first without controller</p>
+      <p>Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also
+      easier to change than MVC architecture.</p>
     </li><li class="listitem">
-      <p>Isolate side effect with request handler and multi-threaded page rendering</p>
-      
-      <p>There are two types of action in a system, one is with &#8220;side effect&#8221;, another one is without &#8220;side effect&#8221;. 
-      &#8220;actions with side effect&#8221; are ones that will change the system status once they are performed. For instance, 
-      for the same URL, a login request (if succeeded) will cause a client&#8217;s privilege to be changed and the client 
-      could probably get a different page view from what the client get before login, because of which we say a login 
-      request is an action with side effect. Another obvious example is a database update operation. Once an update is 
-      committed, all the related clients will get a different output from the result before the update, which is also 
-      classified as &#8220;an action with side effect&#8221;. How about a query? We consider a query as an operation without side effect, 
-      it means that a client will always get the same result regardless of how many times the query is executed.</p>
-      
-      <p>We believe the actions with side effect should be managed seriously and we do that by putting all the actions 
-      with side effect to request handlers so that the view layer is purified and this makes the source more clear and maintainable. 
-      This is also means with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free.
+      <p>Isolate side effect with request handler</p>
+      <p>Asta4D imports the conception of "side-effect" from functional programming languages and separating the "side-effect"
+      by request handlers, which afford more flexibility on page rendering because the view layer is side-effect free now. Therefore
+      Asta4D allows parallel page rendering in multiple threads as a built-in feature.
       </p>
-      
-      <p>paralle snippet rendering:</p>
-      <pre class="programlisting">
-
-
-&lt;div afd:render=<span class="hl-string">"ParallelTest$TestRender:snippetInDiv"</span> afd:parallel&gt;
-    &lt;div id=<span class="hl-string">"test"</span>&gt;xx&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;afd:snippet render=<span class="hl-string">"ParallelTest$TestRender:snippetReplaceDiv"</span> parallel&gt;
-    &lt;div id=<span class="hl-string">"test"</span>&gt;xx&lt;/div&gt;
-&lt;/afd:snippet&gt;
-
-
-
-      </pre>      
-      
-      <p>parallel list rendering:</p>
-      <pre class="programlisting">
-
-
-Renderer renderer = Renderer.create(<span class="hl-string">"div#test"</span>, list, <span class="hl-keyword">new</span> ParallelDataConvertor&lt;String, String&gt;() {
-                <em><span class="hl-annotation" style="color: gray">@Override</span></em>
-                <span class="hl-keyword">public</span> String convert(String obj) {
-                    <span class="hl-keyword">try</span> {
-                        Thread.sleep(<span class="hl-number">1000</span>);
-                    } <span class="hl-keyword">catch</span> (InterruptedException e) {
-                        <span class="hl-keyword">throw</span> <span class="hl-keyword">new</span> RuntimeException(e);
-                    }
-                    <span class="hl-keyword">return</span> obj + <span class="hl-string">"-sleep"</span>;
-                }
-            });
-
-
-
-
-      </pre> 
-      
     </li></ul></div> 
-  
-</div>
-      
 
-    </div>
+</div>
   </div>
   
-  <div class="part"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-functionality"></a>Part&nbsp;II.&nbsp;Functions of Asta4D</h1></div></div></div>
+  <div class="part"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Part&nbsp;II.&nbsp;User Guide</h1></div></div></div>
     
-    <p>...</p>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>2.&nbsp;Inheritable template and parameterized embed file</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>3.&nbsp;Splitted rendering logic from template</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>4.&nbsp;Renderer: easy to use, secure, testable</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>5.&nbsp;View first URL mapping and variable injection</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>6.&nbsp;Side-effect and request handler</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>7.&nbsp;Impement request handler and url mapping</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+  </div>  
+
+  <div class="part"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-reference"></a>Part&nbsp;III.&nbsp;Reference</h1></div></div></div>
+    
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>8.&nbsp;Template</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>9.&nbsp;Snippet</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>10.&nbsp;Variable injection</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>11.&nbsp;URL rule</h2></div></div></div>
+  
+  
+  <p>...</p>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Request Handler</h2></div></div></div>
+  
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e76"></a>12.1&nbsp;Implementation</h2></div></div></div>
+  
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e78"></a>12.2&nbsp;Content provider</h2></div></div></div>
+  
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e80"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
+  
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e82"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
+  
+  </div>
+  
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>13.&nbsp;Extended request handler usage</h2></div></div></div>
+  
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e86"></a>13.1&nbsp;Restful</h2></div></div></div>
+  
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e88"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e90"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
+  
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e92"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
+  
+  </div>
+
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>14.&nbsp;i18n</h2></div></div></div>
+  
+  
+  <p>...</p>
+  
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>15.&nbsp;Asta4dServlet and configuration</h2></div></div></div>
+  
+  
+  <p>...</p>
+  
+</div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>16.&nbsp;Integration with Spring</h2></div></div></div>
+  
+  
+  <p>...</p>
+  
+</div>
   </div>  
   
 </div></body></html>
