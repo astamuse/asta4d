@@ -84,6 +84,7 @@
             <useExtensions>1</useExtensions>
             <highlightSource>1</highlightSource>
             <tocMaxDepth>3</tocMaxDepth>
+            <tocSectionDepth>3</tocSectionDepth>
             <entities>
                 <entity>
                     <name>version</name>
