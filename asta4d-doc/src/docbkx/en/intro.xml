@@ -60,7 +60,31 @@
       Asta4D allows parallel page rendering in multiple threads as a built-in feature.
       </para>
     </listitem>
-   
-  </itemizedlist> 
+  </itemizedlist>
 
+  <para>The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:</para> 
+  
+  <itemizedlist>
+    <listitem>
+      <para>For Designer</para>
+      <para>Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their
+      maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>For developer</para>
+      <para>We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex
+      rendering logic because they can use powerful Java language to do whatever they want since the rendering has been splitted from
+      template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup
+      of coffee.</para>
+    </listitem>
+    
+    <listitem>
+      <para>4 Dimension</para>
+      <para>We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just
+      like we are going through the 4 dimensional space.
+      </para>
+    </listitem>
+  </itemizedlist>
 </chapter>
