@@ -32,7 +32,6 @@
 
   <part id="asta4d-introduction">
     <title>Introduction</title>
-
     
     <partintro id="asta4d-intro">
       <para>
@@ -50,7 +49,7 @@
     </partintro>
     <xi:include href="en/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>
-  
+
   <part id="asta4d-user-guide">
     <title>User Guide</title>
     <xi:include href="en/inheritable_template.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

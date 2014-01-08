@@ -9,6 +9,108 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Inheritable template and parameterized embed file</title>
   
-  <para>...</para>
+  <itemizedlist>
+    <listitem>
+      <para>Inheritable template</para>
+      <para>
+      The template of Asta4D is inheritable, child template can override, append or insert content to certain place
+      in parent template. Let's see a sample:
+      
+      </para>
+      <example><title>parent.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<html>   
+    <head>   
+        <afd:block id="block1">   
+            <link href="parent1.css" rel="stylesheet" type="text/css" />   
+        </afd:block>   
+           
+        <afd:block id="block2">   
+            <link href="parent2.css" rel="stylesheet" type="text/css" />   
+        </afd:block>   
+  
+        <title>extension sample</title>   
+    </head>   
+    <body>   
+        <afd:block id="content">content</afd:block>   
+    </body>   
+</html>
+]]>
+      </programlisting>
+      </example>
+
+      <para>Child template can declare inheritance by "afd:extension" and overriding can be declared by "afd:block":</para>
+      <example id="template-child"><title>child.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<html>   
+<head></head>   
+<body>   
+<!-- (1) -->   
+<afd:extension parent="parent.html">   
+  
+    <!-- (2) -->   
+    <afd:block append="block1">   
+        <link href="child1.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+  
+    <!-- (3) -->   
+    <afd:block insert="block2">   
+        <link href="child2.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+  
+    <!-- (4) -->   
+    <afd:block override="content ">   
+        <div>hello</div>   
+        <!-- (5) -->   
+        <afd:embed target="/templates/embed.html" ></afd:embed>   
+    </afd:block>   
+  
+</afd:extension>   
+</body>   
+</html> 
+]]>
+      </programlisting>
+      </example>
+      
+      <para>
+      "afd:block" support 3 types action: insert, append and override. In the <xref linkend="template-child"/>, there is an 
+      additional declaration of including by "afd:embed" which embed the target file to the current place of the current file.
+      Let's see the embed.html:
+      </para>
+      <example id="template-child"><title>embed.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<html>   
+<head></head>   
+<body>   
+    <!-- (6) -->   
+    <afd:block append="block1">   
+        <link href="embed.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+    <div>good embed</div>   
+</body>   
+</html>   
+]]>
+      </programlisting>
+      </example>
+      
+      <para>
+      The "afd:block" declaration in the embeded target file is available after the target file is inserted into the 
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>The developers are complaining about the poor functionalities of template language which they are using 
+      and tired from the various magic skills for complex rendering logic.</para>
+    </listitem>
+
+    <listitem>
+      <para>3.	The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
+      approach like traditional PHP/ASP development.</para>
+    </listitem>
+
+  </itemizedlist>
 
 </chapter>
