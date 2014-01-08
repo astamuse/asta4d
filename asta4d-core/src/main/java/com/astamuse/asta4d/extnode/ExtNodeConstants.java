@@ -75,6 +75,7 @@ public class ExtNodeConstants {
     public final static String GROUP_NODE_ATTR_TYPE = "type";
     public final static String GROUP_NODE_ATTR_TYPE_USERDEFINE = "userdefine";
     public final static String GROUP_NODE_ATTR_TYPE_FAKE = "fake";
+    public final static String GROUP_NODE_ATTR_TYPE_TEMPLATE_WRAPPER = "template_wrapper";
 
     public final static String MSG_NODE_NAME = "msg";
     public final static String MSG_NODE_TAG = addNS(MSG_NODE_NAME);

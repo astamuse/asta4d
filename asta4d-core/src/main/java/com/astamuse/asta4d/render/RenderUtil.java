@@ -55,8 +55,7 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 
 /**
  * 
- * This class is a functions holder which supply the ability of applying
- * rendereres to certain Element.
+ * This class is a functions holder which supply the ability of applying rendereres to certain Element.
  * 
  * @author e-ryu
  * 
@@ -74,13 +73,10 @@ public class RenderUtil {
     }
 
     /**
-     * Find out all the snippet in the passed Document and execute them. The
-     * Containing embed tag of the passed Document will be exactly mixed in here
-     * too. <br>
-     * Recursively contained snippets will be executed from outside to inside,
-     * thus the inner snippets will not be executed until all of their outer
-     * snippets are finished. Also, the dynamically created snippets and embed
-     * tags will comply with this rule too.
+     * Find out all the snippet in the passed Document and execute them. The Containing embed tag of the passed Document will be exactly
+     * mixed in here too. <br>
+     * Recursively contained snippets will be executed from outside to inside, thus the inner snippets will not be executed until all of
+     * their outer snippets are finished. Also, the dynamically created snippets and embed tags will comply with this rule too.
      * 
      * @param doc
      *            the Document to apply snippets
@@ -92,6 +88,9 @@ public class RenderUtil {
         if (doc == null) {
             return;
         }
+
+        applyClearAction(doc, false);
+
         // retrieve ready snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
                 ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
@@ -373,14 +372,22 @@ public class RenderUtil {
     }
 
     /**
-     * Clear the redundant elements which are usually created by
-     * snippet/renderer applying.If the forFinalClean is true, all the finished
+     * Clear the redundant elements which are usually created by snippet/renderer applying.If the forFinalClean is true, all the finished
      * snippet tags will be removed too.
      * 
      * @param target
      * @param forFinalClean
      */
     public final static void applyClearAction(Element target, boolean forFinalClean) {
+        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
+                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
+        ElementUtil.removeNodesBySelector(target, fakeGroup, true);
+
+        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
+        ElementUtil.removeNodesBySelector(target, clearGroup, false);
+
+        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
+
         if (forFinalClean) {
             String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
                     ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
@@ -389,15 +396,6 @@ public class RenderUtil {
             ElementUtil.removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
             ElementUtil.removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
         }
-
-        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
-                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
-        ElementUtil.removeNodesBySelector(target, fakeGroup, false);
-
-        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
-        ElementUtil.removeNodesBySelector(target, clearGroup, false);
-
-        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
 
     }
 

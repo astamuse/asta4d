@@ -17,27 +17,46 @@
 
 package com.astamuse.asta4d.test.render;
 
+import org.testng.annotations.Test;
+
+import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 
 public class TemplateExtractionTest extends BaseTest {
 
+    @Test
     public void loadTempateWithExtension() {
         new SimpleCase("TemplateWithExtension.html");
     }
 
+    public static class RenderException {
+        public Renderer render() {
+            throw new RuntimeException("this method should not be invoked");
+        }
+    }
+
+    @Test
+    public void loadTempateWithClear() {
+        new SimpleCase("TemplateWithClear.html");
+    }
+
+    @Test
     public void loadTempateWithEmbed() {
         new SimpleCase("TemplateWithEmbed.html");
     }
 
+    @Test
     public void loadTempateWithEmbedBaseFolder() {
         new SimpleCase("TemplateWithEmbedBaseFolder.html");
     }
 
+    @Test
     public void loadTempateWithExtensionAndEmbedMerge() {
         new SimpleCase("TemplateWithExtensionAndEmbedMerge.html");
     }
 
+    @Test
     public void loadTemplateWithThreeLevelExtension() {
         new SimpleCase("ThreeLevelExtension_Child.html");
     }
