@@ -209,7 +209,7 @@ public class TemplateUtil {
                 Elements children = embedDoc.body().children();
                 Element wrappingNode = ElementUtil.wrapElementsToSingleNode(children);
         */
-        Element wrappingNode = new GroupNode(ExtNodeConstants.GROUP_NODE_ATTR_TYPE_TEMPLATE_WRAPPER);
+        Element wrappingNode = new GroupNode(ExtNodeConstants.GROUP_NODE_ATTR_TYPE_EMBED_WRAPPER);
         // retrieve all the blocks that misincluded into head
         Element head = embedDoc.head();
         Elements headChildren = head.children();
