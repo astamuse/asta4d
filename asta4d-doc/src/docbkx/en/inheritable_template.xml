@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="chapter-Inheritable-template"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -15,7 +15,6 @@
       <para>
       The template of Asta4D is inheritable, child template can override, append or insert content to certain place
       in parent template. Let's see a sample:
-      
       </para>
       <example><title>parent.html</title>
       <programlisting language="xml">
@@ -75,9 +74,14 @@
       </example>
       
       <para>
-      "afd:block" support 3 types action: insert, append and override. In the <xref linkend="template-child"/>, there is an 
-      additional declaration of including by "afd:embed" which embed the target file to the current place of the current file.
-      Let's see the embed.html:
+      "afd:block" support 3 types action: insert, append and override. 
+      </para>
+      
+      <sbr/>
+      
+      <para>
+      In the <xref linkend="template-child"/>, there is an additional declaration of including by "afd:embed" which embed 
+      the target file to the current place of the current file. Let's see the embed.html:
       </para>
       <example id="template-child"><title>embed.html</title>
       <programlisting language="xml">
@@ -97,20 +101,81 @@
       </example>
       
       <para>
-      The "afd:block" declaration in the embeded target file is available after the target file is inserted into the 
+      The "afd:block" declaration in the embeded target file is available after the content of target file is inserted into the
+      <xref linkend="template-child"/>, all "afd:block" tags will be treated as overriding(inserting/appending) to the parent template
+      and the contents out of "afd:blocks" will be inserted at the place where the "afd:embed" is declared.
+      </para>
+      
+      <sbr/>
+      
+      <para>After all the template files are merged, we will get the following result:</para>
+      <example><title>The result of template merging:</title>
+      <programlisting language="xml">
+<![CDATA[
+<html>   
+<head>   
+       
+    <!—block1 -->   
+    <link href="parent1.css" rel="stylesheet" type="text/css" />   
+    <link href="child1.css" rel="stylesheet" type="text/css" />   
+    <link href="embed.css" rel="stylesheet" type="text/css" />   
+  
+    <!—block2 -->   
+    <link href="child2.css" rel="stylesheet" type="text/css" />   
+    <link href="parent2.css" rel="stylesheet" type="text/css" />   
+  
+    <title>extension sample</title>   
+  
+</head>   
+<body>   
+  
+    <!—content -->   
+    <div>hello</div>   
+  
+    <!—embed -->   
+    <div>good embed</div>   
+  
+</body>   
+</html>  
+]]>
+      </programlisting>
+      </example>
+      
+      
+    </listitem>
+
+    <listitem>
+      <para>Parameterized embeding</para>
+      
+      <para>
+      Extra parameters can be passed to the target embeded file by specifying the DOM attribute of "afd:embed" when we
+      are embeding files.
+      </para>
+      
+      <example><title>Sample of parameterized embeding:</title>
+      <programlisting language="xml">
+<![CDATA[
+<afd:embed target="/xxx/showList.html" limit="30"></afd:embed>
+]]>
+      </programlisting>
+      </example>
+
+      <para>
+      The "limit" parameter can be accessed by variable injection in the rendering logic of showList.html, by which we can
+      parameterize the embeding. This feature is very useful for creating a page component which encapsulates common
+      html snippets and can be controlled by the passed parameters. Basically, embeding a file in a template file
+      is similar to calling a function with(or without) arguments. Especially, the parameters are not limited to
+      specified static values in the template file, they can be valued dynamicaly at runtime too. Furture, the
+      type of parameters is not restricted to the stringizable types such as String or Integer/Long, arbitrary Java type
+      can be specified dynamically at runtime. See the reference of Renering logic to learn more details. 
       </para>
     </listitem>
-
-    <listitem>
-      <para>The developers are complaining about the poor functionalities of template language which they are using 
-      and tired from the various magic skills for complex rendering logic.</para>
-    </listitem>
-
-    <listitem>
-      <para>3.	The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
-      approach like traditional PHP/ASP development.</para>
-    </listitem>
-
   </itemizedlist>
 
+  <para>
+  Simply, the idea of Asta4D's template system is akin to the traditional OOP model, the parent and child templates can be 
+  regarded as parent/child classes and the block can be viewed as a overridable virtual method. The embed external files can
+  be also treated as funcation calling. As a matter of fact, since arbitrary type of value can be passed to the embed files, 
+  there is actually no difference between Asta4D's embeding and common function calling.
+  </para>
 </chapter>
