@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="splitted-rendering"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -9,6 +9,97 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Splitted rendering logic from template</title>
   
-  <para>...</para>
+  <para>
+  There is no dynamic code in a template file. An Asta4D template file is always a pure HTML file which can be easily 
+  maintained by front-end developers, it is very design friendly and we can reduce the workload for source 
+  refactoring by over 90%.
+  </para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>Declare snippet class in template file</para>
+      <example><title>Sample of snippet declaration:</title>
+      <programlisting language="xml">
+<![CDATA[
+<section>  
+    <article>  
+        <div afd:render="SimpleSnippet">dummy text</div>  
+        <afd:snippet render="SimpleSnippet:setProfile">  
+            <p id="name">name:<span>dummy name</span></p>  
+            <p id="age">age:<span>0</span></p>  
+        </afd:snippet>  
+    </article>  
+</section>
+]]>
+      </programlisting>
+      </example>
+  
+      <para>
+      The "afd:render" attribute in div tag declares a Java class which is in charge of the concrete rendering logic, such Java
+      class is usually called as a snippet class. A snippet class can be declared by a "afd:snippet" tag too, as you have seen
+      in above sample. The rendering logic is secluded to independent Java classes by snippet declaration and it is not necessary
+      to learn any new template language for back-end developers. The back-end guys can achieve all the rendering logic easily
+      by powerful Java language which they have been adept to, no learning costs, no magic codes, succinct Java source only.
+      </para>
+      
+      <sbr/>
+      
+    </listitem>
+    
+    <listitem>
+      <para>Implement a snippet class</para>
+      <example><title>Sample of snippet class:</title>
+      <programlisting language="java">
+<![CDATA[
+public class SimpleSnippet {  
+  
+    public Renderer render(String name) {  
+        if (StringUtils.isEmpty(name)) {  
+            name = "Asta4D";  
+        }  
+        Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");  
+        return Renderer.create("*", element);  
+    }  
+  
+    public Renderer setProfile() {  
+        Renderer render = new GoThroughRenderer();  
+        render.add("p#name span", "asta4d");  
+        render.add("p#age span", 20);  
+        return render;  
+    }  
+}
+]]>
+      </programlisting>
+      </example>
+      
+      <para>
+      The Renderer class is provided by framework to declare rendering actions. Renderer uses traditional CSS selector to
+      reference the rendering target and receive the rendering value at the same time, amazing and powerful.
+      </para>
+      <sbr/>
+      
+      <para>If the above template file and snippet class are executed, we would get the following result:</para>
+      <example><title>Result of snippet execution:</title>
+      <programlisting language="xml">
+<![CDATA[
+<section>  
+    <article>  
+        <span>Hello Asta4D</span>  
+            <p id="name">name:<span>asta4d/span></p>  
+            <p id="age">age:<span>20</span></p>  
+    </article>  
+</section>
+]]>
+      </programlisting>
+      </example>
+    </listitem>
+  </itemizedlist>
 
+  <para>
+  Asta4D introduces 4 extra tags to the html template file: afd:extension, afd:block, afd:embed, afd:snippet, which will not
+  disturb most html editors, accordingly Asta4D is extremely friendly to front-end engineers. On the other hand, we can see
+  that all the rendering logic is fulfiled by Java code and the back-end engineers can compose their back-end logic and rendering logic
+  very smoothly without magic skills and extra learning costs, which means highly boost of productivity.
+  </para>
+  
 </chapter>

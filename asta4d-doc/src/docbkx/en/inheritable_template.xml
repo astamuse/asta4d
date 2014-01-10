@@ -115,12 +115,12 @@
 <html>   
 <head>   
        
-    <!—block1 -->   
+    <!-- block1 -->   
     <link href="parent1.css" rel="stylesheet" type="text/css" />   
     <link href="child1.css" rel="stylesheet" type="text/css" />   
     <link href="embed.css" rel="stylesheet" type="text/css" />   
   
-    <!—block2 -->   
+    <!-- block2 -->   
     <link href="child2.css" rel="stylesheet" type="text/css" />   
     <link href="parent2.css" rel="stylesheet" type="text/css" />   
   
@@ -129,10 +129,10 @@
 </head>   
 <body>   
   
-    <!—content -->   
+    <!-- content -->   
     <div>hello</div>   
   
-    <!—embed -->   
+    <!-- embed -->   
     <div>good embed</div>   
   
 </body>   
@@ -165,7 +165,7 @@
       parameterize the embeding. This feature is very useful for creating a page component which encapsulates common
       html snippets and can be controlled by the passed parameters. Basically, embeding a file in a template file
       is similar to calling a function with(or without) arguments. Especially, the parameters are not limited to
-      specified static values in the template file, they can be valued dynamicaly at runtime too. Furture, the
+      specified static values in the template file, they can be valued dynamicaly at runtime too. Further, the
       type of parameters is not restricted to the stringizable types such as String or Integer/Long, arbitrary Java type
       can be specified dynamically at runtime. See the reference of Renering logic to learn more details. 
       </para>
