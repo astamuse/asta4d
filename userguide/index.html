@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
       , <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
-    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-intro">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Inheritable template and parameterized embed file</a></span></dt><dt><span class="chapter"><a href="#overview">3. Splitted rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#overview">4. Renderer: easy to use, secure, testable</a></span></dt><dt><span class="chapter"><a href="#overview">5. View first URL mapping and variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e119">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e121">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e123">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e125">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e129">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e131">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e133">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e135">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-intro">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Inheritable template and parameterized embed file</a></span></dt><dt><span class="chapter"><a href="#splitted-rendering">3. Splitted rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#overview">4. Renderer: easy to use, secure, testable</a></span></dt><dt><span class="chapter"><a href="#overview">5. View first URL mapping and variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e139">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e141">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e143">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e145">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e149">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e151">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e153">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e155">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
   
 
   
@@ -216,10 +216,10 @@
 <span class="hl-tag">&lt;/head&gt;</span>   
 <span class="hl-tag">&lt;body&gt;</span>   
   
-    <span class="hl-tag">&lt;!&#8212;content</span> <span class="hl-attribute">--&gt;</span>   
+    <span class="hl-tag">&lt;!&#8212;-</span> <span class="hl-attribute">content</span> <span class="hl-attribute">--&gt;</span>   
     <span class="hl-attribute">&lt;div&gt;hello&lt;/div&gt;</span>   
   
-    <span class="hl-attribute">&lt;!&#8212;embed</span> <span class="hl-attribute">--&gt;</span>   
+    <span class="hl-attribute">&lt;!&#8212;-</span> <span class="hl-attribute">embed</span> <span class="hl-attribute">--&gt;</span>   
     <span class="hl-attribute">&lt;div&gt;good</span> <span class="hl-attribute">embed&lt;/div&gt;</span>   
   
 <span class="hl-attribute">&lt;/body&gt;</span>   
@@ -250,7 +250,7 @@
       parameterize the embeding. This feature is very useful for creating a page component which encapsulates common
       html snippets and can be controlled by the passed parameters. Basically, embeding a file in a template file
       is similar to calling a function with(or without) arguments. Especially, the parameters are not limited to
-      specified static values in the template file, they can be valued dynamicaly at runtime too. Furture, the
+      specified static values in the template file, they can be valued dynamicaly at runtime too. Further, the
       type of parameters is not restricted to the stringizable types such as String or Integer/Long, arbitrary Java type
       can be specified dynamically at runtime. See the reference of Renering logic to learn more details. 
       </p>
@@ -263,11 +263,98 @@
   there is actually no difference between Asta4D's embeding and common function calling.
   </p>
 </div>
-    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>3.&nbsp;Splitted rendering logic from template</h2></div></div></div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="splitted-rendering"></a>3.&nbsp;Splitted rendering logic from template</h2></div></div></div>
   
   
-  <p>...</p>
+  <p>
+  There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily 
+  maintained by front-end developers, it is very design friendly and we can reduce the workload for source 
+  refactoring by over 90%.
+  </p>
+  
+  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+      <p>Declare snippet class in template file</p>
+      <div class="example"><a name="d5e94"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;Sample of snippet declaration:</b></p><div class="example-contents">
+      <pre class="programlisting">
 
+<span class="hl-tag">&lt;section&gt;</span>  
+    <span class="hl-tag">&lt;article&gt;</span>  
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"SimpleSnippet"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/div&gt;</span>  
+        <span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"SimpleSnippet:setProfile"</span><span class="hl-tag">&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>dummy name<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>0<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+        <span class="hl-tag">&lt;/afd:snippet&gt;</span>  
+    <span class="hl-tag">&lt;/article&gt;</span>  
+<span class="hl-tag">&lt;/section&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+  
+      <p>
+      The "afd:render" attribute in div tag declares a Java class which is in charge of the concrete rendering logic, such Java
+      class is usually called as a snippet class. A snippet class can be declared by a "afd:snippet" tag too, as you have seen
+      in above sample. The rendering logic is secluded to independent Java classes by snippet declaration and it is not necessary
+      to learn any new template language for back-end developers. The back-end guys can achieve all the rendering logic easily
+      by powerful Java language which they have been adept to, no learning costs, no magic codes, succinct Java source only.
+      </p>
+      
+      <br>
+      
+    </li><li class="listitem">
+      <p>Implement a snippet class</p>
+      <div class="example"><a name="d5e101"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;Sample of snippet class:</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SimpleSnippet {  
+  
+    <span class="hl-keyword">public</span> Renderer render(String name) {  
+        <span class="hl-keyword">if</span> (StringUtils.isEmpty(name)) {  
+            name = <span class="hl-string">"Asta4D"</span>;  
+        }  
+        Element element = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;span&gt;Hello "</span> + name + <span class="hl-string">"!&lt;/span&gt;"</span>);  
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"*"</span>, element);  
+    }  
+  
+    <span class="hl-keyword">public</span> Renderer setProfile() {  
+        Renderer render = <span class="hl-keyword">new</span> GoThroughRenderer();  
+        render.add(<span class="hl-string">"p#name span"</span>, <span class="hl-string">"asta4d"</span>);  
+        render.add(<span class="hl-string">"p#age span"</span>, <span class="hl-number">20</span>);  
+        <span class="hl-keyword">return</span> render;  
+    }  
+}
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      <p>
+      The Renderer class is provided by framework to declare rendering actions. Renderer uses traditional CSS selector to
+      reference the rendering target and receive the rendering value at the same time, amazing and powerful.
+      </p>
+      <br>
+      
+      <p>If the above template file and snippet class are executed, we would get the following result:</p>
+      <div class="example"><a name="d5e107"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Result of snippet execution:</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;section&gt;</span>  
+    <span class="hl-tag">&lt;article&gt;</span>  
+        <span class="hl-tag">&lt;span&gt;</span>Hello Asta4D<span class="hl-tag">&lt;/span&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>asta4d/span&gt;<span class="hl-tag">&lt;/p&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>20<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+    <span class="hl-tag">&lt;/article&gt;</span>  
+<span class="hl-tag">&lt;/section&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+    </li></ul></div>
+
+  <p>
+  Asta4D introduces 4 extra tags to the html template file: afd:extension, afd:block, afd:embed, afd:snippet, which will not
+  disturb most html editors, accordingly Asta4D is extremely friendly to front-end engineers. On the other hand, we can see
+  that all the rendering logic is fulfiled by Java code and the back-end engineers can compose their back-end logic and rendering logic
+  very smoothly without magic skills and extra learning costs, which means highly boost of productivity.
+  </p>
+  
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>4.&nbsp;Renderer: easy to use, secure, testable</h2></div></div></div>
   
@@ -324,19 +411,19 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e119"></a>12.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e139"></a>12.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e121"></a>12.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e141"></a>12.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e123"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e143"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e125"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e145"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -344,19 +431,19 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>13.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e129"></a>13.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e149"></a>13.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e131"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e151"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e133"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e153"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e135"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e155"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
