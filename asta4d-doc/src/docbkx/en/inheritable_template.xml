@@ -7,11 +7,10 @@
     xsi:schemaLocation="
         http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
-  <title>Inheritable template and parameterized embed file</title>
+  <title>Flexible template</title>
   
-  <itemizedlist>
-    <listitem>
-      <para>Inheritable template</para>
+    <section>
+      <title>Inheritable template</title>
       <para>
       The template of Asta4D is inheritable, child template can override, append or insert content to certain place
       in parent template. Let's see a sample:
@@ -142,10 +141,10 @@
       </example>
       
       
-    </listitem>
+    </section>
 
-    <listitem>
-      <para>Parameterized embeding</para>
+    <section>
+      <title>Parameterized embeding</title>
       
       <para>
       Extra parameters can be passed to the target embeded file by specifying the DOM attribute of "afd:embed" when we
@@ -169,8 +168,7 @@
       type of parameters is not restricted to the stringizable types such as String or Integer/Long, arbitrary Java type
       can be specified dynamically at runtime. See the reference of Renering logic to learn more details. 
       </para>
-    </listitem>
-  </itemizedlist>
+    </section>
 
   <para>
   Simply, the idea of Asta4D's template system is akin to the traditional OOP model, the parent and child templates can be 
