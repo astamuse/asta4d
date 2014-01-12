@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
       , <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
-    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-intro">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Inheritable template and parameterized embed file</a></span></dt><dt><span class="chapter"><a href="#splitted-rendering">3. Splitted rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#overview">4. Renderer: easy to use, secure, testable</a></span></dt><dt><span class="chapter"><a href="#overview">5. View first URL mapping and variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e139">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e141">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e143">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e145">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e149">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e151">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e153">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e155">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-intro">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e55">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e79">2.2. Parameterized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#splitted-rendering">3. Splitted rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#renderer">4. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e113">4.1. How to render data to page</a></span></dt><dt><span class="section"><a href="#d5e131">4.2. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e134">4.3. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">5. View first URL mapping and variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e168">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e170">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e172">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e174">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e178">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e180">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e182">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e184">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
   
 
   
@@ -94,16 +94,16 @@
 
   <div class="part"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Part&nbsp;II.&nbsp;User Guide</h1></div></div></div>
     
-    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-Inheritable-template"></a>2.&nbsp;Inheritable template and parameterized embed file</h2></div></div></div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-Inheritable-template"></a>2.&nbsp;Flexible template</h2></div></div></div>
   
   
-  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
-      <p>Inheritable template</p>
+    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e55"></a>2.1&nbsp;Inheritable template</h2></div></div></div>
+      
       <p>
       The template of Asta4D is inheritable, child template can override, append or insert content to certain place
       in parent template. Let's see a sample:
       </p>
-      <div class="example"><a name="d5e59"></a><p class="title"><b>Example&nbsp;2.1.&nbsp;parent.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e58"></a><p class="title"><b>Example&nbsp;2.1.&nbsp;parent.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;html&gt;</span>   
@@ -196,19 +196,19 @@
       <br>
       
       <p>After all the template files are merged, we will get the following result:</p>
-      <div class="example"><a name="d5e77"></a><p class="title"><b>Example&nbsp;2.4.&nbsp;The result of template merging:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e76"></a><p class="title"><b>Example&nbsp;2.4.&nbsp;The result of template merging:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;html&gt;</span>   
 <span class="hl-tag">&lt;head&gt;</span>   
        
-    <span class="hl-tag">&lt;!&#8212;block1</span> <span class="hl-attribute">--&gt;</span>   
-    <span class="hl-attribute">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-comment">&lt;!-- block1 --&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
     <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
     <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"embed.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
   
-    <span class="hl-tag">&lt;!&#8212;block2</span> <span class="hl-attribute">--&gt;</span>   
-    <span class="hl-attribute">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-comment">&lt;!-- block2 --&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
     <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
   
     <span class="hl-tag">&lt;title&gt;</span>extension sample<span class="hl-tag">&lt;/title&gt;</span>   
@@ -229,15 +229,17 @@
       </div></div><br class="example-break">
       
       
-    </li><li class="listitem">
-      <p>Parameterized embeding</p>
+    </div>
+
+    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e79"></a>2.2&nbsp;Parameterized embeding</h2></div></div></div>
+      
       
       <p>
       Extra parameters can be passed to the target embeded file by specifying the DOM attribute of "afd:embed" when we
       are embeding files.
       </p>
       
-      <div class="example"><a name="d5e83"></a><p class="title"><b>Example&nbsp;2.5.&nbsp;Sample of parameterized embeding:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e82"></a><p class="title"><b>Example&nbsp;2.5.&nbsp;Sample of parameterized embeding:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/xxx/showList.html"</span> <span class="hl-attribute">limit</span>=<span class="hl-value">"30"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>
@@ -254,7 +256,7 @@
       type of parameters is not restricted to the stringizable types such as String or Integer/Long, arbitrary Java type
       can be specified dynamically at runtime. See the reference of Renering logic to learn more details. 
       </p>
-    </li></ul></div>
+    </div>
 
   <p>
   Simply, the idea of Asta4D's template system is akin to the traditional OOP model, the parent and child templates can be 
@@ -267,14 +269,14 @@
   
   
   <p>
-  There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily 
+  There is no dynamic code in a template file. An Asta4D template file is always a pure HTML file which can be easily 
   maintained by front-end developers, it is very design friendly and we can reduce the workload for source 
   refactoring by over 90%.
   </p>
   
   <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
       <p>Declare snippet class in template file</p>
-      <div class="example"><a name="d5e94"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;Sample of snippet declaration:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e93"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;Sample of snippet declaration:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;section&gt;</span>  
@@ -302,7 +304,7 @@
       
     </li><li class="listitem">
       <p>Implement a snippet class</p>
-      <div class="example"><a name="d5e101"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;Sample of snippet class:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e100"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;Sample of snippet class:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SimpleSnippet {  
@@ -333,7 +335,7 @@
       <br>
       
       <p>If the above template file and snippet class are executed, we would get the following result:</p>
-      <div class="example"><a name="d5e107"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Result of snippet execution:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e106"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Result of snippet execution:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;section&gt;</span>  
@@ -356,11 +358,128 @@
   </p>
   
 </div>
-    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>4.&nbsp;Renderer: easy to use, secure, testable</h2></div></div></div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="renderer"></a>4.&nbsp;Renderer: easy to use, secure, testable</h2></div></div></div>
   
   
-  <p>...</p>
+  <p>
+  In Asta4D, all the rendering logic is declared by a Renderer class which provide various interface for rendering.
+  </p>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e113"></a>4.1&nbsp;How to render data to page</h2></div></div></div>
+    
+    <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+        <p>Renderer accepts various types as rendering value</p>
+        <div class="example"><a name="d5e118"></a><p class="title"><b>Example&nbsp;4.1.&nbsp;Sample usage of Renderer</b></p><div class="example-contents">
+        <pre class="programlisting">
 
+Renderer render = <span class="hl-keyword">new</span> GoThroughRenderer();  
+render.add(<span class="hl-string">"#someIdForInt"</span>, <span class="hl-number">12345</span>);  
+render.add(<span class="hl-string">"#someIdForLong"</span>, <span class="hl-number">12345L</span>);  
+render.add(<span class="hl-string">"#someIdForBool"</span>, true);  
+render.add(<span class="hl-string">"#someIdForStr"</span>, <span class="hl-string">"a str"</span>);  
+render.add(<span class="hl-string">"#someIdForNull"</span>, (Object) null);  
+render.add(<span class="hl-string">"#someIdForClear"</span>, Clear);  
+  
+Element newChild = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;&lt;/div&gt;"</span>);  
+render.add(<span class="hl-string">"#someIdForElementSetter"</span>, <span class="hl-keyword">new</span> ChildReplacer(newChild));  
+  
+render.add(<span class="hl-string">"#someIdForElement"</span>, ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;eee&lt;/div&gt;"</span>));  
+  
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Renderer.create(<span class="hl-string">"#value"</span>, <span class="hl-string">"value"</span>));  
+
+        </pre>
+        </div></div><br class="example-break">
+      </li><li class="listitem">
+        <p>List of data can be rendered via Renderer too:</p>
+        <div class="example"><a name="d5e123"></a><p class="title"><b>Example&nbsp;4.2.&nbsp;Sample of list rendering</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+Renderer render = <span class="hl-keyword">new</span> GoThroughRenderer();  
+render.add(<span class="hl-string">"#someIdForInt"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>));  
+render.add(<span class="hl-string">"#someIdForLong"</span>, Arrays.asList(<span class="hl-number">123L</span>, <span class="hl-number">456L</span>, <span class="hl-number">789L</span>));  
+render.add(<span class="hl-string">"#someIdForBool"</span>, Arrays.asList(true, true, false));  
+render.add(<span class="hl-string">"#someIdForStr"</span>, Arrays.asList(<span class="hl-string">"str1"</span>, <span class="hl-string">"str2"</span>, <span class="hl-string">"str3"</span>));  
+  
+Element newChild1 = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;1&lt;/div&gt;"</span>);  
+Element newChild2 = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;2&lt;/div&gt;"</span>);  
+  
+render.add(<span class="hl-string">"#someIdForElementSetter"</span>, Arrays.asList(<span class="hl-keyword">new</span> ChildReplacer(newChild1), <span class="hl-keyword">new</span> ChildReplacer(newChild2)));  
+  
+render.add(<span class="hl-string">"#someIdForElement"</span>, Arrays.asList(newChild1, newChild2));  
+  
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>), <span class="hl-keyword">new</span> RowRenderer&lt;Integer&gt;() {  
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>  
+    <span class="hl-keyword">public</span> Renderer convert(<span class="hl-keyword">int</span> rowIndex, Integer obj) {  
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#id"</span>, <span class="hl-string">"id-"</span> + obj).add(<span class="hl-string">"#otherId"</span>, <span class="hl-string">"otherId-"</span> + obj);  
+    }  
+});   
+
+        </pre>
+        </div></div><br class="example-break">
+      </li><li class="listitem">
+        <p>DOM attribution can be done too:</p>
+        <div class="example"><a name="d5e128"></a><p class="title"><b>Example&nbsp;4.3.&nbsp;Sample of DOM attribution rendering</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"+class"</span>, <span class="hl-string">"yyy"</span>);  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"-class"</span>, <span class="hl-string">"zzz"</span>);  
+  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"+class"</span>, <span class="hl-string">"xxx"</span>);  
+  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"value"</span>, <span class="hl-string">"hg"</span>);  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"href"</span>, null);  
+  
+render.add(<span class="hl-string">"#X"</span>, <span class="hl-string">"value"</span>, <span class="hl-keyword">new</span> Date(<span class="hl-number">123456L</span>));
+
+        </pre>
+        </div></div><br class="example-break">
+      </li></ul></div>
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e131"></a>4.2&nbsp;Immune from cross-site hole</h2></div></div></div>
+    
+    <p>
+    The previous samples show us that all the operations to DOM are delegated by Renderer except create DOM
+    from String value by "ElementUtil#parseAsSingle". As a matter of fact, all the delegated operations cause
+    all the rendering values are escaped by force, which means that your system is, by nature, immune from
+    cross-site problems if there is no "ElementUtil#parseAsSingle" calling in your system. You do not need
+    to be wary of illegal characters by from the clients since all the values will be escaped as HTML compulsorily.
+    </p>
+    
+    On the other hand, according to our practice, it is rarely that you have to call &#8220;ElementUtil.parseAsSingle&#8221;
+    to generate the rendering content from a raw HTML string, so just take care of your usage of this exceptional api
+    then you can say bye-bye to the cross-site holes.    
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e134"></a>4.3&nbsp;Test your rendering logic</h2></div></div></div>
+    
+    <p>
+    Testing web page is always a complex task and we usually verify rendering results by selenuim which is as a common
+    technology. By Asta4D, testable Renderer can replace over than half of selenium tests to simpler junit tests.
+    </p>
+    
+    <p>
+    According to the previous samples, all the rendering logic is holded by an instance of Renderer class, so simply,
+    we can verify almost rendering logic by testing the returned Renderer instance from the snippet method. 
+    </p>
+    
+    <div class="example"><a name="d5e138"></a><p class="title"><b>Example&nbsp;4.4.&nbsp;Sample RendererTester</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+RendererTester tester = RendererTester.forRenderer(render);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForInt"</span>), <span class="hl-number">12345</span>);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForLong"</span>), <span class="hl-number">12345L</span>);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForBool"</span>), true);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForStr"</span>), <span class="hl-string">"a str"</span>);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForNull"</span>), null);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>), Clear);  
+
+    </pre>
+    </div></div><br class="example-break">
+    
+    <p>More samples can be found in <a class="ulink" href="https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java" target="_top">source</a></p>
+  </div>
+  
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>5.&nbsp;View first URL mapping and variable injection</h2></div></div></div>
   
@@ -411,19 +530,19 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e139"></a>12.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e168"></a>12.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e141"></a>12.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e170"></a>12.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e143"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e172"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e145"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e174"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -431,19 +550,19 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>13.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e149"></a>13.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e178"></a>13.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e151"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e180"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e153"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e182"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e155"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e184"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
