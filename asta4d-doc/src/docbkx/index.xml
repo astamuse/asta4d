@@ -47,13 +47,12 @@
 
       </para>
     </partintro>
-    <xi:include href="en/intro.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>
 
   <part id="asta4d-user-guide">
     <title>User Guide</title>
     <xi:include href="en/inheritable_template.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="en/splitted_rendering.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/renderer.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/url_mapping.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/side_effect.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
