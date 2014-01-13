@@ -215,7 +215,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Additionally, there is a [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) which includes more detailed user guide which is for our employees.
+Additionally, there is an old [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) which includes more detailed user guide which is for our employees. There is also an on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is not completed yet.
 
 ## Best practices
 
