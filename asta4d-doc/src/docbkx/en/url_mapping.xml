@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="url-mapping"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -9,6 +9,241 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>View first URL mapping and variable injection</title>
   
-  <para>...</para>
+  <section>
+    <title>View first</title>
+
+    <para>
+    In Asta4D, we follow the principle of view first rather than the tradition MVC architecture. The declaration of URL rules
+    does not need to include a controller and one url can be mapped to one template file directly, which is called as View First.
+    </para>
+    
+    <para>
+    In Asta4D, URL mapping rules are not managed in a configuration file. The Framework provides a sort of DSL by a set of convinient
+    APIs, which means the declaration of Asta4D's URL mapping rule is programmable and it affords much flexibility than the way with a
+    static configuration file.    
+    </para>
+    
+    <para>
+    Users declare their own URL rules via implementing the interface UrlMappingRuleInitializer of Asta4D:
+    </para>
+    
+    <example><title>Sample of declaring url rules:</title>
+    <programlisting language="java">
+<![CDATA[
+public class UrlRules implements UrlMappingRuleInitializer {    
+    
+    @Override    
+    public void initUrlMappingRules(UrlMappingRuleHelper rules) {    
+        //@formatter:off    
+        rules.add(GET, "/")    
+             .redirect("/app/index");    
+            
+        rules.add(GET, "/redirect-to-index")    
+             .redirect("p:/app/index");    
+            
+        rules.add("/app/", "/templates/index.html");    
+        rules.add("/app/index", "/templates/index.html");    
+        rules.add("/app/{name}/{age}", "/templates/variableinjection.html")；    
+        ...    
+    
+        //@formatter:on    
+    }
+}
+]]>
+    </programlisting>
+    </example>
+  </section>
+  
+  <section>
+    <title>The grammer of URL rule and path variable</title>
+    <para>
+    The grammer of Asta4D's URL rule is almost the same as Spring MVC's URL mapping rule and the parts surrounded by braces are 
+    treated as path variables which can be retrieved in following process(in snippet classes or request handlers).
+    </para>
+    
+    <para>
+    Further, extra path variables can be declared in a url rule by calling the method of "var" as following:
+    </para>
+    <example><title>Sample of declaring extra path variable:</title>
+    <programlisting language="java">
+<![CDATA[
+rules.add("/app/{name}/{age}", "/templates/variableinjection.html")  
+     .var("extraVar", 1234);  
+]]>
+    </programlisting>
+    </example>
+  </section>
+  
+  <section>
+    <title>Variable Injection</title>
+    <para>
+    Asta4D implements a variable injection mechanism which is very closed to Spring MVC, all of the instance fields 
+    and method parameters in the implementation of snippet classes can be injected automatically by framework.
+    </para>
+    
+    <para>
+    Further, all the snippet classes are singleton in request scope.In other words, there will be only one istance of any 
+    snippet class in a single request scope regardless of how many times the snippet class is called. Let us see some samples
+    of variable injection in the snippet class.
+    </para>
+    
+    <example>
+    <programlisting language="java">
+<![CDATA[
+public class InitSnippet implements InitializableSnippet {    
+    
+    @ContextData    
+    private String value; // (1)    
+    private long id;    
+    private String resolvedValue;    
+    private int count = 0;    
+
+}    
+]]>
+    </programlisting>
+    <para>
+    @ContextData indicates that the instance field "value" need to be injected after the instance of InitSnippet is created. 
+    Since the snippet instance is singeleton in the current request scope, the instance field "value" will be injected and 
+    initialized only once in the current request scope. The framework will search a variable named "value" in all the available
+    variable scopes and inject the found value. The name of "value" is decided by the field name by default and can be
+    sepcified by extra declaration(see the following samples).
+    </para>
+    </example>
+    
+    <example>
+    <programlisting language="java">
+<![CDATA[
+public class InitSnippet implements InitializableSnippet {    
+
+    @ContextData    
+    private void setId(long id) {　//(3)    
+        this.id = id;    
+    }    
+
+}    
+]]>
+    </programlisting>
+    <para>Instance field can be injected via setter methods too.</para>
+    </example>
+    
+    <example>
+    <programlisting language="java">
+<![CDATA[
+public class InitSnippet implements InitializableSnippet {    
+    
+    @Override    
+    public void init() throws SnippetInvokeException { //(2)    
+        resolvedValue = value + "-resolved";    
+        count++;    
+    }  
+
+}    
+]]>
+    </programlisting>
+    <para>
+    The init method of InitializableSnippet is being implemented. This is not necessary but if a snippet class implements 
+    the interface of InitializableSnippet, the init method will be called once after all the instance fields are injected,
+    by which customized snippet initial logic can be performed.
+    </para>
+    </example>
+    
+    <example>
+    <programlisting language="java">
+<![CDATA[
+public class InitSnippet implements InitializableSnippet {    
+
+    // (4)    
+    public Renderer getPathVarName(    
+    @ContextData(scope = WebApplicationContext.SCOPE_PATHVAR)    
+    int count) {    
+    }
+
+}    
+]]>
+    </programlisting>
+    <para>
+    Variable injection on snippet method. In this sample the extra search scope are delcared, which cause framework searches
+    a variable named "count" in the path variable scope. As the same as the injection on instance field, the searching variable
+    name is decided by the parameter name by default.
+    </para>
+    </example>
+    
+    <example>
+    <programlisting language="java">
+<![CDATA[
+public class InitSnippet implements InitializableSnippet {    
+
+    // (5)    
+    public Renderer getQueryParamName(    
+    @ContextData(name = "var", scope = WebApplicationContext.SCOPE_QUERYPARAM)    
+    String name) {    
+    }    
+
+}    
+]]>
+    </programlisting>
+    <para>
+    In this sample, an extra variable name and search scope are declared, the framework will search a variable named "var" in the
+    request parameters.
+    </para>
+    </example>    
+
+    <example>
+    <programlisting language="java">
+<![CDATA[
+public class InitSnippet implements InitializableSnippet {    
+
+    // (6)    
+    public Renderer getDefaultName(String name) {    
+    } 
+
+}    
+]]>
+    </programlisting>
+    <para>
+    There is a difference between instance field injection and method parameter injection. A instance field without @ContextData
+    annotation will not be injected, but for method paramters, all the paramters will be injected compulsorily. In this sample,
+    the framework will search a variable named "name" in all the available scopes as following order:
+    </para>
+    <orderedlist>
+      <listitem>
+        <para>HTML tag attribution(SCOPE_ATTR)</para>
+        <para>Trace back to the top tag of the current HTML document recursively. This scope is only available to the snippet method.</para>
+      </listitem>
+      <listitem>
+        <para>path variable(SCOPE_PATHVAR)</para>
+      </listitem>
+      <listitem>
+        <para>request parameter(SCOPE_QUERYPARAM)</para>
+      </listitem>
+      <listitem>
+        <para>flash variable(SCOPE_FLASH)</para>
+        <para>The variables passed from one request to another request, usually acrross a redirect.</para>
+      </listitem>
+      <listitem>
+        <para>cookie(SCOPE_COOKIE)</para>
+      </listitem>
+      <listitem>
+        <para>request hearder(SCOPE_HEADER)</para>
+      </listitem>
+      <listitem>
+        <para>request attribute(SCOPE_REQUEST)</para>
+      </listitem>
+      <listitem>
+        <para>session(SCOPE_SESSION)</para>
+      </listitem>
+      <listitem>
+        <para>global(SCOPE_GLOBAL)</para>
+        <para>A global static variable pool</para>
+      </listitem>
+    </orderedlist>
+    <para>
+      This search order is applied to the instance field injection too except that the first scope of HTML tag attribution is not available.
+    </para>
+    </example>
+
+
+    
+  </section>
 
 </chapter>
