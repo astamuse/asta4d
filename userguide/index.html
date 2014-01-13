@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
       , <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
-    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-intro">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e55">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e79">2.2. Parameterized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#splitted-rendering">3. Splitted rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#renderer">4. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e113">4.1. How to render data to page</a></span></dt><dt><span class="section"><a href="#d5e131">4.2. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e134">4.3. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">5. View first URL mapping and variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e168">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e170">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e172">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e174">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e178">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e180">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e182">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e184">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-intro">1. Why Asta4D</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e55">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e79">2.2. Parameterized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#splitted-rendering">3. Split rendering logic from template</a></span></dt><dt><span class="chapter"><a href="#renderer">4. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e113">4.1. How to render data to page</a></span></dt><dt><span class="section"><a href="#d5e131">4.2. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e134">4.3. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">5. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e145">5.1. View first</a></span></dt><dt><span class="section"><a href="#d5e153">5.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e160">5.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">6. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">7. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">8. Template</a></span></dt><dt><span class="chapter"><a href="#overview">9. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">10. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">11. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">12. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e227">12.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e229">12.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e231">12.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e233">12.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e237">13.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e239">13.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e241">13.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e243">13.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">15. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">16. Integration with Spring</a></span></dt></dl></dd></dl></div>
   
 
   
@@ -265,7 +265,7 @@
   there is actually no difference between Asta4D's embeding and common function calling.
   </p>
 </div>
-    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="splitted-rendering"></a>3.&nbsp;Splitted rendering logic from template</h2></div></div></div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="splitted-rendering"></a>3.&nbsp;Split rendering logic from template</h2></div></div></div>
   
   
   <p>
@@ -481,10 +481,235 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
   </div>
   
 </div>
-    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>5.&nbsp;View first URL mapping and variable injection</h2></div></div></div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="url-mapping"></a>5.&nbsp;View first URL mapping and variable injection</h2></div></div></div>
   
   
-  <p>...</p>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e145"></a>5.1&nbsp;View first</h2></div></div></div>
+    
+
+    <p>
+    In Asta4D, we follow the principle of view first rather than the tradition MVC architecture. The declaration of URL rules
+    does not need to include a controller and one url can be mapped to one template file directly, which is called as View First.
+    </p>
+    
+    <p>
+    In Asta4D, URL mapping rules are not managed in a configuration file. The Framework provides a sort of DSL by a set of convinient
+    APIs, which means the declaration of Asta4D's URL mapping rule is programmable and it affords much flexibility than the way with a
+    static configuration file.    
+    </p>
+    
+    <p>
+    Users declare their own URL rules via implementing the interface UrlMappingRuleInitializer of Asta4D:
+    </p>
+    
+    <div class="example"><a name="d5e150"></a><p class="title"><b>Example&nbsp;5.1.&nbsp;Sample of declaring url rules:</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> UrlRules <span class="hl-keyword">implements</span> UrlMappingRuleInitializer {    
+    
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>    
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> initUrlMappingRules(UrlMappingRuleHelper rules) {    
+        <span class="hl-comment">//@formatter:off    </span>
+        rules.add(GET, <span class="hl-string">"/"</span>)    
+             .redirect(<span class="hl-string">"/app/index"</span>);    
+            
+        rules.add(GET, <span class="hl-string">"/redirect-to-index"</span>)    
+             .redirect(<span class="hl-string">"p:/app/index"</span>);    
+            
+        rules.add(<span class="hl-string">"/app/"</span>, <span class="hl-string">"/templates/index.html"</span>);    
+        rules.add(<span class="hl-string">"/app/index"</span>, <span class="hl-string">"/templates/index.html"</span>);    
+        rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-string">"/templates/variableinjection.html"</span>)&#65307;    
+        ...    
+    
+        <span class="hl-comment">//@formatter:on    </span>
+    }
+}
+
+    </pre>
+    </div></div><br class="example-break">
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e153"></a>5.2&nbsp;The grammer of URL rule and path variable</h2></div></div></div>
+    
+    <p>
+    The grammer of Asta4D's URL rule is almost the same as Spring MVC's URL mapping rule and the parts surrounded by braces are 
+    treated as path variables which can be retrieved in following process(in snippet classes or request handlers).
+    </p>
+    
+    <p>
+    Further, extra path variables can be declared in a url rule by calling the method of "var" as following:
+    </p>
+    <div class="example"><a name="d5e157"></a><p class="title"><b>Example&nbsp;5.2.&nbsp;Sample of declaring extra path variable:</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-string">"/templates/variableinjection.html"</span>)  
+     .var(<span class="hl-string">"extraVar"</span>, <span class="hl-number">1234</span>);  
+
+    </pre>
+    </div></div><br class="example-break">
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e160"></a>5.3&nbsp;Variable Injection</h2></div></div></div>
+    
+    <p>
+    Asta4D implements a variable injection mechanism which is very closed to Spring MVC, all of the instance fields 
+    and method parameters in the implementation of snippet classes can be injected automatically by framework.
+    </p>
+    
+    <p>
+    Further, all the snippet classes are singleton in request scope.In other words, there will be only one istance of any 
+    snippet class in a single request scope regardless of how many times the snippet class is called. Let us see some samples
+    of variable injection in the snippet class.
+    </p>
+    
+    <div class="example"><a name="d5e164"></a><p class="title"><b>Example&nbsp;5.3.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+    
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>    
+    <span class="hl-keyword">private</span> String value; <span class="hl-comment">// (1)    </span>
+    <span class="hl-keyword">private</span> <span class="hl-keyword">long</span> id;    
+    <span class="hl-keyword">private</span> String resolvedValue;    
+    <span class="hl-keyword">private</span> <span class="hl-keyword">int</span> count = <span class="hl-number">0</span>;    
+
+}    
+
+    </pre>
+    <p>
+    @ContextData indicates that the instance field "value" need to be injected after the instance of InitSnippet is created. 
+    Since the snippet instance is singeleton in the current request scope, the instance field "value" will be injected and 
+    initialized only once in the current request scope. The framework will search a variable named "value" in all the available
+    variable scopes and inject the found value. The name of "value" is decided by the field name by default and can be
+    sepcified by extra declaration(see the following samples).
+    </p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e167"></a><p class="title"><b>Example&nbsp;5.4.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>    
+    <span class="hl-keyword">private</span> <span class="hl-keyword">void</span> setId(<span class="hl-keyword">long</span> id) {&#12288;<span class="hl-comment">//(3)    </span>
+        <span class="hl-keyword">this</span>.id = id;    
+    }    
+
+}    
+
+    </pre>
+    <p>Instance field can be injected via setter methods too.</p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e170"></a><p class="title"><b>Example&nbsp;5.5.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+    
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>    
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> init() <span class="hl-keyword">throws</span> SnippetInvokeException { <span class="hl-comment">//(2)    </span>
+        resolvedValue = value + <span class="hl-string">"-resolved"</span>;    
+        count++;    
+    }  
+
+}    
+
+    </pre>
+    <p>
+    The init method of InitializableSnippet is being implemented. This is not necessary but if a snippet class implements 
+    the interface of InitializableSnippet, the init method will be called once after all the instance fields are injected,
+    by which customized snippet initial logic can be performed.
+    </p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e173"></a><p class="title"><b>Example&nbsp;5.6.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <span class="hl-comment">// (4)    </span>
+    <span class="hl-keyword">public</span> Renderer getPathVarName(    
+    <em><span class="hl-annotation" style="color: gray">@ContextData(scope = WebApplicationContext.SCOPE_PATHVAR)</span></em>    
+    <span class="hl-keyword">int</span> count) {    
+    }
+
+}    
+
+    </pre>
+    <p>
+    Variable injection on snippet method. In this sample the extra search scope are delcared, which cause framework searches
+    a variable named "count" in the path variable scope. As the same as the injection on instance field, the searching variable
+    name is decided by the parameter name by default.
+    </p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e176"></a><p class="title"><b>Example&nbsp;5.7.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <span class="hl-comment">// (5)    </span>
+    <span class="hl-keyword">public</span> Renderer getQueryParamName(    
+    <em><span class="hl-annotation" style="color: gray">@ContextData(name = "var", scope = WebApplicationContext.SCOPE_QUERYPARAM)</span></em>    
+    String name) {    
+    }    
+
+}    
+
+    </pre>
+    <p>
+    In this sample, an extra variable name and search scope are declared, the framework will search a variable named "var" in the
+    request parameters.
+    </p>
+    </div></div><br class="example-break">    
+
+    <div class="example"><a name="d5e179"></a><p class="title"><b>Example&nbsp;5.8.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <span class="hl-comment">// (6)    </span>
+    <span class="hl-keyword">public</span> Renderer getDefaultName(String name) {    
+    } 
+
+}    
+
+    </pre>
+    <p>
+    There is a difference between instance field injection and method parameter injection. A instance field without @ContextData
+    annotation will not be injected, but for method paramters, all the paramters will be injected compulsorily. In this sample,
+    the framework will search a variable named "name" in all the available scopes as following order:
+    </p>
+    <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        <p>HTML tag attribution(SCOPE_ATTR)</p>
+        <p>Trace back to the top tag of the current HTML document recursively. This scope is only available to the snippet method.</p>
+      </li><li class="listitem">
+        <p>path variable(SCOPE_PATHVAR)</p>
+      </li><li class="listitem">
+        <p>request parameter(SCOPE_QUERYPARAM)</p>
+      </li><li class="listitem">
+        <p>flash variable(SCOPE_FLASH)</p>
+        <p>The variables passed from one request to another request, usually acrross a redirect.</p>
+      </li><li class="listitem">
+        <p>cookie(SCOPE_COOKIE)</p>
+      </li><li class="listitem">
+        <p>request hearder(SCOPE_HEADER)</p>
+      </li><li class="listitem">
+        <p>request attribute(SCOPE_REQUEST)</p>
+      </li><li class="listitem">
+        <p>session(SCOPE_SESSION)</p>
+      </li><li class="listitem">
+        <p>global(SCOPE_GLOBAL)</p>
+        <p>A global static variable pool</p>
+      </li></ol></div>
+    <p>
+      This search order is applied to the instance field injection too except that the first scope of HTML tag attribution is not available.
+    </p>
+    </div></div><br class="example-break">
+
+
+    
+  </div>
 
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>6.&nbsp;Side-effect and request handler</h2></div></div></div>
@@ -530,19 +755,19 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e168"></a>12.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e227"></a>12.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e170"></a>12.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e229"></a>12.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e172"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e231"></a>12.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e174"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e233"></a>12.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -550,19 +775,19 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>13.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e178"></a>13.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e237"></a>13.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e180"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e239"></a>13.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e182"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e241"></a>13.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e184"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e243"></a>13.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
