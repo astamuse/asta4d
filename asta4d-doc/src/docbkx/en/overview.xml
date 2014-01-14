@@ -30,7 +30,7 @@
       </listitem>
 
       <listitem>
-        <para>3.	The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
+        <para>The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
         approach like traditional PHP/ASP development.</para>
       </listitem>
 
@@ -83,7 +83,7 @@
       <listitem>
         <para>For developer</para>
         <para>We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex
-        rendering logic because they can use powerful Java language to do whatever they want since the rendering has been splitted from
+        rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from
         template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup
         of coffee.</para>
       </listitem>
