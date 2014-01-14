@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
       , <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
-    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e21">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e31">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e44">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e61">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e85">2.2. Parameterized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e95">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e118">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e136">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e139">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e150">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e158">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e165">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">5. Side-effect and request handler</a></span></dt><dt><span class="chapter"><a href="#overview">6. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">7. Template</a></span></dt><dt><span class="chapter"><a href="#overview">8. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e232">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e234">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e236">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e238">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e242">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e244">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e246">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e248">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">0.1</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e21">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e31">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e44">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e61">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e85">2.2. Parameterized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e95">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e118">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e136">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e139">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e150">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e158">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e165">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e212">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e217">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e221">5.3. Isolate side effect and multi thread rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">6. Impement request handler and url mapping</a></span></dt></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#overview">7. Template</a></span></dt><dt><span class="chapter"><a href="#overview">8. Snippet</a></span></dt><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e244">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e246">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e248">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e250">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e254">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e256">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e258">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e260">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt></dl></dd></dl></div>
   
 
   
@@ -46,7 +46,7 @@
         <p>The developers are complaining about the poor functionalities of template language which they are using 
         and tired from the various magic skills for complex rendering logic.</p>
       </li><li class="listitem">
-        <p>3.	The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
+        <p>The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
         approach like traditional PHP/ASP development.</p>
       </li></ul></div>
   </div>
@@ -88,7 +88,7 @@
       </li><li class="listitem">
         <p>For developer</p>
         <p>We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex
-        rendering logic because they can use powerful Java language to do whatever they want since the rendering has been splitted from
+        rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from
         template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup
         of coffee.</p>
       </li><li class="listitem">
@@ -717,11 +717,74 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
   </div>
 
 </div>
-    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>5.&nbsp;Side-effect and request handler</h2></div></div></div>
+    <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-side-effect"></a>5.&nbsp;Side effect and request handler</h2></div></div></div>
   
-  
-  <p>...</p>
+ 
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e212"></a>5.1&nbsp;The role with responsibility to http request: Request Handler</h2></div></div></div>
+    
+    <p>
+    Even Asta4D complies with the principle of view first, there is still a role similar with the controller in MVC
+    architecture, such role is called request handler. We believe that there should be a role who takes responsiblity
+    of a certain http request and such role can be considered as an alternative to controller of MVC in some situations
+    too.
+    </p>
+    
+    <p>
+    According to the view first rule, a request handler can be ignored in most cases. You can also assume that there is
+    is a default request handler which navigates all the http requests to the corresponding template files(The real 
+    story is more complex but you can try to understand the theory conceptually by this way).
+    </p>
+    
+    <p>
+    Now the question is when we need a request handler? Before we can answer this question, we have to discuss the conception
+    of "side effect".
+    </p>
+  </div>
 
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e217"></a>5.2&nbsp;Side effect of system operations</h2></div></div></div>
+    
+
+    <p>
+    A system always afford users various operations such as query, update, etc. All of these operations will affect the status
+    of system in various ways. In Asta4D, we say that there are two types of action in a system, one is with &#8220;side effect&#8221;, 
+    another one is without &#8220;side effect&#8221;. &#8220;actions with side effect&#8221; are ones that will change the system status once they are
+    performed. For instance, for the same URL, a login request (if succeeded) will cause a client&#8217;s privilege to be changed and 
+    the client could probably get a different page view from what the client get before login, because of which we say a login 
+    request is an action with side effect. Another obvious example is a database update operation. Once an update is committed, 
+    all the related clients will get a different output from the result before the update, which is also classified as &#8220;an action 
+    with side effect&#8221;. 
+    </p>
+    
+    <p>
+    How about a query? We consider a query as an operation without side effect, it means that a client will always get the same
+    result regardless of how many times the query is executed. Some people may ask how about counting on query times? For counting
+    on query times, we can still split the counting and query to two individual operations, one is with side effect and another one
+    is without side effect.
+    </p>
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e221"></a>5.3&nbsp;Isolate side effect and multi thread rendering</h2></div></div></div>
+    
+
+    <p>
+    We believe the actions with side effect should be managed seriously and we do that by putting all the actions with side effect
+    to request handlers so that the view layer is purified and this makes the source more clear and maintainable. This is also means 
+    with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free, which is a
+    high light function of Asta4D.
+    </p>
+
+    <p>
+    In traditional MVC architecture, the responsibility of controller is tangled, a controller does not only handle the duty of altering
+    system status(date update), but also takes the responsibility of preparing data for view layer. We often have to expand the database
+    session(transaction) to the view layer for handling lazy load issue, which makes transaction management more complicated. Additionally,
+    especially for the pages that can be split to relatively individual blocks, hypothetically we can accelerate the page loading
+    by retrieving data in multi threads for each block, but in reality it is impossible due to the source complexity and development costs.
+    The developers still have to access each data source sequentially to retrieve data for each block even the page is splitted to individual
+    blocks.
+    </p>
+    
+    
+  </div>
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>6.&nbsp;Impement request handler and url mapping</h2></div></div></div>
   
@@ -760,19 +823,19 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>11.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e232"></a>11.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e244"></a>11.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e234"></a>11.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e246"></a>11.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e236"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e248"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e238"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e250"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -780,19 +843,19 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e242"></a>12.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e254"></a>12.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e244"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e256"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e246"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e258"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e248"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e260"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
