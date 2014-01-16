@@ -5,9 +5,10 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -42,6 +43,7 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
 
     private final static ValidatorFactory defaultFactory = Validation.buildDefaultValidatorFactory();
     private final static Validator defaultValidator = defaultFactory.getValidator();
+    private final static Map<String, Class> MagicClsMap = new ConcurrentHashMap<String, Class>();
 
     @Override
     protected boolean isValid(List<Field> fieldList) {
@@ -51,34 +53,45 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
     public boolean isValid() {
         try {
 
-            Set<ConstraintViolation> result = new LinkedHashSet<>();
-
             Object magicInstance = createValidationMagicInstance();
+            copyValue(this, magicInstance);
 
-            List<Field> originalFieldList = retrieveValidationFieldList();
-            for (Field field : originalFieldList) {
-                Object value = FieldUtils.readField(field, this, true);
-                Object validateValue = ((FormField) value).getFieldValue();
-                Set tmp = defaultValidator.validateValue(magicInstance.getClass(), field.getName(), validateValue);
-                for (Object object : tmp) {
-                    ConstraintViolation cv = (ConstraintViolation) object;
-                    addMessage(field.getName(), cv.getMessage());
-                }
-                result.addAll(tmp);
+            Set<ConstraintViolation<Object>> cvs = defaultValidator.validate(magicInstance);
+            for (ConstraintViolation<Object> cv : cvs) {
+                addMessage(cv.getPropertyPath().toString(), cv.getMessage());
             }
-
-            return result.isEmpty();
+            return cvs.isEmpty();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void copyValue(Object originalForm, Object magicFormInstance) {
+        try {
+            List<Field> fieldList = retrieveValidationFieldList();
+            Object v;
+            for (Field field : fieldList) {
+                v = FieldUtils.readField(field, originalForm, true);
+                if (v != null && FormField.class.isAssignableFrom(v.getClass())) {
+                    v = ((FormField) v).getFieldValue();
+                }
+                FieldUtils.writeField(magicFormInstance, field.getName(), v, true);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private Object createValidationMagicInstance() {
         try {
-            Class magicCls = getValidationMagicCls();
+            Class magicCls = MagicClsMap.get(this.getClass().getName());
+            if (magicCls == null) {
+                magicCls = getValidationMagicCls();
+                MagicClsMap.put(this.getClass().getName(), magicCls);
+            }
             Object magicInstance = magicCls.newInstance();
-
             return magicInstance;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -86,6 +99,13 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
 
     }
 
+    /**
+     * In this method, we create a magic class to represent the original form class. All the fields declared as subclass of
+     * {@link FormField} will be extract to the value type that is declared as the generic type of FormField, all the other fields which are
+     * not subclass of {@link FormField} will be copied to the new magic class with the original type.
+     * 
+     * @return
+     */
     private Class getValidationMagicCls() {
         try {
             String originalClassName = this.getClass().getName();

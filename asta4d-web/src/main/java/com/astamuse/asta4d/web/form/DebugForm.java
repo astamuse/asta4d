@@ -27,6 +27,10 @@ public class DebugForm extends JsrBeanValidationForm {
         }
     };
 
+    @ContextData
+    @NotNull
+    public String email = null;
+
     public static void main(String[] args) {
         WebApplicationContext context = new WebApplicationContext();
         context.init();
@@ -36,14 +40,14 @@ public class DebugForm extends JsrBeanValidationForm {
         WebApplicationConfiguration.setConfiguration(conf);
 
         DebugForm form = new DebugForm();
-        form.age.setValue("", "age-debug", "35");
+        form.age.setValue("", "age-debug", null);
         System.out.println("validate result:" + form.isValid());
     }
 
     @Override
     protected List<Field> retrieveValidationFieldList() {
         try {
-            return Arrays.asList(this.getClass().getField("age"));
+            return Arrays.asList(this.getClass().getField("age"), this.getClass().getField("email"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

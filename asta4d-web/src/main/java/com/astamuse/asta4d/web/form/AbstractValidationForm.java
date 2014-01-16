@@ -20,6 +20,8 @@ public abstract class AbstractValidationForm {
     protected abstract boolean isValid(List<Field> fieldList);
 
     protected List<Field> retrieveValidationFieldList() {
+        // ClassUtils.get
+        // classu
         return Collections.emptyList();
     }
 

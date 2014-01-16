@@ -39,6 +39,9 @@ public class DefaultDataConvertorInvoker implements DataConvertorInvoker {
 
     @Override
     public Object convert(Object data, Class<?> targetType) throws DataOperationException {
+        if (data == null) {
+            return null;
+        }
         Object result;
         Class<?> srcType = new TypeInfo(data.getClass()).getType();
         if (targetType.isAssignableFrom(srcType)) {
