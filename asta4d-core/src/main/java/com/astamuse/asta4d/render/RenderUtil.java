@@ -88,6 +88,9 @@ public class RenderUtil {
         if (doc == null) {
             return;
         }
+
+        applyClearAction(doc, false);
+
         // retrieve ready snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
                 ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
@@ -386,6 +389,15 @@ public class RenderUtil {
      * @param forFinalClean
      */
     public final static void applyClearAction(Element target, boolean forFinalClean) {
+        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
+                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
+        ElementUtil.removeNodesBySelector(target, fakeGroup, true);
+
+        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
+        ElementUtil.removeNodesBySelector(target, clearGroup, false);
+
+        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
+
         if (forFinalClean) {
             String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
                     ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
@@ -394,15 +406,6 @@ public class RenderUtil {
             ElementUtil.removeNodesBySelector(target, ExtNodeConstants.BLOCK_NODE_TAG_SELECTOR, true);
             ElementUtil.removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
         }
-
-        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
-                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
-        ElementUtil.removeNodesBySelector(target, fakeGroup, false);
-
-        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
-        ElementUtil.removeNodesBySelector(target, clearGroup, false);
-
-        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
 
     }
 

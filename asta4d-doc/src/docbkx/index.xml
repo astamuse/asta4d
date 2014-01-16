@@ -31,20 +31,45 @@
   <toc></toc>
 
   <part id="asta4d-introduction">
-    <title>Introduction of Asta4D</title>
-
-    <partintro id="asta4d-core-intro">
-      <para>Asta4D is a web application framework which is friendly to design and flexible to development.</para>
+    <title>Introduction</title>
+    
+    <partintro id="asta4d-intro">
+      <para>
+      Asta4D is a web application framework which is friendly to designer and flexible to developer. Asta4D affords
+      high productivity than traditional MVC architecture by View First architecture. It also allows front-end engineers 
+      and back-end engineers work independently without interference by separating rendering logic from template files.
+      </para>
       
-      <xi:include href="en/overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-      
+      <para>
+      Asta4D is inspired by lift which is a famous scala web application framework and it is developed by astamuse company Ltd.
+      locating at Tokyo Japan. We are concentrating on global innovation support and developing Asta4D for our own services.
+      Currently, Asta4D is driving our new service development.
 
+      </para>
     </partintro>
+    <xi:include href="en/overview.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>
-  
-  <part id="asta4d-functionality">
-    <title>Functions of Asta4D</title>
-    <para>...</para>
+
+  <part id="asta4d-user-guide">
+    <title>User Guide</title>
+    <xi:include href="en/inheritable_template.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/renderer.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/url_mapping.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/side_effect.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  </part>  
+
+  <part id="asta4d-reference">
+    <title>Reference</title>
+    <xi:include href="en/detail_template.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_snippet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_var_injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_url_rule.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_ext_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_i18n.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_servlet_conf.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_integration_spring.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>  
   
 </book>
