@@ -12,17 +12,18 @@
 
     <productname>Asta4D Framework</productname>
 
-    <releaseinfo>0.1</releaseinfo>
-
+    <releaseinfo><?eval Version: ${docVersion}?></releaseinfo>
+    <pubdate><?eval Last update at: ${docTime}?></pubdate>
+    
     <authorgroup>
-      <author>
-        <firstname>Shunsuke</firstname>
-        <surname>Otani</surname>
-      </author>	  
       <author>
         <firstname>Rui</firstname>
         <surname>Liu</surname>
       </author>
+      <author>
+        <firstname>Shunsuke</firstname>
+        <surname>Otani</surname>
+      </author>	  
     </authorgroup>
   </bookinfo>
 
