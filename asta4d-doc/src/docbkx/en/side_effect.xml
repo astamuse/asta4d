@@ -68,12 +68,46 @@
     session(transaction) to the view layer for handling lazy load issue, which makes transaction management more complicated. Additionally,
     especially for the pages that can be split to relatively individual blocks, hypothetically we can accelerate the page loading
     by retrieving data in multi threads for each block, but in reality it is impossible due to the source complexity and development costs.
-    The developers still have to access each data source sequentially to retrieve data for each block even the page is splitted to individual
+    The developers still have to access each data source sequentially to retrieve data for each block even the page is splitable as individual
     blocks.
     </para>
+
+    <para>
+    For Asta4D, the logic layers of system is clarified by isolating side effects at architecture level. The database session(transaction)
+    does no longer need keep opening cross layers, it is clear that the duty of request handler is altering system status but not preparing
+    data for view layer. At the mean time, at the view layer, acquiring data and rendering data are performed at the same time, at the same
+    place: We access data source and retrieve data in snippet method, and pass the data to Renderer to perform rendering immediately in the
+    same snippet method. Further, the complexity can be reduced drastically because all the accesses to certain data are isolated in certain
+    snippet methods and there is no cross layer invoking and coupling any more.
+    </para>
     
-    <!-- para>
-    For Asta4D, the logic layers of system is clarified by isolating side effects at architecture level.
-    </para -->
+    <para>
+    On the other hand, we can simply perform multi thread rendering by calling each snippet method in different threads, which is transparent to
+    developer. Because all the side effects has been isolated in request handler layer, we do not need to considerate sync or mutex even we
+    are performing multi thread rendering since the view layer is side effect free now.
+    </para>
+    
+    <para>
+    Let us see how easy we can achieve parallel rendering 
+    </para>
+    
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+<div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>  
+    <div id="test">xx</div>  
+</div>  
+  
+<afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>  
+    <div id="test">xx</div>  
+</afd:snippet>
+]]>
+      </programlisting>
+      <para>
+      All the snippets declared with parallel(afd:parallel) attribution will not block the http request main thread, the http request main thread
+      will wait for the parallel rendering after all the non-parallel rendering finished, then merge the result and output to the client.
+      </para>
+    </example>
+
   </section>
 </chapter>
