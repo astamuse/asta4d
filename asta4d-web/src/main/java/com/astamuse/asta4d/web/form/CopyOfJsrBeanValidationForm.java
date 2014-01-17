@@ -24,21 +24,21 @@ import org.hibernate.validator.cfg.ConstraintDef;
 import org.hibernate.validator.cfg.ConstraintMapping;
 import org.hibernate.validator.cfg.context.PropertyConstraintMappingContext;
 
-public class CopyOfJsrBeanValidationForm extends AbstractValidationForm {
+public class CopyOfJsrBeanValidationForm extends AbstractValidatableForm {
 
     private final static ValidatorFactory defaultFactory = Validation.buildDefaultValidatorFactory();
     private final static Validator defaultValidator = defaultFactory.getValidator();
 
     private Validator customizedValidator = null;
 
-    private Validator retrieveValidator(Field clsField, FormField formField) {
+    private Validator retrieveValidator(Field clsField, ValidatableFormField formField) {
         if (customizedValidator == null) {
             customizedValidator = buildCustomizedValidatorForCertainFormField(clsField, formField);
         }
         return customizedValidator;
     }
 
-    private Validator buildCustomizedValidatorForCertainFormField(Field clsField, FormField formField) {
+    private Validator buildCustomizedValidatorForCertainFormField(Field clsField, ValidatableFormField formField) {
         BeanDescriptor beanDescriptor = defaultValidator.getConstraintsForClass(this.getClass());
 
         PropertyDescriptor propDesc = beanDescriptor.getConstraintsForProperty(clsField.getName());
@@ -78,21 +78,20 @@ public class CopyOfJsrBeanValidationForm extends AbstractValidationForm {
         return cs.toArray(new Class[cs.size()]);
     }
 
-    @Override
     protected boolean isValid(List<Field> fieldList) {
-        Set<ConstraintViolation<FormField>> result = new LinkedHashSet<>();
-        Set<ConstraintViolation<FormField>> tmp;
+        Set<ConstraintViolation<ValidatableFormField>> result = new LinkedHashSet<>();
+        Set<ConstraintViolation<ValidatableFormField>> tmp;
         try {
             for (Field field : fieldList) {
 
                 Type type = field.getGenericType();
 
-                FormField formField;
+                ValidatableFormField formField;
 
-                formField = (FormField) FieldUtils.readField(field, this, true);
+                formField = (ValidatableFormField) FieldUtils.readField(field, this, true);
 
                 tmp = validate(field, formField);
-                for (ConstraintViolation<FormField> cv : tmp) {
+                for (ConstraintViolation<ValidatableFormField> cv : tmp) {
                     addMessage(formField.getName(), cv.getMessage());
                 }
                 result.addAll(tmp);
@@ -105,8 +104,14 @@ public class CopyOfJsrBeanValidationForm extends AbstractValidationForm {
         return result.isEmpty();
     }
 
-    protected Set<ConstraintViolation<FormField>> validate(Field clsField, FormField formField) {
+    protected Set<ConstraintViolation<ValidatableFormField>> validate(Field clsField, ValidatableFormField formField) {
         Validator validator = retrieveValidator(clsField, formField);
         return validator.validateValue((Class) formField.getClass(), "fieldValue", formField.getFieldValue());
+    }
+
+    @Override
+    protected boolean validateValues(List<Field> fieldList) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

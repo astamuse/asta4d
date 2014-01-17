@@ -39,22 +39,18 @@ import javax.validation.ValidatorFactory;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-public class JsrBeanValidationForm extends AbstractValidationForm {
+public class JsrBeanValidationForm extends AbstractValidatableForm {
 
     private final static ValidatorFactory defaultFactory = Validation.buildDefaultValidatorFactory();
     private final static Validator defaultValidator = defaultFactory.getValidator();
     private final static Map<String, Class> MagicClsMap = new ConcurrentHashMap<String, Class>();
 
     @Override
-    protected boolean isValid(List<Field> fieldList) {
-        return false;
-    }
-
-    public boolean isValid() {
+    protected boolean validateValues(List<Field> fieldList) {
         try {
 
-            Object magicInstance = createValidationMagicInstance();
-            copyValue(this, magicInstance);
+            Object magicInstance = createValidationMagicInstance(fieldList);
+            copyValue(this, magicInstance, fieldList);
 
             Set<ConstraintViolation<Object>> cvs = defaultValidator.validate(magicInstance);
             for (ConstraintViolation<Object> cv : cvs) {
@@ -67,14 +63,13 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
         }
     }
 
-    private void copyValue(Object originalForm, Object magicFormInstance) {
+    private void copyValue(Object originalForm, Object magicFormInstance, List<Field> fieldList) {
         try {
-            List<Field> fieldList = retrieveValidationFieldList();
             Object v;
             for (Field field : fieldList) {
                 v = FieldUtils.readField(field, originalForm, true);
-                if (v != null && FormField.class.isAssignableFrom(v.getClass())) {
-                    v = ((FormField) v).getFieldValue();
+                if (v != null && ValidatableFormField.class.isAssignableFrom(v.getClass())) {
+                    v = ((ValidatableFormField) v).getFieldValue();
                 }
                 FieldUtils.writeField(magicFormInstance, field.getName(), v, true);
             }
@@ -84,11 +79,11 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
 
     }
 
-    private Object createValidationMagicInstance() {
+    private Object createValidationMagicInstance(List<Field> fieldList) {
         try {
             Class magicCls = MagicClsMap.get(this.getClass().getName());
             if (magicCls == null) {
-                magicCls = getValidationMagicCls();
+                magicCls = getValidationMagicCls(fieldList);
                 MagicClsMap.put(this.getClass().getName(), magicCls);
             }
             Object magicInstance = magicCls.newInstance();
@@ -101,16 +96,15 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
 
     /**
      * In this method, we create a magic class to represent the original form class. All the fields declared as subclass of
-     * {@link FormField} will be extract to the value type that is declared as the generic type of FormField, all the other fields which are
-     * not subclass of {@link FormField} will be copied to the new magic class with the original type.
+     * {@link ValidatableFormField} will be extract to the value type that is declared as the generic type of FormField, all the other fields which are
+     * not subclass of {@link ValidatableFormField} will be copied to the new magic class with the original type.
      * 
      * @return
      */
-    private Class getValidationMagicCls() {
+    private Class getValidationMagicCls(List<Field> originalFieldList) {
         try {
             String originalClassName = this.getClass().getName();
             String className = originalClassName + "_$JsrBeanValidationForm$_";
-            List<Field> originalFieldList = retrieveValidationFieldList();
 
             ClassPool cpool = ClassPool.getDefault();
             CtClass ct = cpool.makeClass(this.getClass().getPackage().getName() + "." + className);
@@ -126,7 +120,7 @@ public class JsrBeanValidationForm extends AbstractValidationForm {
 
                 Class originalType = originalField.getType();
                 String name = originalField.getName();
-                if (FormField.class.isAssignableFrom(originalType)) {
+                if (ValidatableFormField.class.isAssignableFrom(originalType)) {
                     originalType = (Class) ((ParameterizedType) originalField.getGenericType()).getActualTypeArguments()[0];
                 }
 

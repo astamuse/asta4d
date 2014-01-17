@@ -2,10 +2,9 @@ package com.astamuse.asta4d.web.form;
 
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.DataConvertorInvoker;
-import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
-public abstract class SimpleFormField<T> extends ContextDataHolder implements FormField<T> {
+public class SimpleFormField<T> extends ContextDataHolder implements ValidatableFormField<T> {
 
     private final static DataConvertorInvoker DataConvertorInvoker = WebApplicationConfiguration.getWebApplicationConfiguration()
             .getDataConvertorInvoker();
@@ -13,6 +12,8 @@ public abstract class SimpleFormField<T> extends ContextDataHolder implements Fo
     private T fieldValue;
 
     private Class<T> fieldValueType;
+
+    private boolean isTypeMismatched = false;
 
     @SuppressWarnings("unchecked")
     public SimpleFormField(Class<T> fieldValueType) {
@@ -26,8 +27,8 @@ public abstract class SimpleFormField<T> extends ContextDataHolder implements Fo
         super.setValue(scope, name, value);
         try {
             fieldValue = (T) DataConvertorInvoker.convert(value, fieldValueType);
-        } catch (DataOperationException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            isTypeMismatched = true;
         }
     }
 
@@ -39,6 +40,11 @@ public abstract class SimpleFormField<T> extends ContextDataHolder implements Fo
     @Override
     public T getFieldValue() {
         return fieldValue;
+    }
+
+    @Override
+    public boolean isTypeMismatched() {
+        return isTypeMismatched;
     }
 
 }

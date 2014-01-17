@@ -1,15 +1,10 @@
 package com.astamuse.asta4d.web.form;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 
@@ -19,13 +14,7 @@ public class DebugForm extends JsrBeanValidationForm {
     @ContextData
     @NotNull
     @Max(30)
-    public SimpleFormField<Integer> age = new SimpleFormField<Integer>(Integer.class) {
-        @Override
-        public Renderer fieldValueRenderer() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-    };
+    public SimpleFormField<Integer> age = new SimpleFormField<Integer>(Integer.class);
 
     @ContextData
     @NotNull
@@ -40,17 +29,8 @@ public class DebugForm extends JsrBeanValidationForm {
         WebApplicationConfiguration.setConfiguration(conf);
 
         DebugForm form = new DebugForm();
-        form.age.setValue("", "age-debug", null);
+        form.age.setValue("", "age-debug", "x");
         System.out.println("validate result:" + form.isValid());
-    }
-
-    @Override
-    protected List<Field> retrieveValidationFieldList() {
-        try {
-            return Arrays.asList(this.getClass().getField("age"), this.getClass().getField("email"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

@@ -113,7 +113,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
             });
         }// end for loop
 
-        renderer.eableMissingSelectorWarning();
+        renderer.enableMissingSelectorWarning();
 
         renderer.add(defaultGlobalContainerSelector, new ElementSetter() {
             @Override
