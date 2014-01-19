@@ -108,6 +108,25 @@
       will wait for the parallel rendering after all the non-parallel rendering finished, then merge the result and output to the client.
       </para>
     </example>
-
   </section>
+
+  <section>
+    <title>Compatibility to MVC</title>
+    <para>
+    Someone may ask: "Is it true that we do not need MVC?", "Is it true that we do not need a controller?". The answer is "No". We
+    admit that MVC architecture is more convenient than view first for some certain cases, for instance, when we are handling form
+    submission, the MVC structure is required naturally. By Asta4D, you can simply handle this case by implement the request handler
+    as a controller.
+    </para>
+    
+    <para>
+    Further, perhaps you cannot agree with the idea of view first. You believe a controller is necessary in any case but you are also
+    interested in the split template mechanism of Asta4D, the same answer for you: implement your request handler as a controller. 
+    </para>
+    
+    <para>
+      <remark>You can also integrate Asta4D's template only as a view layer implementation for Spring MVC. More details can be found in reference.</remark>
+    </para>
+  </section>
+
 </chapter>
