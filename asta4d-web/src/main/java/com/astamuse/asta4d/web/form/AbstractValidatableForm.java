@@ -42,13 +42,22 @@ public abstract class AbstractValidatableForm {
                     v = (ValidatableFormField) FieldUtils.readField(field, this, true);
                     if (v.isTypeMismatched()) {
                         hasTypeMismachedField = true;
-                        addMessage(v.getName(), "type mismached");
+                        addMessage(v.getName(), retrieveTypeMismatchedMessage(field));
                     }
                 }
             }
             return !hasTypeMismachedField;
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    protected String retrieveTypeMismatchedMessage(Field field) {
+        TypeMismatch tmm = field.getAnnotation(TypeMismatch.class);
+        if (tmm == null) {
+            return "type mismached";
+        } else {
+            return tmm.message();
         }
     }
 

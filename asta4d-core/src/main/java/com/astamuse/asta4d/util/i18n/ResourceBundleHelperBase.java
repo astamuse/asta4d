@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.format.PlaceholderFormatter;
-import com.astamuse.asta4d.util.InvalidMessageException;
 
 public abstract class ResourceBundleHelperBase {
     private final static Logger LOGGER = LoggerFactory.getLogger(ResourceBundleHelperBase.class);
@@ -79,12 +78,7 @@ public abstract class ResourceBundleHelperBase {
         @Override
         public String toString() {
             String msgKey = key + '.' + value;
-            try {
-                return ResourceBundleUtil.getMessage(formatter, locale, msgKey);
-            } catch (InvalidMessageException e) {
-                LOGGER.warn("failed to get the message. key=" + msgKey, e);
-                return '!' + msgKey + '!';
-            }
+            return ResourceBundleUtil.getMessage(formatter, locale, msgKey);
         }
     }
 }

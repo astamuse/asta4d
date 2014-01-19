@@ -41,8 +41,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 public class JsrBeanValidationForm extends AbstractValidatableForm {
 
-    private final static ValidatorFactory defaultFactory = Validation.buildDefaultValidatorFactory();
-    private final static Validator defaultValidator = defaultFactory.getValidator();
+    protected final static ValidatorFactory defaultFactory = Validation.buildDefaultValidatorFactory();
+    protected final static Validator defaultValidator = defaultFactory.getValidator();
     private final static Map<String, Class> MagicClsMap = new ConcurrentHashMap<String, Class>();
 
     @Override
@@ -96,8 +96,8 @@ public class JsrBeanValidationForm extends AbstractValidatableForm {
 
     /**
      * In this method, we create a magic class to represent the original form class. All the fields declared as subclass of
-     * {@link ValidatableFormField} will be extract to the value type that is declared as the generic type of FormField, all the other fields which are
-     * not subclass of {@link ValidatableFormField} will be copied to the new magic class with the original type.
+     * {@link ValidatableFormField} will be extract to the value type that is declared as the generic type of FormField, all the other
+     * fields which are not subclass of {@link ValidatableFormField} will be copied to the new magic class with the original type.
      * 
      * @return
      */

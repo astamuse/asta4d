@@ -30,7 +30,6 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
 import com.astamuse.asta4d.format.PlaceholderFormatter;
-import com.astamuse.asta4d.util.InvalidMessageException;
 
 public class ResourceBundleUtil {
 
@@ -42,38 +41,48 @@ public class ResourceBundleUtil {
         }
     };
 
-    public static String getMessage(ParamOrderDependentFormatter formatter, Locale locale, String key, Object... params)
-            throws InvalidMessageException {
+    public static String getMessage(ParamOrderDependentFormatter formatter, Locale locale, String key, Object... params) {
         List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
         MissingResourceException ex = null;
+        String pattern = null;
         for (String resourceName : resourceNames) {
             try {
                 ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
-                return formatter.format(resourceBundle.getString(key), params);
+                pattern = resourceBundle.getString(key);
+
             } catch (MissingResourceException e) {
-                ex = e;
+                // ex = e;
             }
         }
-        throw new InvalidMessageException("key[" + key + "] not found.", ex);
+        if (pattern == null) {
+            pattern = key;
+        }
+
+        return formatter.format(pattern, params);
+
     }
 
-    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key) throws InvalidMessageException {
+    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key) {
         return getMessage(formatter, locale, key, Collections.<String, Object> emptyMap());
     }
 
-    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key, Map<String, Object> paramMap)
-            throws InvalidMessageException {
+    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key, Map<String, Object> paramMap) {
         List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
         MissingResourceException ex = null;
+        String pattern = null;
         for (String resourceName : resourceNames) {
             try {
                 ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
-                return formatter.format(resourceBundle.getString(key), paramMap);
+                pattern = resourceBundle.getString(key);
             } catch (MissingResourceException e) {
                 ex = e;
             }
         }
-        throw new InvalidMessageException("key[" + key + "] not found.", ex);
+        if (pattern == null) {
+            pattern = key;
+        }
+        return formatter.format(pattern, paramMap);
+
     }
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {
