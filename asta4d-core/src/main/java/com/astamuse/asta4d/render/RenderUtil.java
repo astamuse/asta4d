@@ -48,7 +48,6 @@ import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
-import com.astamuse.asta4d.util.InvalidMessageException;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
@@ -405,8 +404,7 @@ public class RenderUtil {
         for (Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
             if (!attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_KEY)) {
-                InvalidMessageException ex = new InvalidMessageException(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
-                logger.error("", ex);
+                logger.warn(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
                 continue;
             }
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
@@ -422,12 +420,8 @@ public class RenderUtil {
 
             Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);
             String text;
-            try {
-                text = helper.getMessage(key, paramMap);
-            } catch (InvalidMessageException e) {
-                logger.warn("failed to get the message. key=" + key, e);
-                text = '!' + key + '!';
-            }
+            text = helper.getMessage(key, paramMap);
+
             Node node;
             if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {
                 node = ElementUtil.text(text.substring(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX.length()));
