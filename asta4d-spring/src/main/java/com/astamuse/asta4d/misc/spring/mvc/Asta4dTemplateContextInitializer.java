@@ -44,16 +44,15 @@ public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter 
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        Context asta4dContext = Context.getCurrentThreadContext();
+        WebApplicationContext asta4dContext = WebApplicationContext.getCurrentThreadContext();
         if (asta4dContext == null) {
             asta4dContext = new WebApplicationContext();
             Context.setCurrentThreadContext(asta4dContext);
         }
         asta4dContext.init();
-        WebApplicationContext webContext = (WebApplicationContext) asta4dContext;
-        webContext.setRequest(request);
-        webContext.setResponse(response);
-        webContext.setServletContext(servletContext);
+        asta4dContext.setRequest(request);
+        asta4dContext.setResponse(response);
+        asta4dContext.setServletContext(servletContext);
         return true;
     }
 
