@@ -138,10 +138,140 @@ rules.add("/app/handler")
   
   <section>
     <title>Default request handler</title>
+    <para>
+    You can not only declare request handler to a certain url, but also declare global request handlers which is available to
+    all the urls and prior to the request handlers declared on certain urls. There is a conception of request handler chain
+    for multi handlers, we will explain it in a later chapter.
+    </para>
+    
+    <example>
+      <title>Default request handler</title>
+      <programlisting language="java">
+<![CDATA[
+rules.addDefaultRequestHandler(GlobalHandler.class);  
+  
+rules.addDefaultRequestHandler("authcheck", AuthCheckHandler.class);  
+]]>
+      </programlisting>
+    </example>
+    
+    <para>
+    At the second line declaration for AuthCheckHandler, an attribute can be specified at the same time, which cause the declared request handler
+    is only available to the rules that declared the same attribute.
+    </para>
+    
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.add("/app/handler").attribute("authcheck")  
+        ...  
+]]>
+      </programlisting>
+    </example>
+    
+    <remark>
+    In the framework's internal implementation, a static match rule table will be generated after all the url mapping declaration finished. A global
+    request handler that is only available to certain rules will be configured to the the certain url rules only, by which unnecessary performance
+    cost is avoid.
+    </remark>
+    
+    <para>
+    In our practice, we found that it is very inconvenient to declare necessary attribute on every rule. In most situations, we will
+    want to do something like configure a same default request handler to all the url paths under "/xxx", which can be done by delcaring
+    a non attribute default request handler which judges the url pattern by itself, but such way will lose the performance benefit of
+    attribute declaration. Thus, we provide an alternative way for this situation: url rule rewrite.
+    </para>
+    
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.addRuleRewriter(new UrlMappingRuleRewriter() {  
+    @Override  
+    public void rewrite(UrlMappingRule rule) {  
+        if(rule.getSourcePath().startsWith("/privatedata/")){  
+            rule.getAttributeList().add("authcheck");  
+        }  
+    }  
+});   
+]]>
+      </programlisting>
+    </example>
+
+    <para>
+    Please note that, untill now all the introduced configuration for url mapping are achieved by a group of interface called
+    HandyRule which convert all the declaration to the instance of UrlMappingRule which is used by framework internally. But in
+    the url rule rewritter implementation, developers have to cope with the raw UrlMappingRule which is difficult to understand,
+    so complex url rewriting is not appreciated. Basically, the scenario of url rule rewriting is only for add attributes to rules in
+    bulk.
+    </para>
   </section>
   
   <section>
-    <title>Global forwarding/redirect</title>
+    <title>Global forward/redirect</title>
+
+    <para>
+    Previously we mentioned that the result of a request handler will be matched in the forward declaration, if there is no matched forward found,
+    the global forward rule will be checked.
+    </para>
+    
+    <example>
+      <title>Global forward</title>
+      <programlisting language="java">
+<![CDATA[
+rules.addGlobalForward(PageNotFoundException.class, "/pagenotfound.html", 404);  
+]]>
+      </programlisting>
+
+      <para>
+      The above source declares that if the result of request handler is PageNotFoundException(Exception is treated as the result of the request handler),
+      forward the request to pagenotfound.html by http status code 404.
+      </para>
+      
+    </example>
+    
+    <para>
+    Global redirect can be declared by the same way.
+    </para>
+    
+    <example>
+      <title>Global redirect</title>
+      <programlisting language="java">
+<![CDATA[
+rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, "/somewhere");  
+]]>
+      </programlisting>
+    </example>
+
+    <para>
+    The global forward rules are applied before the default forward rule(the forward rule without result) on certain url mapping rule.
+    </para>
+
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.addGlobalForward(PageNotFoundException.class, "/pagenotfound.html", 404);  
+
+rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, "/somewhere");  
+
+rules.add("/app/handler")  
+     .handler(LoginHandler.class) 
+     .forward(LoginFailure.class, "/templates/error.html") 
+     .redirect(FurtherConfirm.class, "/app/furtherConfirm")  
+     .forward("/templates/success.html");
+]]>
+      </programlisting>
+    </example>
+    
+    <para>
+    In the above sample, the result of LoginHandler will be matched by the following order:
+    <orderedlist>
+      <listitem>LoginFailer</listitem>
+      <listitem>FurtherConfirm</listitem>
+      <listitem>PageNotFoundException</listitem>
+      <listitem>REDIRECT_TO_SOMEWHERE</listitem>
+      <listitem>(default-> "success.html")</listitem>
+    </orderedlist>
+    </para>
   </section>
 
 </chapter>
