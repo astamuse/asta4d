@@ -259,12 +259,123 @@
     </sect2>
   </sect1>
   <sect1>
-    <title>Customization</title>
+    <title>Additional</title>
     <itemizedlist>
+      <listitem>
+        <para>HTML5 convention</para>
+        <para>
+        Asta4D's template engine does only support html5, which relies on the underline library <ulink url="http://jsoup.org">jsoup(verion 1.6.3)</ulink>.
+        jsoup implements the <ulink url="http://whatwg.org/html">WHATWG HTML5</ulink> specification and requires compliance from the target file.
+        jsoup can fix some cases of breaking specification but you would still get unexpected result for certain cases. Basically, you should take care
+        of the following things:
+        <itemizedlist>
+          <listitem><para>All tags and attributes are converted to lower case.</para></listitem>
+          <listitem><para>Self closed tags such as &lt;div /&gt; or &lt;afd:embed target="embed.html" /&gt; is not legal.</para></listitem>
+          <listitem><para>There are some tags that the parser "ensures".For example a &lt;tbody&gt; tag must be the first tag inside &lt;table&gt;, which
+          breas the following example:</para>
+            <example>
+            <programlisting language="xml">
+<![CDATA[
+<table>
+<afd:snippet render="ListSnippet">
+<tr><td></td></tr>
+</afd:snippet>
+</table> 
+]]>
+            </programlisting>
+            </example>
+            <para>But it can be replaced by the following:</para>
+            <example>
+            <programlisting language="xml">
+<![CDATA[
+<table>
+<tr afd:render="ListSnippet"><td></td></tr>
+</table> 
+]]>
+            </programlisting>
+            </example>
+          </listitem>
+        </itemizedlist>
+        </para>
+      </listitem>
+      <listitem>
+        <para>body convention</para>
+        <para>When a child template file uses "afd:extension" to declare its parent template, only the body part(all the 
+        children of the body except the body tag itself) of the child template will be processed by the template engine 
+        and the parts out of body will be ignored simply. The same convention is applied to the embed target file. The 
+        following two sample will not cause different results by Asta4D.</para>
+        <example><title>child.html without body tag:</title>
+        <programlisting language="xml">
+<![CDATA[
+<afd:extension parent="parent.html">   
+  
+    <afd:block override="content ">   
+        <div>hello</div>   
+        <afd:embed target="/templates/embed.html" ></afd:embed>   
+    </afd:block>   
+  
+</afd:extension>  
+]]>
+        </programlisting>
+        </example>
+        <example id="child-with-body-tag"><title>child.html with body tag:</title>
+        <programlisting language="xml">
+<![CDATA[
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<afd:extension parent="parent.html">   
+  
+    <afd:block override="content ">   
+        <div>hello</div>   
+        <afd:embed target="/templates/embed.html" ></afd:embed>   
+    </afd:block>   
+  
+</afd:extension>
+</body>
+</html>  
+]]>
+        </programlisting>
+        </example>
+        <para>
+        This convention can be used for editor compatibility in case of your prefer html editor requires correct meta information
+        (We add charset="UTF-8" to all of our template files for this reason). Note that this convention is only available on extended
+        child template file or embedded target file, the parts out of body tag will be processed normally in the parent template file
+        which is as a root template without further parent.
+        </para>
+        <para>
+        Further, explicit parameter information can be commented at body tag in parameterizable embed target file for better source
+        readability.
+        </para>
+        <example id="embed-with-parameter-declaring"><title>embed.html</title>
+          <programlisting language="xml">
+<![CDATA[
+<html>
+<head><meta charset="UTF-8"></head>
+<body itemsize="{Integer}" itemlist="{List}">
+    <afd:block append="block1">   
+        <link href="embed.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+    <div>good embed</div>   
+</body>
+</html>
+]]>
+          </programlisting>
+          <para>
+            In <xref linkend="embed-with-parameter-declaring" />, we put some "strange" information in the body tag, which suggests that
+            when this file is embedded, it requires an Integer parameter named "itemsize" and a List parameter named "itemlist". Note
+            that such declaration can only be regarded as a hint for source reader and there is no warranty about any parameter check.
+            You should consider it as a sample of how you can make interesting use of the body convention.
+          </para>
+        </example>
+        <sbr/>
+      </listitem>
       <listitem>
         <para>"afd" name space</para>
         <para>The "afd" name space is configured as the default name space of Asta4D's special tags. This name space can be
-        changed by Configuration#setTagNameSpace</para>
+        changed by Configuration#setTagNameSpace.</para>
         <sbr/>
       </listitem>
       <listitem>

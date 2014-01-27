@@ -42,32 +42,22 @@
       <example id="template-child"><title>child.html</title>
       <programlisting language="xml">
 <![CDATA[
-<html>   
-<head></head>   
-<body>   
-<!-- (1) -->   
 <afd:extension parent="parent.html">   
   
-    <!-- (2) -->   
     <afd:block append="block1">   
         <link href="child1.css" rel="stylesheet" type="text/css" />   
     </afd:block>   
   
-    <!-- (3) -->   
     <afd:block insert="block2">   
         <link href="child2.css" rel="stylesheet" type="text/css" />   
     </afd:block>   
   
-    <!-- (4) -->   
     <afd:block override="content ">   
         <div>hello</div>   
-        <!-- (5) -->   
         <afd:embed target="/templates/embed.html" ></afd:embed>   
     </afd:block>   
   
 </afd:extension>   
-</body>   
-</html> 
 ]]>
       </programlisting>
       </example>
@@ -82,19 +72,13 @@
       In the <xref linkend="template-child"/>, there is an additional declaration of including by "afd:embed" which embed 
       the target file to the current place of the current file. Let's see the embed.html:
       </para>
-      <example id="template-child"><title>embed.html</title>
+      <example><title>embed.html</title>
       <programlisting language="xml">
 <![CDATA[
-<html>   
-<head></head>   
-<body>   
-    <!-- (6) -->   
     <afd:block append="block1">   
         <link href="embed.css" rel="stylesheet" type="text/css" />   
     </afd:block>   
     <div>good embed</div>   
-</body>   
-</html>   
 ]]>
       </programlisting>
       </example>
