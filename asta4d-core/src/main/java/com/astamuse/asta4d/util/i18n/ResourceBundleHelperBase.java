@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.format.PlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 
 public abstract class ResourceBundleHelperBase {
     private final static Logger LOGGER = LoggerFactory.getLogger(ResourceBundleHelperBase.class);

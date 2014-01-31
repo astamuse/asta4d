@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.astamuse.asta4d.format.PlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 
 public class ParamMapResourceBundleHelper extends ResourceBundleHelperBase {
 

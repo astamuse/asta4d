@@ -28,8 +28,8 @@ import org.apache.commons.lang3.LocaleUtils;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
-import com.astamuse.asta4d.format.PlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.ParamOrderDependentFormatter;
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 
 public class ResourceBundleUtil {
 

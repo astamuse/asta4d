@@ -24,8 +24,6 @@ import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
-import com.astamuse.asta4d.format.PlaceholderFormatter;
-import com.astamuse.asta4d.format.SymbolPlaceholderFormatter;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -38,6 +36,8 @@ import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
 public class Configuration {
 

@@ -29,12 +29,12 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.format.NamedPlaceholderFormatter;
-import com.astamuse.asta4d.format.NumberPlaceholderFormatter;
-import com.astamuse.asta4d.format.SymbolPlaceholderFormatter;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
+import com.astamuse.asta4d.util.i18n.format.NamedPlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.NumberPlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
 public class ResourceBundleUtilTest extends BaseTest {
 

@@ -19,7 +19,7 @@ package com.astamuse.asta4d.util.i18n;
 
 import java.util.Locale;
 
-import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
+import com.astamuse.asta4d.util.i18n.format.ParamOrderDependentFormatter;
 
 public class ResourceBundleHelper extends ResourceBundleHelperBase {
 
