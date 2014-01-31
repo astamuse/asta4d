@@ -48,15 +48,13 @@ import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
-import com.astamuse.asta4d.util.InvalidMessageException;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 
 /**
  * 
- * This class is a functions holder which supply the ability of applying
- * rendereres to certain Element.
+ * This class is a functions holder which supply the ability of applying rendereres to certain Element.
  * 
  * @author e-ryu
  * 
@@ -74,13 +72,10 @@ public class RenderUtil {
     }
 
     /**
-     * Find out all the snippet in the passed Document and execute them. The
-     * Containing embed tag of the passed Document will be exactly mixed in here
-     * too. <br>
-     * Recursively contained snippets will be executed from outside to inside,
-     * thus the inner snippets will not be executed until all of their outer
-     * snippets are finished. Also, the dynamically created snippets and embed
-     * tags will comply with this rule too.
+     * Find out all the snippet in the passed Document and execute them. The Containing embed tag of the passed Document will be exactly
+     * mixed in here too. <br>
+     * Recursively contained snippets will be executed from outside to inside, thus the inner snippets will not be executed until all of
+     * their outer snippets are finished. Also, the dynamically created snippets and embed tags will comply with this rule too.
      * 
      * @param doc
      *            the Document to apply snippets
@@ -92,6 +87,9 @@ public class RenderUtil {
         if (doc == null) {
             return;
         }
+
+        applyClearAction(doc, false);
+
         // retrieve ready snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS,
                 ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
@@ -373,14 +371,22 @@ public class RenderUtil {
     }
 
     /**
-     * Clear the redundant elements which are usually created by
-     * snippet/renderer applying.If the forFinalClean is true, all the finished
+     * Clear the redundant elements which are usually created by snippet/renderer applying.If the forFinalClean is true, all the finished
      * snippet tags will be removed too.
      * 
      * @param target
      * @param forFinalClean
      */
     public final static void applyClearAction(Element target, boolean forFinalClean) {
+        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
+                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
+        ElementUtil.removeNodesBySelector(target, fakeGroup, true);
+
+        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
+        ElementUtil.removeNodesBySelector(target, clearGroup, false);
+
+        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
+
         if (forFinalClean) {
             String removeSnippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR,
                     ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
@@ -390,15 +396,6 @@ public class RenderUtil {
             ElementUtil.removeNodesBySelector(target, ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, true);
         }
 
-        String fakeGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.GROUP_NODE_ATTR_TYPE,
-                ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
-        ElementUtil.removeNodesBySelector(target, fakeGroup, false);
-
-        String clearGroup = SelectorUtil.attr(ExtNodeConstants.GROUP_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_CLEAR, null);
-        ElementUtil.removeNodesBySelector(target, clearGroup, false);
-
-        ElementUtil.removeNodesBySelector(target, SelectorUtil.attr(ExtNodeConstants.ATTR_CLEAR_WITH_NS), false);
-
     }
 
     public final static void applyMessages(Element target) {
@@ -406,13 +403,9 @@ public class RenderUtil {
         List<Element> msgElems = target.select(selector);
         for (Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
-            if (!attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_KEY)) {
-                InvalidMessageException ex = new InvalidMessageException(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
-                logger.error("", ex);
-                continue;
-            }
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
             List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            String defaultMsg = ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
 
             // TODO cache localed helper instance
             ParamMapResourceBundleHelper helper = null;
@@ -424,12 +417,8 @@ public class RenderUtil {
 
             Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);
             String text;
-            try {
-                text = helper.getMessage(key, paramMap);
-            } catch (InvalidMessageException e) {
-                logger.warn("failed to get the message. key=" + key, e);
-                text = '!' + key + '!';
-            }
+            text = helper.getMessageWithDefault(key, defaultMsg, paramMap);
+
             Node node;
             if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {
                 node = ElementUtil.text(text.substring(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX.length()));

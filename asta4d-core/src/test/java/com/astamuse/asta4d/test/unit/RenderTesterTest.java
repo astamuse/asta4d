@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.test.unit;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -17,6 +19,7 @@ import com.astamuse.asta4d.render.test.RendererTester;
 import com.astamuse.asta4d.render.test.TestableElementWrapper;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 
 public class RenderTesterTest extends BaseTest {
@@ -30,6 +33,8 @@ public class RenderTesterTest extends BaseTest {
         render.add("#someIdForLong", 12345L);
         render.add("#someIdForBool", true);
         render.add("#someIdForStr", "a str");
+        render.add("#someIdForNull", (Object) null);
+        render.add("#someIdForClear", Clear);
 
         Element newChild = ElementUtil.parseAsSingle("<div></div>");
         render.add("#someIdForElementSetter", new ChildReplacer(newChild));
@@ -44,6 +49,9 @@ public class RenderTesterTest extends BaseTest {
         Assert.assertEquals(tester.get("#someIdForLong"), 12345L);
         Assert.assertEquals(tester.get("#someIdForBool"), true);
         Assert.assertEquals(tester.get("#someIdForStr"), "a str");
+        Assert.assertEquals(tester.get("#someIdForNull"), null);
+        Assert.assertEquals(tester.get("#someIdForClear"), Clear);
+
         Assert.assertEquals(tester.get("#someIdForElementSetter"), new ChildReplacer(ElementUtil.parseAsSingle("<div></div>")));
 
         Assert.assertEquals(tester.get("#someIdForElement"), TestableElementWrapper.parse("<div>eee</div>"));
@@ -141,13 +149,20 @@ public class RenderTesterTest extends BaseTest {
 
         List<RendererTester> testerList = RendererTester.forRendererList(renderList);
         List<String> confirmIdList = Arrays.asList("id-123", "id-456", "id-789");
-        List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
 
         for (int i = 0; i < testerList.size(); i++) {
             RendererTester recursiveTester = testerList.get(i);
             Assert.assertEquals(recursiveTester.get("#id"), confirmIdList.get(i));
-            Assert.assertEquals(recursiveTester.get("#otherId"), confirmOtherIdList.get(i));
         }
+
+        // we can also write tests in a more functional way
+        List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
+        Assert.assertEquals(confirmOtherIdList, ListConvertUtil.transform(testerList, new RowConvertor<RendererTester, String>() {
+            @Override
+            public String convert(int rowIndex, RendererTester tester) {
+                return (String) tester.get("#otherId");
+            }
+        }));
 
     }
 

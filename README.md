@@ -194,7 +194,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.12.30               \
+        -DarchetypeVersion=0.14.1.31               \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -272,6 +272,18 @@ Want to do:
 
     
 ## Release Notes
+-   0.14.1.31
+    
+    ADD
+    - allow default msg content for msg rendering
+    - allow extra attribution and var declaration on remaped rules
+    - allow initialize asta4d in spring mvc as template solution only
+    
+    FIX
+    - predefined clear nodes are not removed correctly
+    - wrong spelled method name
+    - refactor rendering test mechanism for better test support(with minor bug fix)
+
 -   0.12.30
     
     ADD

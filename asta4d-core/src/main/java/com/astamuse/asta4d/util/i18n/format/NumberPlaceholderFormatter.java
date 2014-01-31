@@ -15,13 +15,18 @@
  * 
  */
 
-package com.astamuse.asta4d.format;
+package com.astamuse.asta4d.util.i18n.format;
 
-import java.util.Map;
+import java.text.MessageFormat;
 
-import com.astamuse.asta4d.util.InvalidMessageException;
+public class NumberPlaceholderFormatter extends ParamOrderDependentFormatter {
 
-public interface PlaceholderFormatter {
-
-    String format(String pattern, Map<String, Object> paramMap) throws InvalidMessageException;
+    @Override
+    public String format(String pattern, Object... params) {
+        try {
+            return MessageFormat.format(pattern, params);
+        } catch (IllegalArgumentException e) {
+            return pattern;
+        }
+    }
 }

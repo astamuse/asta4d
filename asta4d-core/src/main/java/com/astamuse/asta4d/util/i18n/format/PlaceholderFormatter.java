@@ -15,20 +15,11 @@
  * 
  */
 
-package com.astamuse.asta4d.util;
+package com.astamuse.asta4d.util.i18n.format;
 
-@SuppressWarnings("serial")
-public class InvalidMessageException extends Exception {
+import java.util.Map;
 
-    public InvalidMessageException(String message) {
-        super(message);
-    }
+public interface PlaceholderFormatter {
 
-    public InvalidMessageException(Throwable cause) {
-        super(cause);
-    }
-
-    public InvalidMessageException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    String format(String pattern, Map<String, Object> paramMap);
 }

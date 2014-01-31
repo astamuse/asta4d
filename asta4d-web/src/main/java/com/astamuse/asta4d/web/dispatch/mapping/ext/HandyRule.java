@@ -38,9 +38,9 @@ public class HandyRule extends HandyRuleWithHandler {
         Map<String, Object> map = rule.getExtraVarMap();
         if (map == null) {
             map = new HashMap<String, Object>();
+            rule.setExtraVarMap(map);
         }
         map.put(key, value);
-        rule.setExtraVarMap(map);
         return this;
     }
 

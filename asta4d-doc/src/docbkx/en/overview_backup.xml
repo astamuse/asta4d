@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="overview"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Overview of Asta4D</title>
+
+  <para>Asta4D is inspired by lift which is a famous scala web application framework. Asta4D is therefore 
+  developed as an alternative of lift for Java. If you like scala, we strongly recommend lift for you 
+  and if you‘d like to enjoy the benefit of lift while still staying with Java, we believe our Asta4D 
+  is your best fit.</para>
+  
+  <para>In the past decade, plenty of Java based web application frameworks are generated. Especially the MVC 
+  architecture and JSP tag libs (or other traditional template technologies) that has greatly released our productivity. 
+  But unfortunately, we are still suffering from the following situations:
+  </para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>The designers or front-end engineers are keeping complaining the mixed-in dynamic code, as they disturb 
+      their efforts of redesigning the page style or structure. And in the mean time, the back-end developers are also 
+      complaining that the front-end guys break the working page frequently,  because redesign or the new design is hard 
+      to merge due to the huge cost of source refactoring. </para>
+    </listitem>
+
+    <listitem>
+      <para>The developers are complaining about the poor functionalities of template language which they are using 
+      and tired from the various magic skills for complex rendering logic.</para>
+    </listitem>
+
+    <listitem>
+      <para>3.	The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
+      approach like traditional PHP/ASP development.</para>
+    </listitem>
+
+  </itemizedlist>
+  
+  <para>Asta4D is our solution to combat those issues. Thanks to lift, from where we learn a lot, and try to bring them into the Java’s world. 
+  We designed Asta4D complying with the following points:
+  </para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>Separate template and rendering logic</para>
+	  <para>There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily maintained by 
+      front-end developers, it is very design friendly and we can reduce the workload for source refactoring by over 90%. 
+	  </para>
+      
+      <programlisting language="php">
+<![CDATA[
+<section>
+	<article>
+		<div afd:render="SimpleSnippet">dummy text</div>
+		<afd:snippet render="SimpleSnippet:setProfile">
+			<p id="name">name:<span>dummy name</span></p>
+			<p id="age">age:<span>0</span></p>
+		</afd:snippet>
+	</article>
+</section>
+]]>
+      </programlisting>      
+      
+      
+	  <para>The rendering logic is secluded to an independent java class, developers do not need to learn any new template language, they can continue to use 
+      their familiar Java to describe how they want to render the page with the full power of Java language.
+	  </para>
+	  
+      <programlisting language="java">
+<![CDATA[
+
+public class SimpleSnippet {
+
+    public Renderer render(String name) {
+        if (StringUtils.isEmpty(name)) {
+            name = "Asta4D";
+        }
+        Element element = 
+ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
+        return Renderer.create("*", element);
+    }
+
+    public Renderer setProfile() {
+        Renderer render = new GoThroughRenderer();
+        render.add("p#name span", "asta4d");
+        render.add("p#age span", "20");
+        return render;
+    }
+}
+
+]]>
+      </programlisting>
+	  
+    </listitem>
+
+    <listitem>
+      <para>View first without controller and a powerful and easy to use URL matching mechanism</para>
+      <para>We agree with that MVC is a great and powerful architecture, but it is counterproductive. For years, Java programmers have been 
+      desiring for a solution that is efficient to develop like traditional PHP/ASP development. The essential reason of why traditional 
+      PHP/ASP development is efficient is the answer called “View First”. In a view first developing style, a developer will implement the 
+      logic at where the result is supposed to be shown, which is how the traditional PHP/ASP development performs. 
+      </para>
+      
+      <para>Many people would argue that the implementation on site will cause the source becomes more complex and hard to understand. 
+      This is not wrong, but we have separated our template file from rendering logic, so it is no longer a problem. In terms of productivity, 
+      the developers can therefore concentrate on the real development without worrying about complicating source structure.
+      </para>
+      
+      <para>We also supply a powerful and easy way to configure URL matching rules with a sort of human friendly configuration api.</para>
+
+      <programlisting language="java">
+<![CDATA[
+
+        rules.add("/app/", "/templates/index.html");
+
+        rules.add("/app/handler")
+             .handler(LoginHandler.class)
+             .handler(EchoHandler.class)
+             .forward(LoginFailure.class, "/templates/error.html")
+             .forward("/templates/success.html");
+
+
+]]>
+      </programlisting>
+      
+    </listitem>
+
+    <listitem>
+      <para>Simple but flexible process flow</para>
+      
+      <para>There is no controller in our framework, we believe there should be a certain party which should take the responsibility of 
+      a certain request, we called the certain party as request handlers. We assume that a sort of request handlers will try to supply 
+      certain content to the client who sends the request, so a request handler will supply a content provider which will produce the real 
+      content and then a content writer will take the obligation of writing the content back to the client.</para>
+      
+      <para>Thus, an ajax or Restful request can be simply forwarded to a request handler which will supply the result. </para>
+      
+      <para>JSON:</para>
+      <programlisting language="java">
+<![CDATA[
+
+rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
+
+//...
+
+public class GetUserListHandler {
+
+    @RequestHandler
+    public List<String> queryUserList() {
+        return Arrays.asList("otani", "ryu", "mizuhara");
+    }
+}
+
+
+]]>
+      </programlisting>
+
+      <para>Restful:</para>
+      <programlisting language="java">
+<![CDATA[
+
+rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
+
+//...
+
+public class AddUserHandler {
+
+    @RequestHandler
+    public HeaderInfo doAdd(String newUserName) {
+        // some logic that should add a new user by the given name
+        // ...
+        return new HeaderInfo(200);
+    }
+}
+
+
+]]>
+      </programlisting>
+
+    </listitem>
+
+    
+    <listitem>
+      <para>Isolate side effect with request handler and multi-threaded page rendering</para>
+      
+      <para>There are two types of action in a system, one is with “side effect”, another one is without “side effect”. 
+      “actions with side effect” are ones that will change the system status once they are performed. For instance, 
+      for the same URL, a login request (if succeeded) will cause a client’s privilege to be changed and the client 
+      could probably get a different page view from what the client get before login, because of which we say a login 
+      request is an action with side effect. Another obvious example is a database update operation. Once an update is 
+      committed, all the related clients will get a different output from the result before the update, which is also 
+      classified as “an action with side effect”. How about a query? We consider a query as an operation without side effect, 
+      it means that a client will always get the same result regardless of how many times the query is executed.</para>
+      
+      <para>We believe the actions with side effect should be managed seriously and we do that by putting all the actions 
+      with side effect to request handlers so that the view layer is purified and this makes the source more clear and maintainable. 
+      This is also means with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free.
+      </para>
+      
+      <para>paralle snippet rendering:</para>
+      <programlisting language="php">
+<![CDATA[
+
+<div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
+    <div id="test">xx</div>
+</div>
+
+<afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>
+    <div id="test">xx</div>
+</afd:snippet>
+
+
+]]>
+      </programlisting>      
+      
+      <para>parallel list rendering:</para>
+      <programlisting language="java">
+<![CDATA[
+
+Renderer renderer = Renderer.create("div#test", list, new ParallelDataConvertor<String, String>() {
+                @Override
+                public String convert(String obj) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return obj + "-sleep";
+                }
+            });
+
+
+
+]]>
+      </programlisting> 
+      
+    </listitem>
+   
+  </itemizedlist> 
+  
+</chapter>

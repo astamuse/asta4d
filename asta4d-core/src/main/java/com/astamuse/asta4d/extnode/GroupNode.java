@@ -18,8 +18,7 @@
 package com.astamuse.asta4d.extnode;
 
 /**
- * This node is intended to be used for a variety of purposes, such as combining
- * multi nodes to a single node or being a place holder.
+ * This node is intended to be used for a variety of purposes, such as combining multi nodes to a single node or being a place holder.
  * 
  * @author e-ryu
  * 
@@ -27,7 +26,11 @@ package com.astamuse.asta4d.extnode;
 public class GroupNode extends ExtNode {
 
     public GroupNode() {
+        this(ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
+    }
+
+    public GroupNode(String type) {
         super(ExtNodeConstants.GROUP_NODE_TAG);
-        this.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE, ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE);
+        this.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE, type);
     }
 }

@@ -17,12 +17,13 @@
 
 package com.astamuse.asta4d.util.i18n;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.astamuse.asta4d.format.PlaceholderFormatter;
-import com.astamuse.asta4d.util.InvalidMessageException;
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 
 public class ParamMapResourceBundleHelper extends ResourceBundleHelperBase {
 
@@ -42,12 +43,33 @@ public class ParamMapResourceBundleHelper extends ResourceBundleHelperBase {
         super(formatter);
     }
 
-    public String getMessage(String key) throws InvalidMessageException {
-        return ResourceBundleUtil.getMessage(getFormatter(), getLocale(), key, Collections.<String, Object> emptyMap());
+    public String getMessage(String key) {
+        return getMessageWithDefault(key, (String) null);
     }
 
-    public String getMessage(String key, Map<String, Object> paramMap) throws InvalidMessageException {
-        return ResourceBundleUtil.getMessage(getFormatter(), getLocale(), key, paramMap);
+    public String getMessage(String key, Map paramMap) {
+        return getMessageWithDefault(key, null, paramMap);
+    }
+
+    public String getMessage(String key, Pair... params) {
+        return getMessageWithDefault(key, null, params);
+    }
+
+    public String getMessageWithDefault(String key, String defaultMsg) {
+        return ResourceBundleUtil.getMessage(getFormatter(), getLocale(), key, defaultMsg, null);
+    }
+
+    public String getMessageWithDefault(String key, String defaultMsg, Map paramMap) {
+        return ResourceBundleUtil.getMessage(getFormatter(), getLocale(), key, defaultMsg, paramMap);
+    }
+
+    public String getMessageWithDefault(String key, String defaultMsg, Pair... params) {
+
+        Map<String, Object> map = new HashMap<>();
+        for (Pair<String, Object> pair : params) {
+            map.put(pair.getKey(), pair.getValue());
+        }
+        return ResourceBundleUtil.getMessage(getFormatter(), getLocale(), key, defaultMsg, map);
     }
 
 }

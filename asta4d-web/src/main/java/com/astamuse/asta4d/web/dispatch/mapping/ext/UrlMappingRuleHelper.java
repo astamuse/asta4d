@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.astamuse.asta4d.Context;
@@ -216,13 +217,33 @@ public class UrlMappingRuleHelper {
             if (reMapId == null) {
                 continue;
             }
+
             copyFromRule = searchRuleById(arrangedRuleList, reMapId.toString());
+
+            List<String> originalAttrList = rule.getAttributeList();
+            Map<String, Object> originalVarMap = rule.getExtraVarMap();
+            int originalPriority = rule.getPriority();
+
             rule.setAttributeList(new ArrayList<>(copyFromRule.getAttributeList()));
             rule.setExtraVarMap(new HashMap<>(copyFromRule.getExtraVarMap()));
+            rule.setPriority(copyFromRule.getPriority());
+
             rule.setHandlerList(new ArrayList<>(copyFromRule.getHandlerList()));
             rule.setInterceptorList(new ArrayList<>(copyFromRule.getInterceptorList()));
-            rule.setPriority(copyFromRule.getPriority());
             rule.setResultTransformerList(new ArrayList<>(copyFromRule.getResultTransformerList()));
+
+            // add original configurations back
+            if (originalAttrList != null) {
+                rule.getAttributeList().addAll(originalAttrList);
+            }
+
+            if (originalVarMap != null) {
+                rule.getExtraVarMap().putAll(originalVarMap);
+            }
+
+            if (originalPriority != DEFAULT_PRIORITY) {
+                rule.setPriority(originalPriority);
+            }
         }
 
         Collections.sort(arrangedRuleList, new Comparator<UrlMappingRule>() {

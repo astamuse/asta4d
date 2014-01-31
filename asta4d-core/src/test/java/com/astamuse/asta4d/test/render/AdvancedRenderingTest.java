@@ -39,14 +39,23 @@ public class AdvancedRenderingTest extends BaseTest {
             // replace element
             Element elem = ElementUtil.parseAsSingle("<div>i am a danymic element</div>");
             Renderer repElem = Renderer.create("*", elem);
+
+            repElem.addDebugger("after rep elem");
+
             repElem.add("*", "replacetext");
 
+            repElem.addDebugger("after rep text");
+
+            render.addDebugger("before d1");
             render.add("#d1", repElem);
+            render.addDebugger("after d1");
 
             Renderer attrSet = Renderer.create("div", "a", "b");
             attrSet.add("#d3[a=b]", "+class", "tc");
 
+            render.addDebugger("before d2");
             render.add("#d2", attrSet);
+            render.addDebugger("after d2");
 
             return render;
         }

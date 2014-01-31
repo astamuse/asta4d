@@ -9,7 +9,7 @@
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>0.12.30</version>
+  <version>0.14.1.31</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
@@ -92,6 +92,9 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <locale>en_US</locale>
+          </configuration>
           <version>2.9</version>
           <executions>
             <execution>

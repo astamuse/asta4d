@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="chapter-side-effect"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Side effect and request handler</title>
+ 
+  <section>
+    <title>The role with responsibility to http request: Request Handler</title>
+    <para>
+    Even Asta4D complies with the principle of view first, there is still a role similar with the controller in MVC
+    architecture, such role is called request handler. We believe that there should be a role who takes responsiblity
+    of a certain http request and such role can be considered as an alternative to controller of MVC in some situations
+    too.
+    </para>
+    
+    <para>
+    According to the view first rule, a request handler can be ignored in most cases. You can also assume that there is
+    is a default request handler which navigates all the http requests to the corresponding template files(The real 
+    story is more complex but you can try to understand the theory conceptually by this way).
+    </para>
+    
+    <para>
+    Now the question is when we need a request handler? Before we can answer this question, we have to discuss the conception
+    of "side effect".
+    </para>
+  </section>
+
+  <section>
+    <title>Side effect of system operations</title>
+
+    <para>
+    A system always afford users various operations such as query, update, etc. All of these operations will affect the status
+    of system in various ways. In Asta4D, we say that there are two types of action in a system, one is with “side effect”, 
+    another one is without “side effect”. “actions with side effect” are ones that will change the system status once they are
+    performed. For instance, for the same URL, a login request (if succeeded) will cause a client’s privilege to be changed and 
+    the client could probably get a different page view from what the client get before login, because of which we say a login 
+    request is an action with side effect. Another obvious example is a database update operation. Once an update is committed, 
+    all the related clients will get a different output from the result before the update, which is also classified as “an action 
+    with side effect”. 
+    </para>
+    
+    <para>
+    How about a query? We consider a query as an operation without side effect, it means that a client will always get the same
+    result regardless of how many times the query is executed. Some people may ask how about counting on query times? For counting
+    on query times, we can still split the counting and query to two individual operations, one is with side effect and another one
+    is without side effect.
+    </para>
+  </section>
+  
+  <section>
+    <title>Isolate side effect and multi thread rendering</title>
+
+    <para>
+    We believe the actions with side effect should be managed seriously and we do that by putting all the actions with side effect
+    to request handlers so that the view layer is purified and this makes the source more clear and maintainable. This is also means 
+    with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free, which is a
+    high light function of Asta4D.
+    </para>
+
+    <para>
+    In traditional MVC architecture, the responsibility of controller is tangled, a controller does not only handle the duty of altering
+    system status(date update), but also takes the responsibility of preparing data for view layer. We often have to expand the database
+    session(transaction) to the view layer for handling lazy load issue, which makes transaction management more complicated. Additionally,
+    especially for the pages that can be split to relatively individual blocks, hypothetically we can accelerate the page loading
+    by retrieving data in multi threads for each block, but in reality it is impossible due to the source complexity and development costs.
+    The developers still have to access each data source sequentially to retrieve data for each block even the page is splitable as individual
+    blocks.
+    </para>
+
+    <para>
+    For Asta4D, the logic layers of system is clarified by isolating side effects at architecture level. The database session(transaction)
+    does no longer need keep opening cross layers, it is clear that the duty of request handler is altering system status but not preparing
+    data for view layer. At the mean time, at the view layer, acquiring data and rendering data are performed at the same time, at the same
+    place: We access data source and retrieve data in snippet method, and pass the data to Renderer to perform rendering immediately in the
+    same snippet method. Further, the complexity can be reduced drastically because all the accesses to certain data are isolated in certain
+    snippet methods and there is no cross layer invoking and coupling any more.
+    </para>
+    
+    <para>
+    On the other hand, we can simply perform multi thread rendering by calling each snippet method in different threads, which is transparent to
+    developer. Because all the side effects has been isolated in request handler layer, we do not need to considerate sync or mutex even we
+    are performing multi thread rendering since the view layer is side effect free now.
+    </para>
+    
+    <para>
+    Let us see how easy we can achieve parallel rendering 
+    </para>
+    
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+<div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>  
+    <div id="test">xx</div>  
+</div>  
+  
+<afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>  
+    <div id="test">xx</div>  
+</afd:snippet>
+]]>
+      </programlisting>
+      <para>
+      All the snippets declared with parallel(afd:parallel) attribution will not block the http request main thread, the http request main thread
+      will wait for the parallel rendering after all the non-parallel rendering finished, then merge the result and output to the client.
+      </para>
+    </example>
+  </section>
+
+  <section>
+    <title>Compatibility to MVC</title>
+    <para>
+    Someone may ask: "Is it true that we do not need MVC?", "Is it true that we do not need a controller?". The answer is "No". We
+    admit that MVC architecture is more convenient than view first for some certain cases, for instance, when we are handling form
+    submission, the MVC structure is required naturally. By Asta4D, you can simply handle this case by implement the request handler
+    as a controller.
+    </para>
+    
+    <para>
+    Further, perhaps you cannot agree with the idea of view first. You believe a controller is necessary in any case but you are also
+    interested in the split template mechanism of Asta4D, the same answer for you: implement your request handler as a controller. 
+    </para>
+    
+    <para>
+      <remark>You can also integrate Asta4D's template only as a view layer implementation for Spring MVC. More details can be found in reference.</remark>
+    </para>
+  </section>
+
+</chapter>

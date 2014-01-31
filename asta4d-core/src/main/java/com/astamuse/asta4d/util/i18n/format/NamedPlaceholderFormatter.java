@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.format;
+package com.astamuse.asta4d.util.i18n.format;
 
 import java.util.Map;
 

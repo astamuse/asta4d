@@ -28,6 +28,10 @@ public class ElementSetterTransformer extends Transformer<ElementSetter> {
         super(content);
     }
 
+    public ElementSetterTransformer(ElementSetter content, Object originalData) {
+        super(content, originalData);
+    }
+
     @Override
     public Element transform(Element elem, ElementSetter content) {
         Element result = ElementUtil.safeClone(elem);

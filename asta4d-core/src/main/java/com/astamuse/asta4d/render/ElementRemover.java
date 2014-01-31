@@ -5,8 +5,12 @@ import com.astamuse.asta4d.render.transformer.ElementTransformer;
 
 public class ElementRemover extends ElementTransformer {
 
+    public ElementRemover(Object originalData) {
+        super(new GroupNode(), originalData);
+    }
+
     public ElementRemover() {
-        super(new GroupNode());
+        super(new GroupNode(), null);
     }
 
 }

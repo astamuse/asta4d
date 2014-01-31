@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="chapter-request-handler"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Impement request handler and url mapping</title>
+
+  <section>
+    <title>@RequestHandler</title>
+    <para>It is not complicated to implement a request handler. @RequestHandler can be used to annotate a handle
+    method in arbitrary Java class which will be treated as a request handler.</para>
+    
+    <example>
+      <programlisting language="java">
+<![CDATA[
+public class LoginHandler {  
+  
+    @RequestHandler  
+    public LoginFailure doLogin(String flag) throws LoginFailure {  
+        if (StringUtils.isEmpty(flag)) {  
+            return null;  
+        }  
+        if ("error".equals(flag)) {  
+            throw new LoginFailure();  
+        }  
+        if (!Boolean.parseBoolean(flag)) {  
+            return new LoginFailure();  
+        }  
+        return null;  
+    }  
+}  
+]]>
+      </programlisting>
+      <para>
+      Take a look at the parameters of the handle method, the handle method of a request handler accepts parameter injection
+      as same as the snippet method. More details can be found at the descriptions of the snippet method.
+      </para>
+    </example>
+  </section>
+ 
+  <section>
+    <title>delcare url rule for request handler</title>
+    <para>Previously we have introduced how to forward a http request to a certain template file by url mapping. We can declare 
+    a request handler for q http request by the same way:
+    </para>
+    
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.add("/app/handler")  
+     .handler(LoginHandler.class) // (1)  
+     .forward(LoginFailure.class, "/templates/error.html") //(2)  
+     .redirect(FurtherConfirm.class, "/app/furtherConfirm")//(3)  
+     .forward("/templates/success.html"); //(4)  
+]]>
+      </programlisting>
+      <para>
+      Simply explain:
+        <orderedlist>
+          <listitem>
+            <para>Forward the request to "/app/handler" to the request handler "LoginHandler".</para>
+          </listitem>
+          <listitem>
+            <para>If "LoginHandler" returns a result of "LoginFailure", forward the request to the template file "error.html".</para>
+          </listitem>
+          <listitem>
+            <para>If "LoginHandler" returns a result of "FurtherConfirm", redirect the current request to "/app/furtherConfirm" 
+            by http code 302(302 is by default).</para>
+          </listitem>
+          <listitem>
+            <para>If "LoginHandler" does not return a meaningful result(it usually means success by a null return) , forward the request 
+            to the template file "success.html".</para>
+          </listitem>
+        </orderedlist>
+      </para>
+    </example>
+    
+    <para>
+      More verbose details:
+    </para>
+    
+    <para>
+      The handler method is used to add a request handler and accepts arbitrary type as the the parameter: an instance of java.lang.Class or an
+      arbitrary instance. The framework explains received parameters by the implementation of DeclareInstanceResolver configured by
+      WebApplicationConfiguration. Thee default implementation provided by framework follows the following rules to explain the declaration
+      of request handler:
+      <orderedlist>
+        <listitem>
+          <para>If an instance of java.lang.Class is specified, the instance of request handler will be created by invoke "newInstance()"
+          on the specified Class.</para>
+        </listitem>
+        <listitem>
+          <para>If a string is specified, the string will be treated as a class name and an instance of java.lang.Class will be created by 
+          calling "Class#forName", then the instance of request handler will be created by invoke "newInstance()" on the created Class.</para>
+        </listitem>
+        <listitem>
+          <para>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
+          it is interesting that we can declare an anonymous class as a request handler:</para>
+          <example>
+            <programlisting language="java">
+<![CDATA[
+rules.add("/app/handler")  
+     .handler(new Object(){  
+        @RequestHandler  
+        public void handle(){  
+            //  
+        }  
+     }); 
+]]>
+            </programlisting>
+          </example>
+        </listitem>
+      </orderedlist>
+      <remark>The asta4d-spring package also provides a resolver based on Spring IOC container, the request handler instance will be retrieved by
+      passing the specified parameter to the "Context#getBean" method of spring container.</remark>
+    </para>
+    
+    <para>
+    The forward method adds a transforming rule for the result of request handler.There must be a handler method annotated by @RequestHandler and the
+    returned value of the handle method is viewed as the result of the request handler, thrown exceptions in the handle method are treated as the result
+    too. The framework will attempt to match the result to the expected result specified by forward method then transforms the result to the corresponding
+    template file(The real mechanism of result transforming is more complicated and is explained at ...). When the matching attempt is performed, the
+    equals method will be used at first, if the equals method returns false and the expected result by forward method is an instance of java.lang.Class,
+    "Class#isAssignableFrom" will be utilized, if false again, skip the current forward rule and do the same check on the next forward rule. A forward rule
+    without the expected result specified will be viewed as a default rule, if matched forward rule for a result is missing or the request handler returns
+    a pointless result(void declaration of handle method or returns null), the default rule will be applied.
+    </para>
+    
+    <para>
+    The redirect method follows the same rule of forward method except it will cause a 302 redirect(302 is default, 301 can be declared) instead of forwarding
+    to a template file.
+    </para>
+  </section>
+  
+  <section>
+    <title>Default request handler</title>
+    <para>
+    You can not only declare request handler to a certain url, but also declare global request handlers which is available to
+    all the urls and prior to the request handlers declared on certain urls. There is a conception of request handler chain
+    for multi handlers, we will explain it in a later chapter.
+    </para>
+    
+    <example>
+      <title>Default request handler</title>
+      <programlisting language="java">
+<![CDATA[
+rules.addDefaultRequestHandler(GlobalHandler.class);  
+  
+rules.addDefaultRequestHandler("authcheck", AuthCheckHandler.class);  
+]]>
+      </programlisting>
+    </example>
+    
+    <para>
+    At the second line declaration for AuthCheckHandler, an attribute can be specified at the same time, which cause the declared request handler
+    is only available to the rules that declared the same attribute.
+    </para>
+    
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.add("/app/handler").attribute("authcheck")  
+        ...  
+]]>
+      </programlisting>
+    </example>
+    
+    <remark>
+    In the framework's internal implementation, a static match rule table will be generated after all the url mapping declaration finished. A global
+    request handler that is only available to certain rules will be configured to the the certain url rules only, by which unnecessary performance
+    cost is avoid.
+    </remark>
+    
+    <para>
+    In our practice, we found that it is very inconvenient to declare necessary attribute on every rule. In most situations, we will
+    want to do something like configure a same default request handler to all the url paths under "/xxx", which can be done by delcaring
+    a non attribute default request handler which judges the url pattern by itself, but such way will lose the performance benefit of
+    attribute declaration. Thus, we provide an alternative way for this situation: url rule rewrite.
+    </para>
+    
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.addRuleRewriter(new UrlMappingRuleRewriter() {  
+    @Override  
+    public void rewrite(UrlMappingRule rule) {  
+        if(rule.getSourcePath().startsWith("/privatedata/")){  
+            rule.getAttributeList().add("authcheck");  
+        }  
+    }  
+});   
+]]>
+      </programlisting>
+    </example>
+
+    <para>
+    Please note that, untill now all the introduced configuration for url mapping are achieved by a group of interface called
+    HandyRule which convert all the declaration to the instance of UrlMappingRule which is used by framework internally. But in
+    the url rule rewritter implementation, developers have to cope with the raw UrlMappingRule which is difficult to understand,
+    so complex url rewriting is not appreciated. Basically, the scenario of url rule rewriting is only for add attributes to rules in
+    bulk.
+    </para>
+  </section>
+  
+  <section>
+    <title>Global forward/redirect</title>
+
+    <para>
+    Previously we mentioned that the result of a request handler will be matched in the forward declaration, if there is no matched forward found,
+    the global forward rule will be checked.
+    </para>
+    
+    <example>
+      <title>Global forward</title>
+      <programlisting language="java">
+<![CDATA[
+rules.addGlobalForward(PageNotFoundException.class, "/pagenotfound.html", 404);  
+]]>
+      </programlisting>
+
+      <para>
+      The above source declares that if the result of request handler is PageNotFoundException(Exception is treated as the result of the request handler),
+      forward the request to pagenotfound.html by http status code 404.
+      </para>
+      
+    </example>
+    
+    <para>
+    Global redirect can be declared by the same way.
+    </para>
+    
+    <example>
+      <title>Global redirect</title>
+      <programlisting language="java">
+<![CDATA[
+rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, "/somewhere");  
+]]>
+      </programlisting>
+    </example>
+
+    <para>
+    The global forward rules are applied before the default forward rule(the forward rule without result) on certain url mapping rule.
+    </para>
+
+    <example>
+      <programlisting language="java">
+<![CDATA[
+rules.addGlobalForward(PageNotFoundException.class, "/pagenotfound.html", 404);  
+
+rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, "/somewhere");  
+
+rules.add("/app/handler")  
+     .handler(LoginHandler.class) 
+     .forward(LoginFailure.class, "/templates/error.html") 
+     .redirect(FurtherConfirm.class, "/app/furtherConfirm")  
+     .forward("/templates/success.html");
+]]>
+      </programlisting>
+    </example>
+    
+    <para>
+    In the above sample, the result of LoginHandler will be matched by the following order:
+    <orderedlist>
+      <listitem>LoginFailer</listitem>
+      <listitem>FurtherConfirm</listitem>
+      <listitem>PageNotFoundException</listitem>
+      <listitem>REDIRECT_TO_SOMEWHERE</listitem>
+      <listitem>(default-> "success.html")</listitem>
+    </orderedlist>
+    </para>
+  </section>
+
+</chapter>

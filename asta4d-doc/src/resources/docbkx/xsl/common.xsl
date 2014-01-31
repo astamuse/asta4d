@@ -35,7 +35,13 @@
 	<xsl:param name="admon.graphics.extension">.png</xsl:param>
 
 	<!-- Table of Contents -->
-	<xsl:param name="generate.toc">book toc,title</xsl:param>
+	<xsl:param name="generate.toc">
+    book toc,title
+    sect1     toc,title
+    sect2     toc,title
+    sect3     toc,title
+    </xsl:param>
 	<xsl:param name="toc.section.depth">3</xsl:param>
+    <xsl:param name="generate.section.toc.level">2</xsl:param>
 
 </xsl:stylesheet>
