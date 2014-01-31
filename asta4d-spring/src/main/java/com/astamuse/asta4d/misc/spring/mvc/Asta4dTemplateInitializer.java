@@ -17,30 +17,64 @@
 
 package com.astamuse.asta4d.misc.spring.mvc;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.ServletConfigAware;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
 
 /**
  * 
- * This class should be declared as singeleton in spring container
+ * This class is used to initialize necessary Asta4D's configuration and context when Asta4D is used as only the template solution for
+ * Spring MVC.
+ * 
+ * This class should be declared as singeleton in spring container.
  * 
  * @author e-ryu
  * 
  */
-public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter implements ServletContextAware, ApplicationContextAware {
+public class Asta4dTemplateInitializer extends HandlerInterceptorAdapter implements ServletContextAware, ApplicationContextAware,
+        InitializingBean, ServletConfigAware {
+
+    private ServletConfig servletConfig;
 
     private ServletContext servletContext;
+
+    private ApplicationContext beanContext;
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.beanContext = applicationContext;
+    }
+
+    @Override
+    public void setServletConfig(ServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        WebApplicationConfiguration asta4dConf = beanContext.getBean(WebApplicationConfiguration.class);
+        WebApplicatoinConfigurationInitializer.initConfigurationFromFile(servletConfig, asta4dConf);
+        WebApplicationConfiguration.setConfiguration(asta4dConf);
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -63,17 +97,6 @@ public class Asta4dTemplateContextInitializer extends HandlerInterceptorAdapter 
             asta4dContext.clear();
         }
         super.afterCompletion(request, response, handler, ex);
-    }
-
-    @Override
-    public void setServletContext(ServletContext servletContext) {
-        this.servletContext = servletContext;
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        WebApplicationConfiguration asta4dConf = applicationContext.getBean(WebApplicationConfiguration.class);
-        WebApplicationConfiguration.setConfiguration(asta4dConf);
     }
 
 }
