@@ -403,12 +403,9 @@ public class RenderUtil {
         List<Element> msgElems = target.select(selector);
         for (Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
-            if (!attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_KEY)) {
-                logger.warn(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
-                continue;
-            }
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
             List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            String defaultMsg = ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
 
             // TODO cache localed helper instance
             ParamMapResourceBundleHelper helper = null;
@@ -420,7 +417,7 @@ public class RenderUtil {
 
             Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);
             String text;
-            text = helper.getMessage(key, paramMap);
+            text = helper.getMessageWithDefault(key, defaultMsg, paramMap);
 
             Node node;
             if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {

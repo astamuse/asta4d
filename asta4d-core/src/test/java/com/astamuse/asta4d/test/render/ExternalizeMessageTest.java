@@ -58,6 +58,13 @@ public class ExternalizeMessageTest extends BaseTest {
     }
 
     @Test
+    public void externalizeMessage_DefaultMsg() {
+        Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
+        setUpResourceBundleManager("symbol_placeholder_messages", new NamedPlaceholderFormatter());
+        new SimpleCase("ExternalizeMessage_DefaultMsg.html", "ExternalizeMessage_DefaultMsg.html");
+    }
+
+    @Test
     public void externalizeMessage_SymbolPlaceholder_us() {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
         setUpResourceBundleManager("symbol_placeholder_messages", new SymbolPlaceholderFormatter());

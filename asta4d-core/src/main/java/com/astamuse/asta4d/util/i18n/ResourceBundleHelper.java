@@ -40,7 +40,11 @@ public class ResourceBundleHelper extends ResourceBundleHelperBase {
     }
 
     public String getMessage(String key, Object... params) {
-        return ResourceBundleUtil.getMessage((ParamOrderDependentFormatter) getFormatter(), getLocale(), key, params);
+        return ResourceBundleUtil.getMessage((ParamOrderDependentFormatter) getFormatter(), getLocale(), key, null, params);
+    }
+
+    public String getMessageWithDefault(String key, String defaultMsg, Object... params) {
+        return ResourceBundleUtil.getMessage((ParamOrderDependentFormatter) getFormatter(), getLocale(), key, defaultMsg, params);
     }
 
 }
