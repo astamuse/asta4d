@@ -1,11 +1,8 @@
 ## What is Asta4D
 
-It is a web application framework which is friendly to design and flexible to development.
-It is inspired by lift which is a famous scala web application framework. Asta4D is therefore 
-developed as an alternative of [lift](http://liftweb.net/) for Java. If you like scala, we strongly recommend lift 
-for you and if you‘d like to enjoy the benefit of lift while still staying with Java, we believe 
-our Asta4D is your best fit.
+Asta4D is a web application framework which is friendly to designer and flexible to developer. Asta4D affords high productivity than traditional MVC architecture by View First architecture. It also allows front-end engineers and back-end engineers work independently without interference by separating rendering logic from template files.
 
+Asta4D is inspired by [lift](http://liftweb.net/)  which is a famous scala web application framework and it is developed by astamuse company Ltd. locating at Tokyo Japan. We are concentrating on global innovation support and developing Asta4D for our own services. Currently, Asta4D is driving our new service development.
 
 ## Why Asta4D
 In the past decade, plenty of Java based web application frameworks are generated. Especially the MVC 
@@ -17,6 +14,47 @@ productivity. But unfortunately, we are still suffering from the following situa
 1. The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient approach like traditional PHP/ASP development.
 
 Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse.com](http://astamuse.com)
+
+## How Asta4D helps us
+
+Asta4D is our solution to combat those issues. Thanks to lift, from where we learn a lot. We designed Asta4D complying with the following points:
+
+1. Separate template and rendering logic
+    
+    Asta4D affords front-end engineers a friendly environment by separating rendering logic from template files which are pure html files. At the mean time, back-end engineers can use the powerful Java language to implement the rendering logic without being suffering from the "poor and sometimes magic" template languages.
+
+1. Testable Rendering logic
+
+    All of the rendering logic of Asta4D is testable and you can simply test them by write simple junit cases, which can replace over than half of selenium tests.
+
+1. High security of being immune from cross-site(XSS/CSRF)
+    
+    Asta4D is, by nature, immune from cross-site(XSS/CSRF) problems. You do not need to take care of cross-site any more. All the rendered value would be escaped by default and your clients have no chance to put malicious contents to your server.
+
+1. View first without controller
+    
+    Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier to change than MVC architecture.
+
+1. Isolate side effect with request handler
+    
+    Asta4D imports the conception of "side-effect" from functional programming languages and separating the "side-effect" by request handlers, which afford more flexibility on page rendering because the view layer is side-effect free now. Therefore Asta4D allows parallel page rendering in multiple threads as a built-in feature.
+
+## What does "Asta4D" means
+
+The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:
+
+1. For Designer
+    
+    Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
+
+1. For developer
+    
+    We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup of coffee.
+
+1. 4 Dimension
+    
+    We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just like we are going through the 4 dimensional space.
+
 
 ## A taste of Asta4D
 -   Separated template and rendering logic
@@ -37,10 +75,6 @@ Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse
         </article>
     </section>
     ```
-
-
-    There is only some minimal mix-in extra declarations that tell template engine which Java class will rendering these 
-    html contents, which Java class is usually called as a snippet class.
 
     In the snippet class, we use traditional CSS selector to reference rendering target, amazing and powerful.
 
@@ -94,9 +128,6 @@ Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse
 
     [Further samples for test](https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java)
 
--   High security of being immune from cross-site(XSS/CSRF)
-    
-    Asta4D is, by nature, immune from cross-site problems. You do not need to take care of cross-site any more. All the rendered value would be escaped by default and your clients have no chance to put malicious contents to your server.
     
 -   View first and URL matching
 
@@ -112,75 +143,6 @@ Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse
          .forward("/templates/success.html");
     ```
 
--   Request handlers for ajax and Restful request
-    
-    json request:
-
-    ```java
-    rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
-    ```
-
-    ```java
-    public class GetUserListHandler {
-
-        @RequestHandler
-        public List<String> queryUserList() {
-            return Arrays.asList("otani", "ryu", "mizuhara");
-        }
-    }
-    ```
-
-    Restful request:
-
-    ```java
-    rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
-    ```
-
-    ```java
-    public class AddUserHandler {
-
-        @RequestHandler
-        public HeaderInfo doAdd(String newUserName) {
-            // some logic that should add a new user by the given name
-            // ...
-            return new HeaderInfo(200);
-        }
-    ```
-
--   Isolate side effect with request handler and multi-threaded page rendering
-
-    There are two types of action in a system, one is with “side effect”, another one is without “side effect”. “actions with side effect” are ones that will change the system status once they are performed. For instance, for the same URL, a login request (if succeeded) will cause a client’s privilege to be changed and the client could probably get a different page view from what the client get before login, because of which we say a login request is an action with side effect. Another obvious example is a database update operation. Once an update is committed, all the related clients will get a different output from the result before the update, which is also classified as “an action with side effect”. How about a query? We consider a query as an operation without side effect, it means that a client will always get the same result regardless of how many times the query is executed.
-
-    We believe the actions with side effect should be managed seriously and we do that by putting all the actions with side effect to request handlers so that the view layer is purified and this makes the source more clear and maintainable. This is also means with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free. 
-
-    parallel snippet rendering: All the snippet marked as afd:parallel” or “parallel” will be executed parallel.
-    
-    ```html
-    <div afd:render="ParallelTest$TestRender:snippetInDiv" afd:parallel>
-        <div id="test">xx</div>
-    </div>
-
-    <afd:snippet render="ParallelTest$TestRender:snippetReplaceDiv" parallel>
-        <div id="test">xx</div>
-    </afd:snippet>
-    ```    
-
-    parallel list rendering: A parallel data convertor can be used for parallel rendering a list.
-    
-    ```java
-    Renderer renderer = Renderer.create("div#test", list, 
-        new ParallelDataConvertor<String, String>() {
-                @Override
-                public String convert(String obj) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    return obj + "-sleep";
-                }
-            });
-    ```
 
 ## Quick start
 
@@ -215,7 +177,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Additionally, there is an old [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) which includes more detailed user guide which is for our employees. There is also an on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is not completed yet.
+Additionally, there is on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is updated at irregular intervals. There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and there is something changed from it had been written.
 
 ## Best practices
 
@@ -252,23 +214,6 @@ Want to do:
 -   default value of context data
     
     The current @ContextData does not support declaring default value, we need support it and additionally Unified EL([JSR341](https://jcp.org/en/jsr/detail?id=341)) is desired.
-
-
-
-## Questions and answers
-
--   **Q**: Who developed Asta4D and what its current status is?
-    
-    **A**: Asta4D is powered by [astamuse company Ltd.](http://www.astamuse.co.jp/) locating at Tokyo Japan. We are concentrating on global innovation support 
-    and develop Asta4D for our own services. Currently, Asta4D is used by our new service development and is still in alpha release status.
-
--   **Q**: Why are there Spring dependencies in Asta4D?
-    
-    **A**: Our initial purpose is to drive up our new service development, so we have to consider a balance of progression and schedule 
-    between Asta4D’s development and our service’s development. So we decided to start Asta4D’s work basing on Spring MVC 
-    therefore Spring MVC can do the things that we have no time to do. Currently, we have removed dependencies from Spring, but since we
-    started our work from Spring MVC and therefore Asta4D can work perfectly with Spring, so our sample project is still using Spring as a sample of
-    integration of Spring bean management. If you don't need Spring, simply change the dependency of "asta4d-spring" to "asta4d-web".
 
     
 ## Release Notes
