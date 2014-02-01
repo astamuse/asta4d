@@ -7,8 +7,265 @@
     xsi:schemaLocation="
         http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
-  <title>Snippet</title>
+  <title>Details of snippet class</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Rendering APIs</title>
+    <toc/>
+    <sect2>
+      <title>Create and add Renderer instance</title>
+      <para>There are almost same two sets of overloaded methods: create and add. The create methods are static and can be
+      used to create a Renderer instance. The add methods are instance methods and can be used to add a implicitly created
+      Renderer instance to an existing Renderer instance. Both of the create and add methods return the created Renderer
+      instance therefore chain invoking can be performed as well.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
 
+Renderer renderer = Renderer.create("#someId", "xyz").add("sometag", "hello");
+renderer.add(".someclass", "abc").add(".someclass2", "abc2");
+
+Renderer renderer2 = Renderer.create("#someId2", "xyz2");
+Renderer renderer3 = Renderer.create("#someId3", "xyz3");
+
+//add renderer2 and renderer3 to renderer
+renderer.add(renderer2);
+renderer.add(renderer3);
+]]>
+        </programlisting>
+      </example>
+      <para>Note that the order of a Renderer instance being added is significant but the target instance which a Renderer
+      is added to has no effect on the rendering order. In the following example, "add renderer2 to renderer then add renderer3 to renderer2"
+      is completely equal to "add renderer2 and renderer3 to renderer" at above example.
+      </para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+//add renderer2 to renderer then add renderer3 to renderer2
+renderer.add(renderer2);
+renderer2.add(renderer3);
+
+]]>
+        </programlisting>
+      </example>
+      <para>The following is equal too:</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+//add renderer3 to renderer2 then add renderer2 to renderer
+renderer2.add(renderer3);
+renderer.add(renderer2);
+
+]]>
+        </programlisting>
+      </example>
+      <para>A instance of Renderer should not be considered as a single rendering declaration only, A instance of Renderer is exactly a
+      rendering chain holder, you can call add method on any instance of the chain but the added Renderer instance will be always added
+      to the tail of the chain. If the added Renderer instance is holding over than one Renderer instance in its own chain, the held chain
+      will be added to the tail of the chain of the target Renderer.</para>
+      
+      <para>There is also a non-parameter create method which can by used to create a "do nothing" Renderer for source convenience. In our
+      practice, we write the following line at the beginning of most of our snippet methods.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+Renderer renderer = Renderer.create();
+]]>
+        </programlisting>
+      </example>
+      
+      <para>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
+      cases. You can also read the Java doc of Renderer for more details.</para>
+    </sect2>
+    <sect2>
+      <title>Render text</title>
+      <para>add(String selector, String value) can be used to render a text under the element specified by given selector.
+      All child nodes of the target element specified by selector will be emptied and the given String value will be rendered as a single
+      text node of the target element.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+renderer.add("#someId", "xyz");
+]]>
+        </programlisting>
+      </example>
+      <para>Long/long, Integer/int, Boolean/boolean will be treated as text rendering too.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+renderer.add("#someIdForLong", 123L);
+renderer.add("#someIdForInt", 123);
+renderer.add("#someIdForBool", true);
+]]>
+        </programlisting>
+      </example>
+    </sect2>
+    <sect2>
+      <title>Render DOM attribution</title>
+      <para>add(String selector, String attr, String value) can be used to render attribute value of a DOM element. There are some rules will
+      be applied for the pattern of specified "attr" and "value":</para>
+      <itemizedlist>
+        <listitem>
+          <para>add("+class", value)</para>
+          <para>call addClass(value) on target Element, null value will be treated as "null".</para>
+        </listitem>
+        <listitem>
+          <para>add("-class", value)</para>
+          <para>call removeClass(value) on target Element, null value will be treated as "null".</para>
+        </listitem>
+        <listitem>
+          <para>add("class", value)</para>
+          <para>call attr("class", value) on target Element if value is not null, for a null value, removeAttr("class") will be called.</para>
+        </listitem>
+        <listitem>
+          <para>add("anyattr", value)</para>
+          <para>call attr("anyattr", value) on target Element if value is not null, for a null value, removeAttr("anyattr") will be called.</para>
+        </listitem>
+        <listitem>
+          <para>add("anyattr", SpecialRenderer.Clear)</para>
+          <para>call removeAttr("anyattr") on target Element.</para>
+        </listitem>
+        <listitem>
+          <para>add("+anyattr", value)</para>
+          <para>call attr("anyattr", value) on target Element if value is not null, for a null value, removeAttr("anyattr") will be called.</para>
+        </listitem>
+        <listitem>
+          <para>add("+anyattr", SpecialRenderer.Clear)</para>
+          <para>call removeAttr("anyattr") on target Element.</para>
+        </listitem>
+        <listitem>
+          <para>add("-anyattr", value)</para>
+          <para>call removeAttr("anyattr") on target Element.</para>
+        </listitem>
+      </itemizedlist>
+      
+      <para>There is also an add method for attribution rendering that accepts arbitrary data as Object type: add(String selector, String attr, Object value).
+      When the "value" is specified as a non-string value and the "attr" is specified as "+class" or "-class", A IllegalArgumentException will be thrown.
+      When an arbitrary Object value is rendered to attribute by such method, an internal object reference id will be rendered to the target attribute
+      instead of the original object since it cannot be treated as attribute string value directly. The object reference id can be used by variable injection
+      for the nested snippet rendering. See the following example, we pass a Date instance to the nested snippet method:
+      </para>
+      
+      <example>
+        <programlisting language="xml">
+<![CDATA[
+<div afd:render="MySnippet:outer">
+  <div id="inner" afd:render="MySnippet:inner">
+    <span id="current-date"></span>
+  </div>
+</div>
+]]>
+        </programlisting>
+        <programlisting language="java">
+<![CDATA[
+public class MySnippet{
+
+    public Renderer outer(){
+        return Renderer.create("#innder", "now", new Date());
+    }
+    
+    public Renderer inner(Date now){
+        return Renderer.create("#current-date", now);
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      
+      <para>This mechanism can be used for parametrized embedding too. Parameters can be specified by attribution rendering 
+      in the snippet method of parent template file and can be retrieved by the snippet method of child template file as same
+      as the above example.
+      </para>
+      
+      <example>
+        <programlisting language="xml">
+<![CDATA[
+<!-- parent template -->
+<div afd:render="MySnippet:outer">
+  <afd:embed id="inner" target="child.html"></afd:embed>
+</div>
+]]>
+        </programlisting>
+        <programlisting language="xml">
+<![CDATA[
+<!-- child template -->
+  <div afd:render="MySnippet:embed">
+    <span id="current-date"></span>
+  </div>
+]]>
+        </programlisting>
+        <programlisting language="java">
+<![CDATA[
+public class MySnippet{
+
+    public Renderer outer(){
+        return Renderer.create("#innder", "now", new Date());
+    }
+    
+    public Renderer embed(Date now){
+        return Renderer.create("#current-date", now);
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      
+    </sect2>
+    <sect2>
+      <title>Clear an Element</title>
+    </sect2>
+    <sect2>
+      <title>Render raw Element</title>
+    </sect2>
+    <sect2>
+      <title>Arbitrary rendering for an Element</title>
+    </sect2>
+    <sect2>
+      <title>Recursive rendering</title>
+    </sect2>
+    <sect2>
+      <title>Debug renderer</title>
+    </sect2>
+    <sect2>
+      <title>Missing selector warning</title>
+    </sect2>
+    <sect2>
+      <title>List rendering</title>
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Other things about snippet class</title>
+    <itemizedlist>
+      <listitem>
+        <para>Nested snippet</para>
+      </listitem>
+      <listitem>
+        <para>InitializableSnippet</para>
+      </listitem>
+      <listitem>
+        <para>SnippetInterceptor</para>
+      </listitem>
+      <listitem>
+        <para>ContextBindData</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Customization</title>
+    <itemizedlist>
+      <listitem>
+        <para>SnippetExtractor</para>
+      </listitem>
+      <listitem>
+        <para>SnippetResolver</para>
+      </listitem>
+      <listitem>
+        <para>SnippetInvoker</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
 </chapter>
