@@ -23,73 +23,73 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     Asta4D affords front-end engineers a friendly environment by separating rendering logic from template files which are pure html files. At the mean time, back-end engineers can use the powerful Java language to implement the rendering logic without being suffering from the "poor and sometimes magic" template languages.
 
-        There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily maintained by front-end developers, it is very design friendly and we can reduce the workload for source refactoring by over 90%.
+    There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily maintained by front-end developers, it is very design friendly and we can reduce the workload for source refactoring by over 90%.
 
 
-	    ```html
-	    <section>
-	        <article>
-	            <div afd:render="SimpleSnippet">dummy text</div>
-	            <afd:snippet render="SimpleSnippet:setProfile">
-	                <p id="name">name:<span>dummy name</span></p>
-	                <p id="age">age:<span>0</span></p>
-	            </afd:snippet>
-	        </article>
-	    </section>
-	    ```
+    ```html
+    <section>
+        <article>
+            <div afd:render="SimpleSnippet">dummy text</div>
+            <afd:snippet render="SimpleSnippet:setProfile">
+                <p id="name">name:<span>dummy name</span></p>
+                <p id="age">age:<span>0</span></p>
+            </afd:snippet>
+        </article>
+    </section>
+    ```
 
-	    In the snippet class, we use traditional CSS selector to reference rendering target, amazing and powerful.
-	
-	
-	    ```java
-	    public class SimpleSnippet {
-	
-	        public Renderer render(String name) {
-	            if (StringUtils.isEmpty(name)) {
-	                name = "Asta4D";
-	            }
-	            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
-	            return Renderer.create("*", element);
-	        }
-	
-	        public Renderer setProfile() {
-	            Renderer render = new GoThroughRenderer();
-	            render.add("p#name span", "asta4d");
-	            render.add("p#age span", "20");
-	            return render;
-	        }
-	    }
-	    ```
+    In the snippet class, we use traditional CSS selector to reference rendering target, amazing and powerful.
+    
+    
+    ```java
+    public class SimpleSnippet {
+    
+        public Renderer render(String name) {
+            if (StringUtils.isEmpty(name)) {
+                name = "Asta4D";
+            }
+            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
+            return Renderer.create("*", element);
+        }
+    
+        public Renderer setProfile() {
+            Renderer render = new GoThroughRenderer();
+            render.add("p#name span", "asta4d");
+            render.add("p#age span", "20");
+            return render;
+        }
+    }
+    ```
 
 1. Testable Rendering logic
 
     All of the rendering logic of Asta4D is testable and you can simply test them by write simple junit cases, which can replace over than half of selenium tests.
 
-	    ```java
-	        // prepare test target
-	        Renderer render = new GoThroughRenderer();
-	        render.add("#someIdForInt", 12345);
-	
-	        // perform test
-	        RendererTester tester = RendererTester.forRenderer(render);
-	        Assert.assertEquals(tester.get("#someIdForInt"), 12345);
-	
-	    ```
-	
-	    Rendering for list data can be performed as well
-	
-	    ```java
-	        // prepare test target
-	        Renderer render = new GoThroughRenderer();
-	        render.add("#someIdForInt", Arrays.asList(123, 456, 789));
-	
-	        // perform test
-	        RendererTester tester = RendererTester.forRenderer(render);
-	        Assert.assertEquals(tester.getAsList("#someIdForInt"), Arrays.asList(123, 456, 789));
-	
-	    ```
-	
-	    [Further samples for test](https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java)
+    ```java
+        // prepare test target
+        Renderer render = new GoThroughRenderer();
+        render.add("#someIdForInt", 12345);
+    
+        // perform test
+        RendererTester tester = RendererTester.forRenderer(render);
+        Assert.assertEquals(tester.get("#someIdForInt"), 12345);
+    
+    ```
+    
+    Rendering for list data can be performed as well
+    
+    ```java
+        // prepare test target
+        Renderer render = new GoThroughRenderer();
+        render.add("#someIdForInt", Arrays.asList(123, 456, 789));
+    
+        // perform test
+        RendererTester tester = RendererTester.forRenderer(render);
+        Assert.assertEquals(tester.getAsList("#someIdForInt"), Arrays.asList(123, 456, 789));
+    
+    ```
+    
+    [Further samples for test](https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java)
 
 1. High security of being immune from cross-site(XSS/CSRF)
     
@@ -99,17 +99,17 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier to change than MVC architecture.
 
-	    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
-	
-	    ```java
-	    rules.add("/app/", "/templates/index.html");
-	
-	    rules.add("/app/handler")
-	         .handler(LoginHandler.class)
-	         .handler(EchoHandler.class)
-	         .forward(LoginFailure.class, "/templates/error.html")
-	         .forward("/templates/success.html");
-	    ```
+    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
+    
+    ```java
+    rules.add("/app/", "/templates/index.html");
+    
+    rules.add("/app/handler")
+         .handler(LoginHandler.class)
+         .handler(EchoHandler.class)
+         .forward(LoginFailure.class, "/templates/error.html")
+         .forward("/templates/success.html");
+    ```
 
 1. Isolate side effect with request handler
     
