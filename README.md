@@ -23,9 +23,73 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     Asta4D affords front-end engineers a friendly environment by separating rendering logic from template files which are pure html files. At the mean time, back-end engineers can use the powerful Java language to implement the rendering logic without being suffering from the "poor and sometimes magic" template languages.
 
+        There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be easily maintained by front-end developers, it is very design friendly and we can reduce the workload for source refactoring by over 90%.
+
+
+	    ```html
+	    <section>
+	        <article>
+	            <div afd:render="SimpleSnippet">dummy text</div>
+	            <afd:snippet render="SimpleSnippet:setProfile">
+	                <p id="name">name:<span>dummy name</span></p>
+	                <p id="age">age:<span>0</span></p>
+	            </afd:snippet>
+	        </article>
+	    </section>
+	    ```
+
+	    In the snippet class, we use traditional CSS selector to reference rendering target, amazing and powerful.
+	
+	
+	    ```java
+	    public class SimpleSnippet {
+	
+	        public Renderer render(String name) {
+	            if (StringUtils.isEmpty(name)) {
+	                name = "Asta4D";
+	            }
+	            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
+	            return Renderer.create("*", element);
+	        }
+	
+	        public Renderer setProfile() {
+	            Renderer render = new GoThroughRenderer();
+	            render.add("p#name span", "asta4d");
+	            render.add("p#age span", "20");
+	            return render;
+	        }
+	    }
+	    ```
+
 1. Testable Rendering logic
 
     All of the rendering logic of Asta4D is testable and you can simply test them by write simple junit cases, which can replace over than half of selenium tests.
+
+	    ```java
+	        // prepare test target
+	        Renderer render = new GoThroughRenderer();
+	        render.add("#someIdForInt", 12345);
+	
+	        // perform test
+	        RendererTester tester = RendererTester.forRenderer(render);
+	        Assert.assertEquals(tester.get("#someIdForInt"), 12345);
+	
+	    ```
+	
+	    Rendering for list data can be performed as well
+	
+	    ```java
+	        // prepare test target
+	        Renderer render = new GoThroughRenderer();
+	        render.add("#someIdForInt", Arrays.asList(123, 456, 789));
+	
+	        // perform test
+	        RendererTester tester = RendererTester.forRenderer(render);
+	        Assert.assertEquals(tester.getAsList("#someIdForInt"), Arrays.asList(123, 456, 789));
+	
+	    ```
+	
+	    [Further samples for test](https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java)
 
 1. High security of being immune from cross-site(XSS/CSRF)
     
@@ -34,6 +98,18 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 1. View first without controller
     
     Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier to change than MVC architecture.
+
+	    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
+	
+	    ```java
+	    rules.add("/app/", "/templates/index.html");
+	
+	    rules.add("/app/handler")
+	         .handler(LoginHandler.class)
+	         .handler(EchoHandler.class)
+	         .forward(LoginFailure.class, "/templates/error.html")
+	         .forward("/templates/success.html");
+	    ```
 
 1. Isolate side effect with request handler
     
@@ -54,94 +130,6 @@ The name of Asta4D is from our company's name: astamuse. We explain the "4D" as 
 1. 4 Dimension
     
     We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just like we are going through the 4 dimensional space.
-
-
-## A taste of Asta4D
--   Separated template and rendering logic
-
-    There is no dynamic code in template file. An Asta4D template file is always a pure HTML file which can be 
-    easily maintained by front-end developers, it is very design friendly and we can reduce the workload for 
-    source refactoring by over 90%.
-
-
-    ```html
-    <section>
-        <article>
-            <div afd:render="SimpleSnippet">dummy text</div>
-            <afd:snippet render="SimpleSnippet:setProfile">
-                <p id="name">name:<span>dummy name</span></p>
-                <p id="age">age:<span>0</span></p>
-            </afd:snippet>
-        </article>
-    </section>
-    ```
-
-    In the snippet class, we use traditional CSS selector to reference rendering target, amazing and powerful.
-
-
-    ```java
-    public class SimpleSnippet {
-
-        public Renderer render(String name) {
-            if (StringUtils.isEmpty(name)) {
-                name = "Asta4D";
-            }
-            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
-            return Renderer.create("*", element);
-        }
-
-        public Renderer setProfile() {
-            Renderer render = new GoThroughRenderer();
-            render.add("p#name span", "asta4d");
-            render.add("p#age span", "20");
-            return render;
-        }
-    }
-    ```
--   Testable Rendering logic
-
-    Since all the rendering logics are being held by a Renderer instance which can be simply retrieved by invoking the target method of snippet class, unit test can be simply performed.
-
-    ```java
-        // prepare test target
-        Renderer render = new GoThroughRenderer();
-        render.add("#someIdForInt", 12345);
-
-        // perform test
-        RendererTester tester = RendererTester.forRenderer(render);
-        Assert.assertEquals(tester.get("#someIdForInt"), 12345);
-
-    ```
-
-    Rendering for list data can be performed as well
-
-    ```java
-        // prepare test target
-        Renderer render = new GoThroughRenderer();
-        render.add("#someIdForInt", Arrays.asList(123, 456, 789));
-
-        // perform test
-        RendererTester tester = RendererTester.forRenderer(render);
-        Assert.assertEquals(tester.getAsList("#someIdForInt"), Arrays.asList(123, 456, 789));
-
-    ```
-
-    [Further samples for test](https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java)
-
-    
--   View first and URL matching
-
-    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
-
-    ```java
-    rules.add("/app/", "/templates/index.html");
-
-    rules.add("/app/handler")
-         .handler(LoginHandler.class)
-         .handler(EchoHandler.class)
-         .forward(LoginFailure.class, "/templates/error.html")
-         .forward("/templates/success.html");
-    ```
 
 
 ## Quick start
@@ -177,7 +165,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Additionally, there is on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is updated at irregular intervals. There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and there is something changed from it had been written.
+Additionally, there is an on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is updated at irregular intervals. There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and there is something changed from it had been written.
 
 ## Best practices
 
