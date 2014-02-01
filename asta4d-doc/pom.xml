@@ -37,13 +37,36 @@
         <version>2.0.14</version>
         <executions>
           <execution>
+            <id>html-singlepage</id>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+                <targetDirectory>${basedir}/target/docbkx/html-singlepage</targetDirectory>
+                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-singlepage.xsl</htmlCustomization>
+                <postProcess>
+                    <copy todir="${basedir}/target/docbkx/html-singlepage">
+                        <fileset dir="${basedir}/src/resources/docbkx">
+                            <include name="**/*.css" />
+                            <include name="**/*.png" />
+                            <include name="**/*.gif" />
+                            <include name="**/*.jpg" />
+                        </fileset>
+                    </copy>
+                </postProcess>
+            </configuration>
+          </execution>
+          <execution>
             <id>html</id>
             <goals>
               <goal>generate-html</goal>
             </goals>
             <phase>generate-sources</phase>
             <configuration>
-                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-singlepage.xsl</htmlCustomization>
+                <chunkedOutput>true</chunkedOutput>
+                <targetDirectory>${basedir}/target/docbkx/html</targetDirectory>
+                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-multipage.xsl</htmlCustomization>
                 <postProcess>
                     <copy todir="${basedir}/target/docbkx/html">
                         <fileset dir="${basedir}/src/resources/docbkx">
@@ -56,7 +79,6 @@
                 </postProcess>
             </configuration>
           </execution>
-          
           <!-- pdf cannot work correctly yet
           <execution>
             <id>pdf</id>
@@ -81,6 +103,7 @@
         </dependencies>
         <!-- Common Docbook configuration -->
         <configuration>
+            <sourceDirectory>${basedir}/src/docbkx</sourceDirectory>
             <xincludeSupported>true</xincludeSupported>
             <chunkedOutput>false</chunkedOutput>
             <foCustomization>${basedir}/src/resources/docbkx/xsl/pdf.xsl</foCustomization>
