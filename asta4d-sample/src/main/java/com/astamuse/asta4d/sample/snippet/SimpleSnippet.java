@@ -59,7 +59,7 @@ public class SimpleSnippet {
     public Renderer manipulateAttrValues() {
         Renderer render = new GoThroughRenderer();
         render.add("input#yes", "checked", "checked");
-        render.add("button#delete", "disabled", null);
+        render.add("button#delete", "disabled", (Object) null);
         render.add("li#plus", "+class", "red");
         render.add("li#minus", "-class", "bold");
         return render;
