@@ -1,9 +1,9 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
+   <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, framework"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
       , <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
-    </div></div><div><p class="releaseinfo">Version: 0.14.2.1-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-02-01 22:55</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e22">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e35">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e59">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e79">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e103">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e113">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e136">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e154">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e157">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e168">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e176">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e183">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e230">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e235">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e239">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e249">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e257">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e263">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e292">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e306">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e331">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e432">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e478">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e556">8.2. Other things about snippet class</a></span></dt><dt><span class="sect1"><a href="#d5e567">8.3. Customization</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e584">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e586">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e588">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e590">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e594">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e596">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e598">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e600">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e610">15.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e613">15.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">Version: 0.14.2.1-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-02-05 00:08</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e560">8.2. Other things about snippet class</a></span></dt><dt><span class="sect1"><a href="#d5e571">8.3. Customization</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e588">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e590">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e592">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e594">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e598">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e600">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e602">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e604">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e614">15.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e617">15.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
   
 
   
@@ -30,7 +30,7 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-overview"></a>1.&nbsp;Overview</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e22"></a>1.1&nbsp;Why Asta4D</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e26"></a>1.1&nbsp;Why Asta4D</h2></div></div></div>
     
     <p>In the past decade, plenty of Java based web application frameworks are generated. Especially the MVC 
     architecture and JSP tag libs (or other traditional template technologies) that has greatly released our productivity. 
@@ -54,7 +54,7 @@
       </li></ul></div>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e35"></a>1.2&nbsp;How Asta4D helps us</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e39"></a>1.2&nbsp;How Asta4D helps us</h2></div></div></div>
     
     <p>Asta4D is our solution to combat those issues. Thanks to lift, from where we learn a lot. We designed Asta4D complying
     with the following points:
@@ -94,7 +94,7 @@
       </li></ul></div>
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e59"></a>1.3&nbsp;What does the name of "Asta4D" mean</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e63"></a>1.3&nbsp;What does the name of "Asta4D" mean</h2></div></div></div>
     
     <p>The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:</p> 
     
@@ -127,13 +127,13 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-Inheritable-template"></a>2.&nbsp;Flexible template</h2></div></div></div>
   
   
-    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e79"></a>2.1&nbsp;Inheritable template</h2></div></div></div>
+    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e83"></a>2.1&nbsp;Inheritable template</h2></div></div></div>
       
       <p>
       The template of Asta4D is inheritable, child template can override, append or insert content to certain place
       in parent template. Let's see a sample:
       </p>
-      <div class="example"><a name="d5e82"></a><p class="title"><b>Example&nbsp;2.1.&nbsp;parent.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e86"></a><p class="title"><b>Example&nbsp;2.1.&nbsp;parent.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;html&gt;</span>   
@@ -190,7 +190,7 @@
       In the <a class="xref" href="#template-child" title="Example&nbsp;2.2.&nbsp;child.html">Example&nbsp;2.2, &#8220;child.html&#8221;</a>, there is an additional declaration of including by "afd:embed" which embed 
       the target file to the current place of the current file. Let's see the embed.html:
       </p>
-      <div class="example"><a name="d5e93"></a><p class="title"><b>Example&nbsp;2.3.&nbsp;embed.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e97"></a><p class="title"><b>Example&nbsp;2.3.&nbsp;embed.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
     <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">append</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
@@ -210,7 +210,7 @@
       <br>
       
       <p>After all the template files are merged, we will get the following result:</p>
-      <div class="example"><a name="d5e100"></a><p class="title"><b>Example&nbsp;2.4.&nbsp;The result of template merging:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e104"></a><p class="title"><b>Example&nbsp;2.4.&nbsp;The result of template merging:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;html&gt;</span>   
@@ -245,7 +245,7 @@
       
     </div>
 
-    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e103"></a>2.2&nbsp;Parametrized embeding</h2></div></div></div>
+    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e107"></a>2.2&nbsp;Parametrized embeding</h2></div></div></div>
       
       
       <p>
@@ -253,7 +253,7 @@
       are embeding files.
       </p>
       
-      <div class="example"><a name="d5e106"></a><p class="title"><b>Example&nbsp;2.5.&nbsp;Sample of parametrized embeding:</b></p><div class="example-contents">
+      <div class="example"><a name="d5e110"></a><p class="title"><b>Example&nbsp;2.5.&nbsp;Sample of parametrized embeding:</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/xxx/showList.html"</span> <span class="hl-attribute">limit</span>=<span class="hl-value">"30"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>
@@ -282,7 +282,7 @@
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="renderer"></a>3.&nbsp;Renderer: easy to use, secure, testable</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e113"></a>3.1&nbsp;Split rendering logic from template</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e117"></a>3.1&nbsp;Split rendering logic from template</h2></div></div></div>
     
     
     <p>
@@ -293,7 +293,7 @@
     
     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
         <p>Declare snippet class in template file</p>
-        <div class="example"><a name="d5e119"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;Sample of snippet declaration:</b></p><div class="example-contents">
+        <div class="example"><a name="d5e123"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;Sample of snippet declaration:</b></p><div class="example-contents">
         <pre class="programlisting">
 
 <span class="hl-tag">&lt;section&gt;</span>  
@@ -321,7 +321,7 @@
         
       </li><li class="listitem">
         <p>Implement a snippet class</p>
-        <div class="example"><a name="d5e126"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;Sample of snippet class:</b></p><div class="example-contents">
+        <div class="example"><a name="d5e130"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;Sample of snippet class:</b></p><div class="example-contents">
         <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SimpleSnippet {  
@@ -352,7 +352,7 @@
         <br>
         
         <p>If the above template file and snippet class are executed, we would get the following result:</p>
-        <div class="example"><a name="d5e132"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Result of snippet execution:</b></p><div class="example-contents">
+        <div class="example"><a name="d5e136"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Result of snippet execution:</b></p><div class="example-contents">
         <pre class="programlisting">
 
 <span class="hl-tag">&lt;section&gt;</span>  
@@ -375,11 +375,11 @@
     </p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e136"></a>3.2&nbsp;Render data to page</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e140"></a>3.2&nbsp;Render data to page</h2></div></div></div>
     
     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
         <p>In Asta4D, all the rendering logic is declared by a Renderer class which accepts various types as rendering value.</p>
-        <div class="example"><a name="d5e141"></a><p class="title"><b>Example&nbsp;3.4.&nbsp;Sample usage of Renderer</b></p><div class="example-contents">
+        <div class="example"><a name="d5e145"></a><p class="title"><b>Example&nbsp;3.4.&nbsp;Sample usage of Renderer</b></p><div class="example-contents">
         <pre class="programlisting">
 
 Renderer render = <span class="hl-keyword">new</span> GoThroughRenderer();  
@@ -401,7 +401,7 @@ render.add(<span class="hl-string">"#someIdForRenderer"</span>, Renderer.create(
         </div></div><br class="example-break">
       </li><li class="listitem">
         <p>List of data can be rendered via Renderer too:</p>
-        <div class="example"><a name="d5e146"></a><p class="title"><b>Example&nbsp;3.5.&nbsp;Sample of list rendering</b></p><div class="example-contents">
+        <div class="example"><a name="d5e150"></a><p class="title"><b>Example&nbsp;3.5.&nbsp;Sample of list rendering</b></p><div class="example-contents">
         <pre class="programlisting">
 
 Renderer render = <span class="hl-keyword">new</span> GoThroughRenderer();  
@@ -428,7 +428,7 @@ render.add(<span class="hl-string">"#someIdForRenderer"</span>, Arrays.asList(<s
         </div></div><br class="example-break">
       </li><li class="listitem">
         <p>DOM attribution can be done too:</p>
-        <div class="example"><a name="d5e151"></a><p class="title"><b>Example&nbsp;3.6.&nbsp;Sample of DOM attribution rendering</b></p><div class="example-contents">
+        <div class="example"><a name="d5e155"></a><p class="title"><b>Example&nbsp;3.6.&nbsp;Sample of DOM attribution rendering</b></p><div class="example-contents">
         <pre class="programlisting">
 
 render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"+class"</span>, <span class="hl-string">"yyy"</span>);  
@@ -446,7 +446,7 @@ render.add(<span class="hl-string">"#X"</span>, <span class="hl-string">"value"<
       </li></ul></div>
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e154"></a>3.3&nbsp;Immune from cross-site hole</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e158"></a>3.3&nbsp;Immune from cross-site hole</h2></div></div></div>
     
     <p>
     The previous samples show us that all the operations to DOM are delegated by Renderer except create DOM
@@ -461,7 +461,7 @@ render.add(<span class="hl-string">"#X"</span>, <span class="hl-string">"value"<
     then you can say bye-bye to the cross-site holes.    
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e157"></a>3.4&nbsp;Test your rendering logic</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e161"></a>3.4&nbsp;Test your rendering logic</h2></div></div></div>
     
     <p>
     Testing web page is always a complex task and we usually verify rendering results by selenuim which is as a common
@@ -473,7 +473,7 @@ render.add(<span class="hl-string">"#X"</span>, <span class="hl-string">"value"<
     we can verify almost rendering logic by testing the returned Renderer instance from the snippet method. 
     </p>
     
-    <div class="example"><a name="d5e161"></a><p class="title"><b>Example&nbsp;3.7.&nbsp;Sample RendererTester</b></p><div class="example-contents">
+    <div class="example"><a name="d5e165"></a><p class="title"><b>Example&nbsp;3.7.&nbsp;Sample RendererTester</b></p><div class="example-contents">
     <pre class="programlisting">
 
 RendererTester tester = RendererTester.forRenderer(render);  
@@ -494,7 +494,7 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="url-mapping"></a>4.&nbsp;View first URL mapping and variable injection</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e168"></a>4.1&nbsp;View first</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e172"></a>4.1&nbsp;View first</h2></div></div></div>
     
 
     <p>
@@ -512,7 +512,7 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
     Users declare their own URL rules via implementing the interface UrlMappingRuleInitializer of Asta4D:
     </p>
     
-    <div class="example"><a name="d5e173"></a><p class="title"><b>Example&nbsp;4.1.&nbsp;Sample of declaring url rules:</b></p><div class="example-contents">
+    <div class="example"><a name="d5e177"></a><p class="title"><b>Example&nbsp;4.1.&nbsp;Sample of declaring url rules:</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> UrlRules <span class="hl-keyword">implements</span> UrlMappingRuleInitializer {    
@@ -539,7 +539,7 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
     </div></div><br class="example-break">
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e176"></a>4.2&nbsp;The grammer of URL rule and path variable</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e180"></a>4.2&nbsp;The grammer of URL rule and path variable</h2></div></div></div>
     
     <p>
     The grammer of Asta4D's URL rule is almost the same as Spring MVC's URL mapping rule and the parts surrounded by braces are 
@@ -549,7 +549,7 @@ Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>)
     <p>
     Further, extra path variables can be declared in a url rule by calling the method of "var" as following:
     </p>
-    <div class="example"><a name="d5e180"></a><p class="title"><b>Example&nbsp;4.2.&nbsp;Sample of declaring extra path variable:</b></p><div class="example-contents">
+    <div class="example"><a name="d5e184"></a><p class="title"><b>Example&nbsp;4.2.&nbsp;Sample of declaring extra path variable:</b></p><div class="example-contents">
     <pre class="programlisting">
 
 rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-string">"/templates/variableinjection.html"</span>)  
@@ -559,7 +559,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </div></div><br class="example-break">
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e183"></a>4.3&nbsp;Variable Injection</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e187"></a>4.3&nbsp;Variable Injection</h2></div></div></div>
     
     <p>
     Asta4D implements a variable injection mechanism which is very closed to Spring MVC, all of the instance fields 
@@ -572,7 +572,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     of variable injection in the snippet class.
     </p>
     
-    <div class="example"><a name="d5e187"></a><p class="title"><b>Example&nbsp;4.3.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e191"></a><p class="title"><b>Example&nbsp;4.3.&nbsp;</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
@@ -595,7 +595,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </p>
     </div></div><br class="example-break">
     
-    <div class="example"><a name="d5e190"></a><p class="title"><b>Example&nbsp;4.4.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e194"></a><p class="title"><b>Example&nbsp;4.4.&nbsp;</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
@@ -611,7 +611,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     <p>Instance field can be injected via setter methods too.</p>
     </div></div><br class="example-break">
     
-    <div class="example"><a name="d5e193"></a><p class="title"><b>Example&nbsp;4.5.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e197"></a><p class="title"><b>Example&nbsp;4.5.&nbsp;</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
@@ -632,7 +632,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </p>
     </div></div><br class="example-break">
     
-    <div class="example"><a name="d5e196"></a><p class="title"><b>Example&nbsp;4.6.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e200"></a><p class="title"><b>Example&nbsp;4.6.&nbsp;</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
@@ -653,7 +653,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </p>
     </div></div><br class="example-break">
     
-    <div class="example"><a name="d5e199"></a><p class="title"><b>Example&nbsp;4.7.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e203"></a><p class="title"><b>Example&nbsp;4.7.&nbsp;</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
@@ -673,7 +673,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </p>
     </div></div><br class="example-break">    
 
-    <div class="example"><a name="d5e202"></a><p class="title"><b>Example&nbsp;4.8.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e206"></a><p class="title"><b>Example&nbsp;4.8.&nbsp;</b></p><div class="example-contents">
     <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
@@ -725,7 +725,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-side-effect"></a>5.&nbsp;Side effect and request handler</h2></div></div></div>
   
  
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e230"></a>5.1&nbsp;The role with responsibility to http request: Request Handler</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e234"></a>5.1&nbsp;The role with responsibility to http request: Request Handler</h2></div></div></div>
     
     <p>
     Even Asta4D complies with the principle of view first, there is still a role similar with the controller in MVC
@@ -746,7 +746,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </p>
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e235"></a>5.2&nbsp;Side effect of system operations</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e239"></a>5.2&nbsp;Side effect of system operations</h2></div></div></div>
     
 
     <p>
@@ -768,7 +768,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e239"></a>5.3&nbsp;Isolate side effect and multi thread rendering</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e243"></a>5.3&nbsp;Isolate side effect and multi thread rendering</h2></div></div></div>
     
 
     <p>
@@ -807,7 +807,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     Let us see how easy we can achieve parallel rendering 
     </p>
     
-    <div class="example"><a name="d5e246"></a><p class="title"><b>Example&nbsp;5.1.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e250"></a><p class="title"><b>Example&nbsp;5.1.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"ParallelTest$TestRender:snippetInDiv"</span> <span class="hl-attribute">afd:parallel&gt;</span>  
@@ -826,7 +826,7 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </div></div><br class="example-break">
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e249"></a>5.4&nbsp;Compatibility to MVC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e253"></a>5.4&nbsp;Compatibility to MVC</h2></div></div></div>
     
     <p>
     Someone may ask: "Is it true that we do not need MVC?", "Is it true that we do not need a controller?". The answer is "No". We
@@ -849,12 +849,12 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-request-handler"></a>6.&nbsp;Impement request handler and url mapping</h2></div></div></div>
   
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e257"></a>6.1&nbsp;@RequestHandler</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e261"></a>6.1&nbsp;@RequestHandler</h2></div></div></div>
     
     <p>It is not complicated to implement a request handler. @RequestHandler can be used to annotate a handle
     method in arbitrary Java class which will be treated as a request handler.</p>
     
-    <div class="example"><a name="d5e260"></a><p class="title"><b>Example&nbsp;6.1.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e264"></a><p class="title"><b>Example&nbsp;6.1.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-keyword">public</span> <span class="hl-keyword">class</span> LoginHandler {  
@@ -882,13 +882,13 @@ rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-st
     </div></div><br class="example-break">
   </div>
  
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e263"></a>6.2&nbsp;delcare url rule for request handler</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e267"></a>6.2&nbsp;delcare url rule for request handler</h2></div></div></div>
     
     <p>Previously we have introduced how to forward a http request to a certain template file by url mapping. We can declare 
     a request handler for q http request by the same way:
     </p>
     
-    <div class="example"><a name="d5e266"></a><p class="title"><b>Example&nbsp;6.2.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e270"></a><p class="title"><b>Example&nbsp;6.2.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 rules.add(<span class="hl-string">"/app/handler"</span>)  
@@ -932,7 +932,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
         </li><li class="listitem">
           <p>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
           it is interesting that we can declare an anonymous class as a request handler:</p>
-          <div class="example"><a name="d5e287"></a><p class="title"><b>Example&nbsp;6.3.&nbsp;</b></p><div class="example-contents">
+          <div class="example"><a name="d5e291"></a><p class="title"><b>Example&nbsp;6.3.&nbsp;</b></p><div class="example-contents">
             <pre class="programlisting">
 
 rules.add(<span class="hl-string">"/app/handler"</span>)  
@@ -967,7 +967,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     </p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e292"></a>6.3&nbsp;Default request handler</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e296"></a>6.3&nbsp;Default request handler</h2></div></div></div>
     
     <p>
     You can not only declare request handler to a certain url, but also declare global request handlers which is available to
@@ -975,7 +975,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     for multi handlers, we will explain it in a later chapter.
     </p>
     
-    <div class="example"><a name="d5e295"></a><p class="title"><b>Example&nbsp;6.4.&nbsp;Default request handler</b></p><div class="example-contents">
+    <div class="example"><a name="d5e299"></a><p class="title"><b>Example&nbsp;6.4.&nbsp;Default request handler</b></p><div class="example-contents">
       
       <pre class="programlisting">
 
@@ -991,7 +991,7 @@ rules.addDefaultRequestHandler(<span class="hl-string">"authcheck"</span>, AuthC
     is only available to the rules that declared the same attribute.
     </p>
     
-    <div class="example"><a name="d5e299"></a><p class="title"><b>Example&nbsp;6.5.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e303"></a><p class="title"><b>Example&nbsp;6.5.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 rules.add(<span class="hl-string">"/app/handler"</span>).attribute(<span class="hl-string">"authcheck"</span>)  
@@ -1013,7 +1013,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>).attribute(<span class="
     attribute declaration. Thus, we provide an alternative way for this situation: url rule rewrite.
     </p>
     
-    <div class="example"><a name="d5e303"></a><p class="title"><b>Example&nbsp;6.6.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e307"></a><p class="title"><b>Example&nbsp;6.6.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 rules.addRuleRewriter(<span class="hl-keyword">new</span> UrlMappingRuleRewriter() {  
@@ -1037,7 +1037,7 @@ rules.addRuleRewriter(<span class="hl-keyword">new</span> UrlMappingRuleRewriter
     </p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e306"></a>6.4&nbsp;Global forward/redirect</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e310"></a>6.4&nbsp;Global forward/redirect</h2></div></div></div>
     
 
     <p>
@@ -1045,7 +1045,7 @@ rules.addRuleRewriter(<span class="hl-keyword">new</span> UrlMappingRuleRewriter
     the global forward rule will be checked.
     </p>
     
-    <div class="example"><a name="d5e309"></a><p class="title"><b>Example&nbsp;6.7.&nbsp;Global forward</b></p><div class="example-contents">
+    <div class="example"><a name="d5e313"></a><p class="title"><b>Example&nbsp;6.7.&nbsp;Global forward</b></p><div class="example-contents">
       
       <pre class="programlisting">
 
@@ -1064,7 +1064,7 @@ rules.addGlobalForward(PageNotFoundException.<span class="hl-keyword">class</spa
     Global redirect can be declared by the same way.
     </p>
     
-    <div class="example"><a name="d5e314"></a><p class="title"><b>Example&nbsp;6.8.&nbsp;Global redirect</b></p><div class="example-contents">
+    <div class="example"><a name="d5e318"></a><p class="title"><b>Example&nbsp;6.8.&nbsp;Global redirect</b></p><div class="example-contents">
       
       <pre class="programlisting">
 
@@ -1077,7 +1077,7 @@ rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, <span class="hl-string">"/somewhe
     The global forward rules are applied before the default forward rule(the forward rule without result) on certain url mapping rule.
     </p>
 
-    <div class="example"><a name="d5e318"></a><p class="title"><b>Example&nbsp;6.9.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e322"></a><p class="title"><b>Example&nbsp;6.9.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 rules.addGlobalForward(PageNotFoundException.<span class="hl-keyword">class</span>, <span class="hl-string">"/pagenotfound.html"</span>, <span class="hl-number">404</span>);  
@@ -1107,13 +1107,13 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-template"></a>7.&nbsp;Details of Template</h2></div></div></div>
   
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e331"></a>7.1.&nbsp;Supported tags</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e334">7.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="#d5e346">7.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="#d5e375">7.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="#d5e389">7.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="#d5e412">7.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="#d5e420">7.1.6. afd:msg</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e335"></a>7.1.&nbsp;Supported tags</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e338">7.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="#d5e350">7.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="#d5e379">7.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="#d5e393">7.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="#d5e416">7.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="#d5e424">7.1.6. afd:msg</a></span></dt></dl></div>
     
     
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e334"></a>7.1.1.&nbsp;afd:extension</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e338"></a>7.1.1.&nbsp;afd:extension</h3></div></div></div>
       
       <p>A "afd:extension" tag declares the relationship of inheritance between child template and parent template.</p>
-      <div class="example"><a name="d5e337"></a><p class="title"><b>Example&nbsp;7.1.&nbsp;child.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e341"></a><p class="title"><b>Example&nbsp;7.1.&nbsp;child.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
@@ -1128,12 +1128,12 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
             <p>Identifies the parent template file of the current template.</p>
           </dd></dl></div>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e346"></a>7.1.2.&nbsp;afd:block</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e350"></a>7.1.2.&nbsp;afd:block</h3></div></div></div>
       
       <p>A "afd:block" tag declares a referenceable block in the template file. Child template file can reference the
       blocks in parent template by the same tag "afd:block" with extra action declaration: append, insert, override.
       </p>
-      <div class="example"><a name="d5e349"></a><p class="title"><b>Example&nbsp;7.2.&nbsp;parent.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e353"></a><p class="title"><b>Example&nbsp;7.2.&nbsp;parent.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;html&gt;</span>   
@@ -1155,7 +1155,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
 
       </pre>
       </div></div><br class="example-break">
-      <div class="example"><a name="d5e352"></a><p class="title"><b>Example&nbsp;7.3.&nbsp;child.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e356"></a><p class="title"><b>Example&nbsp;7.3.&nbsp;child.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
@@ -1196,11 +1196,11 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
           </dd></dl></div>
       <p class="remark"><em><span class="remark">The result of merging the above two files by Asta4D's template engine can be found at <a class="xref" href="#chapter-Inheritable-template" title="2.&nbsp;Flexible template">Chapter&nbsp;2, <i>Flexible template</i></a>.</span></em></p>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e375"></a>7.1.3.&nbsp;afd:embed</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e379"></a>7.1.3.&nbsp;afd:embed</h3></div></div></div>
       
       <p>A "afd:embed" tag declares an action of extracting and inserting an external file's content to the site where
       the "afd:embed" tag is declared.</p>
-      <div class="example"><a name="d5e378"></a><p class="title"><b>Example&nbsp;7.4.&nbsp;child.html</b></p><div class="example-contents">
+      <div class="example"><a name="d5e382"></a><p class="title"><b>Example&nbsp;7.4.&nbsp;child.html</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
@@ -1221,11 +1221,11 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       Samples and the merging result can be found at <a class="xref" href="#chapter-Inheritable-template" title="2.&nbsp;Flexible template">Chapter&nbsp;2, <i>Flexible template</i></a>.
       </span></em></p>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e389"></a>7.1.4.&nbsp;afd:snippet</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e393"></a>7.1.4.&nbsp;afd:snippet</h3></div></div></div>
       
       <p>A "afd:snippet" tag declares an Java class which assumes the duty of rendering data to the html snippet contained
       by the declaring tag.</p>
-      <div class="example"><a name="d5e392"></a><p class="title"><b>Example&nbsp;7.5.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e396"></a><p class="title"><b>Example&nbsp;7.5.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"SimpleSnippet:setProfile"</span><span class="hl-tag">&gt;</span>  
@@ -1252,7 +1252,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       <p>
       There is an alternative way to declare a snippet by "afd:render" attribute.
       </p>
-      <div class="example"><a name="d5e409"></a><p class="title"><b>Example&nbsp;7.6.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e413"></a><p class="title"><b>Example&nbsp;7.6.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"SimpleSnippet:setProfile"</span><span class="hl-tag">&gt;</span>  
@@ -1267,11 +1267,11 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       "afd:clear" will be always available even there is no declaration of "afd:render" on the html tag.
       </p>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e412"></a>7.1.5.&nbsp;afd:group</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e416"></a>7.1.5.&nbsp;afd:group</h3></div></div></div>
       
       <p>A "afd:group" tag declares a referenceable DOM element for back-end Java snippet class. It is useful to reference certain
       text without wrapping html tag or combine a group of coordinate html tags as a single node.</p>
-      <div class="example"><a name="d5e415"></a><p class="title"><b>Example&nbsp;7.7.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e419"></a><p class="title"><b>Example&nbsp;7.7.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 
@@ -1287,11 +1287,11 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       </div></div><br class="example-break">
       <div class="variablelist"><p class="title"><b>Attributes:</b></p><em><span class="remark">None.</span></em><dl class="variablelist"></dl></div>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e420"></a>7.1.6.&nbsp;afd:msg</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e424"></a>7.1.6.&nbsp;afd:msg</h3></div></div></div>
       
       <p>A "afd:msg" tag declares a message managed in external files. This tag is mainly designed for i18n support, but
       it also can be used as a simple string replacer. Please see <a class="xref" href="#chapter-detail-i18n" title="13.&nbsp;i18n">Chapter&nbsp;13, <i>i18n</i></a> for more details.</p>
-      <div class="example"><a name="d5e424"></a><p class="title"><b>Example&nbsp;7.8.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e428"></a><p class="title"><b>Example&nbsp;7.8.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"search.result.count"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:message&gt;</span>
@@ -1303,7 +1303,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
           </dd></dl></div>
     </div>
   </div>
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e432"></a>7.2.&nbsp;Additional</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e436"></a>7.2.&nbsp;Additional</h2></div></div></div>
     
     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
         <p>HTML5 convention</p>
@@ -1314,7 +1314,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
         of the following things:
         </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>All tags and attributes are converted to lower case.</p></li><li class="listitem"><p>Self closed tags such as &lt;div /&gt; or &lt;afd:embed target="embed.html" /&gt; is not legal.</p></li><li class="listitem"><p>There are some tags that the parser "ensures".For example a &lt;tbody&gt; tag must be the first tag inside &lt;table&gt;, which
           breas the following example:</p>
-            <div class="example"><a name="d5e447"></a><p class="title"><b>Example&nbsp;7.9.&nbsp;</b></p><div class="example-contents">
+            <div class="example"><a name="d5e451"></a><p class="title"><b>Example&nbsp;7.9.&nbsp;</b></p><div class="example-contents">
             <pre class="programlisting">
 
 <span class="hl-tag">&lt;table&gt;</span>
@@ -1326,7 +1326,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
             </pre>
             </div></div><br class="example-break">
             <p>But it can be replaced by the following:</p>
-            <div class="example"><a name="d5e450"></a><p class="title"><b>Example&nbsp;7.10.&nbsp;</b></p><div class="example-contents">
+            <div class="example"><a name="d5e454"></a><p class="title"><b>Example&nbsp;7.10.&nbsp;</b></p><div class="example-contents">
             <pre class="programlisting">
 
 <span class="hl-tag">&lt;table&gt;</span>
@@ -1343,7 +1343,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
         children of the body except the body tag itself) of the child template will be processed by the template engine 
         and the parts out of body will be ignored simply. The same convention is applied to the embed target file. The 
         following two sample will not cause different results by Asta4D.</p>
-        <div class="example"><a name="d5e455"></a><p class="title"><b>Example&nbsp;7.11.&nbsp;child.html without body tag:</b></p><div class="example-contents">
+        <div class="example"><a name="d5e459"></a><p class="title"><b>Example&nbsp;7.11.&nbsp;child.html without body tag:</b></p><div class="example-contents">
         <pre class="programlisting">
 
 <span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
@@ -1429,16 +1429,16 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-snippet"></a>8.&nbsp;Details of snippet class</h2></div></div></div>
   
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e478"></a>8.1.&nbsp;Rendering APIs</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e481">8.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#d5e497">8.1.2. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e505">8.1.3. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e542">8.1.4. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e544">8.1.5. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e546">8.1.6. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e548">8.1.7. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e550">8.1.8. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e552">8.1.9. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e554">8.1.10. List rendering</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e482"></a>8.1.&nbsp;Rendering APIs</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e485">8.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#d5e501">8.1.2. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e509">8.1.3. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e546">8.1.4. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e548">8.1.5. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e550">8.1.6. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e552">8.1.7. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e554">8.1.8. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e556">8.1.9. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e558">8.1.10. List rendering</a></span></dt></dl></div>
     
     
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e481"></a>8.1.1.&nbsp;Create and add Renderer instance</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e485"></a>8.1.1.&nbsp;Create and add Renderer instance</h3></div></div></div>
       
       <p>There are almost same two sets of overloaded methods: create and add. The create methods are static and can be
       used to create a Renderer instance. The add methods are instance methods and can be used to add a implicitly created
       Renderer instance to an existing Renderer instance. Both of the create and add methods return the created Renderer
       instance therefore chain invoking can be performed as well.</p>
-      <div class="example"><a name="d5e484"></a><p class="title"><b>Example&nbsp;8.1.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e488"></a><p class="title"><b>Example&nbsp;8.1.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 
@@ -1458,7 +1458,7 @@ renderer.add(renderer3);
       is added to has no effect on the rendering order. In the following example, "add renderer2 to renderer then add renderer3 to renderer2"
       is completely equal to "add renderer2 and renderer3 to renderer" at above example.
       </p>
-      <div class="example"><a name="d5e487"></a><p class="title"><b>Example&nbsp;8.2.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e491"></a><p class="title"><b>Example&nbsp;8.2.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 
@@ -1470,7 +1470,7 @@ renderer2.add(renderer3);
         </pre>
       </div></div><br class="example-break">
       <p>The following is equal too:</p>
-      <div class="example"><a name="d5e490"></a><p class="title"><b>Example&nbsp;8.3.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e494"></a><p class="title"><b>Example&nbsp;8.3.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 
@@ -1488,7 +1488,7 @@ renderer.add(renderer2);
       
       <p>There is also a non-parameter create method which can by used to create a "do nothing" Renderer for source convenience. In our
       practice, we write the following line at the beginning of most of our snippet methods.</p>
-      <div class="example"><a name="d5e494"></a><p class="title"><b>Example&nbsp;8.4.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e498"></a><p class="title"><b>Example&nbsp;8.4.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 Renderer renderer = Renderer.create();
@@ -1499,12 +1499,12 @@ Renderer renderer = Renderer.create();
       <p>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
       cases. You can also read the Java doc of Renderer for more details.</p>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e497"></a>8.1.2.&nbsp;Render text</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e501"></a>8.1.2.&nbsp;Render text</h3></div></div></div>
       
       <p>add(String selector, String value) can be used to render a text under the element specified by given selector.
       All child nodes of the target element specified by selector will be emptied and the given String value will be rendered as a single
       text node of the target element.</p>
-      <div class="example"><a name="d5e500"></a><p class="title"><b>Example&nbsp;8.5.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e504"></a><p class="title"><b>Example&nbsp;8.5.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 renderer.add(<span class="hl-string">"#someId"</span>, <span class="hl-string">"xyz"</span>);
@@ -1512,7 +1512,7 @@ renderer.add(<span class="hl-string">"#someId"</span>, <span class="hl-string">"
         </pre>
       </div></div><br class="example-break">
       <p>Long/long, Integer/int, Boolean/boolean will be treated as text rendering too.</p>
-      <div class="example"><a name="d5e503"></a><p class="title"><b>Example&nbsp;8.6.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e507"></a><p class="title"><b>Example&nbsp;8.6.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 renderer.add(<span class="hl-string">"#someIdForLong"</span>, <span class="hl-number">123L</span>);
@@ -1522,7 +1522,7 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
         </pre>
       </div></div><br class="example-break">
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e505"></a>8.1.3.&nbsp;Render DOM attribution</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e509"></a>8.1.3.&nbsp;Render DOM attribution</h3></div></div></div>
       
       <p>add(String selector, String attr, String value) can be used to render attribute value of a DOM element. There are some rules will
       be applied for the pattern of specified "attr" and "value":</p>
@@ -1559,7 +1559,7 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
       for the nested snippet rendering. See the following example, we pass a Date instance to the nested snippet method:
       </p>
       
-      <div class="example"><a name="d5e534"></a><p class="title"><b>Example&nbsp;8.7.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e538"></a><p class="title"><b>Example&nbsp;8.7.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 <span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"MySnippet:outer"</span><span class="hl-tag">&gt;</span>
@@ -1590,7 +1590,7 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
       as the above example.
       </p>
       
-      <div class="example"><a name="d5e538"></a><p class="title"><b>Example&nbsp;8.8.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e542"></a><p class="title"><b>Example&nbsp;8.8.&nbsp;</b></p><div class="example-contents">
         <pre class="programlisting">
 
 <span class="hl-comment">&lt;!-- parent template --&gt;</span>
@@ -1624,30 +1624,30 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
       </div></div><br class="example-break">
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e542"></a>8.1.4.&nbsp;Clear an Element</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e546"></a>8.1.4.&nbsp;Clear an Element</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e544"></a>8.1.5.&nbsp;Render raw Element</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e548"></a>8.1.5.&nbsp;Render raw Element</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e546"></a>8.1.6.&nbsp;Arbitrary rendering for an Element</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e550"></a>8.1.6.&nbsp;Arbitrary rendering for an Element</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e548"></a>8.1.7.&nbsp;Recursive rendering</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e552"></a>8.1.7.&nbsp;Recursive rendering</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e550"></a>8.1.8.&nbsp;Debug renderer</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e554"></a>8.1.8.&nbsp;Debug renderer</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e552"></a>8.1.9.&nbsp;Missing selector warning</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e556"></a>8.1.9.&nbsp;Missing selector warning</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e554"></a>8.1.10.&nbsp;List rendering</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e558"></a>8.1.10.&nbsp;List rendering</h3></div></div></div>
       
     </div>
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e556"></a>8.2.&nbsp;Other things about snippet class</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e560"></a>8.2.&nbsp;Other things about snippet class</h2></div></div></div>
     
     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
         <p>Nested snippet</p>
@@ -1660,7 +1660,7 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
       </li></ul></div>
   </div>
 
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e567"></a>8.3.&nbsp;Customization</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e571"></a>8.3.&nbsp;Customization</h2></div></div></div>
     
     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
         <p>SnippetExtractor</p>
@@ -1686,19 +1686,19 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>11.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e584"></a>11.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e588"></a>11.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e586"></a>11.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e590"></a>11.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e588"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e592"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e590"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e594"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -1706,19 +1706,19 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e594"></a>12.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e598"></a>12.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e596"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e600"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e598"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e602"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e600"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e604"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
@@ -1738,12 +1738,12 @@ renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>15.&nbsp;Integration with Spring</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e610"></a>15.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e614"></a>15.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
     
     <p>...</p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e613"></a>15.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e617"></a>15.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
     
     <p>...</p>
   </div>
