@@ -11,6 +11,10 @@
   
   <sect1>
     <title>Rendering APIs</title>
+    <para>Asta4D provides various rendering APIs to help developers render value to the page. By those APIs, developer can render
+    text under a DOM element, set the attribute value for a DOM element, also can convert a list data to a list of DOM element,
+    and also other various manipulation on DOM elements.
+    </para>
     <toc/>
     <sect2>
       <title>Create and add Renderer instance</title>
@@ -78,6 +82,179 @@ Renderer renderer = Renderer.create();
       
       <para>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
       cases. You can also read the Java doc of Renderer for more details.</para>
+    </sect2>
+    <sect2>
+      <title>CSS Selector</title>
+      <para>Asta4D is using a modified version of <ulink url="httphttp://jsoup.org/">jsoup library</ulink> to afford CSS selector function.
+      Currently, we support the following selectors:
+      </para>
+      
+      <table frame='all'><title>Supported selectors</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+      <colspec colname='c3'/>
+      <thead>
+        <row>
+          <entry>Pattern</entry>
+          <entry>Matches</entry>
+          <entry>Example</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>*</entry>
+          <entry>any element</entry>
+          <entry>*</entry>
+        </row>
+        <row>
+          <entry>tag</entry>
+          <entry>elements with the given tag name</entry>
+          <entry>div</entry>
+        </row>
+        <row>
+          <entry>ns|E</entry>
+          <entry>elements of type E in the namespace ns</entry>
+          <entry>fb|name finds &lt;fb:name&gt; elements</entry>
+        </row>
+        <row>
+          <entry>#id</entry>
+          <entry>elements with attribute ID of "id"</entry>
+          <entry>div#wrap, #logo</entry>
+        </row>
+        <row>
+          <entry>.class</entry>
+          <entry>elements with a class name of "class"</entry>
+          <entry>div.left, .result</entry>
+        </row>
+        <row>
+          <entry>[attr]</entry>
+          <entry>elements with an attribute named "attr" (with any value)</entry>
+          <entry>a[href], [title]</entry>
+        </row>
+        <row>
+          <entry>[^attrPrefix]</entry>
+          <entry>elements with an attribute name starting with "attrPrefix". Use to find elements with HTML5 datasets</entry>
+          <entry>[^data-], div[^data-]</entry>
+        </row>
+        <row>
+          <entry>[attr=val]</entry>
+          <entry>elements with an attribute named "attr", and value equal to "val"</entry>
+          <entry>img[width=500], a[rel=nofollow]</entry>
+        </row>
+        <row>
+          <entry>[attr^=valPrefix]</entry>
+          <entry>elements with an attribute named "attr", and value starting with "valPrefix"</entry>
+          <entry>a[href^=http:]</entry>
+        </row>
+        <row>
+          <entry>[attr$=valSuffix]</entry>
+          <entry>elements with an attribute named "attr", and value ending with "valSuffix"</entry>
+          <entry>img[src$=.png]</entry>
+        </row>
+        <row>
+          <entry>[attr*=valContaining]</entry>
+          <entry>elements with an attribute named "attr", and value containing "valContaining"</entry>
+          <entry>a[href*=/search/]</entry>
+        </row>
+        <row>
+          <entry>[attr~=regex]</entry>
+          <entry>elements with an attribute named "attr", and value matching the regular expression</entry>
+          <entry>img[src~=(?i)\\.(png|jpe?g)]</entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry>The above may be combined in any order</entry>
+          <entry>div.header[title]</entry>
+        </row>
+        <row>
+          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Combinators</emphasis></entry>
+        </row>
+        <row>
+          <entry>E F</entry>
+          <entry>an F element descended from an E element</entry>
+          <entry>div a, .logo h1</entry>
+        </row>
+        <row>
+          <entry>E > F</entry>
+          <entry>an F direct child of E</entry>
+          <entry>ol > li</entry>
+        </row>
+        <row>
+          <entry>E + F</entry>
+          <entry>an F element immediately preceded by sibling E</entry>
+          <entry>li + li, div.head + div</entry>
+        </row>
+        <row>
+          <entry>E ~ F</entry>
+          <entry>an F element preceded by sibling E</entry>
+          <entry>h1 ~ p</entry>
+        </row>
+        <row>
+          <entry>E, F, G</entry>
+          <entry>all matching elements E, F, or G</entry>
+          <entry>a[href], div, h3</entry>
+        </row>
+        <row>
+          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Pseudo selectors</emphasis></entry>
+        </row>
+        <row>
+          <entry>:lt(n)</entry>
+          <entry>elements whose sibling index is less than n</entry>
+          <entry>td:lt(3) finds the first 2 cells of each row</entry>
+        </row>
+        <row>
+          <entry>:gt(n)</entry>
+          <entry>elements whose sibling index is greater than n</entry>
+          <entry>td:gt(1) finds cells after skipping the first two</entry>
+        </row>
+        <row>
+          <entry>:eq(n)</entry>
+          <entry>elements whose sibling index is equal to n</entry>
+          <entry>td:eq(0) finds the first cell of each row</entry>
+        </row>
+        <row>
+          <entry>:has(selector)</entry>
+          <entry>elements that contains at least one element matching the selector</entry>
+          <entry>div:has(p) finds divs that contain p elements</entry>
+        </row>
+        <row>
+          <entry>:not(selector)</entry>
+          <entry>elements that do not match the selector. See also Elements.not(String)</entry>
+          <entry>
+            <para>div:not(.logo) finds all divs that do not have the "logo" class.</para>
+            <para>div:not(:has(div)) finds divs that do not contain divs.</para>
+          </entry>
+        </row>
+        <row>
+          <entry>:contains(text)</entry>
+          <entry>elements that contains the specified text. The search is case insensitive. The text may appear in the found element, or any of its descendants.</entry>
+          <entry>p:contains(jsoup) finds p elements containing the text "jsoup".</entry>
+        </row>
+        <row>
+          <entry>:matches(regex)</entry>
+          <entry>elements whose text matches the specified regular expression. The text may appear in the found element, or any of its descendants.</entry>
+          <entry>td:matches(\\d+) finds table cells containing digits. div:matches((?i)login) finds divs containing the text, case insensitively.</entry>
+        </row>
+        <row>
+          <entry>:containsOwn(text)</entry>
+          <entry>elements that directly contains the specified text. The search is case insensitive. The text must appear in the found element, not any of its descendants.</entry>
+          <entry>p:containsOwn(jsoup) finds p elements with own text "jsoup".</entry>
+        </row>
+        <row>
+          <entry>:matchesOwn(regex)</entry>
+          <entry>elements whose own text matches the specified regular expression. The text must appear in the found element, not any of its descendants.</entry>
+          <entry>td:matchesOwn(\\d+) finds table cells directly containing digits. div:matchesOwn((?i)login) finds divs containing the text, case insensitively.</entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry>The above may be combined in any order and with other selectors</entry>
+          <entry>.light:contains(name):eq(0)</entry>
+        </row>
+      </tbody>
+      </tgroup>
+      </table>
+      
     </sect2>
     <sect2>
       <title>Render text</title>
@@ -215,6 +392,26 @@ public class MySnippet{
     </sect2>
     <sect2>
       <title>Clear an Element</title>
+      <para>On all the rendering methods, if the specified value is null, the target element will be removed. And there is also
+      an enumeration value of SpecialRenderer.Clear which can be used to declare a remove operation for an element too.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+//if the String value is null, the target element will be removed
+String txt = null;
+Renderer.create("#someId", txt);
+]]>
+        </programlisting>
+        <programlisting language="java">
+<![CDATA[
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear
+
+Renderer.create("#someId", Clear);
+]]>
+        </programlisting>
+      </example>
+      <remark>Note that on the attribute rendering methods, if null value or SpecialRenderer.Clear are specified, as we mentioned in
+      the previous section, the target attribute will be removed and the target element will remain.</remark>
     </sect2>
     <sect2>
       <title>Render raw Element</title>
