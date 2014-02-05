@@ -167,6 +167,7 @@ table tr {
 
 table th {
 	font-weight: bold;
+    background-color: #DCDCDC;
 }
 
 table th,table td {
