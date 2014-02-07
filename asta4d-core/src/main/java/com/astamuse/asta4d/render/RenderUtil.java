@@ -121,6 +121,11 @@ public class RenderUtil {
                 // child.
                 if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
                     renderTarget = element.children().first();
+                    // the hosting element of this faked snippet has been removed by outer a snippet
+                    if (renderTarget == null) {
+                        element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
+                        continue;
+                    }
                 } else {
                     renderTarget = element;
                 }
