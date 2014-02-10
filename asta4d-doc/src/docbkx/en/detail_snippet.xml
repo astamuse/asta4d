@@ -7,8 +7,715 @@
     xsi:schemaLocation="
         http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
-  <title>Snippet</title>
+  <title>Details of snippet class</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Rendering APIs</title>
+    <para>Asta4D provides various rendering APIs to help developers render value to the page. By those APIs, developer can render
+    text under a DOM element, set the attribute value for a DOM element, also can convert a list data to a list of DOM element,
+    and also other various manipulation on DOM elements.
+    </para>
+    <toc/>
+    <sect2>
+      <title>Create and add Renderer instance</title>
+      <para>There are almost same two sets of overloaded methods: create and add. The create methods are static and can be
+      used to create a Renderer instance. The add methods are instance methods and can be used to add a implicitly created
+      Renderer instance to an existing Renderer instance. Both of the create and add methods return the created Renderer
+      instance therefore chain invoking can be performed as well.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
 
+Renderer renderer = Renderer.create("#someId", "xyz").add("sometag", "hello");
+renderer.add(".someclass", "abc").add(".someclass2", "abc2");
+
+Renderer renderer2 = Renderer.create("#someId2", "xyz2");
+Renderer renderer3 = Renderer.create("#someId3", "xyz3");
+
+//add renderer2 and renderer3 to renderer
+renderer.add(renderer2);
+renderer.add(renderer3);
+]]>
+        </programlisting>
+      </example>
+      <para>Note that the order of a Renderer instance being added is significant but the target instance which a Renderer
+      is added to has no effect on the rendering order. In the following example, "add renderer2 to renderer then add renderer3 to renderer2"
+      is completely equal to "add renderer2 and renderer3 to renderer" at above example.
+      </para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+//add renderer2 to renderer then add renderer3 to renderer2
+renderer.add(renderer2);
+renderer2.add(renderer3);
+
+]]>
+        </programlisting>
+      </example>
+      <para>The following is equal too:</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+//add renderer3 to renderer2 then add renderer2 to renderer
+renderer2.add(renderer3);
+renderer.add(renderer2);
+
+]]>
+        </programlisting>
+      </example>
+      <para>A instance of Renderer should not be considered as a single rendering declaration only, A instance of Renderer is exactly a
+      rendering chain holder, you can call add method on any instance of the chain but the added Renderer instance will be always added
+      to the tail of the chain. If the added Renderer instance is holding over than one Renderer instance in its own chain, the held chain
+      will be added to the tail of the chain of the target Renderer.</para>
+      
+      <para>There is also a non-parameter create method which can by used to create a "do nothing" Renderer for source convenience. In our
+      practice, we write the following line at the beginning of most of our snippet methods.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+Renderer renderer = Renderer.create();
+]]>
+        </programlisting>
+      </example>
+      
+      <para>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
+      cases. You can also read the Java doc of Renderer for more details.</para>
+    </sect2>
+    <sect2>
+      <title>CSS Selector</title>
+      <para>Asta4D is using a modified version of <ulink url="http://jsoup.org/">jsoup library</ulink> to afford CSS selector function.
+      Currently, we support the following selectors:
+      </para>
+      
+      <table frame='all'><title>Supported selectors</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+      <colspec colname='c3'/>
+      <thead>
+        <row>
+          <entry>Pattern</entry>
+          <entry>Matches</entry>
+          <entry>Example</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>*</entry>
+          <entry>any element</entry>
+          <entry>*</entry>
+        </row>
+        <row>
+          <entry>tag</entry>
+          <entry>elements with the given tag name</entry>
+          <entry>div</entry>
+        </row>
+        <row>
+          <entry>ns|E</entry>
+          <entry>elements of type E in the namespace ns</entry>
+          <entry>fb|name finds &lt;fb:name&gt; elements</entry>
+        </row>
+        <row>
+          <entry>#id</entry>
+          <entry>elements with attribute ID of "id"</entry>
+          <entry>div#wrap, #logo</entry>
+        </row>
+        <row>
+          <entry>.class</entry>
+          <entry>elements with a class name of "class"</entry>
+          <entry>div.left, .result</entry>
+        </row>
+        <row>
+          <entry>[attr]</entry>
+          <entry>elements with an attribute named "attr" (with any value)</entry>
+          <entry>a[href], [title]</entry>
+        </row>
+        <row>
+          <entry>[^attrPrefix]</entry>
+          <entry>elements with an attribute name starting with "attrPrefix". Use to find elements with HTML5 datasets</entry>
+          <entry>[^data-], div[^data-]</entry>
+        </row>
+        <row>
+          <entry>[attr=val]</entry>
+          <entry>elements with an attribute named "attr", and value equal to "val"</entry>
+          <entry>img[width=500], a[rel=nofollow]</entry>
+        </row>
+        <row>
+          <entry>[attr^=valPrefix]</entry>
+          <entry>elements with an attribute named "attr", and value starting with "valPrefix"</entry>
+          <entry>a[href^=http:]</entry>
+        </row>
+        <row>
+          <entry>[attr$=valSuffix]</entry>
+          <entry>elements with an attribute named "attr", and value ending with "valSuffix"</entry>
+          <entry>img[src$=.png]</entry>
+        </row>
+        <row>
+          <entry>[attr*=valContaining]</entry>
+          <entry>elements with an attribute named "attr", and value containing "valContaining"</entry>
+          <entry>a[href*=/search/]</entry>
+        </row>
+        <row>
+          <entry>[attr~=regex]</entry>
+          <entry>elements with an attribute named "attr", and value matching the regular expression</entry>
+          <entry>img[src~=(?i)\\.(png|jpe?g)]</entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry>The above may be combined in any order</entry>
+          <entry>div.header[title]</entry>
+        </row>
+        <row>
+          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Combinators</emphasis></entry>
+        </row>
+        <row>
+          <entry>E F</entry>
+          <entry>an F element descended from an E element</entry>
+          <entry>div a, .logo h1</entry>
+        </row>
+        <row>
+          <entry>E > F</entry>
+          <entry>an F direct child of E</entry>
+          <entry>ol > li</entry>
+        </row>
+        <row>
+          <entry>E + F</entry>
+          <entry>an F element immediately preceded by sibling E</entry>
+          <entry>li + li, div.head + div</entry>
+        </row>
+        <row>
+          <entry>E ~ F</entry>
+          <entry>an F element preceded by sibling E</entry>
+          <entry>h1 ~ p</entry>
+        </row>
+        <row>
+          <entry>E, F, G</entry>
+          <entry>all matching elements E, F, or G</entry>
+          <entry>a[href], div, h3</entry>
+        </row>
+        <row>
+          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Pseudo selectors</emphasis></entry>
+        </row>
+        <row>
+          <entry>:lt(n)</entry>
+          <entry>elements whose sibling index is less than n</entry>
+          <entry>td:lt(3) finds the first 2 cells of each row</entry>
+        </row>
+        <row>
+          <entry>:gt(n)</entry>
+          <entry>elements whose sibling index is greater than n</entry>
+          <entry>td:gt(1) finds cells after skipping the first two</entry>
+        </row>
+        <row>
+          <entry>:eq(n)</entry>
+          <entry>elements whose sibling index is equal to n</entry>
+          <entry>td:eq(0) finds the first cell of each row</entry>
+        </row>
+        <row>
+          <entry>:has(selector)</entry>
+          <entry>elements that contains at least one element matching the selector</entry>
+          <entry>div:has(p) finds divs that contain p elements</entry>
+        </row>
+        <row>
+          <entry>:not(selector)</entry>
+          <entry>elements that do not match the selector. See also Elements.not(String)</entry>
+          <entry>
+            <para>div:not(.logo) finds all divs that do not have the "logo" class.</para>
+            <para>div:not(:has(div)) finds divs that do not contain divs.</para>
+          </entry>
+        </row>
+        <row>
+          <entry>:contains(text)</entry>
+          <entry>elements that contains the specified text. The search is case insensitive. The text may appear in the found element, or any of its descendants.</entry>
+          <entry>p:contains(jsoup) finds p elements containing the text "jsoup".</entry>
+        </row>
+        <row>
+          <entry>:matches(regex)</entry>
+          <entry>elements whose text matches the specified regular expression. The text may appear in the found element, or any of its descendants.</entry>
+          <entry>td:matches(\\d+) finds table cells containing digits. div:matches((?i)login) finds divs containing the text, case insensitively.</entry>
+        </row>
+        <row>
+          <entry>:containsOwn(text)</entry>
+          <entry>elements that directly contains the specified text. The search is case insensitive. The text must appear in the found element, not any of its descendants.</entry>
+          <entry>p:containsOwn(jsoup) finds p elements with own text "jsoup".</entry>
+        </row>
+        <row>
+          <entry>:matchesOwn(regex)</entry>
+          <entry>elements whose own text matches the specified regular expression. The text must appear in the found element, not any of its descendants.</entry>
+          <entry>td:matchesOwn(\\d+) finds table cells directly containing digits. div:matchesOwn((?i)login) finds divs containing the text, case insensitively.</entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry>The above may be combined in any order and with other selectors</entry>
+          <entry>.light:contains(name):eq(0)</entry>
+        </row>
+      </tbody>
+      </tgroup>
+      </table>
+      
+    </sect2>
+    <sect2>
+      <title>Render text</title>
+      <para>add(String selector, String value) can be used to render a text under the element specified by given selector.
+      All child nodes of the target element specified by selector will be emptied and the given String value will be rendered as a single
+      text node of the target element.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+renderer.add("#someId", "xyz");
+]]>
+        </programlisting>
+      </example>
+      <para>Long/long, Integer/int, Boolean/boolean will be treated as text rendering too.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+renderer.add("#someIdForLong", 123L);
+renderer.add("#someIdForInt", 123);
+renderer.add("#someIdForBool", true);
+]]>
+        </programlisting>
+      </example>
+    </sect2>
+    <sect2>
+      <title>Render DOM attribution</title>
+      <para>add(String selector, String attr, String value) can be used to render attribute value of a DOM element. There are some rules will
+      be applied for the pattern of specified "attr" and "value":</para>
+      <itemizedlist>
+        <listitem>
+          <para>add("+class", value)</para>
+          <para>call addClass(value) on target Element, null value will be treated as "null".</para>
+        </listitem>
+        <listitem>
+          <para>add("-class", value)</para>
+          <para>call removeClass(value) on target Element, null value will be treated as "null".</para>
+        </listitem>
+        <listitem>
+          <para>add("class", value)</para>
+          <para>call attr("class", value) on target Element if value is not null, for a null value, removeAttr("class") will be called.</para>
+        </listitem>
+        <listitem>
+          <para>add("anyattr", value)</para>
+          <para>call attr("anyattr", value) on target Element if value is not null, for a null value, removeAttr("anyattr") will be called.</para>
+        </listitem>
+        <listitem>
+          <para>add("anyattr", SpecialRenderer.Clear)</para>
+          <para>call removeAttr("anyattr") on target Element.</para>
+        </listitem>
+        <listitem>
+          <para>add("+anyattr", value)</para>
+          <para>call attr("anyattr", value) on target Element if value is not null, for a null value, removeAttr("anyattr") will be called.</para>
+        </listitem>
+        <listitem>
+          <para>add("+anyattr", SpecialRenderer.Clear)</para>
+          <para>call removeAttr("anyattr") on target Element.</para>
+        </listitem>
+        <listitem>
+          <para>add("-anyattr", value)</para>
+          <para>call removeAttr("anyattr") on target Element.</para>
+        </listitem>
+      </itemizedlist>
+      
+      <para>There is also an add method for attribution rendering that accepts arbitrary data as Object type: add(String selector, String attr, Object value).
+      When the "value" is specified as a non-string value and the "attr" is specified as "+class" or "-class", A IllegalArgumentException will be thrown.
+      When an arbitrary Object value is rendered to attribute by such method, an internal object reference id will be rendered to the target attribute
+      instead of the original object since it cannot be treated as attribute string value directly. The object reference id can be used by variable injection
+      for the nested snippet rendering. See the following example, we pass a Date instance to the nested snippet method:
+      </para>
+      
+      <example>
+        <programlisting language="xml">
+<![CDATA[
+<div afd:render="MySnippet:outer">
+  <div id="inner" afd:render="MySnippet:inner">
+    <span id="current-date"></span>
+  </div>
+</div>
+]]>
+        </programlisting>
+        <programlisting language="java">
+<![CDATA[
+public class MySnippet{
+
+    public Renderer outer(){
+        return Renderer.create("#innder", "now", new Date());
+    }
+    
+    public Renderer inner(Date now){
+        return Renderer.create("#current-date", now);
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      
+      <para>This mechanism can be used for parametrized embedding too. Parameters can be specified by attribution rendering 
+      in the snippet method of parent template file and can be retrieved by the snippet method of child template file as same
+      as the above example.
+      </para>
+      
+      <example>
+        <programlisting language="xml">
+<![CDATA[
+<!-- parent template -->
+<div afd:render="MySnippet:outer">
+  <afd:embed id="inner" target="child.html"></afd:embed>
+</div>
+]]>
+        </programlisting>
+        <programlisting language="xml">
+<![CDATA[
+<!-- child template -->
+  <div afd:render="MySnippet:embed">
+    <span id="current-date"></span>
+  </div>
+]]>
+        </programlisting>
+        <programlisting language="java">
+<![CDATA[
+public class MySnippet{
+
+    public Renderer outer(){
+        return Renderer.create("#innder", "now", new Date());
+    }
+    
+    public Renderer embed(Date now){
+        return Renderer.create("#current-date", now);
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      
+    </sect2>
+    <sect2>
+      <title>Clear an Element</title>
+      <para>On all the rendering methods, if the specified value is null, the target element will be removed. And there is also
+      an enumeration value of SpecialRenderer.Clear which can be used to declare a remove operation for an element too.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+//if the String value is null, the target element will be removed
+String txt = null;
+Renderer.create("#someId", txt);
+]]>
+        </programlisting>
+        <programlisting language="java">
+<![CDATA[
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear
+
+Renderer.create("#someId", Clear);
+]]>
+        </programlisting>
+      </example>
+      <remark>Note that on the attribute rendering methods, if null value or SpecialRenderer.Clear are specified, as we mentioned in
+      the previous section, the target attribute will be removed and the target element will remain.</remark>
+    </sect2>
+    <sect2>
+      <title>Render raw Element</title>
+      <para>An existing DOM element can be replaced by a new element by specifying the new element as the rendering value. The new element
+      can be generated by DOM APIs or simply parsed from raw html source.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+Renderer renderer = Renderer.create();
+
+Element ul = new Element(Tag.valueOf("ul"), "");
+List<Node> lis = new ArrayList<>();
+ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(1)"));
+ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(2)"));
+ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(3)"));
+
+renderer.add("#someId", ul);
+
+String html = "<a href=\"https://github.com/astamuse/asta4d\">asta4d hp</a>";
+renderer.add("#hp-link", ElementUtil.parseAsSingle(html));
+
+]]>
+        </programlisting>
+      </example>
+      
+      <para>There are several utility methods in ElementUtil that can help you operate DOM easier.</para>
+      <remark>ElementUtil#parseAsSingle would cause potential cross-site issues, so take care of it and make sure that you have escaped
+      all the raw html source correctly. Since Asta4D has provided plenty of rendering methods, you should try your best to avoid
+      create element from raw html source. If you have to do something on raw element level, your first option should be DOM APIs
+      and parsing raw html source should be your last alternative.</remark>
+    </sect2>
+    <sect2>
+      <title>Arbitrary rendering for an Element</title>
+      <para>Sometimes you will want to access the rendering target on raw element level and Asta4D allow you access the rendering
+      target element by the interface of ElementSetter. ElementSetter asks the implementation of a callback method "set(Element elem)".
+      As a matter of fact, the text rendering and attribute rendering are achieved by built-in implementation of ElementSetter(TextSetter
+      and AttributeSetter).There is also another built-in ElementSetter implementation called ChildReplacer which can replace the children of rendering target
+      by given element.</para>
+      
+      <example><title>source of ChildReplacer</title>
+        <programlisting language="java">
+<![CDATA[
+
+public class ChildReplacer implements ElementSetter {
+
+    private Element newChild;
+
+    /**
+     * Constructor
+     * 
+     * @param newChild
+     *            the new child node
+     */
+    public ChildReplacer(Element newChild) {
+        this.newChild = newChild;
+    }
+
+    @Override
+    public void set(Element elem) {
+        elem.empty();
+        elem.appendChild(newChild);
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      <para>You can regard the built-in TextSetter, AttributeSetter and ChildReplacer as
+      reference implementation in case of you need implement your own ElementSetter. Following example shows how to use ChildReplacer
+      or declare an anonymous class for ElementSetter on rendering.</para>
+      
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+Renderer renderer = Renderer.create();
+
+renderer.add("#someId", new ChildReplacer(ElementUtil.parseAsSingle("<div>aaa</div>")));
+
+renderer.add("#someNode", new ElementSetter(){
+    public void set(Element elem) {
+        if(elem.tagName().equals("div")){
+            elem.addClass("someClass);
+        }
+    }
+});
+
+]]>
+        </programlisting>
+      </example>
+
+      <remark>On element level, you can also parse element by Element#html(String html) method which will also cause potential
+      cross-site issues. As same as the raw element rendering, parsing raw html source should be your last alternative.</remark>
+    </sect2>
+    <sect2>
+      <title>Recursive rendering</title>
+      <para>For a snippet method, the returned Renderer will be applied to the target element which declares the current snippet method.
+      In the returned Renderer chain, you can also specify recursive Renderer which is only applied to the element specified by given
+      CSS selector.</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+Renderer.create("#someId", Renderer.create("a", "href", "https://github.com/astamuse/asta4d"));
+]]>
+        </programlisting>
+      </example>
+    </sect2>
+    <sect2>
+      <title>Debug renderer</title>
+      <para>Because the Renderer is applied after your snippet method finished, it is difficult to debug if there is something wrong. Asta4D
+      affords rendering debug function too. There are two overloaded debug method, one accepts a log message only and another accepts a log
+      message and a selector. The debug renderer will output the current status of rendering target element to log file, if the selector is
+      not specified, the whole rendering target of current snippet method will be output, if the selector is specified, only the matched child
+      elements will be output. Log level can be configured by "com.astamuse.asta4d.render.DebugRenderer".</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+//the whole target rendering target will be output before and after
+
+renderer.addDebugger("before render value");
+
+renderer.add("#someId", value);
+
+renderer.addDebugger("after render value");
+
+
+//only the a tag element will be output before and after
+
+renderer.addDebugger("before render value for link", "a");
+
+renderer.add("a", "href", url);
+
+renderer.addDebugger("after render value for link", "a");
+
+]]>
+        </programlisting>
+        <remark>If you specified a selector on debugger but do not get any output, it usually means you specified wrong selector or the target
+        element has been removed by previous rendering or outer snippet rendering.</remark>
+      </example>
+    </sect2>
+    <sect2>
+      <title>Missing selector warning</title>
+      <para>If your specified selector on rendering method cannot match any element, Asta4D will output a warning message to log as <remark>"There is no element 
+      found for selector [#someId] at [ com.astamuse.asta4d.test.render.RenderingTest$TestRender.classAttrSetting(RenderingTest.java:73) ], if it is 
+      deserved, try Renderer#disableMissingSelectorWarning() to disable this message and Renderer#enableMissingSelectorWarning could enable this 
+      warning again in your renderer chain"</remark>.</para>
+      <para>Note that the place where the missing selector declared is output to log too, which is disabled by default since it is expensive on production
+      environment. You can enable the source row number output by Configuration#setSaveCallstackInfoOnRendererCreation.</para>
+      <para>Sometimes, the missing selector may be designed by your logic, you can disable the warning message on your rendering chain temporarily as
+      following:</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+renderer.disableMissingSelectorWarning();
+
+renderer.add("#notExistsId", "abc");
+
+renderer.enableMissingSelectorWarning();
+]]>
+        </programlisting>
+      </example>
+    </sect2>
+    <sect2>
+      <title>List rendering</title>
+      <para>Asta4D does not only allow you to rendering single value to an element, but also allow you to duplicate elements by list data, which is
+      usually used to perform list rendering. java.lang.Iterable of String/Integer/Long/Boolean can be rendered directly as text rendering:</para>
+      
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+Renderer renderer = Renderer.create();
+
+renderer.add("#strList", Arrays.asList("a", "b", "c"));
+
+renderer.add("#intList", Arrays.asList(1, 2, 3));
+
+renderer.add("#longList", Arrays.asList(1L, 2L, 3L));
+
+renderer.add("#boolList", Arrays.asList(true, false, true));
+
+]]>
+        </programlisting>
+      </example>
+      <para>On list rendering, the matched element will be duplicated times as the size of the list and the value will be rendered to each duplicated element. You
+      can also perform complex rendering for arbitrary list data by RowConvertor:</para>
+      
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+render.add("#someIdForRenderer", Arrays.asList(123, 456, 789), new RowConvertor<Integer, Renderer>() {
+    @Override
+    public Renderer convert(int rowIndex, Integer obj) {
+        return Renderer.create("#id", "id-" + obj).add("#otherId", "otherId-" + obj);
+    }
+});
+
+]]>
+        </programlisting>
+      </example>
+      <para>Since we will return Renderer in most cases, the RowConvertor can be replaced by RowRenderer which can omit the type
+      declaration of Renderer:</para>
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+render.add("#someIdForRenderer", Arrays.asList(123, 456, 789), new RowRenderer<Integer>() {
+    @Override
+    public Renderer convert(int rowIndex, Integer obj) {
+        return Renderer.create("#id", "id-" + obj).add("#otherId", "otherId-" + obj);
+    }
+});
+
+]]>
+        </programlisting>
+      </example>
+      <para>The returned Renderer by RowConvertor/RowRenderer will be applied to each duplicated element by the given list data.</para>
+      
+      <para>On list rendering, the rendering method accepts java.lang.Iterable rather than java.util.List, which afford more flexibilities to
+      developers. Note that if the given iterable is empty, the target element will be duplicated 0 times, which means the target element
+      will be removed.</para>
+      
+      <para>Asta4D also afford parallel list rendering for you, simply use ParallelRowConvertor/ParallelRowRenderer instead of
+      RowConvertor/RowRenderer:</para>
+      
+      <example>
+        <programlisting language="java">
+<![CDATA[
+
+render.add("#someIdForRenderer", Arrays.asList(123, 456, 789), new ParallelRowRenderer<Integer>() {
+    @Override
+    public Renderer convert(int rowIndex, Integer obj) {
+        return Renderer.create("#id", "id-" + obj).add("#otherId", "otherId-" + obj);
+    }
+});
+
+]]>
+        </programlisting>
+      </example>
+      
+      <para>The parallel list rendering ability is provided by an utility class called ListConvertUtil which basically provides various
+      transform methods for list data conversion like the map function in Scala/Java8. <remark>For Java8, lambda and stream api support will
+      be added in future.</remark></para>
+      
+      <para>The ListConvertUtil uses a thread pool to perform parallel transforming, the size of pool can be configured by
+      Configuration#listExecutorFactory#setPoolSize. There is also an import configuration of ParallelRecursivePolicy. When perform the parallel
+      list transforming recursively, thread dead lock would potentially occur, so you have to choose a policy to handle this case:</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>EXCEPTION</para>
+          <para>When recursive parallel list transforming is identified, throw an RuntimeException.</para>
+        </listitem>
+        <listitem>
+          <para>CURRENT_THREAD</para>
+          <para>When recursive parallel list transforming is identified, the child transforming will be performed in the same thread of
+          parent transforming without picking up an usable thread from pool.</para>
+        </listitem>
+        <listitem>
+          <para>NEW_THREAD</para>
+          <para>When recursive parallel list transforming is identified, the child transforming will be performed in a newly generated
+          thread out of the configured thread pool, the generated thread will be finished immediately after the child transforming
+          finished.</para>
+        </listitem>
+      </itemizedlist>
+      
+      <para>We recommend EXCEPTION or CURRENT_THREAD and the default is EXCEPTION.</para>
+      
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Other things about snippet class</title>
+    <itemizedlist>
+      <listitem>
+        <para>Nested snippet</para>
+      </listitem>
+      <listitem>
+        <para>InitializableSnippet</para>
+      </listitem>
+      <listitem>
+        <para>SnippetInterceptor</para>
+      </listitem>
+      <listitem>
+        <para>ContextBindData</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <title>Customization</title>
+    <itemizedlist>
+      <listitem>
+        <para>SnippetExtractor</para>
+      </listitem>
+      <listitem>
+        <para>SnippetResolver</para>
+      </listitem>
+      <listitem>
+        <para>SnippetInvoker</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
 </chapter>

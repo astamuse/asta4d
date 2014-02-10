@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.test.render;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.extnode.EmbedNode;
@@ -38,6 +40,10 @@ public class AdvancedSnippetTest extends BaseTest {
 
         public Renderer nestedSnippet_inner(String value) {
             return Renderer.create("#pv", value);
+        }
+
+        public Renderer deletedNestedSnippet_outer() {
+            return Renderer.create("#inner", Clear);
         }
 
         public Renderer nestedEmbed(String value) {
@@ -63,6 +69,10 @@ public class AdvancedSnippetTest extends BaseTest {
     }
 
     public AdvancedSnippetTest() {
+    }
+
+    public void testDeletedNestedSnippet() {
+        new SimpleCase("AdvancedSnippet_deletedNestedSnippet.html");
     }
 
     public void testNestedSnippet() {

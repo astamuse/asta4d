@@ -9,6 +9,11 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <bookinfo>
     <title>Asta4D Framework User Guide</title>
+    <keywordset>
+      <keyword>java</keyword>
+      <keyword>view first</keyword>
+      <keyword>framework</keyword>
+    </keywordset>
 
     <productname>Asta4D Framework</productname>
 

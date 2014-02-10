@@ -56,10 +56,10 @@ public class RenderingTest extends BaseTest {
             Renderer renderer = new GoThroughRenderer();
             renderer.add("#testadd", "+v", "2");
             renderer.add("#testaddexisted", "+v", "2");
-            renderer.add("#testremovebynull", "v", null);
+            renderer.add("#testremovebynull", "v", (Object) null);
             renderer.add("#testremovebyClear", "v", Clear);
             renderer.add("#testremovebyminus", "-v", "");
-            renderer.add("#testremovebyaddnull", "+v", null);
+            renderer.add("#testremovebyaddnull", "+v", (Object) null);
             renderer.add("#testremovebyaddClear", "+v", Clear);
             renderer.add("#testset", "v", "2");
             return renderer;
@@ -69,10 +69,10 @@ public class RenderingTest extends BaseTest {
             Renderer renderer = new GoThroughRenderer();
             renderer.add("#testadd", "class", "a");
             renderer.add("#testaddexisted", "+class", "b");
-            renderer.add("#testremovebynull", "class", null);
+            renderer.add("#testremovebynull", "class", (Object) null);
             renderer.add(".xabc", "should not be rendered");
             renderer.add("#testremovebyminus", "-class", "b");
-            renderer.add("#testremovebyaddnull", "+class", null);
+            renderer.add("#testremovebyaddnull", "+class", (Object) null);
             renderer.add("#testset", "class", "b");
             return renderer;
         }

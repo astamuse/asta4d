@@ -128,14 +128,14 @@
     </section>
 
     <section>
-      <title>Parameterized embeding</title>
+      <title>Parametrized embeding</title>
       
       <para>
       Extra parameters can be passed to the target embeded file by specifying the DOM attribute of "afd:embed" when we
       are embeding files.
       </para>
       
-      <example><title>Sample of parameterized embeding:</title>
+      <example><title>Sample of parametrized embeding:</title>
       <programlisting language="xml">
 <![CDATA[
 <afd:embed target="/xxx/showList.html" limit="30"></afd:embed>

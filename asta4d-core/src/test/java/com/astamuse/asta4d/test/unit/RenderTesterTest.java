@@ -175,7 +175,7 @@ public class RenderTesterTest extends BaseTest {
         render.add("#id", "+class", "xxx");
 
         render.add("#id", "value", "hg");
-        render.add("#id", "href", null);
+        render.add("#id", "href", (Object) null);
 
         render.add("#X", "value", new Date(123456L));
 
