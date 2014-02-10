@@ -144,7 +144,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.1.31               \
+        -DarchetypeVersion=0.14.2.10               \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -205,6 +205,12 @@ Want to do:
 
     
 ## Release Notes
+-   0.14.2.10
+    
+    FIX
+    - deprecated reverse injection(it is not necessary and should be removed in future)
+    - NullPointerException on removed nested snippet declared by "afd:render"
+
 -   0.14.1.31
     
     ADD
