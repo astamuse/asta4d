@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Component;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
@@ -342,6 +343,20 @@ public class Renderer {
      */
     public Renderer add(String selector, Element elem) {
         return add(create(selector, elem));
+    }
+
+    /**
+     * Create a renderer for {@link Component} rendering by given parameter and add it to the current renderer. See
+     * {@link #create(String, Component)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param component
+     *            a component that to be rendered
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Component component) {
+        return add(create(selector, component));
     }
 
     /**
@@ -681,6 +696,25 @@ public class Renderer {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementTransformer(elem));
+        }
+    }
+
+    /**
+     * Create a renderer for {@link Component} rendering by given parameter.
+     * <p>
+     * The target element specified by the selector will be completely replaced by the result of given {@link Component#toElement()}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param component
+     *            a component that to be rendered
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Component component) {
+        if (treatNullAsRemoveNode && component == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new ElementTransformer(component.toElement()));
         }
     }
 

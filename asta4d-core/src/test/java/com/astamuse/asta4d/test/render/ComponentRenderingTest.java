@@ -33,7 +33,7 @@ public class ComponentRenderingTest extends BaseTest {
                     this.add("value", ctype);
                 }
 
-            }).toElement());
+            }));
         }
     }
 
