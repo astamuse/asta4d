@@ -134,9 +134,11 @@ The name of Asta4D is from our company's name: astamuse. We explain the "4D" as 
 
 ## Quick start
 
-[Online Sample](http://asta4d-sample.xzer.cloudbees.net/)
+[User Guide](http://astamuse.github.io/asta4d/userguide/index.html)(English, being updated at irregular intervals)
 
 [JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
+
+[Online Sample](http://asta4d-sample.xzer.cloudbees.net/)
 
 There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
 
@@ -165,7 +167,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Additionally, there is an on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is updated at irregular intervals. There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and there is something changed from it had been written.
+There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and something has changed from when it was written.
 
 ## Best practices
 
