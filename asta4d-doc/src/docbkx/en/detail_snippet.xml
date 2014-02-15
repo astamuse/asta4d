@@ -818,11 +818,9 @@ public Renderer render(final String ctype) throws Exception {
       <para>Further, Component also has a "toHtml" method which will return the html source of the component rendering result.
       This method can be used by ajax request to acquire a dynamically rendered component.</para>
     </sect2>
+
     <sect2>
       <title>SnippetInterceptor</title>
-    </sect2>
-    <sect2>
-      <title>ContextBindData</title>
     </sect2>
     <sect2>
       <title>SnippetExtractor</title>
@@ -834,4 +832,4 @@ public Renderer render(final String ctype) throws Exception {
       <title>SnippetInvoker</title>
     </sect2>
   </sect1>
-</chapter>
+</chapter> 
