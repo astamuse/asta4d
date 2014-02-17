@@ -240,11 +240,117 @@ public class PageSnippet {
     <title>Injection</title>
     <sect2>
       <title>@ContextData</title>
+      <para>All fields annotated by @ContextData in a snippet class will be initialized/injected automatically when the snippet class instance is initialized.
+      Further, even the method parameters of snippet rendering method and request handle method are automatically injected, you can still customize the injection
+      by extra @ContextData annotation.</para>
+      
+      <para>Note that there are something different between field injection and method parameter injection. The fields of snippet class without @ContextData will 
+      not be injected, but method parameters will be always injected even without @ContextData.</para>
+      
+      <variablelist>
+        <title>Available configurations of @ContextData:</title>
+        <varlistentry>
+          <term>name</term>
+          <listitem>
+            <para>The name of saved data in context. If it is not specified, the field name or parameter name will be used(This requires that you reverse the parameter names
+            when compile).
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>scope</term>
+          <listitem>
+            <para>The scope of saved data in context. If it is no specified, Asta4D will try to search the data in all the scopes by a predefined order:</para>
+              <orderedlist>
+                <listitem>
+                  <para>element attribute(SCOPE_ATTR)</para>
+                </listitem>
+                <listitem>
+                  <para>path var(SCOPE_PATHVAR)</para>
+                </listitem>
+                <listitem>
+                  <para>query parameter(SCOPE_QUERYPARAM)</para>
+                </listitem>
+                <listitem>
+                  <para>flash(SCOPE_FLASH)</para>
+                </listitem>
+                <listitem>
+                  <para>cookie(SCOPE_COOKIE)</para>
+                </listitem>
+                <listitem>
+                  <para>hearder(SCOPE_HEADER)</para>
+                </listitem>
+                <listitem>
+                  <para>request/default(SCOPE_REQUEST/SCOPE_DEFAULT)</para>
+                </listitem>
+                <listitem>
+                  <para>session(SCOPE_SESSION)</para>
+                </listitem>
+                <listitem>
+                  <para>global(SCOPE_GLOBAL)</para>
+                </listitem>
+              </orderedlist>
+              <para>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <xref linkend="sect-ContextDataFinder"/></para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      
     </sect2>
     <sect2>
       <title>@ContextDataSet</title>
+      <para>A pojo class annotated by @ContextDataSet will be treated as a variable holder. If the type of a snippet class field or a method parameter is a class annotated by
+      @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
+      @ContextData will be injected as same as the snippet class field injection. @ContextDataSet can be used to allocate all of the form data into one single instance as a
+      convenience.</para>
+      
+      <example>
+      <programlisting language="java">
+<![CDATA[
+@ContextDataSet
+public static class MySet {
+
+    @ContextData
+    private long f1;
+
+    @ContextData
+    private String f2;
+
+    public long getF1() {
+        return f1;
+    }
+    
+    public String getF2() {
+        return f2;
+    }
+}
+
+public static class MySnippet {
+
+    public void render(MySet holder) {
+    }
+
+}
+
+public static class MySnippet2 {
+
+    @ContextData
+    private MySet holder;
+
+    public void render() {
+    }
+
+}
+
+
+
+]]>
+      </programlisting>
+      <para>Note that even you declared @ContextDataSet on the class, you still need to declare the @ContextData on the field declaration. For method parameter, it is not necessary
+      since all the parameters are injected automatically. Further, for a declared @ContextDataSet, you still need to declare @ContextData on every field you want to be injected.</para>
+      </example>
+      
     </sect2>
-    <sect2>
+    <sect2 id="sect-ContextDataFinder">
       <title>ContextDataFinder</title>
     </sect2>
     <sect2>
