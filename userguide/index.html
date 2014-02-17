@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, framework"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
       , <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
-    </div></div><div><p class="releaseinfo">Version: 0.14.2.10</p></div><div><p class="pubdate">Last update at: 2014-02-16 01:05</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e756">8.2. Other things about snippet and rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e796">9.1. Context</a></span></dt><dt><span class="sect1"><a href="#d5e886">9.2. Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e903">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e905">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e907">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e909">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e913">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e915">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e917">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e919">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e929">15.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e932">15.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-02-17 12:49</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e756">8.2. Other things about snippet and rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e796">9.1. Context</a></span></dt><dt><span class="sect1"><a href="#d5e886">9.2. Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e940">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e942">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e944">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e946">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e950">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e952">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e954">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e956">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e966">15.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e969">15.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
   
 
   
@@ -2264,21 +2264,107 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     </div>
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e886"></a>9.2.&nbsp;Injection</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e888">9.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e890">9.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#d5e892">9.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e894">9.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e896">9.2.5. ContextDataHolder</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e886"></a>9.2.&nbsp;Injection</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e888">9.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e923">9.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">9.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e931">9.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e933">9.2.5. ContextDataHolder</a></span></dt></dl></div>
     
     <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e888"></a>9.2.1.&nbsp;@ContextData</h3></div></div></div>
       
-    </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e890"></a>9.2.2.&nbsp;@ContextDataSet</h3></div></div></div>
+      <p>All fields annotated by @ContextData in a snippet class will be initialized/injected automatically when the snippet class instance is initialized.
+      Further, even the method parameters of snippet rendering method and request handle method are automatically injected, you can still customize the injection
+      by extra @ContextData annotation.</p>
+      
+      <p>Note that there are something different between field injection and method parameter injection. The fields of snippet class without @ContextData will 
+      not be injected, but method parameters will be always injected even without @ContextData.</p>
+      
+      <div class="variablelist"><p class="title"><b>Available configurations of @ContextData:</b></p><dl class="variablelist"><dt><span class="term">name</span></dt><dd>
+            <p>The name of saved data in context. If it is not specified, the field name or parameter name will be used(This requires that you reverse the parameter names
+            when compile).
+            </p>
+          </dd><dt><span class="term">scope</span></dt><dd>
+            <p>The scope of saved data in context. If it is no specified, Asta4D will try to search the data in all the scopes by a predefined order:</p>
+              <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                  <p>element attribute(SCOPE_ATTR)</p>
+                </li><li class="listitem">
+                  <p>path var(SCOPE_PATHVAR)</p>
+                </li><li class="listitem">
+                  <p>query parameter(SCOPE_QUERYPARAM)</p>
+                </li><li class="listitem">
+                  <p>flash(SCOPE_FLASH)</p>
+                </li><li class="listitem">
+                  <p>cookie(SCOPE_COOKIE)</p>
+                </li><li class="listitem">
+                  <p>hearder(SCOPE_HEADER)</p>
+                </li><li class="listitem">
+                  <p>request/default(SCOPE_REQUEST/SCOPE_DEFAULT)</p>
+                </li><li class="listitem">
+                  <p>session(SCOPE_SESSION)</p>
+                </li><li class="listitem">
+                  <p>global(SCOPE_GLOBAL)</p>
+                </li></ol></div>
+              <p>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <a class="xref" href="#sect-ContextDataFinder" title="9.2.3.&nbsp;ContextDataFinder">Section&nbsp;9.2.3, &#8220;ContextDataFinder&#8221;</a></p>
+          </dd></dl></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e892"></a>9.2.3.&nbsp;ContextDataFinder</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e923"></a>9.2.2.&nbsp;@ContextDataSet</h3></div></div></div>
+      
+      <p>A pojo class annotated by @ContextDataSet will be treated as a variable holder. If the type of a snippet class field or a method parameter is a class annotated by
+      @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
+      @ContextData will be injected as same as the snippet class field injection. @ContextDataSet can be used to allocate all of the form data into one single instance as a
+      convenience.</p>
+      
+      <div class="example"><a name="d5e926"></a><p class="title"><b>Example&nbsp;9.6.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@ContextDataSet</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> MySet {
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> <span class="hl-keyword">long</span> f1;
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> String f2;
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">long</span> getF1() {
+        <span class="hl-keyword">return</span> f1;
+    }
+    
+    <span class="hl-keyword">public</span> String getF2() {
+        <span class="hl-keyword">return</span> f2;
+    }
+}
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> MySnippet {
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> render(MySet holder) {
+    }
+
+}
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> MySnippet2 {
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> MySet holder;
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> render() {
+    }
+
+}
+
+
+
+
+      </pre>
+      <p>Note that even you declared @ContextDataSet on the class, you still need to declare the @ContextData on the field declaration. For method parameter, it is not necessary
+      since all the parameters are injected automatically. Further, for a declared @ContextDataSet, you still need to declare @ContextData on every field you want to be injected.</p>
+      </div></div><br class="example-break">
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e894"></a>9.2.4.&nbsp;DataConvertor</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="sect-ContextDataFinder"></a>9.2.3.&nbsp;ContextDataFinder</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e896"></a>9.2.5.&nbsp;ContextDataHolder</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e931"></a>9.2.4.&nbsp;DataConvertor</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e933"></a>9.2.5.&nbsp;ContextDataHolder</h3></div></div></div>
       
     </div>
   </div>
@@ -2292,19 +2378,19 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>11.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e903"></a>11.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e940"></a>11.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e905"></a>11.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e942"></a>11.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e907"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e944"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e909"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e946"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -2312,19 +2398,19 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e913"></a>12.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e950"></a>12.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e915"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e952"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e917"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e954"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e919"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e956"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
@@ -2344,12 +2430,12 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>15.&nbsp;Integration with Spring</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e929"></a>15.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e966"></a>15.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
     
     <p>...</p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e932"></a>15.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e969"></a>15.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
     
     <p>...</p>
   </div>
