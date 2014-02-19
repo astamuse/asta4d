@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, framework"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
       , <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
-    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-02-17 12:49</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e756">8.2. Other things about snippet and rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e796">9.1. Context</a></span></dt><dt><span class="sect1"><a href="#d5e886">9.2. Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e940">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e942">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e944">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e946">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e950">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e952">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e954">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e956">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e966">15.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e969">15.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-02-20 00:08</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e756">8.2. Other things about snippet and rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">9. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e796">9.1. Context</a></span></dt><dt><span class="sect1"><a href="#d5e886">9.2. Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">10. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e967">10.1. Rule apis</a></span></dt><dt><span class="sect1"><a href="#d5e976">10.2. Request handler chain</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">11. Request Handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e984">11.1. Implementation</a></span></dt><dt><span class="section"><a href="#d5e986">11.2. Content provider</a></span></dt><dt><span class="section"><a href="#d5e988">11.3. Request handler chain</a></span></dt><dt><span class="section"><a href="#d5e990">11.4. Request Interceptor</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">12. Extended request handler usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e994">12.1. Restful</a></span></dt><dt><span class="section"><a href="#d5e996">12.2. Handle static resouce files and generic path mapping</a></span></dt><dt><span class="section"><a href="#d5e998">12.3. Normalize http request</a></span></dt><dt><span class="section"><a href="#d5e1000">12.4. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">13. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">14. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">15. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e1010">15.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e1013">15.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
   
 
   
@@ -1429,7 +1429,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-snippet"></a>8.&nbsp;Details of snippet class</h2></div></div></div>
   
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e482"></a>8.1.&nbsp;Rendering APIs</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e486">8.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#d5e502">8.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="#d5e638">8.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e646">8.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e683">8.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e690">8.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e697">8.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e707">8.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e712">8.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e718">8.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e726">8.1.11. List rendering</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e482"></a>8.1.&nbsp;Rendering APIs</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e486">8.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#css selector">8.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="#d5e638">8.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e646">8.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e683">8.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e690">8.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e697">8.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e707">8.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e712">8.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e718">8.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e726">8.1.11. List rendering</a></span></dt></dl></div>
     
     <p>Asta4D provides various rendering APIs to help developers render value to the page. By those APIs, developer can render
     text under a DOM element, set the attribute value for a DOM element, also can convert a list data to a list of DOM element,
@@ -1503,7 +1503,7 @@ Renderer renderer = Renderer.create();
       <p>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
       cases. You can also read the Java doc of Renderer for more details.</p>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e502"></a>8.1.2.&nbsp;CSS Selector</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="css selector"></a>8.1.2.&nbsp;CSS Selector</h3></div></div></div>
       
       <p>Asta4D is using a modified version of <a class="ulink" href="http://jsoup.org/" target="_top">jsoup library</a> to afford CSS selector function.
       Currently, we support the following selectors:
@@ -2264,7 +2264,7 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     </div>
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e886"></a>9.2.&nbsp;Injection</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e888">9.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e923">9.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">9.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e931">9.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e933">9.2.5. ContextDataHolder</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e886"></a>9.2.&nbsp;Injection</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e888">9.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e936">9.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">9.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e961">9.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e963">9.2.5. ContextDataHolder</a></span></dt></dl></div>
     
     <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e888"></a>9.2.1.&nbsp;@ContextData</h3></div></div></div>
       
@@ -2303,15 +2303,31 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
               <p>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <a class="xref" href="#sect-ContextDataFinder" title="9.2.3.&nbsp;ContextDataFinder">Section&nbsp;9.2.3, &#8220;ContextDataFinder&#8221;</a></p>
           </dd></dl></div>
       
+      <p>There are several scope specified annotations can be used as convenience.</p>
+      
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>@SessionData</p>
+        </li><li class="listitem">
+          <p>@QueryParam</p>
+        </li><li class="listitem">
+          <p>@PathVar</p>
+        </li><li class="listitem">
+          <p>@HeaderData</p>
+        </li><li class="listitem">
+          <p>@CookieData</p>
+        </li></ul></div>
+      
+      <p class="remark"><em><span class="remark">Currently, the convenient annotations cannot be configured with variable name. More flexible configuration will be supported in future version.</span></em></p>
+
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e923"></a>9.2.2.&nbsp;@ContextDataSet</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e936"></a>9.2.2.&nbsp;@ContextDataSet</h3></div></div></div>
       
       <p>A pojo class annotated by @ContextDataSet will be treated as a variable holder. If the type of a snippet class field or a method parameter is a class annotated by
       @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
       @ContextData will be injected as same as the snippet class field injection. @ContextDataSet can be used to allocate all of the form data into one single instance as a
       convenience.</p>
       
-      <div class="example"><a name="d5e926"></a><p class="title"><b>Example&nbsp;9.6.&nbsp;</b></p><div class="example-contents">
+      <div class="example"><a name="d5e939"></a><p class="title"><b>Example&nbsp;9.6.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <em><span class="hl-annotation" style="color: gray">@ContextDataSet</span></em>
@@ -2360,11 +2376,34 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     </div>
     <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="sect-ContextDataFinder"></a>9.2.3.&nbsp;ContextDataFinder</h3></div></div></div>
       
-    </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e931"></a>9.2.4.&nbsp;DataConvertor</h3></div></div></div>
+      <p>Asta4D search data in context by pre configured ContextDataFinder implementation. The default implementation is WebApplicationContextDataFinder. You can supply your own
+      search mechanism by implementing the ContextDataFinder interface or extending from WebApplicationContextDataFinder. WebApplicationContextDataFinder defines the scope search
+      order if scope is not specified, and also returns some special data by hard coding type check:</p>
+      
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>Context/WebApplicationContext</p>
+        </li><li class="listitem">
+          <p>ResourceBundleHelper</p>
+        </li><li class="listitem">
+          <p>ParamMapResourceBundleHelper</p>
+        </li><li class="listitem">
+          <p>HttpServletRequest</p>
+        </li><li class="listitem">
+          <p>HttpServletResponse</p>
+        </li><li class="listitem">
+          <p>ServletContext</p>
+        </li><li class="listitem">
+          <p>UrlMappingRule</p>
+        </li></ul></div>
+      
+      <p>The first 3 types are afforded by the parent class of WebApplicationContextDataFinder: DefaultContextDataFinder. To supply your own logic, you can override the 
+      findDataInContext method and the WebApplicationContextDataFinder's source can be treated as reference implementation.</p>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e933"></a>9.2.5.&nbsp;ContextDataHolder</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e961"></a>9.2.4.&nbsp;DataConvertor</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e963"></a>9.2.5.&nbsp;ContextDataHolder</h3></div></div></div>
       
     </div>
   </div>
@@ -2372,25 +2411,51 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>10.&nbsp;URL rule</h2></div></div></div>
   
   
-  <p>...</p>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e967"></a>10.1.&nbsp;Rule apis</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e969">10.1.1. UrlMappingRuleInitializer</a></span></dt><dt><span class="sect2"><a href="#d5e974">10.1.2. UrlMappingRule and handy rules</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e969"></a>10.1.1.&nbsp;UrlMappingRuleInitializer</h3></div></div></div>
+      
+      <p>All the url mapping rules can be supplied by implementing the UrlMappingRuleInitializer interface which can be configured by 
+      WebApplicationConfiguration#setUrlMappingRuleInitializer.</p>
+      
+      <p>UrlMappingRuleInitializer's initUrlMappingRules method does not return configured rules directly, it supply a UrlMappingRuleHelper
+      instance by parameter instead. The UrlMappingRuleHelper afford a group of methods to help developers build url mapping rules.</p>
+      
+      <p>UrlMappingRuleHelper allows add new rule by add methods, which will be discussed in next section, let us see the global configuration
+      methods of UrlMappingRuleHelper at first.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e974"></a>10.1.2.&nbsp;UrlMappingRule and handy rules</h3></div></div></div>
+      
+    </div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e976"></a>10.2.&nbsp;Request handler chain</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e978">10.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e980">10.2.2. Request handler chain</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e978"></a>10.2.1.&nbsp;Content provider</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e980"></a>10.2.2.&nbsp;Request handler chain</h3></div></div></div>
+      
+    </div>
+  </div>
 
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>11.&nbsp;Request Handler</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e940"></a>11.1&nbsp;Implementation</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e984"></a>11.1&nbsp;Implementation</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e942"></a>11.2&nbsp;Content provider</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e986"></a>11.2&nbsp;Content provider</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e944"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e988"></a>11.3&nbsp;Request handler chain</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e946"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e990"></a>11.4&nbsp;Request Interceptor</h2></div></div></div>
   
   </div>
   
@@ -2398,19 +2463,19 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>12.&nbsp;Extended request handler usage</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e950"></a>12.1&nbsp;Restful</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e994"></a>12.1&nbsp;Restful</h2></div></div></div>
   
   </div>
 
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e952"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e996"></a>12.2&nbsp;Handle static resouce files and generic path mapping</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e954"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e998"></a>12.3&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e956"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1000"></a>12.4&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
@@ -2430,12 +2495,12 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>15.&nbsp;Integration with Spring</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e966"></a>15.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1010"></a>15.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
     
     <p>...</p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e969"></a>15.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1013"></a>15.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
     
     <p>...</p>
   </div>
