@@ -9,6 +9,32 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>URL rule</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Rule apis</title>
+    <sect2>
+      <title>UrlMappingRuleInitializer</title>
+      <para>All the url mapping rules can be supplied by implementing the UrlMappingRuleInitializer interface which can be configured by 
+      WebApplicationConfiguration#setUrlMappingRuleInitializer.</para>
+      
+      <para>UrlMappingRuleInitializer's initUrlMappingRules method does not return configured rules directly, it supply a UrlMappingRuleHelper
+      instance by parameter instead. The UrlMappingRuleHelper afford a group of methods to help developers build url mapping rules.</para>
+      
+      <para>UrlMappingRuleHelper allows add new rule by add methods, which will be discussed in next section, let us see the global configuration
+      methods of UrlMappingRuleHelper at first.</para>
+    </sect2>
+    <sect2>
+      <title>UrlMappingRule and handy rules</title>
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Request handler chain</title>
+    <sect2>
+      <title>Content provider</title>
+    </sect2>
+    <sect2>
+      <title>Request handler chain</title>
+    </sect2>
+  </sect1>
 
 </chapter>

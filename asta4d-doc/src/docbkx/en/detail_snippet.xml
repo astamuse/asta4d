@@ -83,7 +83,7 @@ Renderer renderer = Renderer.create();
       <para>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
       cases. You can also read the Java doc of Renderer for more details.</para>
     </sect2>
-    <sect2>
+    <sect2 id="css selector">
       <title>CSS Selector</title>
       <para>Asta4D is using a modified version of <ulink url="http://jsoup.org/">jsoup library</ulink> to afford CSS selector function.
       Currently, we support the following selectors:

@@ -295,6 +295,28 @@ public class PageSnippet {
         </varlistentry>
       </variablelist>
       
+      <para>There are several scope specified annotations can be used as convenience.</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>@SessionData</para>
+        </listitem>
+        <listitem>
+          <para>@QueryParam</para>
+        </listitem>
+        <listitem>
+          <para>@PathVar</para>
+        </listitem>
+        <listitem>
+          <para>@HeaderData</para>
+        </listitem>
+        <listitem>
+          <para>@CookieData</para>
+        </listitem>
+      </itemizedlist>
+      
+      <remark>Currently, the convenient annotations cannot be configured with variable name. More flexible configuration will be supported in future version.</remark>
+
     </sect2>
     <sect2>
       <title>@ContextDataSet</title>
@@ -352,6 +374,37 @@ public static class MySnippet2 {
     </sect2>
     <sect2 id="sect-ContextDataFinder">
       <title>ContextDataFinder</title>
+      <para>Asta4D search data in context by pre configured ContextDataFinder implementation. The default implementation is WebApplicationContextDataFinder. You can supply your own
+      search mechanism by implementing the ContextDataFinder interface or extending from WebApplicationContextDataFinder. WebApplicationContextDataFinder defines the scope search
+      order if scope is not specified, and also returns some special data by hard coding type check:</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>Context/WebApplicationContext</para>
+        </listitem>
+        <listitem>
+          <para>ResourceBundleHelper</para>
+        </listitem>
+        <listitem>
+          <para>ParamMapResourceBundleHelper</para>
+        </listitem>
+        <listitem>
+          <para>HttpServletRequest</para>
+        </listitem>
+        <listitem>
+          <para>HttpServletResponse</para>
+        </listitem>
+        <listitem>
+          <para>ServletContext</para>
+        </listitem>
+        <listitem>
+          <para>UrlMappingRule</para>
+        </listitem>
+      </itemizedlist>
+      
+      <para>The first 3 types are afforded by the parent class of WebApplicationContextDataFinder: DefaultContextDataFinder. To supply your own logic, you can override the 
+      findDataInContext method and the WebApplicationContextDataFinder's source can be treated as reference implementation.</para>
+      
     </sect2>
     <sect2>
       <title>DataConvertor</title>
