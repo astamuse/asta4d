@@ -19,20 +19,58 @@ package com.astamuse.asta4d.web.util.redirect;
 
 import static com.astamuse.asta4d.web.WebApplicationContext.SCOPE_FLASH;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.net.util.Base64;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.util.IdGenerator;
 
 public class RedirectUtil {
+
+    private final static SecureRandom sr;
+    static {
+        // use the last 32 bit of current time as the seed
+        ByteBuffer bb = ByteBuffer.allocate(64);
+        bb.putLong(System.nanoTime());
+        byte[] bytes = bb.array();
+        byte[] seed = new byte[4];
+        System.arraycopy(bytes, 4, seed, 0, 4);
+        sr = new SecureRandom(seed);
+    }
+
     public static final String KEY_FLASH_SCOPE_ID = "flash_scope_id";
+
+    private static String createEncryptedFlashScopeId() {
+        try {
+            String flashScopeId = IdGenerator.createId();
+
+            byte[] idBytes = flashScopeId.getBytes();
+            ByteBuffer bb = ByteBuffer.allocate(idBytes.length + 4);
+            bb.put(idBytes);
+
+            // add random salt
+            bb.putInt(sr.nextInt());
+
+            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
+            return Base64.encodeBase64URLSafeString(crypt.digest(bb.array()));
+
+        } catch (NoSuchAlgorithmException e) {
+            // impossible
+            throw new RuntimeException(e);
+        }
+    }
 
     public static String setFlashScopeData(String url, Map<String, Object> flashScopeData) {
         if (flashScopeData == null || flashScopeData.isEmpty()) {
             return url;
         }
-        String flashScopeId = IdGenerator.createId();
+        String flashScopeId = createEncryptedFlashScopeId();
         FlashScopeDataManager.getInstance().put(flashScopeId, flashScopeData);
         if (url.contains("?")) {
             return url + '&' + KEY_FLASH_SCOPE_ID + '=' + flashScopeId;
