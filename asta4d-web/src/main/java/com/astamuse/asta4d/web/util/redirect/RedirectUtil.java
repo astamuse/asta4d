@@ -17,19 +17,20 @@
 
 package com.astamuse.asta4d.web.util.redirect;
 
-import static com.astamuse.asta4d.web.WebApplicationContext.SCOPE_FLASH;
-
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.util.Base64;
 
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.util.IdGenerator;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
 public class RedirectUtil {
 
@@ -44,7 +45,8 @@ public class RedirectUtil {
         sr = new SecureRandom(seed);
     }
 
-    public static final String KEY_FLASH_SCOPE_ID = "flash_scope_id";
+    private static final String KEY_FLASH_SCOPE_ID = WebApplicationConfiguration.getWebApplicationConfiguration()
+            .getFlashScopeForwardParameterName();
 
     private static String createEncryptedFlashScopeId() {
         try {
@@ -74,16 +76,20 @@ public class RedirectUtil {
         FlashScopeDataManager.getInstance().put(flashScopeId, flashScopeData);
         if (url.contains("?")) {
             return url + '&' + KEY_FLASH_SCOPE_ID + '=' + flashScopeId;
+        } else {
+            return url + '?' + KEY_FLASH_SCOPE_ID + '=' + flashScopeId;
         }
-        return url + '?' + KEY_FLASH_SCOPE_ID + '=' + flashScopeId;
     }
 
-    public static void getFlashScopeData(String flashScopeId) {
-        Context context = Context.getCurrentThreadContext();
-        Map<String, Object> flashScopeData = FlashScopeDataManager.getInstance().get(flashScopeId);
-        for (Entry<String, Object> entry : flashScopeData.entrySet()) {
-            context.setData(SCOPE_FLASH, entry.getKey(), entry.getValue());
+    public static Map<String, Object> retrieveFlashScopeData(HttpServletRequest request) {
+
+        String flashScopeId = request.getParameter(RedirectUtil.KEY_FLASH_SCOPE_ID);
+        if (StringUtils.isEmpty(flashScopeId)) {
+            return Collections.emptyMap();
+        } else {
+            return FlashScopeDataManager.getInstance().get(flashScopeId);
         }
+
     }
 
 }
