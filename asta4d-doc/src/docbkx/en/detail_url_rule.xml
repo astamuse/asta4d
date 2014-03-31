@@ -104,6 +104,136 @@
           </para>
           <sbr/>
         </listitem>
+        <listitem>
+          <para>id(String id)</para>
+          <sbr/>
+          <para>One added rule can be identified by a unique id.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>reMapTo(String ruleId)</para>
+          <sbr/>
+          <para>Multi url patterns can be mapped to the same rule by reMapTo method. See following sample:
+          </para>
+          <example><title>Retrieve an instance of WebApplicationContext by static method</title>
+          <programlisting language="java">
+<![CDATA[
+    rules.add("/app/", "/templates/index.html").id("index-page");
+    
+    rules.add("/app/index").reMapTo("index-page");
+    
+    rules.add("/app/handler").id("app-handler")
+         .handler(LoginHandler.class)
+         .handler(EchoHandler.class)
+         .forward(LoginFailure.class, "/templates/error.html")
+         .forward("/templates/success.html");
+    
+    rules.add("/app/ex-handler").reMapTo("app-handler").attribute("ex-handler");
+        
+]]>
+          </programlisting>
+          <para>In above sample, "/app/index" will be treated as same as the rule identified as "index-page" which sourc path is "/app/". Aslo the "/app/ex-handler"
+          will be configured as same as "/app/handler" with its special attribute configuration "ex-handler". Special path variable and priority can be configured to
+          remapped rules as well.</para>
+          </example>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>attribute(String attribute)</para>
+          <sbr/>
+          <para>Multi attributes can be configured to a rule. The attributes can be used by global rule configurations to add certain extra operations on certain urls
+          which is attributed by certain attribute.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>var(String key, Object value)</para>
+          <sbr/>
+          <para>Static path variables can be configured by this method, that can be accessed by context's path var scope and also can be automatically injected to snippets
+          or request handlers.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>handler(Object... handlerList)</para>
+          <sbr/>
+          <para>Request handlers can be configured by this methods. Multi request handlers are acceptable and the details about multi request handlers will be explained in
+          later section.</para>
+          <para>The parameter of handler method can be arbitrary type: an instance of java.lang.Class or an arbitrary instance.  The framework explains received parameters by
+          the implementation of DeclareInstanceResolver configured by WebApplicationConfiguration. The default implementation provided by framework follows the following rules
+          to explain the declaration of request handler:</para>
+            <orderedlist>
+              <listitem>
+                <para>If an instance of java.lang.Class is specified, the instance of request handler will be created by invoke "newInstance()"
+                on the specified Class.</para>
+              </listitem>
+              <listitem>
+                <para>If a string is specified, the string will be treated as a class name and an instance of java.lang.Class will be created by 
+                calling "Class#forName", then the instance of request handler will be created by invoke "newInstance()" on the created Class.</para>
+              </listitem>
+              <listitem>
+                <para>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
+                it is interesting that we can declare an anonymous class as a request handler:</para>
+                <example>
+                  <programlisting language="java">
+<![CDATA[
+rules.add("/app/handler")  
+     .handler(new Object(){  
+        @RequestHandler  
+        public void handle(){  
+            //  
+        }  
+     }); 
+]]>
+                  </programlisting>
+                </example>
+              </listitem>
+            </orderedlist>
+            <remark>The asta4d-spring package also provides a resolver based on Spring IOC container, the request handler instance will be retrieved by
+            passing the specified parameter to the "Context#getBean" method of spring container. See details of integration of Spring IOC.</remark>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>forward(String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>forward(String targetPath, int status)</para>
+        </listitem>
+        <listitem>
+          <para>forward(Object result, String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>forward(Object result, String targetPath, int status)</para>
+          <sbr/>
+          <para>
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>redirect(String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>redirect(Object result, String targetPath)</para>
+          <sbr/>
+          <para>
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>json()</para>
+          <sbr/>
+          <para>
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>rest()</para>
+          <sbr/>
+          <para>
+          </para>
+          <sbr/>
+        </listitem>
       </itemizedlist>
     </sect2>
   </sect1>
