@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, framework"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
       , <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
-    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-03-30 21:12</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e756">8.2. Other things about snippet and rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-var-injection">9. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e796">9.1. Context</a></span></dt><dt><span class="sect1"><a href="#d5e886">9.2. Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-url-rule">10. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e967">10.1. Rule apis</a></span></dt><dt><span class="sect1"><a href="#d5e1026">10.2. Request handler result process</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-adv-request-handler">11. Advanced usage of request handler</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1036">11.1. Restful and ajax</a></span></dt><dt><span class="sect1"><a href="#d5e1038">11.2. Handle static resouce files</a></span></dt><dt><span class="sect1"><a href="#d5e1040">11.3. Handle generic path template files</a></span></dt><dt><span class="sect1"><a href="#d5e1042">11.4. Normalize http request</a></span></dt><dt><span class="sect1"><a href="#d5e1044">11.5. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">12. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">13. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">14. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e1054">14.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e1057">14.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-03-31 23:16</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e63">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e83">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e107">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e117">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e140">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e158">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e161">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e172">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e180">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e187">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e234">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e239">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e243">5.3. Isolate side effect and multi thread rendering</a></span></dt><dt><span class="section"><a href="#d5e253">5.4. Compatibility to MVC</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e261">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e267">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e296">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e310">6.4. Global forward/redirect</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">7. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e335">7.1. Supported tags</a></span></dt><dt><span class="sect1"><a href="#d5e436">7.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">8. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e482">8.1. Rendering APIs</a></span></dt><dt><span class="sect1"><a href="#d5e756">8.2. Other things about snippet and rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-var-injection">9. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e796">9.1. Context</a></span></dt><dt><span class="sect1"><a href="#d5e886">9.2. Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-url-rule">10. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e967">10.1. Rule apis</a></span></dt><dt><span class="sect1"><a href="#d5e1094">10.2. Request handler result process</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-adv-request-handler">11. Advanced usage of request handler</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1104">11.1. Restful and ajax</a></span></dt><dt><span class="sect1"><a href="#d5e1106">11.2. Handle static resouce files</a></span></dt><dt><span class="sect1"><a href="#d5e1108">11.3. Handle generic path template files</a></span></dt><dt><span class="sect1"><a href="#d5e1110">11.4. Normalize http request</a></span></dt><dt><span class="sect1"><a href="#d5e1112">11.5. As MVC's Controller</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">12. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">13. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">14. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e1122">14.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e1125">14.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
   
 
   
@@ -2489,19 +2489,132 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
           with prefix "redirect:", the part after prefix "redirect:" follows the convention of redirect string format introduced in global redirect configuration.
           </p>
           <br>
+        </li><li class="listitem">
+          <p>id(String id)</p>
+          <br>
+          <p>One added rule can be identified by a unique id.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>reMapTo(String ruleId)</p>
+          <br>
+          <p>Multi url patterns can be mapped to the same rule by reMapTo method. See following sample:
+          </p>
+          <div class="example"><a name="d5e1035"></a><p class="title"><b>Example&nbsp;10.1.&nbsp;Retrieve an instance of WebApplicationContext by static method</b></p><div class="example-contents">
+          <pre class="programlisting">
+
+    rules.add(<span class="hl-string">"/app/"</span>, <span class="hl-string">"/templates/index.html"</span>).id(<span class="hl-string">"index-page"</span>);
+    
+    rules.add(<span class="hl-string">"/app/index"</span>).reMapTo(<span class="hl-string">"index-page"</span>);
+    
+    rules.add(<span class="hl-string">"/app/handler"</span>).id(<span class="hl-string">"app-handler"</span>)
+         .handler(LoginHandler.<span class="hl-keyword">class</span>)
+         .handler(EchoHandler.<span class="hl-keyword">class</span>)
+         .forward(LoginFailure.<span class="hl-keyword">class</span>, <span class="hl-string">"/templates/error.html"</span>)
+         .forward(<span class="hl-string">"/templates/success.html"</span>);
+    
+    rules.add(<span class="hl-string">"/app/ex-handler"</span>).reMapTo(<span class="hl-string">"app-handler"</span>).attribute(<span class="hl-string">"ex-handler"</span>);
+        
+
+          </pre>
+          <p>In above sample, "/app/index" will be treated as same as the rule identified as "index-page" which sourc path is "/app/". Aslo the "/app/ex-handler"
+          will be configured as same as "/app/handler" with its special attribute configuration "ex-handler". Special path variable and priority can be configured to
+          remapped rules as well.</p>
+          </div></div><br class="example-break">
+          <br>
+        </li><li class="listitem">
+          <p>attribute(String attribute)</p>
+          <br>
+          <p>Multi attributes can be configured to a rule. The attributes can be used by global rule configurations to add certain extra operations on certain urls
+          which is attributed by certain attribute.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>var(String key, Object value)</p>
+          <br>
+          <p>Static path variables can be configured by this method, that can be accessed by context's path var scope and also can be automatically injected to snippets
+          or request handlers.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>handler(Object... handlerList)</p>
+          <br>
+          <p>Request handlers can be configured by this methods. Multi request handlers are acceptable and the details about multi request handlers will be explained in
+          later section.</p>
+          <p>The parameter of handler method can be arbitrary type: an instance of java.lang.Class or an arbitrary instance.  The framework explains received parameters by
+          the implementation of DeclareInstanceResolver configured by WebApplicationConfiguration. The default implementation provided by framework follows the following rules
+          to explain the declaration of request handler:</p>
+            <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                <p>If an instance of java.lang.Class is specified, the instance of request handler will be created by invoke "newInstance()"
+                on the specified Class.</p>
+              </li><li class="listitem">
+                <p>If a string is specified, the string will be treated as a class name and an instance of java.lang.Class will be created by 
+                calling "Class#forName", then the instance of request handler will be created by invoke "newInstance()" on the created Class.</p>
+              </li><li class="listitem">
+                <p>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
+                it is interesting that we can declare an anonymous class as a request handler:</p>
+                <div class="example"><a name="d5e1062"></a><p class="title"><b>Example&nbsp;10.2.&nbsp;</b></p><div class="example-contents">
+                  <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/handler"</span>)  
+     .handler(<span class="hl-keyword">new</span> Object(){  
+        <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>  
+        <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> handle(){  
+            <span class="hl-comment">//  </span>
+        }  
+     }); 
+
+                  </pre>
+                </div></div><br class="example-break">
+              </li></ol></div>
+            <p class="remark"><em><span class="remark">The asta4d-spring package also provides a resolver based on Spring IOC container, the request handler instance will be retrieved by
+            passing the specified parameter to the "Context#getBean" method of spring container. See details of integration of Spring IOC.</span></em></p>
+          <br>
+        </li><li class="listitem">
+          <p>forward(String targetPath)</p>
+        </li><li class="listitem">
+          <p>forward(String targetPath, int status)</p>
+        </li><li class="listitem">
+          <p>forward(Object result, String targetPath)</p>
+        </li><li class="listitem">
+          <p>forward(Object result, String targetPath, int status)</p>
+          <br>
+          <p>
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>redirect(String targetPath)</p>
+        </li><li class="listitem">
+          <p>redirect(Object result, String targetPath)</p>
+          <br>
+          <p>
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>json()</p>
+          <br>
+          <p>
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>rest()</p>
+          <br>
+          <p>
+          </p>
+          <br>
         </li></ul></div>
     </div>
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1026"></a>10.2.&nbsp;Request handler result process</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e1028">10.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e1030">10.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="#d5e1032">10.2.3. Request handler chain</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1094"></a>10.2.&nbsp;Request handler result process</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#d5e1096">10.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e1098">10.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="#d5e1100">10.2.3. Request handler chain</a></span></dt></dl></div>
     
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1028"></a>10.2.1.&nbsp;Content provider</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1096"></a>10.2.1.&nbsp;Content provider</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1030"></a>10.2.2.&nbsp;Result transforming</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1098"></a>10.2.2.&nbsp;Result transforming</h3></div></div></div>
       
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1032"></a>10.2.3.&nbsp;Request handler chain</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1100"></a>10.2.3.&nbsp;Request handler chain</h3></div></div></div>
       
     </div>
   </div>
@@ -2510,23 +2623,23 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-adv-request-handler"></a>11.&nbsp;Advanced usage of request handler</h2></div></div></div>
   
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1036"></a>11.1.&nbsp;Restful and ajax</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1104"></a>11.1.&nbsp;Restful and ajax</h2></div></div></div>
   
   </div>
 
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1038"></a>11.2.&nbsp;Handle static resouce files</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1106"></a>11.2.&nbsp;Handle static resouce files</h2></div></div></div>
   
   </div>
 
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1040"></a>11.3.&nbsp;Handle generic path template files</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1108"></a>11.3.&nbsp;Handle generic path template files</h2></div></div></div>
   
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1042"></a>11.4.&nbsp;Normalize http request</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1110"></a>11.4.&nbsp;Normalize http request</h2></div></div></div>
   
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1044"></a>11.5.&nbsp;As MVC's Controller</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1112"></a>11.5.&nbsp;As MVC's Controller</h2></div></div></div>
   
   </div>
 
@@ -2546,12 +2659,12 @@ Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span cl
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>14.&nbsp;Integration with Spring</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1054"></a>14.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1122"></a>14.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
     
     <p>...</p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1057"></a>14.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1125"></a>14.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
     
     <p>...</p>
   </div>
