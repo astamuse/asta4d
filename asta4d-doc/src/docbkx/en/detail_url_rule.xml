@@ -206,7 +206,8 @@ rules.add("/app/handler")
         <listitem>
           <para>forward(Object result, String targetPath, int status)</para>
           <sbr/>
-          <para>
+          <para>The request will be forwarded to the target template file with specified status code. The result parameter will be used to match the result from 
+          request handler(if there is any request handler configured for current rule).About result matching, see details in next section.
           </para>
           <sbr/>
         </listitem>
@@ -216,21 +217,23 @@ rules.add("/app/handler")
         <listitem>
           <para>redirect(Object result, String targetPath)</para>
           <sbr/>
-          <para>
+          <para>As the same as forward, the request will be redirected(301/302) to the target path. The target path string follows the convention  of redirect string 
+          format introduced in global redirect configuration.
           </para>
           <sbr/>
         </listitem>
         <listitem>
           <para>json()</para>
           <sbr/>
-          <para>
+          <para>The result of request handler will be converted to a json string and be returned the client with MIME type "application/json".
           </para>
           <sbr/>
         </listitem>
         <listitem>
           <para>rest()</para>
           <sbr/>
-          <para>
+          <para>This method does nothing for the current url but declared as a comment that suggests the current rule will act as a restful api and will return customized
+          response which would be head only response in many cases.
           </para>
           <sbr/>
         </listitem>
@@ -240,6 +243,8 @@ rules.add("/app/handler")
   
   <sect1>
     <title>Request handler result process</title>
+    <para>This section will describe some internal mechanism of how asta4d handle the result from a request handler. Especially for the part of result transforming, which is not
+    necessary for normal development but can help you understand how the request handler chain works.</para>
     <sect2>
       <title>Content provider</title>
     </sect2>
