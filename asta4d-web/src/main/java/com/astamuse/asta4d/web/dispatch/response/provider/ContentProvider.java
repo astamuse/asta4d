@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
-public interface ContentProvider<T> {
+public interface ContentProvider {
 
     public boolean isContinuable();
 

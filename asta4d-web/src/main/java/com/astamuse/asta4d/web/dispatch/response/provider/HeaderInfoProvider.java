@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
-public class HeaderInfoProvider implements ContentProvider<Object> {
+public class HeaderInfoProvider implements ContentProvider {
 
     private HashMap<String, String> headerMap;
 

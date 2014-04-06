@@ -24,6 +24,6 @@ import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 
 public interface RequestHandlerInvoker {
 
-    public List<ContentProvider<?>> invoke(UrlMappingRule rule) throws Exception;
+    public List<ContentProvider> invoke(UrlMappingRule rule) throws Exception;
 
 }

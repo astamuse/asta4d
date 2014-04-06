@@ -91,8 +91,8 @@ public class RequestDispatcher {
         writePathVarToContext(context, rule.getExtraVarMap());
         restoreFlashScopeData(context, request);
 
-        List<ContentProvider<?>> requestResult = handleRequest(rule);
-        for (ContentProvider<?> cp : requestResult) {
+        List<ContentProvider> requestResult = handleRequest(rule);
+        for (ContentProvider cp : requestResult) {
             cp.produce(rule, response);
         }
     }
@@ -103,13 +103,13 @@ public class RequestDispatcher {
      * @return ContentProvider
      * @throws Exception
      */
-    private List<ContentProvider<?>> handleRequest(UrlMappingRule currentRule) throws Exception {
+    private List<ContentProvider> handleRequest(UrlMappingRule currentRule) throws Exception {
         Context context = Context.getCurrentThreadContext();
         RequestHandlerInvokerFactory factory = WebApplicationConfiguration.getWebApplicationConfiguration()
                 .getRequestHandlerInvokerFactory();
         RequestHandlerInvoker invoker = factory.getInvoker();
 
-        List<ContentProvider<?>> cpList = invoker.invoke(currentRule);
+        List<ContentProvider> cpList = invoker.invoke(currentRule);
         context.setData(KEY_REQUEST_HANDLER_RESULT, cpList);
 
         return cpList;

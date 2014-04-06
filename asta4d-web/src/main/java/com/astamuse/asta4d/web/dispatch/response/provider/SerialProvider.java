@@ -25,30 +25,30 @@ import javax.servlet.http.HttpServletResponse;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 @SuppressWarnings("rawtypes")
-public class SerialProvider implements ContentProvider<Object> {
+public class SerialProvider implements ContentProvider {
 
-    private List<ContentProvider<?>> contentProviderList = new ArrayList<>();
+    private List<ContentProvider> contentProviderList = new ArrayList<>();
 
     public SerialProvider() {
     }
 
-    public SerialProvider(ContentProvider<?>... contentProviders) {
-        for (ContentProvider<?> contentProvider : contentProviders) {
+    public SerialProvider(ContentProvider... contentProviders) {
+        for (ContentProvider contentProvider : contentProviders) {
             contentProviderList.add(contentProvider);
         }
     }
 
-    public SerialProvider(List<ContentProvider<?>> contentProviders) {
+    public SerialProvider(List<ContentProvider> contentProviders) {
         contentProviderList.addAll(contentProviders);
     }
 
-    public List<ContentProvider<?>> getContentProviderList() {
+    public List<ContentProvider> getContentProviderList() {
         return contentProviderList;
     }
 
     @Override
     public boolean isContinuable() {
-        for (ContentProvider<?> cp : contentProviderList) {
+        for (ContentProvider cp : contentProviderList) {
             if (!cp.isContinuable()) {
                 return false;
             }
@@ -58,7 +58,7 @@ public class SerialProvider implements ContentProvider<Object> {
 
     @Override
     public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
-        for (ContentProvider<?> cp : contentProviderList) {
+        for (ContentProvider cp : contentProviderList) {
             cp.produce(currentRule, response);
         }
     }

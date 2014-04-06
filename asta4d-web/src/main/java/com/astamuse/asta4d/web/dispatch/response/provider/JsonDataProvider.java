@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.util.data.JsonUtil;
 
-public class JsonDataProvider implements ContentProvider<Object> {
+public class JsonDataProvider implements ContentProvider {
 
     private Object data;
 
