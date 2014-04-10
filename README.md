@@ -11,7 +11,7 @@ productivity. But unfortunately, we are still suffering from the following situa
 
 1. The designers or front-end engineers are keeping complaining the mixed-in dynamic code, as they disturb their efforts of redesigning the page style or structure. And in the mean time, the back-end developers are also complaining that the front-end guys break the working page frequently,  because redesign or the new design is hard to merge due to the huge cost of source refactoring. 
 1. The developers are complaining about the poor functionalities of template language which they are using and tired from the various magic skills for complex rendering logic.
-1. The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient approach like traditional PHP/ASP development.
+1. The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient approach.
 
 Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse.com](http://astamuse.com)
 
@@ -95,25 +95,45 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     Asta4D is, by nature, immune from cross-site(XSS/CSRF) problems. You do not need to take care of cross-site any more. All the rendered value would be escaped by default and your clients have no chance to put malicious contents to your server.
 
-1. View first without controller
+1. View first
     
     Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier to change than MVC architecture.
 
-    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
+    A controller is not necessary for request dispatch. All the requests cound be dispatched by a sort of predefined URL matching rules and could be forwarded to template files directly, which is called as view first.
     
     ```java
     rules.add("/app/", "/templates/index.html");
-    
-    rules.add("/app/handler")
-         .handler(LoginHandler.class)
-         .handler(EchoHandler.class)
-         .forward(LoginFailure.class, "/templates/error.html")
-         .forward("/templates/success.html");
     ```
 
 1. Isolate side effect with request handler
     
     Asta4D imports the conception of "side-effect" from functional programming languages and separating the "side-effect" by request handlers, which afford more flexibility on page rendering because the view layer is side-effect free now. Therefore Asta4D allows parallel page rendering in multiple threads as a built-in feature.
+
+	[See details about side effect](http://astamuse.github.io/asta4d/userguide/#chapter-side-effect)
+
+1. Advanced MVC
+	
+	Asta4D also affords a evolved MVC architecture which is more clarified for the duty of each application layer than the traditional MVC architecture.
+
+	By traditional MVC architecture, we often have to expand the transaction from the controller layer across to the view layer to combat the lazy load issue, which ugly structure is essentially caused by the tangled controller which holds various unrelated duties.
+  
+	It is also strange that we have to modify our controller's implementation at every time we change the page appearance at view layer. Such situation could not satisfy us since the layers are not uncoupled really.
+  
+	We would say that the traditional controller is indeed a tangled magic container for most logics, a controller will unfortunately be coupled to most layers in the system even our initial purpose of MVC is to uncouple our logics. By contrast, Asta4D allows developers to really uncouple all the tangled logics easily. Basically we could split the traditional controller's duty to following parts:
+	
+	-	request handler
+      
+		Which takes the responsibilities of all the operations with side-effect.
+
+	-	result matching in url rule
+
+		Which dispatches the request to different views according to the result from request handler
+
+	-	snippet class
+
+		Which has the responsibility to render data to the page and also holds the obligation of preparing all the necessary data for page rendering.
+
+	By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.
 
 ## What does "Asta4D" means
 
