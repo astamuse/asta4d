@@ -9,28 +9,27 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Advanced usage of request handler</title>
   
+  <para>This chapter is to show how you can make advanced usage of request handler on various situations.</para>
+  
   <sect1 id="advanced-mvc">
   <title>Advanced MVC architecture</title>
-  <para>Even we emphasized that Asta4D is a view first framework, we still admit that MVC architecture is more convenient 
-  than view first for some certain cases, for instance, when we are handling form submission, the MVC structure is required
-  naturally. By Asta4D, you can simply handle this case by implement the request handler as a controller.</para>
-  
-  <para>Further, we would say that Asta4D affords an advanced MVC architecture than traditional MVC frameworks.</para>
+  <para>Even we emphasize that Asta4D is a view first framework, it is still compatible with MVC architecture. Further, we would say that 
+  Asta4D affords an advanced MVC architecture than traditional MVC frameworks by the view first mechanism.</para>
   
   <para>In the MVC theory, a controller would act as multi roles in a full request process, from wikipedia, it says: <remark>"A controller 
   can send commands to the model to update the model's state (e.g., editing a document). It can also send commands to its associated 
   view to change the view's presentation of the model (e.g., by scrolling through a document)."</remark> But those are not all in most
   situations, we usually have to do more things in a controller such as querying additional assistant data for page rendering.</para>
   
-  <para>We would say that the traditional controller is indeed a tangled magic container for most logics, a controller will unfortunately
-  be coupled to most layers in the system even our initial purpose of MVC is to uncouple our logics. Take a consideration about how hard
-  we grapple with the lazy load issues in view layer by expanding transaction from the controller across to the view, the tangled controller is 
-  the reason of why we have to do such ugly thing. Take a consideration about we have to modify our controller's implementation at every
-  time we changed the page appearance at view layer, does it strange that since we have introduced MVC architecture to uncouple our layers
-  but we still have to cope with the view's changes in controller layer?</para>
+  <para>By traditional MVC architecture, we often have to expand the transaction from the controller layer across to the view layer to combat
+  the lazy load issue, which ugly structure is essentially caused by the tangled controller which holds various unrelated duties.</para> 
   
-  <para>By Asta4D, developers can really uncouple all the tangled logics easily.Basically we would split the traditional controller's duty
-  to following parts:</para>
+  <para>It is also strange that we have to modify our controller's implementation at every time we change the page appearance at view layer.
+  Such situation could not satisfy us since the layers are not uncoupled really.</para>
+  
+  <para>We would say that the traditional controller is indeed a tangled magic container for most logics, a controller will unfortunately
+  be coupled to most layers in the system even our initial purpose of MVC is to uncouple our logics. By contrast, Asta4D allows developers
+  to really uncouple all the tangled logics easily. Basically we could split the traditional controller's duty to following parts:</para>
   <itemizedlist>
     <listitem>
       <para>request handler</para>
@@ -47,8 +46,84 @@
     </listitem>
   </itemizedlist>
   
-  <para>From above architecture, we can simply clarify the responsibility of each layer and can also perfectly uncoupling our logics.</para>
+  <para>By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.</para>
+  
+  <remark>Need sample source ...</remark>
 
+  </sect1>
+  
+  
+  
+  <sect1>
+  <title>Normalize page url patterns</title>
+  <para>Commonly, we would probably have multiple path patterns for the same template file but we would hope our snippet implementation 
+  could deal with a unified pattern, which can be simply achieved by a request handler.</para>
+  
+  <example>
+    <title>Normalize page url</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.add("/user/name/{name}").id("user-page")
+
+rules.add("/user/{id}").id("user-page")
+     .handler(new Object(){
+        @RequestHandler
+        public void preparePage(Context context, Integer id, String name){
+            User user = null;
+            if(id != null){
+                user = queryUserById(id);
+            }else if (name != null){
+                user = queryUserByName(name);
+            }
+            if(user != null){
+                //in the snippet class, a @ContextData annotation can by use to retrieve this value by injection
+                context.setData("user-page-condition", user);
+            }
+        }
+     }).forward("/user-page.html");
+]]>
+    </programlisting>
+    <remark>Somebody would argue that the above example is apparently a traditional MVC architecture, that is right or wrong. For the most simple situation, if 
+    the snippet class will only show the data from entity class User without any extra query, it is true that the above source shows a traditional MVC architecture.
+    But for the most situations, the page rendering would require more additional queries, which would be done at the snippet side. Such structure is so far from the
+    traditional MVC that we would rather to call it as view first.</remark>
+  </example>
+  
+  <para>In the above example, we do not cope with the case of user does not exist. The following source shows how we can cope with such situation: </para>
+  
+  <example>
+    <title>Normalize page url and PageNotFoundException</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.addGlobalForward(PageNotFoundException.class, "/template/PageNotFound.html", 404);
+rules.addGlobalForward(Throwable.class, "/template/UnknownError.html", 500);
+
+rules.add("/user/name/{name}").id("user-page")
+
+rules.add("/user/{id}").id("user-page")
+     .handler(new Object(){
+        @RequestHandler
+        public void preparePage(Context context, Integer id, String name){
+            User user = null;
+            if(id != null){
+                user = queryUserById(id);
+            }else if (name != null){
+                user = queryUserByName(name);
+            }
+            if(user == null){
+                throw new PageNotFoundException();
+            }else
+                //in the snippet class, a @ContextData annotation can by use to retrieve this value by injection
+                context.setData("user-page-condition", user);
+            }
+        }
+     }).forward("/user-page.html");
+]]>
+    </programlisting>
+  </example>
+  
   </sect1>
   
   <sect1>
@@ -180,9 +255,9 @@ rules.add("/favicon.ico").handler(new StaticResourceHandler(/img/favicon.ico));
     </programlisting>
   </example>
   
-  <para>The wild-card "/**/*" in source path is necessary if you want to mapping all the urls with same path prefix to a certain folder. The base path
+  <para>The wild-card "/**/*" in source path is necessary if you want to mapping all the urls with same path prefix to a certain base folder. The base path
   parameter in constructor of StaticResourceHandler is not necessary. if the base path is not specified, StaticResourceHandler will treat the part before
-  the wild-card "/**/*" as base path.
+  the wild-card "/**/*" in source path as the base path.
   </para>
   <para>StaticResourceHandler can be customized by path var configuration or overriding some protected methods by extending. See details in javadoc of 
   StaticResourceHandler.</para>
@@ -209,7 +284,7 @@ rules.add("/js/**/*").handler(new StaticResourceHandler(){
 
 ]]>
     </programlisting>
-    <para>Note that it is not necessary to specify content type for most situations because StaticResourceHandler will decide 
+    <para>Note that it is not necessary to specify content type for most situations because StaticResourceHandler will guess 
     the content type by file name extension automatically.</para>
   </example>
   
@@ -217,10 +292,21 @@ rules.add("/js/**/*").handler(new StaticResourceHandler(){
 
   <sect1>
   <title>Handle generic path template files</title>
+  <para>Basically Asta4D asks developers to declare the matching relationship between url and template file one by one, but it still allows
+  to declare a generic path matching for all files in same folder, which can be achieved by GenericPathTemplateHandler.</para>
   </sect1>
-  
-  <sect1>
-  <title>Normalize http request</title>
-  </sect1>
+
+  <example>
+    <title>handler template files in bulk</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.add("/pages/**/*").handler(GenericPathTemplateHandler.class);
+
+]]>
+    </programlisting>
+    <para>As same as the StaticResourceHandler, the wild-card "/**/*" is necessary and the base path parameter of constructor can be ignored.</para>
+  </example>
+
 
 </chapter>
