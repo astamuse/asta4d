@@ -94,6 +94,7 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
             <locale>en_US</locale>
+            <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
           </configuration>
           <version>2.9</version>
           <executions>
