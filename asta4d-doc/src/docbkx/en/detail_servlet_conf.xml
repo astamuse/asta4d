@@ -28,7 +28,7 @@
     <!-- standalone without spring -->
     <servlet>
         <servlet-name>Asta4D Servlet</servlet-name>
-        <servlet-class>com.astamuse.asta4d.sample.Asta4DSampleServlet</servlet-class>
+        <servlet-class>com.astamuse.asta4d.web.servlet.Asta4dServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
