@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, framework"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
       , <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
-    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-04-10 23:17</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e67">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e87">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e111">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e121">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e144">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e162">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e165">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e176">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e184">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e191">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e238">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e243">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e247">5.3. Isolate side effect and multi thread rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e259">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e265">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e294">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e308">6.4. Global forward/redirect</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-adv-request-handler">7. Advanced usage of request handler</a></span></dt><dd><dl><dt><span class="sect1"><a href="#advanced-mvc">7.1. Advanced MVC architecture</a></span></dt><dt><span class="sect1"><a href="#d5e352">7.2. Normalize page url patterns</a></span></dt><dt><span class="sect1"><a href="#d5e363">7.3. Restful and ajax</a></span></dt><dt><span class="sect1"><a href="#d5e382">7.4. Handle static resouce files</a></span></dt><dt><span class="sect1"><a href="#d5e394">7.5. Handle generic path template files</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">8. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e405">8.1. Supported tags</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e408">8.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="#d5e420">8.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="#d5e449">8.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="#d5e463">8.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="#d5e486">8.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="#d5e494">8.1.6. afd:msg</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e506">8.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">9. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e552">9.1. Rendering APIs</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e556">9.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#css selector">9.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="#d5e708">9.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e716">9.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e753">9.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e760">9.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e767">9.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e777">9.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e782">9.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e788">9.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e796">9.1.11. List rendering</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e826">9.2. Other things about snippet and rendering</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e828">9.2.1. Nested snippet</a></span></dt><dt><span class="sect2"><a href="#d5e836">9.2.2. InitializableSnippet</a></span></dt><dt><span class="sect2"><a href="#d5e842">9.2.3. Component rendering</a></span></dt><dt><span class="sect2"><a href="#d5e856">9.2.4. SnippetInterceptor</a></span></dt><dt><span class="sect2"><a href="#d5e858">9.2.5. SnippetExtractor</a></span></dt><dt><span class="sect2"><a href="#d5e860">9.2.6. SnippetResolver</a></span></dt><dt><span class="sect2"><a href="#d5e862">9.2.7. SnippetInvoker</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-var-injection">10. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e866">10.1. Context</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e868">10.1.1. Context/WebApplicationContext</a></span></dt><dt><span class="sect2"><a href="#d5e892">10.1.2. Scope</a></span></dt><dt><span class="sect2"><a href="#d5e947">10.1.3. ContextBindData</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e956">10.2. Injection</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e958">10.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e1006">10.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">10.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e1031">10.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e1033">10.2.5. ContextDataHolder</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-url-rule">11. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1037">11.1. Rule apis</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1039">11.1.1. UrlMappingRuleInitializer</a></span></dt><dt><span class="sect2"><a href="#d5e1081">11.1.2. Handy rules</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e1164">11.2. Request handler result process</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1167">11.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e1169">11.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="#d5e1171">11.2.3. Request handler chain</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">12. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">13. Asta4dServlet and configuration</a></span></dt><dt><span class="chapter"><a href="#overview">14. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e1181">14.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e1184">14.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">Version: 0.14.2.11-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-04-13 19:55</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e67">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e87">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e111">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e121">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e144">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e162">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e165">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e176">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e184">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e191">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e238">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e243">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e247">5.3. Isolate side effect and multi thread rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e259">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e265">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e294">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e308">6.4. Global forward/redirect</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-adv-request-handler">7. Advanced usage of request handler</a></span></dt><dd><dl><dt><span class="sect1"><a href="#advanced-mvc">7.1. Advanced MVC architecture</a></span></dt><dt><span class="sect1"><a href="#d5e352">7.2. Normalize page url patterns</a></span></dt><dt><span class="sect1"><a href="#d5e363">7.3. Restful and ajax</a></span></dt><dt><span class="sect1"><a href="#d5e382">7.4. Handle static resouce files</a></span></dt><dt><span class="sect1"><a href="#d5e394">7.5. Handle generic path template files</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">8. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e405">8.1. Supported tags</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e408">8.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="#d5e420">8.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="#d5e449">8.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="#d5e463">8.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="#d5e486">8.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="#d5e494">8.1.6. afd:msg</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e506">8.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">9. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e552">9.1. Rendering APIs</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e556">9.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#css selector">9.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="#d5e708">9.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e716">9.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e753">9.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e760">9.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e767">9.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e777">9.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e782">9.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e788">9.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e796">9.1.11. List rendering</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e826">9.2. Other things about snippet and rendering</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e828">9.2.1. Nested snippet</a></span></dt><dt><span class="sect2"><a href="#d5e836">9.2.2. InitializableSnippet</a></span></dt><dt><span class="sect2"><a href="#d5e842">9.2.3. Component rendering</a></span></dt><dt><span class="sect2"><a href="#d5e856">9.2.4. SnippetInterceptor</a></span></dt><dt><span class="sect2"><a href="#d5e858">9.2.5. SnippetExtractor</a></span></dt><dt><span class="sect2"><a href="#d5e860">9.2.6. SnippetResolver</a></span></dt><dt><span class="sect2"><a href="#d5e862">9.2.7. SnippetInvoker</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-var-injection">10. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e866">10.1. Context</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e868">10.1.1. Context/WebApplicationContext</a></span></dt><dt><span class="sect2"><a href="#d5e892">10.1.2. Scope</a></span></dt><dt><span class="sect2"><a href="#d5e947">10.1.3. ContextBindData</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e956">10.2. Injection</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e958">10.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e1006">10.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">10.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e1031">10.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e1033">10.2.5. ContextDataHolder</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-url-rule">11. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1037">11.1. Rule apis</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1039">11.1.1. UrlMappingRuleInitializer</a></span></dt><dt><span class="sect2"><a href="#d5e1081">11.1.2. Handy rules</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e1164">11.2. Request handler result process</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1167">11.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e1169">11.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="#d5e1171">11.2.3. Request handler chain</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">12. i18n</a></span></dt><dt><span class="chapter"><a href="#overview">13. Asta4dServlet and configuration</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1178">13.1. Asta4dServlet</a></span></dt><dt><span class="sect1"><a href="#d5e1204">13.2. Configuration file</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">14. Integration with Spring</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e1228">14.1. Integrate with Spring IOC</a></span></dt><dt><span class="section"><a href="#d5e1231">14.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
   
 
   
@@ -2923,18 +2923,180 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>13.&nbsp;Asta4dServlet and configuration</h2></div></div></div>
   
   
-  <p>...</p>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1178"></a>13.1.&nbsp;Asta4dServlet</h2></div></div></div>
+    
+    <p>All the http requests are handled by Asta4dServlet which allows developers to override several methods to customize
+    its actions. The web.xml would be like following:</p>
+    <div class="example"><a name="d5e1181"></a><p class="title"><b>Example&nbsp;13.1.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="hl-tag">&lt;web-app</span> <span class="hl-attribute">version</span>=<span class="hl-value">"2.5"</span> <span class="hl-attribute">xmlns</span>=<span class="hl-value">"http://java.sun.com/xml/ns/javaee"</span>
+    <span class="hl-attribute">xmlns:xsi</span>=<span class="hl-value">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="hl-attribute">xsi:schemaLocation</span>=<span class="hl-value">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span><span class="hl-tag">&gt;</span>
+
+    <span class="hl-comment">&lt;!-- standalone without spring --&gt;</span>
+    <span class="hl-tag">&lt;servlet&gt;</span>
+        <span class="hl-tag">&lt;servlet-name&gt;</span>Asta4D Servlet<span class="hl-tag">&lt;/servlet-name&gt;</span>
+        <span class="hl-tag">&lt;servlet-class&gt;</span>com.astamuse.asta4d.sample.Asta4DSampleServlet<span class="hl-tag">&lt;/servlet-class&gt;</span>
+        <span class="hl-tag">&lt;load-on-startup&gt;</span>1<span class="hl-tag">&lt;/load-on-startup&gt;</span>
+    <span class="hl-tag">&lt;/servlet&gt;</span>
+
+    <span class="hl-tag">&lt;servlet-mapping&gt;</span>
+        <span class="hl-tag">&lt;servlet-name&gt;</span>Asta4D Servlet<span class="hl-tag">&lt;/servlet-name&gt;</span>
+        <span class="hl-tag">&lt;url-pattern&gt;</span>/<span class="hl-tag">&lt;/url-pattern&gt;</span>
+    <span class="hl-tag">&lt;/servlet-mapping&gt;</span>
+<span class="hl-tag">&lt;/web-app&gt;</span>
+
+
+      </pre>
+    </div></div><br class="example-break">
+    
+    <p>The following methods can be overridden:</p>
+    <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+        <p>createConfiguration()</p>
+        <p>Overriding this methods allows developers to configure the framework by code. </p>
+        <div class="example"><a name="d5e1188"></a><p class="title"><b>Example&nbsp;13.2.&nbsp;</b></p><div class="example-contents">
+          <pre class="programlisting">
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> WebApplicationConfiguration createConfiguration() {
+        WebApplicationConfiguration conf = <span class="hl-keyword">super</span>.createConfiguration();
+        
+        conf.setSnippetResolver(<span class="hl-keyword">new</span> DefaultSnippetResolver() {
+
+            <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+            <span class="hl-keyword">protected</span> Object createInstance(String snippetName) <span class="hl-keyword">throws</span> SnippetNotResovlableException {
+                <span class="hl-keyword">return</span> <span class="hl-keyword">super</span>.createInstance(<span class="hl-string">"com.astamuse.asta4d.sample.snippet."</span> + snippetName);
+            }
+
+        });
+        
+        conf.setUrlMappingRuleInitializer(<span class="hl-keyword">new</span> UrlRules());
+        
+        conf.getPageInterceptorList().add(<span class="hl-keyword">new</span> SamplePageInterceptor());
+        
+        <span class="hl-keyword">return</span> conf;
+    }
+
+          </pre>
+        </div></div><br class="example-break">
+      </li><li class="listitem">
+        <p>service()</p>
+        <p>Developers can intercept the http request by overriding this method. The following example shows how to rewrite the access url by adding pre request logic:</p>
+        <div class="example"><a name="d5e1193"></a><p class="title"><b>Example&nbsp;13.3.&nbsp;</b></p><div class="example-contents">
+          <pre class="programlisting">
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> <span class="hl-keyword">void</span> service() <span class="hl-keyword">throws</span> Exception {
+        WebApplicationContext context = Context.getCurrentThreadContext();
+        HttpServletRequest request = context.getRequest();
+        String requestURI = request.getRequestURI();
+        <span class="hl-keyword">if</span> (requestURI.startsWith(<span class="hl-string">"/abc/"</span>)) {
+            context.setAccessURI(requestURI.substring(<span class="hl-number">5</span>));
+        }
+        <span class="hl-keyword">super</span>.service();
+    }
+
+          </pre>
+        </div></div><br class="example-break">
+        <p>Request time measuring can be performed too:</p>
+        <div class="example"><a name="d5e1196"></a><p class="title"><b>Example&nbsp;13.4.&nbsp;</b></p><div class="example-contents">
+          <pre class="programlisting">
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> <span class="hl-keyword">void</span> service() <span class="hl-keyword">throws</span> Exception {
+        <span class="hl-keyword">long</span> startTime = System.currentTimeMillis();
+        <span class="hl-keyword">try</span> {
+            <span class="hl-keyword">super</span>.service();
+        } <span class="hl-keyword">finally</span> {
+            <span class="hl-keyword">long</span> endTime = System.currentTimeMillis();
+            System.out.println(<span class="hl-string">"request time:"</span> + (endTime - startTime));
+        }
+    }
+
+          </pre>
+        </div></div><br class="example-break">
+      </li><li class="listitem">
+        <p>createAsta4dContext()</p>
+        <p>Overriding this methods allows developers to afford customized Context implementation.</p>
+      </li><li class="listitem">
+        <p>createConfigurationInitializer()</p>
+        <p>Overriding this methods allows developers to customize the configuration file initialization logic. See details at next section.</p>
+      </li></ul></div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1204"></a>13.2.&nbsp;Configuration file</h2></div></div></div>
+    
+    <p>In the previous section, we introduced that Asta4D can be configured by overriding createConfiguration() method and we also introduced a method called 
+    createConfigurationInitializer which allows customize the configuration file initialization logic. Asta4D allows to be configured by an extra configuration file
+    which will be analyzed by the created configuration initializer. </p>
+    
+    <p>The default implementation of configuration initializer will seek the configuration file by following order:</p>
+    <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        <p>Calling retrievePossibleConfigurationFileNames(Overridable) to retrieve all possible configuration file names which could be an array of String. The default value
+        is "asta4d.conf.properties" only.</p>
+      </li><li class="listitem">
+        <p>Search all the possible names in classpath by order. The first found one will be used.</p>
+      </li><li class="listitem">
+        <p>If there is no configuration file found in classpath, calling retrieveConfigurationFileNameKey(Overridable) to get a key. The default key is "asta4d.conf".</p>
+      </li><li class="listitem">
+        <p>Retrieve the value of key retrieve in previous step by the order as: ServletConfig, JDNI Context, System properties.</p>
+      </li><li class="listitem">
+        <p>If there is a value found in the previous step, open a file as configuration file by treating the found value as a file path.</p>
+      </li></ol></div>
+    <p>As mentioned above, the two methods of retrievePossibleConfigurationFileNames and retrieveConfigurationFileNameKey can be overridden to customize configuration
+    file name and the file path can be also configured by the key "asta4d.conf" at servlet mapping configuration(ServletConfig), JDNI configuration(JDNI context) or command 
+    line parameter(System properties).</p>
+    
+    <p>Further, the default implementation does only support the format of configuration file as Java standard properties file. All the configured key/value will be treated
+    as setXXX method calling on WebApplicationConfiguration instance. The key can be a dot split string which will be treated as recursive property accessing on 
+    WebApplicationConfiguration instance.</p>
+    <div class="example"><a name="d5e1221"></a><p class="title"><b>Example&nbsp;13.5.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-attribute">urlMappingRuleInitializer</span>=com.astamuse.asta4d.sample.UrlRules
+
+<span class="hl-attribute">cacheEnable</span>=false
+
+<span class="hl-attribute">snippetExecutorFactory.threadName</span>=asta4d-sample-snippet
+<span class="hl-attribute">snippetExecutorFactory.poolSize</span>=100
+
+<span class="hl-attribute">listExecutorFactory.threadName</span>=asta4d-sample-list
+<span class="hl-attribute">listExecutorFactory.poolSize</span>=100
+
+      </pre>
+    </div></div><br class="example-break">
+    <p>The above configuration equals to the following source:</p>
+    <div class="example"><a name="d5e1224"></a><p class="title"><b>Example&nbsp;13.6.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+WebApplicationConfiguration conf = <span class="hl-keyword">super</span>.createConfiguration();
+
+conf.setUrlMappingRuleInitializer(<span class="hl-keyword">new</span> UrlRules());
+
+conf.setCacheEnable(false);
+
+((DefaultExecutorServiceFactory) conf.getSnippetExecutorFactory()).setThreadName(<span class="hl-string">"asta4d-sample-snippet"</span>);
+((DefaultExecutorServiceFactory) conf.getSnippetExecutorFactory()).setPoolSize(<span class="hl-number">100</span>);
+
+((DefaultExecutorServiceFactory) conf.getListExecutorFactory()).setThreadName(<span class="hl-string">"asta4d-sample-list"</span>);
+((DefaultExecutorServiceFactory) conf.getListExecutorFactory()).setPoolSize(<span class="hl-number">100</span>);
+
+      </pre>
+    </div></div><br class="example-break">
+  </div>
   
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>14.&nbsp;Integration with Spring</h2></div></div></div>
   
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1181"></a>14.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1228"></a>14.1&nbsp;Integrate with Spring IOC</h2></div></div></div>
     
     <p>...</p>
   </div>
   
-  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1184"></a>14.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1231"></a>14.2&nbsp;Integrate with Spring MVC</h2></div></div></div>
     
     <p>...</p>
   </div>
