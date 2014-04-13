@@ -98,10 +98,11 @@
           <version>2.9</version>
           <executions>
             <execution>
-              <id>attach-sources</id>
+              <id>create-java-doc</id>
               <phase>verify</phase>
               <goals>
                 <goal>jar</goal>
+                <goal>aggregate-jar</goal>
               </goals>
             </execution>
           </executions>          
