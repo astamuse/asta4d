@@ -187,7 +187,7 @@ conf.setCacheEnable(false);
       </programlisting>
     </example>
     
-    <para>All the configurable items can be found at <ulink url="http://astamuse.github.io/asta4d/javadoc/&javadocversion;/asta4d-web/com/astamuse/asta4d/web/WebApplicationConfiguration.html">JavaDoc</ulink>.</para>
+    <para>All the configurable items can be found at <ulink url="http://astamuse.github.io/asta4d/javadoc/&javadocversion;/com/astamuse/asta4d/web/WebApplicationConfiguration.html">JavaDoc</ulink>.</para>
   </sect1>
   
 </chapter>
