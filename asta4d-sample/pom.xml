@@ -18,7 +18,7 @@
     <dependencies>
       <dependency>
         <groupId>com.astamuse</groupId>
-        <artifactId>asta4d-spring</artifactId>
+        <artifactId>asta4d-web</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       
