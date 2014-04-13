@@ -72,8 +72,12 @@ public class Asta4dTemplateInitializer extends HandlerInterceptorAdapter impleme
     @Override
     public void afterPropertiesSet() throws Exception {
         WebApplicationConfiguration asta4dConf = beanContext.getBean(WebApplicationConfiguration.class);
-        WebApplicatoinConfigurationInitializer.initConfigurationFromFile(servletConfig, asta4dConf);
+        createConfigurationInitializer().initConfigurationFromFile(servletConfig, asta4dConf);
         WebApplicationConfiguration.setConfiguration(asta4dConf);
+    }
+
+    protected WebApplicatoinConfigurationInitializer createConfigurationInitializer() {
+        return new WebApplicatoinConfigurationInitializer();
     }
 
     @Override
