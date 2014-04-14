@@ -28,7 +28,9 @@ import org.jsoup.parser.Parser;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.IdGenerator;
+import com.astamuse.asta4d.util.SelectorUtil;
 
 public class Template {
 
@@ -56,9 +58,14 @@ public class Template {
     }
 
     private void initDocument() throws TemplateException {
-        // find inject
+        clearCommentNode();
         processExtension();
         TemplateUtil.regulateElement(doc);
+    }
+
+    private void clearCommentNode() throws TemplateException {
+        String commentSelector = SelectorUtil.tag(ExtNodeConstants.COMMENT_NODE_TAG);
+        ElementUtil.removeNodesBySelector(doc, commentSelector, false);
     }
 
     private void processExtension() throws TemplateException {
@@ -72,8 +79,10 @@ public class Template {
             Template parent = conf.getTemplateResolver().findTemplate(parentPath);
             Document parentDoc = parent.getDocumentClone();
             TemplateUtil.mergeBlock(parentDoc, extension);
+
             doc = parentDoc;
         }
+
     }
 
     public String getPath() {
