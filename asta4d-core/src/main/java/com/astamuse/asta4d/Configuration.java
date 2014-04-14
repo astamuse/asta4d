@@ -20,10 +20,13 @@ package com.astamuse.asta4d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
+import com.astamuse.asta4d.data.DataConvertorInvoker;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.data.DefaultDataConvertorInvoker;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -49,9 +52,11 @@ public class Configuration {
 
     private SnippetExtractor snippetExtractor = new DefaultSnippetExtractor();
 
-    private List<PageInterceptor> pageInterceptorList = new ArrayList<>();
+    private List<PageInterceptor> pageInterceptorList = createDefaultPageInterceptorList();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
+
+    private DataConvertorInvoker dataConvertorInvoker = new DefaultDataConvertorInvoker();
 
     private List<String> resourceNames = null;
 
@@ -132,12 +137,24 @@ public class Configuration {
         this.pageInterceptorList = pageInterceptorList;
     }
 
+    protected List<PageInterceptor> createDefaultPageInterceptorList() {
+        return new LinkedList<>();
+    }
+
     public ContextDataFinder getContextDataFinder() {
         return contextDataFinder;
     }
 
     public void setContextDataFinder(ContextDataFinder contextDataFinder) {
         this.contextDataFinder = contextDataFinder;
+    }
+
+    public DataConvertorInvoker getDataConvertorInvoker() {
+        return dataConvertorInvoker;
+    }
+
+    public void setDataConvertorInvoker(DataConvertorInvoker dataConvertorInvoker) {
+        this.dataConvertorInvoker = dataConvertorInvoker;
     }
 
     public List<String> getResourceNames() {

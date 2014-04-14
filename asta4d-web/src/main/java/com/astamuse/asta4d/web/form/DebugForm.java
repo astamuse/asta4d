@@ -7,8 +7,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.format.NamedPlaceholderFormatter;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
+import com.astamuse.asta4d.util.i18n.format.NamedPlaceholderFormatter;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 
