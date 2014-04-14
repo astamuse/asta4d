@@ -135,6 +135,18 @@ public class RequestDispatcherTest {
 
         rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(358));
 
+        rules.addDefaultRequestHandler("remap-with-attr", new Object() {
+
+            @RequestHandler
+            public String handle(String indexVar, String extraPath, UrlMappingRule rule) {
+                if (!rule.hasAttribute("index-original")) {
+                    throw new RuntimeException("index-remap-original not found");
+                }
+                return "/index-" + indexVar + "-" + extraPath + ".html";
+            }
+
+        });
+
         rules.addRequestHandlerInterceptor(new CounterInterceptorAdapter());
         rules.addRequestHandlerInterceptor(new CounterInterceptorAdapter());
 
@@ -144,11 +156,16 @@ public class RequestDispatcherTest {
 
         //@formatter:off
         
-        rules.add("/index").id("index-page")
+        rules.add("/index").id("index-page").attribute("index-original").var("indexVar", "index_var")
                            .forward(Throwable.class, "/error.html", 500)
                            .forward("/index.html");
         
+
+        
         rules.add("/index-duplicated").reMapTo("index-page");
+        
+        
+        rules.add("/index-remap-with-attr").reMapTo("index-page").attribute("remap-with-attr").var("extraPath", "extra_path");
 
         rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageProvider.AttrBodyOnly);
         
@@ -189,6 +206,7 @@ public class RequestDispatcherTest {
                 
                 { "get", "/index-rewrite", 0, getExpectedPage("/index.html") },
                 { "get", "/index-duplicated", 0, getExpectedPage("/index.html") },
+                { "get", "/index-remap-with-attr", 0, getExpectedPage("/index-index_var-extra_path.html") },
                 { "get", "/body-only", 0, getExpectedPage("/bodyOnly.html") },
                 { "get", "/go-redirect", 302, new RedirectTargetProvider(302, "/go-redirect/ok", null)},
                 { "get", "/go-redirect-301", 301, new RedirectTargetProvider(301, "/go-redirect/301", null)},
@@ -217,7 +235,7 @@ public class RequestDispatcherTest {
     }
 
     @Test(dataProvider = "data")
-    public void execute(String method, String url, int status, ContentProvider<?> contentProvider) throws Exception {
+    public void execute(String method, String url, int status, ContentProvider contentProvider) throws Exception {
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();

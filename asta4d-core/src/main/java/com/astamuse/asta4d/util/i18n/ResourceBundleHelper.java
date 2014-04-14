@@ -19,7 +19,7 @@ package com.astamuse.asta4d.util.i18n;
 
 import java.util.Locale;
 
-import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
+import com.astamuse.asta4d.util.i18n.format.ParamOrderDependentFormatter;
 
 public class ResourceBundleHelper extends ResourceBundleHelperBase {
 
@@ -40,7 +40,11 @@ public class ResourceBundleHelper extends ResourceBundleHelperBase {
     }
 
     public String getMessage(String key, Object... params) {
-        return ResourceBundleUtil.getMessage((ParamOrderDependentFormatter) getFormatter(), getLocale(), key, params);
+        return ResourceBundleUtil.getMessage((ParamOrderDependentFormatter) getFormatter(), getLocale(), key, null, params);
+    }
+
+    public String getMessageWithDefault(String key, String defaultMsg, Object... params) {
+        return ResourceBundleUtil.getMessage((ParamOrderDependentFormatter) getFormatter(), getLocale(), key, defaultMsg, params);
     }
 
 }

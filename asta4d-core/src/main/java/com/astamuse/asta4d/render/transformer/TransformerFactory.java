@@ -23,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Component;
 import com.astamuse.asta4d.render.ElementRemover;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
@@ -58,6 +59,8 @@ public class TransformerFactory {
             transformer = new FutureTransformer((Future<?>) action);
         } else if (action instanceof Element) {
             transformer = new ElementTransformer((Element) action);
+        } else if (action instanceof Component) {
+            transformer = new ElementTransformer(((Component) action).toElement());
         } else {
             transformer = new ElementSetterTransformer(new TextSetter(action));
         }

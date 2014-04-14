@@ -4,12 +4,12 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.12.31-SNAPSHOT</version>
+      <version>0.14.2.11-SNAPSHOT</version>
   </parent>
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-doc</artifactId>
-  <version>0.12.31-SNAPSHOT</version>
+  <version>0.14.2.11-SNAPSHOT</version>
   <packaging>jar</packaging>
   
   <name>com.astamuse.asta4d-doc</name>
@@ -24,6 +24,9 @@
   </repositories>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    <docVersion>${project.version}</docVersion>
+    <docTime>${maven.build.timestamp}</docTime>
   </properties>
   
   <build>
@@ -34,13 +37,36 @@
         <version>2.0.14</version>
         <executions>
           <execution>
+            <id>html-singlepage</id>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+                <targetDirectory>${basedir}/target/docbkx/html-singlepage</targetDirectory>
+                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-singlepage.xsl</htmlCustomization>
+                <postProcess>
+                    <copy todir="${basedir}/target/docbkx/html-singlepage">
+                        <fileset dir="${basedir}/src/resources/docbkx">
+                            <include name="**/*.css" />
+                            <include name="**/*.png" />
+                            <include name="**/*.gif" />
+                            <include name="**/*.jpg" />
+                        </fileset>
+                    </copy>
+                </postProcess>
+            </configuration>
+          </execution>
+          <!-- execution>
             <id>html</id>
             <goals>
               <goal>generate-html</goal>
             </goals>
             <phase>generate-sources</phase>
             <configuration>
-                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-singlepage.xsl</htmlCustomization>
+                <chunkedOutput>true</chunkedOutput>
+                <targetDirectory>${basedir}/target/docbkx/html</targetDirectory>
+                <htmlCustomization>${basedir}/src/resources/docbkx/xsl/html-multipage.xsl</htmlCustomization>
                 <postProcess>
                     <copy todir="${basedir}/target/docbkx/html">
                         <fileset dir="${basedir}/src/resources/docbkx">
@@ -52,8 +78,7 @@
                     </copy>
                 </postProcess>
             </configuration>
-          </execution>
-          
+          </execution -->
           <!-- pdf cannot work correctly yet
           <execution>
             <id>pdf</id>
@@ -78,12 +103,13 @@
         </dependencies>
         <!-- Common Docbook configuration -->
         <configuration>
+            <sourceDirectory>${basedir}/src/docbkx</sourceDirectory>
             <xincludeSupported>true</xincludeSupported>
             <chunkedOutput>false</chunkedOutput>
             <foCustomization>${basedir}/src/resources/docbkx/xsl/pdf.xsl</foCustomization>
             <useExtensions>1</useExtensions>
             <highlightSource>1</highlightSource>
-            <tocMaxDepth>3</tocMaxDepth>
+            <tocMaxDepth>4</tocMaxDepth>
             <tocSectionDepth>3</tocSectionDepth>
             <entities>
                 <entity>

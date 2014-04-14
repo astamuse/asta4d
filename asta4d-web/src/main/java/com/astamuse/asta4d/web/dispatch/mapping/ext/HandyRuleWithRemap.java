@@ -25,8 +25,9 @@ public class HandyRuleWithRemap extends HandyRule {
         super(rule);
     }
 
-    public void reMapTo(String ruleId) {
+    public HandyRuleWithAttrOnly reMapTo(String ruleId) {
         this.var(UrlMappingRuleHelper.REMAP_ID_VAR_NAME, ruleId);
+        return new HandyRuleWithAttrOnly(this.rule);
     }
 
 }

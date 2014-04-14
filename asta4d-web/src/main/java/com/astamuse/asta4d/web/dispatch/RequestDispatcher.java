@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
+import static com.astamuse.asta4d.web.WebApplicationContext.SCOPE_FLASH;
+
 import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +28,6 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,10 +89,10 @@ public class RequestDispatcher {
         UrlMappingRule rule = result.getRule();
         context.setData(KEY_CURRENT_RULE, rule);
         writePathVarToContext(context, rule.getExtraVarMap());
-        retrieveFlashScopeData(request);
+        restoreFlashScopeData(context, request);
 
-        List<ContentProvider<?>> requestResult = handleRequest(rule);
-        for (ContentProvider<?> cp : requestResult) {
+        List<ContentProvider> requestResult = handleRequest(rule);
+        for (ContentProvider cp : requestResult) {
             cp.produce(rule, response);
         }
     }
@@ -102,13 +103,13 @@ public class RequestDispatcher {
      * @return ContentProvider
      * @throws Exception
      */
-    private List<ContentProvider<?>> handleRequest(UrlMappingRule currentRule) throws Exception {
+    private List<ContentProvider> handleRequest(UrlMappingRule currentRule) throws Exception {
         Context context = Context.getCurrentThreadContext();
         RequestHandlerInvokerFactory factory = WebApplicationConfiguration.getWebApplicationConfiguration()
                 .getRequestHandlerInvokerFactory();
         RequestHandlerInvoker invoker = factory.getInvoker();
 
-        List<ContentProvider<?>> cpList = invoker.invoke(currentRule);
+        List<ContentProvider> cpList = invoker.invoke(currentRule);
         context.setData(KEY_REQUEST_HANDLER_RESULT, cpList);
 
         return cpList;
@@ -124,12 +125,13 @@ public class RequestDispatcher {
         }
     }
 
-    private void retrieveFlashScopeData(HttpServletRequest request) {
-        String flashScopeId = request.getParameter(RedirectUtil.KEY_FLASH_SCOPE_ID);
-        if (StringUtils.isEmpty(flashScopeId)) {
-            return;
+    private void restoreFlashScopeData(WebApplicationContext context, HttpServletRequest request) {
+        Map<String, Object> flashScopeData = RedirectUtil.retrieveFlashScopeData(request);
+        if (flashScopeData != null) {
+            for (Entry<String, Object> entry : flashScopeData.entrySet()) {
+                context.setData(SCOPE_FLASH, entry.getKey(), entry.getValue());
+            }
         }
-        RedirectUtil.getFlashScopeData(flashScopeId);
     }
 
 }

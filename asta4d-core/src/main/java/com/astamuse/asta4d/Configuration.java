@@ -20,15 +20,10 @@ package com.astamuse.asta4d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
-import com.astamuse.asta4d.data.DataConvertorInvoker;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
-import com.astamuse.asta4d.data.DefaultDataConvertorInvoker;
-import com.astamuse.asta4d.format.PlaceholderFormatter;
-import com.astamuse.asta4d.format.SymbolPlaceholderFormatter;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -41,6 +36,8 @@ import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
 public class Configuration {
 
@@ -52,9 +49,7 @@ public class Configuration {
 
     private SnippetExtractor snippetExtractor = new DefaultSnippetExtractor();
 
-    private List<PageInterceptor> pageInterceptorList = createDefaultPageInterceptorList();
-
-    private DataConvertorInvoker dataConvertorInvoker = new DefaultDataConvertorInvoker();
+    private List<PageInterceptor> pageInterceptorList = new ArrayList<>();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
@@ -134,13 +129,7 @@ public class Configuration {
     }
 
     public void setPageInterceptorList(List<PageInterceptor> pageInterceptorList) {
-        this.pageInterceptorList = new LinkedList<>();
-        this.pageInterceptorList.addAll(createDefaultPageInterceptorList());
-        this.pageInterceptorList.addAll(pageInterceptorList);
-    }
-
-    protected List<PageInterceptor> createDefaultPageInterceptorList() {
-        return new LinkedList<>();
+        this.pageInterceptorList = pageInterceptorList;
     }
 
     public ContextDataFinder getContextDataFinder() {
@@ -149,14 +138,6 @@ public class Configuration {
 
     public void setContextDataFinder(ContextDataFinder contextDataFinder) {
         this.contextDataFinder = contextDataFinder;
-    }
-
-    public DataConvertorInvoker getDataConvertorInvoker() {
-        return dataConvertorInvoker;
-    }
-
-    public void setDataConvertorInvoker(DataConvertorInvoker dataConvertorInvoker) {
-        this.dataConvertorInvoker = dataConvertorInvoker;
     }
 
     public List<String> getResourceNames() {

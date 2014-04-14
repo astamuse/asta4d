@@ -68,14 +68,14 @@ public class AdvancedRenderingTest extends BaseTest {
             }
             render.add("#outerDiv", "outerValue");
             render.add("#inner", "outerList", list);
-            render.add("#outer", "-count", null);
+            render.add("#outer", "-count", (Object) null);
             return render;
         }
 
         public Renderer setAnyTypeInner(List<String> outerList) {
             Renderer render = new GoThroughRenderer();
             render.add("#innerList > li", outerList);
-            render.add("#inner", "-outerList", null);
+            render.add("#inner", "-outerList", (Object) null);
             return render;
         }
     }

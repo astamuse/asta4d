@@ -121,6 +121,11 @@ public class RenderUtil {
                 // child.
                 if (element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE).equals(ExtNodeConstants.SNIPPET_NODE_ATTR_TYPE_FAKE)) {
                     renderTarget = element.children().first();
+                    // the hosting element of this faked snippet has been removed by outer a snippet
+                    if (renderTarget == null) {
+                        element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
+                        continue;
+                    }
                 } else {
                     renderTarget = element;
                 }
@@ -312,12 +317,7 @@ public class RenderUtil {
         List<Element> elemList = new ArrayList<>(target.select(selector));
 
         if (elemList.isEmpty()) {
-            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
-                Renderer alternativeRenderer = ((ElementNotFoundHandler) currentRenderer).alternativeRenderer();
-                if (alternativeRenderer != null) {
-                    apply(target, alternativeRenderer);
-                }
-            } else if (renderAction.isOutputMissingSelectorWarning()) {
+            if (renderAction.isOutputMissingSelectorWarning()) {
                 String creationInfo = currentRenderer.getCreationSiteInfo();
                 if (creationInfo == null) {
                     creationInfo = "";
@@ -331,11 +331,6 @@ public class RenderUtil {
             }
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
-        } else {
-            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
-                apply(target, rendererList, renderAction, startIndex + 1, count);
-                return;
-            }
         }
 
         List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
@@ -413,12 +408,9 @@ public class RenderUtil {
         List<Element> msgElems = target.select(selector);
         for (Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
-            if (!attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_KEY)) {
-                logger.warn(ExtNodeConstants.MSG_NODE_TAG + " tag must have key attribute.");
-                continue;
-            }
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
             List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            String defaultMsg = ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
 
             // TODO cache localed helper instance
             ParamMapResourceBundleHelper helper = null;
@@ -430,7 +422,7 @@ public class RenderUtil {
 
             Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);
             String text;
-            text = helper.getMessage(key, paramMap);
+            text = helper.getMessageWithDefault(key, defaultMsg, paramMap);
 
             Node node;
             if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {

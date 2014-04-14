@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Component;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.DataConvertor;
@@ -211,7 +212,7 @@ public class Renderer {
      *            a boolean value that will be treated as a String
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, boolean value) {
+    public Renderer add(String selector, Boolean value) {
         return add(create(selector, value));
     }
 
@@ -229,7 +230,7 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for text rendering by given parameter and add it to the current renderer. See {@link #create(String, Object)}.
+     * Create a renderer for given value and add it to the current renderer. See {@link #create(String, Object)}.
      * 
      * @param selector
      *            a css selector
@@ -265,7 +266,7 @@ public class Renderer {
      *            a long value that will be treated as a String value
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, String attr, long value) {
+    public Renderer add(String selector, String attr, Long value) {
         return add(create(selector, attr, value));
     }
 
@@ -280,7 +281,7 @@ public class Renderer {
      *            an int value that will be treated as a String value
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, String attr, int value) {
+    public Renderer add(String selector, String attr, Integer value) {
         return add(create(selector, attr, value));
     }
 
@@ -295,7 +296,7 @@ public class Renderer {
      *            a boolean value that will be treated as a String value
      * @return the created renderer for chain calling
      */
-    public Renderer add(String selector, String attr, boolean value) {
+    public Renderer add(String selector, String attr, Boolean value) {
         return add(create(selector, attr, value));
     }
 
@@ -342,6 +343,20 @@ public class Renderer {
      */
     public Renderer add(String selector, Element elem) {
         return add(create(selector, elem));
+    }
+
+    /**
+     * Create a renderer for {@link Component} rendering by given parameter and add it to the current renderer. See
+     * {@link #create(String, Component)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param component
+     *            a component that to be rendered
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Component component) {
+        return add(create(selector, component));
     }
 
     /**
@@ -537,15 +552,15 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for text by given parameter.
+     * Create a renderer for given parameter.
      * <p>
-     * All child nodes of the target element specified by selector will be emptied and the given String value(Object#toString) will be
-     * rendered as a single text node of the target element.
+     * A special typed renderer will be created by the type of the given value. If there is no coordinate renderer for the type of given
+     * value, the value#toString() will be used to retrieve a text for rendering.
      * 
      * @param selector
      *            a css selector
      * @param value
-     *            a Object that will be rendered. toString() will be called for generating a String
+     *            a Object that will be rendered.
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
@@ -584,8 +599,12 @@ public class Renderer {
      *            a long value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, long value) {
-        return create(selector, attr, String.valueOf(value));
+    public final static Renderer create(String selector, String attr, Long value) {
+        if (value == null) {
+            return create(selector, attr, (String) null);
+        } else {
+            return create(selector, attr, String.valueOf(value));
+        }
     }
 
     /**
@@ -599,8 +618,12 @@ public class Renderer {
      *            an int value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, int value) {
-        return create(selector, attr, String.valueOf(value));
+    public final static Renderer create(String selector, String attr, Integer value) {
+        if (value == null) {
+            return create(selector, attr, (String) null);
+        } else {
+            return create(selector, attr, String.valueOf(value));
+        }
     }
 
     /**
@@ -614,8 +637,12 @@ public class Renderer {
      *            a boolean value that will be treated as a String value
      * @return the created renderer
      */
-    public final static Renderer create(String selector, String attr, boolean value) {
-        return create(selector, attr, String.valueOf(value));
+    public final static Renderer create(String selector, String attr, Boolean value) {
+        if (value == null) {
+            return create(selector, attr, (String) null);
+        } else {
+            return create(selector, attr, String.valueOf(value));
+        }
     }
 
     /**
@@ -669,6 +696,25 @@ public class Renderer {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementTransformer(elem));
+        }
+    }
+
+    /**
+     * Create a renderer for {@link Component} rendering by given parameter.
+     * <p>
+     * The target element specified by the selector will be completely replaced by the result of given {@link Component#toElement()}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param component
+     *            a component that to be rendered
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Component component) {
+        if (treatNullAsRemoveNode && component == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new ElementTransformer(component.toElement()));
         }
     }
 

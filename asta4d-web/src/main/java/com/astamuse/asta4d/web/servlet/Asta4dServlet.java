@@ -17,13 +17,8 @@
 
 package com.astamuse.asta4d.web.servlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -31,8 +26,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +33,13 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
-import com.astamuse.asta4d.web.util.SystemPropertyUtil;
-import com.astamuse.asta4d.web.util.SystemPropertyUtil.PropertyScope;
 
 /**
- * Here we are going to implement a view first mechanism of view resolving. We
- * need a url mapping algorithm too.
+ * Here we are going to implement a view first mechanism of view resolving. We need a url mapping algorithm too.
  * 
  */
 public class Asta4dServlet extends HttpServlet {
@@ -69,7 +60,7 @@ public class Asta4dServlet extends HttpServlet {
         super.init(config);
         try {
             WebApplicationConfiguration asta4dConf = createConfiguration();
-            initConfigurationFromFile(config, asta4dConf);
+            createConfigurationInitializer().initConfigurationFromFile(config, asta4dConf);
             Configuration.setConfiguration(asta4dConf);
         } catch (Exception e) {
             throw new ServletException(e);
@@ -112,11 +103,9 @@ public class Asta4dServlet extends HttpServlet {
     }
 
     /**
-     * Subclass can override this method to do something before or after real
-     * service process.
+     * Subclass can override this method to do something before or after real service process.
      * 
-     * eg. {@link WebApplicationContext#setAccessURI(String)} can be called
-     * before this method to rewrite access uri.
+     * eg. {@link WebApplicationContext#setAccessURI(String)} can be called before this method to rewrite access uri.
      * 
      * @throws Exception
      */
@@ -137,79 +126,8 @@ public class Asta4dServlet extends HttpServlet {
         return new WebApplicationConfiguration();
     }
 
-    protected void initConfigurationFromFile(ServletConfig sc, WebApplicationConfiguration conf) throws Exception {
-        String[] fileNames = retrievePossibleConfigurationFileNames();
-        InputStream input = null;
-        String fileType = null;
-
-        // find file from classpath
-        ClassLoader clsLoder = this.getClass().getClassLoader();
-        for (String name : fileNames) {
-            input = clsLoder.getResourceAsStream(name);
-            if (input != null) {
-                fileType = FilenameUtils.getExtension(name);
-                break;
-            }
-        }
-
-        // find from file system
-        // I can do goto by while loop :)
-        while (input == null) {
-
-            // find key
-            String fileKey = retrieveConfigurationFileNameKey();
-            if (fileKey == null) {
-                break;
-            }
-
-            // get path
-            String filePath = retrieveConfigurationFileName(sc, fileKey);
-            if (filePath == null) {
-                break;
-            }
-
-            // load file
-            File f = new File(filePath);
-            input = new FileInputStream(f);
-            fileType = FilenameUtils.getExtension(filePath);
-            break;
-        }
-
-        if (input != null) {
-            try {
-                switch (fileType) {
-                case "properties":
-                    Properties ps = new Properties();
-                    ps.load(input);
-                    // PropertyUtils.setProperty(bean, name, value)
-                    Enumeration<Object> keys = ps.keys();
-                    while (keys.hasMoreElements()) {
-                        String key = keys.nextElement().toString();
-                        BeanUtils.setProperty(conf, key, ps.get(key));
-                    }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("File type of " + fileType +
-                            " does not be supported for initialize asta4d Configuration.");
-                }
-            } finally {
-                input.close();
-            }
-        }
+    protected WebApplicatoinConfigurationInitializer createConfigurationInitializer() {
+        return new WebApplicatoinConfigurationInitializer();
     }
 
-    protected String[] retrievePossibleConfigurationFileNames() {
-        // return new String[] {
-        // "asta4d.conf.properties, ast4d.conf.js, asta4d.conf.groovy" };
-        return new String[] { "asta4d.conf.properties" };
-    }
-
-    protected String retrieveConfigurationFileNameKey() {
-        return "asta4d.conf";
-    }
-
-    protected String retrieveConfigurationFileName(ServletConfig sc, String key) {
-        return SystemPropertyUtil.retrievePropertyValue(sc, key, PropertyScope.ServletConfig, PropertyScope.JNDI,
-                PropertyScope.SystemProperty);
-    }
 }

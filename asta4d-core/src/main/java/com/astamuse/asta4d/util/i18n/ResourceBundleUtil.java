@@ -17,7 +17,6 @@
 
 package com.astamuse.asta4d.util.i18n;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,11 +24,12 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.format.ParamOrderDependentFormatter;
-import com.astamuse.asta4d.format.PlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.ParamOrderDependentFormatter;
+import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 
 public class ResourceBundleUtil {
 
@@ -41,7 +41,7 @@ public class ResourceBundleUtil {
         }
     };
 
-    public static String getMessage(ParamOrderDependentFormatter formatter, Locale locale, String key, Object... params) {
+    public static String getMessage(ParamOrderDependentFormatter formatter, Locale locale, String key, String defaultMsg, Object... params) {
         List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
         MissingResourceException ex = null;
         String pattern = null;
@@ -55,18 +55,23 @@ public class ResourceBundleUtil {
             }
         }
         if (pattern == null) {
-            pattern = key;
+            pattern = defaultMsg != null ? defaultMsg : key;
         }
 
-        return formatter.format(pattern, params);
+        if (StringUtils.isEmpty(pattern)) {
+            return "";
+        }
+
+        if (params == null || params.length == 0) {
+            return pattern;
+        } else {
+            return formatter.format(pattern, params);
+        }
 
     }
 
-    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key) {
-        return getMessage(formatter, locale, key, Collections.<String, Object> emptyMap());
-    }
-
-    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key, Map<String, Object> paramMap) {
+    public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key, String defaultMsg,
+            Map<String, Object> paramMap) {
         List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
         MissingResourceException ex = null;
         String pattern = null;
@@ -79,9 +84,18 @@ public class ResourceBundleUtil {
             }
         }
         if (pattern == null) {
-            pattern = key;
+            pattern = defaultMsg != null ? defaultMsg : key;
         }
-        return formatter.format(pattern, paramMap);
+
+        if (StringUtils.isEmpty(pattern)) {
+            return "";
+        }
+
+        if (paramMap == null || paramMap.isEmpty()) {
+            return pattern;
+        } else {
+            return formatter.format(pattern, paramMap);
+        }
 
     }
 

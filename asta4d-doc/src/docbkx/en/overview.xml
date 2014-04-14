@@ -21,17 +21,20 @@
         <para>The designers or front-end engineers are keeping complaining the mixed-in dynamic code, as they disturb 
         their efforts of redesigning the page style or structure. And in the mean time, the back-end developers are also 
         complaining that the front-end guys break the working page frequently,  because redesign or the new design is hard 
-        to merge due to the huge cost of source refactoring. </para>
+        to merge due to the huge cost of source refactorying. </para>
+        <sbr/>
       </listitem>
 
       <listitem>
         <para>The developers are complaining about the poor functionalities of template language which they are using 
         and tired from the various magic skills for complex rendering logic.</para>
+        <sbr/>
       </listitem>
 
       <listitem>
-        <para>The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
-        approach like traditional PHP/ASP development.</para>
+        <para>The developers are discontented with the counterproductivity of traditional MVC architecture and desire a more efficient 
+        approach.</para>
+        <sbr/>
       </listitem>
 
     </itemizedlist>
@@ -50,12 +53,30 @@
         are pure html files. At the mean time, back-end engineers can use the powerful Java language to implement the rendering
         logic without being suffering from the "poor and sometimes magic" template languages.
         </para>
+        <sbr/>
       </listitem>
 
       <listitem>
-        <para>View first without controller</para>
-        <para>Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also
-        easier to change than MVC architecture.</para>
+        <para>Testable rendering logic</para>
+        <para>All of the rendering logic in Asta4D is testable and developers can simply test them by writing simple junit cases, 
+        which could replace over than half of selenium tests</para>
+        <sbr/>
+      </listitem>
+      
+      <listitem>
+        <para>High security of being immune from cross-site(XSS/CSRF)</para>
+        <para>Asta4D is, by nature, immune from cross-site(XSS/CSRF) problems. You do not need to take care of cross-site any more. 
+        All the rendered value would be escaped by default and your clients have no chance to put malicious contents to your server.
+        </para>
+        <sbr/>
+      </listitem>
+      
+      <listitem>
+        <para>View first</para>
+        <para>Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier 
+        to change than traditional MVC architecture.
+        </para>
+        <sbr/>
       </listitem>
       
       <listitem>
@@ -64,6 +85,15 @@
         by request handlers, which afford more flexibility on page rendering because the view layer is side-effect free now. Therefore
         Asta4D allows parallel page rendering in multiple threads as a built-in feature.
         </para>
+        <sbr/>
+      </listitem>
+      
+      <listitem>
+        <para>Advanced MVC</para>
+        <para>Asta4D affords developers a evolved MVC architecture which is more clarified for the duty of each application layer than
+        the traditional MVC architecture. 
+        </para>
+        <sbr/>
       </listitem>
     </itemizedlist>
   </section>
@@ -78,6 +108,7 @@
         <para>Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their
         maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
         </para>
+        <sbr/>
       </listitem>
 
       <listitem>
@@ -86,6 +117,7 @@
         rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from
         template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup
         of coffee.</para>
+        <sbr/>
       </listitem>
       
       <listitem>
@@ -93,6 +125,7 @@
         <para>We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just
         like we are going through the 4 dimensional space.
         </para>
+        <sbr/>
       </listitem>
     </itemizedlist>
   </section>

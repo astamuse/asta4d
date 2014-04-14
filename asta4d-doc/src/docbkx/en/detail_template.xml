@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="chapter-detail-template"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -7,8 +7,387 @@
     xsi:schemaLocation="
         http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
-  <title>Template</title>
+  <title>Details of Template</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Supported tags</title>
+    <toc></toc>
+    <sect2>
+      <title>afd:extension</title>
+      <para>A "afd:extension" tag declares the relationship of inheritance between child template and parent template.</para>
+      <example><title>child.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<afd:extension parent="parent.html">   
+
+...
+
+</afd:extension>   
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <varlistentry>
+          <term>parent</term>
+          <listitem>
+            <para>Identifies the parent template file of the current template.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </sect2>
+    <sect2>
+      <title>afd:block</title>
+      <para>A "afd:block" tag declares a referenceable block in the template file. Child template file can reference the
+      blocks in parent template by the same tag "afd:block" with extra action declaration: append, insert, override.
+      </para>
+      <example><title>parent.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<html>   
+    <head>   
+        <afd:block id="block1">   
+            <link href="parent1.css" rel="stylesheet" type="text/css" />   
+        </afd:block>   
+           
+        <afd:block id="block2">   
+            <link href="parent2.css" rel="stylesheet" type="text/css" />   
+        </afd:block>   
+  
+        <title>extension sample</title>   
+    </head>   
+    <body>   
+        <afd:block id="content">content</afd:block>   
+    </body>   
+</html> 
+]]>
+      </programlisting>
+      </example>
+      <example><title>child.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<afd:extension parent="parent.html">   
+
+    <afd:block append="block1">   
+        <link href="child1.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+  
+    <afd:block insert="block2">   
+        <link href="child2.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+  
+    <afd:block override="content">   
+        <div>hello</div>   
+    </afd:block>   
+  
+</afd:extension>
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <varlistentry>
+          <term>id</term>
+          <listitem>
+            <para>The referenceable id of a block.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>append</term>
+          <listitem>
+            <para>
+            Append all the children of current tag to the tail of the parent's block which id equals the declared
+            value of the append attribute.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>insert</term>
+          <listitem>
+            <para>
+            Insert all the children of current tag to the head of the parent's block which id equals the declared
+            value of the insert attribute.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>override</term>
+          <listitem>
+            <para>
+            Override the parent's block which id equals the declared value of the override attribute by all the
+            children of current tag.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <remark>The result of merging the above two files by Asta4D's template engine can be found at <xref linkend="chapter-Inheritable-template"/>.</remark>
+    </sect2>
+    <sect2>
+      <title>afd:embed</title>
+      <para>A "afd:embed" tag declares an action of extracting and inserting an external file's content to the site where
+      the "afd:embed" tag is declared.</para>
+      <example><title>child.html</title>
+      <programlisting language="xml">
+<![CDATA[
+<afd:extension parent="parent.html">   
+  
+    <afd:block override="content ">   
+        <div>hello</div>   
+        <afd:embed target="/templates/embed.html" ></afd:embed>   
+    </afd:block>   
+  
+</afd:extension>  
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <varlistentry>
+          <term>target</term>
+          <listitem>
+            <para>The path of which file should be included at the declaration site.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <remark>In the embed target file, afd:block can also be used to append/insert/override the blocks in source template.
+      Samples and the merging result can be found at <xref linkend="chapter-Inheritable-template"/>.
+      </remark>
+    </sect2>
+    <sect2>
+      <title>afd:snippet</title>
+      <para>A "afd:snippet" tag declares an Java class which assumes the duty of rendering data to the html snippet contained
+      by the declaring tag.</para>
+      <example>
+      <programlisting language="xml">
+<![CDATA[
+<afd:snippet render="SimpleSnippet:setProfile">  
+    <p id="name">name:<span>dummy name</span></p>  
+    <p id="age">age:<span>0</span></p>  
+</afd:snippet>
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <varlistentry>
+          <term>render</term>
+          <listitem>
+            <para>The snippet class name and render method name by format:&lt;class name&gt;:&lt;method name&gt;, the class name
+            and the method name are split by colon. If the method name is omitted, the default method name "render" will be used.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>parallel</term>
+          <listitem>
+            <para>A snippet tag with "parallel" attribute will be executed in a separated thread from the main thread of current
+            http request. It is not necessary to assign a value to this attribute.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>clear</term>
+          <listitem>
+            <para>A snippet tag with "clear" attribute will not be executed and will be removed from the final output page. This
+            is useful for disabling certain contents temporarily in certain situations such as debug. It is not necessary to assign
+            a value to this attribute.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      <para>
+      There is an alternative way to declare a snippet by "afd:render" attribute.
+      </para>
+      <example>
+      <programlisting language="xml">
+<![CDATA[
+<div afd:render="SimpleSnippet:setProfile">  
+    <p id="name">name:<span>dummy name</span></p>  
+    <p id="age">age:<span>0</span></p>  
+</div>
+]]>
+      </programlisting>
+      </example>
+      <para>By the same way, "afd:paralell" and "afd:clear" can be used on arbitrary html tags which will be treated as the same as
+      a "afd:snippet" tag. Note that "afd:paralell" will not be available except the "afd:render" is declared too, but the 
+      "afd:clear" will be always available even there is no declaration of "afd:render" on the html tag.
+      </para>
+    </sect2>
+    <sect2>
+      <title>afd:group</title>
+      <para>A "afd:group" tag declares a referenceable DOM element for back-end Java snippet class. It is useful to reference certain
+      text without wrapping html tag or combine a group of coordinate html tags as a single node.</para>
+      <example>
+      <programlisting language="xml">
+<![CDATA[
+
+<p>We found <afd:group id="item-count">3</afd:group> matched items in our database.</p> 
+
+<afd:group id="list-item">
+  <div id="title">the title</div>
+  <div id="content">the content</div>
+</afd:group>
+
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <remark>None.</remark>
+      </variablelist>
+    </sect2>
+    <sect2>
+      <title>afd:msg</title>
+      <para>A "afd:msg" tag declares a message managed in external files. This tag is mainly designed for i18n support, but
+      it also can be used as a simple string replacer. Please see <xref linkend="chapter-detail-i18n"/> for more details.</para>
+      <example>
+      <programlisting language="xml">
+<![CDATA[
+<afd:msg key="search.result.count"></afd:message>
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <varlistentry>
+          <term>key</term>
+          <listitem>
+            <para>The message key which should can be found in the configured message file.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Additional</title>
+    <itemizedlist>
+      <listitem>
+        <para>HTML5 convention</para>
+        <para>
+        Asta4D's template engine does only support html5, which relies on the underline library <ulink url="http://jsoup.org">jsoup(verion 1.6.3)</ulink>.
+        jsoup implements the <ulink url="http://whatwg.org/html">WHATWG HTML5</ulink> specification and requires compliance from the target file.
+        jsoup can fix some cases of breaking specification but you would still get unexpected result for certain cases. Basically, you should take care
+        of the following things:
+        <itemizedlist>
+          <listitem><para>All tags and attributes are converted to lower case.</para></listitem>
+          <listitem><para>Self closed tags such as &lt;div /&gt; or &lt;afd:embed target="embed.html" /&gt; is not legal.</para></listitem>
+          <listitem><para>There are some tags that the parser "ensures".For example a &lt;tbody&gt; tag must be the first tag inside &lt;table&gt;, which
+          breas the following example:</para>
+            <example>
+            <programlisting language="xml">
+<![CDATA[
+<table>
+<afd:snippet render="ListSnippet">
+<tr><td></td></tr>
+</afd:snippet>
+</table> 
+]]>
+            </programlisting>
+            </example>
+            <para>But it can be replaced by the following:</para>
+            <example>
+            <programlisting language="xml">
+<![CDATA[
+<table>
+<tr afd:render="ListSnippet"><td></td></tr>
+</table> 
+]]>
+            </programlisting>
+            </example>
+          </listitem>
+        </itemizedlist>
+        </para>
+      </listitem>
+      <listitem>
+        <para>body convention</para>
+        <para>When a child template file uses "afd:extension" to declare its parent template, only the body part(all the 
+        children of the body except the body tag itself) of the child template will be processed by the template engine 
+        and the parts out of body will be ignored simply. The same convention is applied to the embed target file. The 
+        following two sample will not cause different results by Asta4D.</para>
+        <example><title>child.html without body tag:</title>
+        <programlisting language="xml">
+<![CDATA[
+<afd:extension parent="parent.html">   
+  
+    <afd:block override="content ">   
+        <div>hello</div>   
+        <afd:embed target="/templates/embed.html" ></afd:embed>   
+    </afd:block>   
+  
+</afd:extension>  
+]]>
+        </programlisting>
+        </example>
+        <example id="child-with-body-tag"><title>child.html with body tag:</title>
+        <programlisting language="xml">
+<![CDATA[
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<afd:extension parent="parent.html">   
+  
+    <afd:block override="content ">   
+        <div>hello</div>   
+        <afd:embed target="/templates/embed.html" ></afd:embed>   
+    </afd:block>   
+  
+</afd:extension>
+</body>
+</html>  
+]]>
+        </programlisting>
+        </example>
+        <para>
+        This convention can be used for editor compatibility in case of your prefer html editor requires correct meta information
+        (We add charset="UTF-8" to all of our template files for this reason). Note that this convention is only available on extended
+        child template file or embedded target file, the parts out of body tag will be processed normally in the parent template file
+        which is as a root template without further parent.
+        </para>
+        <para>
+        Further, explicit parameter information can be commented at body tag in parameterizable embed target file for better source
+        readability.
+        </para>
+        <example id="embed-with-parameter-declaring"><title>embed.html</title>
+          <programlisting language="xml">
+<![CDATA[
+<html>
+<head><meta charset="UTF-8"></head>
+<body itemsize="{Integer}" itemlist="{List}">
+    <afd:block append="block1">   
+        <link href="embed.css" rel="stylesheet" type="text/css" />   
+    </afd:block>   
+    <div>good embed</div>   
+</body>
+</html>
+]]>
+          </programlisting>
+          <para>
+            In <xref linkend="embed-with-parameter-declaring" />, we put some "strange" information in the body tag, which suggests that
+            when this file is embedded, it requires an Integer parameter named "itemsize" and a List parameter named "itemlist". Note
+            that such declaration can only be regarded as a hint for source reader and there is no warranty about any parameter check.
+            You should consider it as a sample of how you can make interesting use of the body convention.
+          </para>
+        </example>
+        <sbr/>
+      </listitem>
+      <listitem>
+        <para>"afd" name space</para>
+        <para>The "afd" name space is configured as the default name space of Asta4D's special tags. This name space can be
+        changed by Configuration#setTagNameSpace.</para>
+        <sbr/>
+      </listitem>
+      <listitem>
+        <para>TemplateResolver</para>
+        <para>Asta4D searches certain template file by configured TemplateResolver. There are three pre-implemented TemplateResolver:
+        FileTemplateResolver, ClasspathTemplateResolver and WebApplicationTemplateResolver. The default configured WebApplicationTemplateResolver
+        will search template files with awareness of servlet container. The FileTemplateResolver and ClasspathTemplateResolver
+        can be used for test purpose, you can also provide your own TemplateResolver for special search mechanism.
+        </para>
+      </listitem>
+
+    </itemizedlist>
+  </sect1>
 
 </chapter>

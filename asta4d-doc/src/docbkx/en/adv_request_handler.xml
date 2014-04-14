@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xml:id="chapter-adv-request-handler"
+    xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xl="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
+        http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
+  <title>Advanced usage of request handler</title>
+  
+  <para>This chapter is to show how you can make advanced usage of request handler on various situations.</para>
+  
+  <sect1 id="advanced-mvc">
+  <title>Advanced MVC architecture</title>
+  <para>Even we emphasize that Asta4D is a view first framework, it is still compatible with MVC architecture. Further, we would say that 
+  Asta4D affords an advanced MVC architecture than traditional MVC frameworks by the view first mechanism.</para>
+  
+  <para>In the MVC theory, a controller would act as multi roles in a full request process, from wikipedia, it says: <remark>"A controller 
+  can send commands to the model to update the model's state (e.g., editing a document). It can also send commands to its associated 
+  view to change the view's presentation of the model (e.g., by scrolling through a document)."</remark> But those are not all in most
+  situations, we usually have to do more things in a controller such as querying additional assistant data for page rendering.</para>
+  
+  <para>By traditional MVC architecture, we often have to expand the transaction from the controller layer across to the view layer to combat
+  the lazy load issue, which ugly structure is essentially caused by the tangled controller which holds various unrelated duties.</para> 
+  
+  <para>It is also strange that we have to modify our controller's implementation at every time we change the page appearance at view layer.
+  Such situation could not satisfy us since the layers are not uncoupled really.</para>
+  
+  <para>We would say that the traditional controller is indeed a tangled magic container for most logics, a controller will unfortunately
+  be coupled to most layers in the system even our initial purpose of MVC is to uncouple our logics. By contrast, Asta4D allows developers
+  to really uncouple all the tangled logics easily. Basically we could split the traditional controller's duty to following parts:</para>
+  <itemizedlist>
+    <listitem>
+      <para>request handler</para>
+      <para>Which takes the responsibilities of all the operations with side-effect.</para>
+    </listitem>
+    <listitem>
+      <para>result matching in url rule</para>
+      <para>Which dispatches the request to different views according to the result from request handler</para>
+    </listitem>
+    <listitem>
+      <para>snippet class</para>
+      <para>Which has the responsibility to render data to the page and also holds the obligation of preparing all the necessary data for
+      page rendering.</para>
+    </listitem>
+  </itemizedlist>
+  
+  <para>By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.</para>
+  
+  <remark>Need sample source ...</remark>
+
+  </sect1>
+  
+  
+  
+  <sect1>
+  <title>Normalize page url patterns</title>
+  <para>Commonly, we would probably have multiple path patterns for the same template file but we would hope our snippet implementation 
+  could deal with a unified pattern, which can be simply achieved by a request handler.</para>
+  
+  <example>
+    <title>Normalize page url</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.add("/user/name/{name}").id("user-page")
+
+rules.add("/user/{id}").id("user-page")
+     .handler(new Object(){
+        @RequestHandler
+        public void preparePage(Context context, Integer id, String name){
+            User user = null;
+            if(id != null){
+                user = queryUserById(id);
+            }else if (name != null){
+                user = queryUserByName(name);
+            }
+            if(user != null){
+                //in the snippet class, a @ContextData annotation can by use to retrieve this value by injection
+                context.setData("user-page-condition", user);
+            }
+        }
+     }).forward("/user-page.html");
+]]>
+    </programlisting>
+    <remark>Somebody would argue that the above example is apparently a traditional MVC architecture, that is right or wrong. For the most simple situation, if 
+    the snippet class will only show the data from entity class User without any extra query, it is true that the above source shows a traditional MVC architecture.
+    But for the most situations, the page rendering would require more additional queries, which would be done at the snippet side. Such structure is so far from the
+    traditional MVC that we would rather to call it as view first.</remark>
+  </example>
+  
+  <para>In the above example, we do not cope with the case of user does not exist. The following source shows how we can cope with such situation: </para>
+  
+  <example>
+    <title>Normalize page url and PageNotFoundException</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.addGlobalForward(PageNotFoundException.class, "/template/PageNotFound.html", 404);
+rules.addGlobalForward(Throwable.class, "/template/UnknownError.html", 500);
+
+rules.add("/user/name/{name}").id("user-page")
+
+rules.add("/user/{id}").id("user-page")
+     .handler(new Object(){
+        @RequestHandler
+        public void preparePage(Context context, Integer id, String name){
+            User user = null;
+            if(id != null){
+                user = queryUserById(id);
+            }else if (name != null){
+                user = queryUserByName(name);
+            }
+            if(user == null){
+                throw new PageNotFoundException();
+            }else
+                //in the snippet class, a @ContextData annotation can by use to retrieve this value by injection
+                context.setData("user-page-condition", user);
+            }
+        }
+     }).forward("/user-page.html");
+]]>
+    </programlisting>
+  </example>
+  
+  </sect1>
+  
+  <sect1>
+  <title>Restful and ajax</title>
+  <para>For the request which does not require response of html files, such as restful or ajax request, request handler can be used to cope
+  with such situation.</para>
+  <para>There is a rest() method which does nothing on the current rule but can be used as a comment to suggest that the current rule will 
+  response customized contents as a restful api. A request handler can return a ContentProvider to supply customized response content. 
+  Details of ContenProvider can be found at later chapters, here we only show examples of how to response customized contents.</para>
+  
+  <example>
+    <title>Return header only response</title>
+    <programlisting language="java">
+<![CDATA[
+public class UpdateHandler {  
+  
+    @RequestHandler  
+    public ContentProvider doUpdate(String id, String content) {
+        if (idExists(id)) {
+            try {
+                updateContent(id, content);
+                return new HeaderInfoProvider();
+            } catch (Exception ex) {
+                HeaderInfoProvider header = new HeaderInfoProvider(500);
+                header.addHeader("exception", ex.getMessage());
+                return header;
+            }
+        } else {
+            return new HeaderInfoProvider(404);
+        }
+    }
+}  
+]]>
+    </programlisting>
+  </example>
+  
+  <example>
+    <title>Return customized binary data</title>
+    <programlisting language="java">
+<![CDATA[
+public class GetHandler {  
+  
+    @RequestHandler  
+    public ContentProvider get(String id) {
+        Object data = getContent(id);
+        if (data == null) {
+            return new HeaderInfoProvider(404);
+        } else {
+            HeaderInfoProvider header = new HeaderInfoProvider();// default to 200
+            header.addHeader("Content-Type", "application/json");
+
+            String json = toJson(data);
+            BinaryDataProvider binaryData = new BinaryDataProvider(json.getBytes());
+            
+            return new SerialProvider(header, binaryData);
+        }
+    }
+}  
+]]>
+    </programlisting>
+  </example>
+  
+  <para>For json data, there is a more convenience way to response a json string to client. A json() method can be used on 
+  rule declaration to ask the framework to convert the returned result from request handler to a json string automatically.
+  the above </para>
+  
+  <example>
+    <title>Declare json at rule</title>
+    <programlisting language="java">
+<![CDATA[
+
+// in rule declaration
+rules.add("/get").handler(GetHandler.class).json();
+
+
+//the handler implementation
+public class GetHandler {  
+  
+    @RequestHandler  
+    public Object get(String id) {
+        return getContent(id);
+    }
+}  
+]]>
+    </programlisting>
+  </example>
+  <para>Further, since a request handler can access HttpServletResponse instance directly, developer can do more complex customization
+  on HttpServletResponse instance directly.</para>
+  
+  <example>
+    <title>access HttpServletResponse directly</title>
+    <programlisting language="java">
+<![CDATA[
+public class XXXHandler {  
+  
+    @RequestHandler
+    public void handle(HttpServletResponse response) throws IOException {
+        response.setStatus(200);
+        response.addHeader("xxx", "");
+        response.getOutputStream().write("OK".getBytes());
+    }
+}  
+]]>
+    </programlisting>
+  </example>
+
+  <para>There are two built-in customized request handlers for handler static resouce files and mapping generic path template files.
+  See the next section.</para>
+
+  </sect1>
+
+  <sect1>
+  <title>Handle static resouce files</title>
+  <para>The most simple way to handling static resource files is mapping their path in web.xml then they will be serviced by the servlet container.
+  But Asta4D still affords a way to handle them at framework level.</para>
+  
+  <example>
+    <title>handler static files</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.add("/js/**/*").handler(new StaticResourceHandler());
+
+rules.add("/img/**/*").handler(new StaticResourceHandler("/resource/img"));
+
+rules.add("/favicon.ico").handler(new StaticResourceHandler(/img/favicon.ico));
+
+]]>
+    </programlisting>
+  </example>
+  
+  <para>The wild-card "/**/*" in source path is necessary if you want to mapping all the urls with same path prefix to a certain base folder. The base path
+  parameter in constructor of StaticResourceHandler is not necessary. if the base path is not specified, StaticResourceHandler will treat the part before
+  the wild-card "/**/*" in source path as the base path.
+  </para>
+  <para>StaticResourceHandler can be customized by path var configuration or overriding some protected methods by extending. See details in javadoc of 
+  StaticResourceHandler.</para>
+  
+  <example>
+    <title>customize StaticResourceHandler</title>
+    <programlisting language="java">
+<![CDATA[
+
+// by path var
+
+rules.add("/js/**/*")
+    .var(StaticResourceHandler.VAR_CONTENT_TYPE, "text/javascript") 
+    .handler(StaticResourceHandler.class);
+
+// by overring
+rules.add("/js/**/*").handler(new StaticResourceHandler(){
+    @Override
+    protected long decideCacheTime(String path) {
+        return 24 * 60 * 60 * 1000; //force cache 24 hours
+    }
+    
+});
+
+]]>
+    </programlisting>
+    <para>Note that it is not necessary to specify content type for most situations because StaticResourceHandler will guess 
+    the content type by file name extension automatically.</para>
+  </example>
+  
+  </sect1>
+
+  <sect1>
+  <title>Handle generic path template files</title>
+  <para>Basically Asta4D asks developers to declare the matching relationship between url and template file one by one, but it still allows
+  to declare a generic path matching for all files in same folder, which can be achieved by GenericPathTemplateHandler.</para>
+  </sect1>
+
+  <example>
+    <title>handler template files in bulk</title>
+    <programlisting language="java">
+<![CDATA[
+
+rules.add("/pages/**/*").handler(GenericPathTemplateHandler.class);
+
+]]>
+    </programlisting>
+    <para>As same as the StaticResourceHandler, the wild-card "/**/*" is necessary and the base path parameter of constructor can be ignored.</para>
+  </example>
+
+
+</chapter>

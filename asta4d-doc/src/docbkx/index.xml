@@ -9,20 +9,26 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <bookinfo>
     <title>Asta4D Framework User Guide</title>
+    <keywordset>
+      <keyword>java</keyword>
+      <keyword>view first</keyword>
+      <keyword>framework</keyword>
+    </keywordset>
 
     <productname>Asta4D Framework</productname>
 
-    <releaseinfo>0.1</releaseinfo>
-
+    <releaseinfo><?eval Version: ${docVersion}?></releaseinfo>
+    <pubdate><?eval Last update at: ${docTime}?></pubdate>
+    
     <authorgroup>
-      <author>
-        <firstname>Shunsuke</firstname>
-        <surname>Otani</surname>
-      </author>	  
       <author>
         <firstname>Rui</firstname>
         <surname>Liu</surname>
       </author>
+      <author>
+        <firstname>Shunsuke</firstname>
+        <surname>Otani</surname>
+      </author>	  
     </authorgroup>
   </bookinfo>
 
@@ -57,6 +63,7 @@
     <xi:include href="en/url_mapping.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/side_effect.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/adv_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>  
 
   <part id="asta4d-reference">
@@ -65,8 +72,6 @@
     <xi:include href="en/detail_snippet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_var_injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_url_rule.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="en/detail_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="en/detail_ext_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_i18n.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_servlet_conf.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_integration_spring.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

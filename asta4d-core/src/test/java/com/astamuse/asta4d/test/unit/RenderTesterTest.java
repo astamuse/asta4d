@@ -19,6 +19,7 @@ import com.astamuse.asta4d.render.test.RendererTester;
 import com.astamuse.asta4d.render.test.TestableElementWrapper;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 
 public class RenderTesterTest extends BaseTest {
@@ -148,13 +149,20 @@ public class RenderTesterTest extends BaseTest {
 
         List<RendererTester> testerList = RendererTester.forRendererList(renderList);
         List<String> confirmIdList = Arrays.asList("id-123", "id-456", "id-789");
-        List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
 
         for (int i = 0; i < testerList.size(); i++) {
             RendererTester recursiveTester = testerList.get(i);
             Assert.assertEquals(recursiveTester.get("#id"), confirmIdList.get(i));
-            Assert.assertEquals(recursiveTester.get("#otherId"), confirmOtherIdList.get(i));
         }
+
+        // we can also write tests in a more functional way
+        List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
+        Assert.assertEquals(confirmOtherIdList, ListConvertUtil.transform(testerList, new RowConvertor<RendererTester, String>() {
+            @Override
+            public String convert(int rowIndex, RendererTester tester) {
+                return (String) tester.get("#otherId");
+            }
+        }));
 
     }
 
@@ -167,7 +175,7 @@ public class RenderTesterTest extends BaseTest {
         render.add("#id", "+class", "xxx");
 
         render.add("#id", "value", "hg");
-        render.add("#id", "href", null);
+        render.add("#id", "href", (Object) null);
 
         render.add("#X", "value", new Date(123456L));
 

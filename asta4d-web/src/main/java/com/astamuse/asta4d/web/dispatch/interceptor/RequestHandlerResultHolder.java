@@ -23,16 +23,16 @@ import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 
 public class RequestHandlerResultHolder {
 
-    private List<ContentProvider<?>> contentProviderList = null;
+    private List<ContentProvider> contentProviderList = null;
 
     public RequestHandlerResultHolder() {
     }
 
-    public List<ContentProvider<?>> getContentProviderList() {
+    public List<ContentProvider> getContentProviderList() {
         return contentProviderList;
     }
 
-    public void setContentProviderList(List<ContentProvider<?>> contentProviderList) {
+    public void setContentProviderList(List<ContentProvider> contentProviderList) {
         this.contentProviderList = contentProviderList;
     }
 
