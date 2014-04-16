@@ -237,6 +237,27 @@
       </variablelist>
     </sect2>
     <sect2>
+      <title>afd:comment</title>
+      <para>A "afd:comment" tag declares a comment block in the template files and it will be removed after rendering.</para>
+      <example>
+      <programlisting language="xml">
+<![CDATA[
+
+<afd:comment>This is comment</afd:comment>
+
+<afd:comment>
+  <div>This is comment too.</div>
+</afd:comment>
+
+]]>
+      </programlisting>
+      </example>
+      <variablelist>
+        <title>Attributes:</title>
+        <remark>None.</remark>
+      </variablelist>
+    </sect2>
+    <sect2>
       <title>afd:msg</title>
       <para>A "afd:msg" tag declares a message managed in external files. This tag is mainly designed for i18n support, but
       it also can be used as a simple string replacer. Please see <xref linkend="chapter-detail-i18n"/> for more details.</para>
