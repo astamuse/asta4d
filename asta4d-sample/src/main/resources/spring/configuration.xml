@@ -13,6 +13,11 @@
         <property name="snippetResolver">
             <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
         </property>
+        <property name="instanceResolverList">
+            <list>
+                <bean class="com.astamuse.asta4d.misc.spring.SpringManagedInstanceResolver"/>
+            </list>
+        </property>
         <property name="pageInterceptorList">
             <list>
                 <bean class="com.astamuse.asta4d.sample.interceptor.SamplePageInterceptor"/>
@@ -36,5 +41,8 @@
     <bean id="FormSnippet" class="com.astamuse.asta4d.sample.snippet.FormSnippet" scope="prototype"/>
     <bean id="SimpleSnippet" class="com.astamuse.asta4d.sample.snippet.SimpleSnippet" scope="prototype"/>
     <bean id="ShowCodeSnippet" class="com.astamuse.asta4d.sample.snippet.ShowCodeSnippet" scope="prototype"/>
+    
+    <bean class="com.astamuse.asta4d.sample.handler.LoginHandler"/>
+    
 
 </beans>
