@@ -31,7 +31,7 @@ import com.astamuse.asta4d.data.InjectUtil;
  * @see InjectUtil
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface ContextData {
 
     /**

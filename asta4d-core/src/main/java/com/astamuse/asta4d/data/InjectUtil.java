@@ -35,12 +35,12 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.util.Asta4DWarningException;
+import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 
 /**
- * This class is a function holder to supply functionalities about data
- * injection
+ * This class is a function holder to supply functionalities about data injection
  * 
  * @author e-ryu
  * 
@@ -91,8 +91,7 @@ public class InjectUtil {
     private final static Paranamer paranamer = new AdaptiveParanamer();
 
     /**
-     * Set the value of all the fields marked by {@link ContextData} of the
-     * given instance.
+     * Set the value of all the fields marked by {@link ContextData} of the given instance.
      * 
      * @param instance
      * @throws DataOperationException
@@ -188,11 +187,9 @@ public class InjectUtil {
     }
 
     /**
-     * Retrieve values from fields marked as reverse injectable of given
-     * instance.
+     * Retrieve values from fields marked as reverse injectable of given instance.
      * 
-     * There are only limited scopes can be marked as injectable. See
-     * {@link Configuration#setReverseInjectableScopes(List)}.
+     * There are only limited scopes can be marked as injectable. See {@link Configuration#setReverseInjectableScopes(List)}.
      * 
      * @param instance
      * @throws DataOperationException
@@ -248,7 +245,7 @@ public class InjectUtil {
         // whether it is a problem?
         Method[] mtds = cls.getMethods();
         for (Method method : mtds) {
-            cd = findContextDataAnnotation(method.getAnnotations());
+            cd = ConvertableAnnotationRetriever.retrieveAnnotation(ContextData.class, method.getAnnotations());
             if (cd != null) {
                 // cd = method.getAnnotation(ContextData.class);
                 MethodInfo mi = new MethodInfo();
@@ -329,7 +326,8 @@ public class InjectUtil {
                     mi.type = method.getParameterTypes()[0];
                     mi.fixForPrimitiveType();
 
-                    ContextDataSet cdSet = findContextDataSetAnnotation(mi.type.getAnnotations());
+                    ContextDataSet cdSet = ConvertableAnnotationRetriever
+                            .retrieveAnnotation(ContextDataSet.class, mi.type.getAnnotations());
                     if (cdSet == null) {
                         mi.isContextDataSet = false;
                     } else {
@@ -349,7 +347,7 @@ public class InjectUtil {
         while (!cls.getName().equals(objCls)) {
             flds = cls.getDeclaredFields();
             for (Field field : flds) {
-                cd = findContextDataAnnotation(field.getAnnotations());
+                cd = ConvertableAnnotationRetriever.retrieveAnnotation(ContextData.class, field.getAnnotations());
                 if (cd != null) {
                     fi = new FieldInfo();
                     fi.field = field;
@@ -364,7 +362,8 @@ public class InjectUtil {
                     fi.scope = cd == null ? "" : cd.scope();
                     fi.fixForPrimitiveType();
 
-                    ContextDataSet cdSet = findContextDataSetAnnotation(fi.type.getAnnotations());
+                    ContextDataSet cdSet = ConvertableAnnotationRetriever
+                            .retrieveAnnotation(ContextDataSet.class, fi.type.getAnnotations());
                     if (cdSet == null) {
                         fi.isContextDataSet = false;
                     } else {
@@ -394,8 +393,7 @@ public class InjectUtil {
     }
 
     /**
-     * Retrieve value from {@link Context} for given Method by configured
-     * {@link ContextDataFinder}
+     * Retrieve value from {@link Context} for given Method by configured {@link ContextDataFinder}
      * 
      * @param method
      *            given method
@@ -408,8 +406,7 @@ public class InjectUtil {
     }
 
     /**
-     * Retrieve value from {@link Context} for given Method by given
-     * {@link ContextDataFinder}
+     * Retrieve value from {@link Context} for given Method by given {@link ContextDataFinder}
      * 
      * @param method
      *            given method
@@ -483,8 +480,8 @@ public class InjectUtil {
             target = new TargetInfo();
             target.type = types[i];
 
-            cd = findContextDataAnnotation(annotations[i]);
-            cdSet = findContextDataSetAnnotation(target.type.getAnnotations());
+            cd = ConvertableAnnotationRetriever.retrieveAnnotation(ContextData.class, annotations[i]);
+            cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, target.type.getAnnotations());
             target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
             if (StringUtils.isEmpty(target.name)) {
@@ -503,7 +500,7 @@ public class InjectUtil {
         return targetList;
     }
 
-    private final static ContextData findContextDataAnnotation(Annotation[] annotations) {
+    private final static ContextData findContextDataAnnotationxxx(Annotation[] annotations) {
         ContextData cd = null;
         Class<?> cls;
         for (Annotation annotation : annotations) {
@@ -519,7 +516,7 @@ public class InjectUtil {
         return cd;
     }
 
-    private final static ContextDataSet findContextDataSetAnnotation(Annotation[] annotations) {
+    private final static ContextDataSet findContextDataSetAnnotationxxx(Annotation[] annotations) {
         ContextDataSet cdset = null;
         Class<?> cls;
         for (Annotation annotation : annotations) {
