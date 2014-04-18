@@ -35,9 +35,8 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
 /**
- * A default implementation of {@link ContextDataFinder}. It will search data in
- * a given order (if scope is not specified) and try to apply predefined
- * {@link ContextDataFinder} list to convert data to appropriate type.
+ * A default implementation of {@link ContextDataFinder}. It will search data in a given order (if scope is not specified) and try to apply
+ * predefined {@link ContextDataFinder} list to convert data to appropriate type.
  * 
  * @author e-ryu
  * 
@@ -121,7 +120,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             data = convertData(srcType, targetType, data);
         }
 
-        dataHolder.setValue(data);
+        dataHolder.setData(dataHolder.getName(), dataHolder.getScope(), data);
         return dataHolder;
     }
 

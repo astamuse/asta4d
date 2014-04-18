@@ -37,28 +37,22 @@ public class ContextDataHolder<T> implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getScope() {
         return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
     }
 
     public T getValue() {
         return value;
     }
 
-    public void setValue(T value) {
-        this.value = value;
-    }
-
     public Class<T> getTypeCls() {
         return typeCls;
+    }
+
+    public void setData(String name, String scope, T value) {
+        this.name = name;
+        this.scope = scope;
+        this.value = value;
     }
 
 }
