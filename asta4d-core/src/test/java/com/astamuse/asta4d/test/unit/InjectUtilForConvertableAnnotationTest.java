@@ -13,6 +13,8 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextDataHolder;
+import com.astamuse.asta4d.data.ContextDataSetFactory;
+import com.astamuse.asta4d.data.DefaultContextDataSetFactory;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
@@ -39,6 +41,11 @@ public class InjectUtilForConvertableAnnotationTest extends BaseTest {
                 @Override
                 public Class<? extends Annotation> annotationType() {
                     return ContextDataSet.class;
+                }
+
+                @Override
+                public Class<? extends ContextDataSetFactory> factory() {
+                    return DefaultContextDataSetFactory.class;
                 }
             };
         }

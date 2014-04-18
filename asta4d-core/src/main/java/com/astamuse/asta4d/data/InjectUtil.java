@@ -60,7 +60,7 @@ public class InjectUtil {
         String scope;
         Class<?> type;
         Object defaultValue;
-        boolean isContextDataSet;
+        ContextDataSetFactory contextDataSetFactory;
 
         void fixForPrimitiveType() {
             TypeInfo typeInfo = new TypeInfo(type);
@@ -105,8 +105,8 @@ public class InjectUtil {
             ContextDataHolder searchHolder, valueHolder;
             Object value;
             for (FieldInfo fi : target.setFieldList) {
-                if (fi.isContextDataSet) {
-                    value = fi.type.newInstance();
+                if (fi.contextDataSetFactory != null) {
+                    value = fi.contextDataSetFactory.createInstance(fi.type);
                     injectToInstance(value);
                     FieldUtils.writeField(fi.field, instance, value, true);
                 } else if (ContextDataHolder.class.isAssignableFrom(fi.type)) {
@@ -144,8 +144,8 @@ public class InjectUtil {
             }
 
             for (MethodInfo mi : target.setMethodList) {
-                if (mi.isContextDataSet) {
-                    value = mi.type.newInstance();
+                if (mi.contextDataSetFactory != null) {
+                    value = mi.contextDataSetFactory.createInstance(mi.type);
                     injectToInstance(value);
                 } else if (ContextDataHolder.class.isAssignableFrom(mi.type)) {
                     Object hi = mi.type.newInstance();
@@ -208,13 +208,14 @@ public class InjectUtil {
                 value = mi.method.invoke(instance);
                 context.setData(mi.scope, mi.name, value);
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
             String msg = String.format("Exception when inject value from instance of [%s] to Context.", instance.getClass().toString());
             throw new DataOperationException(msg, e);
         }
     }
 
-    private final static InstanceWireTarget getInstanceTarget(Object instance) throws DataOperationException {
+    private final static InstanceWireTarget getInstanceTarget(Object instance) throws DataOperationException, InstantiationException,
+            IllegalAccessException {
         boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
         InstanceWireTarget target = null;
         if (cacheEnable) {
@@ -230,7 +231,8 @@ public class InjectUtil {
         return target;
     }
 
-    private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException {
+    private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException, InstantiationException,
+            IllegalAccessException {
         List<String> reverseTargetScopes = Configuration.getConfiguration().getReverseInjectableScopes();
 
         InstanceWireTarget target = new InstanceWireTarget();
@@ -329,9 +331,9 @@ public class InjectUtil {
                     ContextDataSet cdSet = ConvertableAnnotationRetriever
                             .retrieveAnnotation(ContextDataSet.class, mi.type.getAnnotations());
                     if (cdSet == null) {
-                        mi.isContextDataSet = false;
+                        mi.contextDataSetFactory = null;
                     } else {
-                        mi.isContextDataSet = true;
+                        mi.contextDataSetFactory = cdSet.factory().newInstance();
                     }
 
                     target.setMethodList.add(mi);
@@ -365,9 +367,9 @@ public class InjectUtil {
                     ContextDataSet cdSet = ConvertableAnnotationRetriever
                             .retrieveAnnotation(ContextDataSet.class, fi.type.getAnnotations());
                     if (cdSet == null) {
-                        fi.isContextDataSet = false;
+                        fi.contextDataSetFactory = null;
                     } else {
-                        fi.isContextDataSet = true;
+                        fi.contextDataSetFactory = cdSet.factory().newInstance();
                     }
 
                     target.setFieldList.add(fi);
@@ -416,24 +418,24 @@ public class InjectUtil {
      * @throws DataOperationException
      */
     public final static Object[] getMethodInjectParams(Method method, ContextDataFinder dataFinder) throws DataOperationException {
-        List<TargetInfo> targetList = getMethodTarget(method);
-        Object[] params = new Object[targetList.size()];
-        if (params.length == 0) {
-            return params;
-        }
-
-        Context context = Context.getCurrentThreadContext();
-
-        TargetInfo target;
-
-        @SuppressWarnings("rawtypes")
-        ContextDataHolder holder;
-
         try {
+            List<TargetInfo> targetList = getMethodTarget(method);
+            Object[] params = new Object[targetList.size()];
+            if (params.length == 0) {
+                return params;
+            }
+
+            Context context = Context.getCurrentThreadContext();
+
+            TargetInfo target;
+
+            @SuppressWarnings("rawtypes")
+            ContextDataHolder holder;
+
             for (int i = 0; i < params.length; i++) {
                 target = targetList.get(i);
-                if (target.isContextDataSet) {
-                    Object obj = target.type.newInstance();
+                if (target.contextDataSetFactory != null) {// create context data set
+                    Object obj = target.contextDataSetFactory.createInstance(target.type);
                     injectToInstance(obj);
                     params[i] = obj;
                 } else {
@@ -443,14 +445,14 @@ public class InjectUtil {
                     params[i] = holder == null ? null : holder.getValue();
                 }
             }
+
+            return params;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new DataOperationException("create instance failed.", e);
         }
-
-        return params;
     }
 
-    private final static List<TargetInfo> getMethodTarget(Method method) {
+    private final static List<TargetInfo> getMethodTarget(Method method) throws InstantiationException, IllegalAccessException {
         boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
         List<TargetInfo> targetList = null;
         if (cacheEnable) {
@@ -465,7 +467,7 @@ public class InjectUtil {
         return targetList;
     }
 
-    private final static List<TargetInfo> createMethodTarget(Method method) {
+    private final static List<TargetInfo> createMethodTarget(Method method) throws InstantiationException, IllegalAccessException {
         Class<?>[] types = method.getParameterTypes();
         List<TargetInfo> targetList = new ArrayList<>();
         if (types.length == 0) {
@@ -489,9 +491,9 @@ public class InjectUtil {
             }
 
             if (cdSet == null) {
-                target.isContextDataSet = false;
+                target.contextDataSetFactory = null;
             } else {
-                target.isContextDataSet = true;
+                target.contextDataSetFactory = cdSet.factory().newInstance();
             }
 
             target.fixForPrimitiveType();
