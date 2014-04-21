@@ -20,7 +20,7 @@
     </sect2>
     <sect2 id="i18n-PlaceholderFormatter">
       <title>PlaceholderFormatter</title>
-      <para>Asta4D supports various parameter formats of message template, which can be configured by Configuration#setPlaceholderFormatter.</para>
+      <para>Asta4D supports various parameter formats of message template.</para>
       <table frame='all'><title>Built-in formatters</title>
       <tgroup cols='3' align='left' colsep='1' rowsep='1'>
       <colspec colname='c1'/>
@@ -36,22 +36,26 @@
       <tbody>
         <row>
           <entry>SymbolPlaceholderFormatter (default)</entry>
-          <entry>-</entry>
-          <entry>-</entry>
+          <entry>Use JDK's <ulink url="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String, java.lang.Object...)">
+          String#format</ulink> to format messages.</entry>
+          <entry>"There are %d items in the %s list."</entry>
         </row>
         <row>
           <entry>NamedPlaceholderFormatter</entry>
-          <entry>-</entry>
-          <entry>-</entry>
+          <entry>Use Apache Commons Lang's <ulink url="http://commons.apache.org/proper/commons-lang/javadocs/api-release/org/apache/commons/lang3/text/StrSubstitutor.html#replace(java.lang.CharSequence)">
+          StrSubstitutor#replace</ulink> to format messages. Use "{" and "}" to represent variables place holder.</entry>
+          <entry>"There are {count} items in the {item-name} list."</entry>
         </row>
         <row>
           <entry>NumberPlaceholderFormatter</entry>
-          <entry>-</entry>
-          <entry>-</entry>
+          <entry>Use JDK's <ulink url="http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html#format(java.lang.String, java.lang.Object...)">
+          MessageFormat#format</ulink> to format messages.</entry>
+          <entry>"There are {1} items in the {2} list."</entry>
         </row>
       </tbody>
       </tgroup>
       </table>
+      <para>If the built-in formatters cannot meet the needs, customized implementation of PlaceholderFormatter can be configured by Configuration#setPlaceholderFormatter.</para>
     </sect2>
     <sect2 id="i18n-ResourceBundleHelper-ParamMapResourceBundleHelper">
       <title>ResourceBundleHelper|ParamMapResourceBundleHelper</title>
