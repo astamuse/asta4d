@@ -9,6 +9,60 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>i18n</title>
   
-  <para>...</para>
+  <sect1 id="i18n-message">
+    <title>message stringization</title>
+    <sect2 id="i18n-resource-bundle">
+      <title>Resource bundle</title>
+      <para>Asta4D affords basic i18n support by JDK's built-in resource bundle mechanism. The base name of resource bundle
+      files can be specified by Configuration#setResourceNames which accepts a list of base name. The configured resource bundles
+      will be passed to JDK's <ulink url="http://docs.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String, java.util.Locale, java.lang.ClassLoader)">
+      ResourceBundle#getBundle(String baseName, Locale locale, ClassLoader loader)</ulink> to retrieve messages.</para>
+    </sect2>
+    <sect2 id="i18n-PlaceholderFormatter">
+      <title>PlaceholderFormatter</title>
+      <para>Asta4D supports various parameter formats of message template, which can be configured by Configuration#setPlaceholderFormatter.</para>
+      <table frame='all'><title>Built-in formatters</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+      <colspec colname='c3'/>
+      <thead>
+        <row>
+          <entry>PlaceholderFormatter</entry>
+          <entry>Description</entry>
+          <entry>Example</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>SymbolPlaceholderFormatter (default)</entry>
+          <entry>-</entry>
+          <entry>-</entry>
+        </row>
+        <row>
+          <entry>NamedPlaceholderFormatter</entry>
+          <entry>-</entry>
+          <entry>-</entry>
+        </row>
+        <row>
+          <entry>NumberPlaceholderFormatter</entry>
+          <entry>-</entry>
+          <entry>-</entry>
+        </row>
+      </tbody>
+      </tgroup>
+      </table>
+    </sect2>
+    <sect2 id="i18n-ResourceBundleHelper-ParamMapResourceBundleHelper">
+      <title>ResourceBundleHelper|ParamMapResourceBundleHelper</title>
+    </sect2>
+    <sect2 id="i18n-afd-msg">
+      <title>afd:msg</title>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="i18n-template-file">
+    <title>template file search</title>
+  </sect1>
   
 </chapter>
