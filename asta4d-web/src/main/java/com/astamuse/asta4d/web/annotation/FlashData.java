@@ -22,8 +22,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.astamuse.asta4d.data.TypeUnMacthPolicy;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface FlashData {
     String name() default "";
+
+    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.DEFAULT_VALUE;
 }

@@ -1,7 +1,9 @@
 package com.astamuse.asta4d.web.annotation.convertor;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
+import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.util.annotation.AnnotationConvertor;
 import com.astamuse.asta4d.web.WebApplicationContext;
@@ -16,24 +18,37 @@ public class WebSpecialScopeConvertor implements AnnotationConvertor<Annotation,
 
     @Override
     public ContextData convert(Annotation originalAnnotation) {
+        String scope = "";
         if (originalAnnotation instanceof CookieData) {
-            return gen(WebApplicationContext.SCOPE_COOKIE, ((CookieData) originalAnnotation).name());
+            scope = WebApplicationContext.SCOPE_COOKIE;
         } else if (originalAnnotation instanceof FlashData) {
-            return gen(WebApplicationContext.SCOPE_FLASH, ((FlashData) originalAnnotation).name());
+            scope = WebApplicationContext.SCOPE_FLASH;
         } else if (originalAnnotation instanceof HeaderData) {
-            return gen(WebApplicationContext.SCOPE_HEADER, ((HeaderData) originalAnnotation).name());
+            scope = WebApplicationContext.SCOPE_HEADER;
         } else if (originalAnnotation instanceof PathVar) {
-            return gen(WebApplicationContext.SCOPE_PATHVAR, ((PathVar) originalAnnotation).name());
+            scope = WebApplicationContext.SCOPE_PATHVAR;
         } else if (originalAnnotation instanceof QueryParam) {
-            return gen(WebApplicationContext.SCOPE_QUERYPARAM, ((QueryParam) originalAnnotation).name());
+            scope = WebApplicationContext.SCOPE_QUERYPARAM;
         } else if (originalAnnotation instanceof SessionData) {
-            return gen(WebApplicationContext.SCOPE_SESSION, ((SessionData) originalAnnotation).name());
-        } else {
-            return null;
+            scope = WebApplicationContext.SCOPE_SESSION;
         }
+
+        try {
+            Method nameMethod = originalAnnotation.getClass().getMethod("name");
+            String name = (String) nameMethod.invoke(originalAnnotation);
+
+            Method typeUnMatchMethod = originalAnnotation.getClass().getMethod("typeUnMatch");
+            TypeUnMacthPolicy typeUnMatch = (TypeUnMacthPolicy) typeUnMatchMethod.invoke(originalAnnotation);
+
+            return gen(scope, name, typeUnMatch);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    private ContextData gen(final String scope, final String name) {
+    private ContextData gen(final String scope, final String name, final TypeUnMacthPolicy typeUnMatch) {
         return new ContextData() {
 
             @Override
@@ -54,6 +69,11 @@ public class WebSpecialScopeConvertor implements AnnotationConvertor<Annotation,
             @Override
             public String name() {
                 return name;
+            }
+
+            @Override
+            public TypeUnMacthPolicy typeUnMatch() {
+                return typeUnMatch;
             }
         };
     }

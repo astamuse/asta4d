@@ -16,6 +16,7 @@ import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.ContextDataSetFactory;
 import com.astamuse.asta4d.data.DefaultContextDataSetFactory;
 import com.astamuse.asta4d.data.InjectUtil;
+import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
@@ -83,6 +84,11 @@ public class InjectUtilForConvertableAnnotationTest extends BaseTest {
                 @Override
                 public boolean reverse() {
                     return false;
+                }
+
+                @Override
+                public TypeUnMacthPolicy typeUnMatch() {
+                    return TypeUnMacthPolicy.DEFAULT_VALUE;
                 }
             };
         }
