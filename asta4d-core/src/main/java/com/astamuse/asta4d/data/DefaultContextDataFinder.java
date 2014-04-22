@@ -28,9 +28,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.builtin.String2Bool;
-import com.astamuse.asta4d.data.builtin.String2Int;
-import com.astamuse.asta4d.data.builtin.String2Long;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
@@ -53,9 +50,9 @@ public class DefaultContextDataFinder implements ContextDataFinder {
 
     private final static List<ArrayDataConvertor<?, ?>> getDefaultDataConvertorList() {
         List<ArrayDataConvertor<?, ?>> defaultList = new ArrayList<>();
-        defaultList.add(new String2Long());
-        defaultList.add(new String2Int());
-        defaultList.add(new String2Bool());
+        // defaultList.add(new String2Long());
+        // defaultList.add(new String2Int());
+        // defaultList.add(new String2Bool());
         return defaultList;
     }
 

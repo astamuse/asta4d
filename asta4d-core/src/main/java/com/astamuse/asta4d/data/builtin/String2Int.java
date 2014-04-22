@@ -17,7 +17,7 @@
 
 package com.astamuse.asta4d.data.builtin;
 
-import com.astamuse.asta4d.data.ArrayDataConvertor;
+import com.astamuse.asta4d.data.DataConvertor;
 
 /**
  * Convert String to Integer
@@ -25,7 +25,7 @@ import com.astamuse.asta4d.data.ArrayDataConvertor;
  * @author e-ryu
  * 
  */
-public class String2Int extends ArrayDataConvertor<String, Integer> {
+public class String2Int implements DataConvertor<String, Integer> {
 
     @Override
     public Integer convert(String s) {
