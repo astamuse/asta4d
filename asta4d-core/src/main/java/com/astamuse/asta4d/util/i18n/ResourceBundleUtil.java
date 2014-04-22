@@ -100,18 +100,25 @@ public class ResourceBundleUtil {
     }
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {
-        Context context = Context.getCurrentThreadContext();
-        if (!Configuration.getConfiguration().isCacheEnable()) {
+        Configuration config = Configuration.getConfiguration();
+
+        if (!config.isCacheEnable()) {
             ResourceBundle.clearCache();
         }
+
+        ResourceBundleFactory factory = config.getResourceBundleFactory();
+
         if (locale != null || LocaleUtils.isAvailableLocale(locale)) {
-            return ResourceBundle.getBundle(resourceName, locale);
+            return factory.retrieveResourceBundle(resourceName, locale);
         }
+
+        Context context = Context.getCurrentThreadContext();
         Locale currentLocale = context.getCurrentLocale();
         if (currentLocale != null || LocaleUtils.isAvailableLocale(currentLocale)) {
-            return ResourceBundle.getBundle(resourceName, currentLocale);
+            return factory.retrieveResourceBundle(resourceName, currentLocale);
+        } else {
+            return factory.retrieveResourceBundle(resourceName, Locale.getDefault());
         }
-        return ResourceBundle.getBundle(resourceName);
     }
 
     private ResourceBundleUtil() {

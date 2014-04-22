@@ -36,6 +36,8 @@ import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
+import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
+import com.astamuse.asta4d.util.i18n.ResourceBundleFactory;
 import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
@@ -56,6 +58,8 @@ public class Configuration {
     private List<String> resourceNames = null;
 
     private PlaceholderFormatter placeholderFormatter = new SymbolPlaceholderFormatter();
+
+    private ResourceBundleFactory resourceBundleFactory = new LatinEscapingResourceBundleFactory();
 
     private boolean cacheEnable = true;
 
@@ -158,6 +162,14 @@ public class Configuration {
 
     public void setPlaceholderFormatter(PlaceholderFormatter placeholderFormatter) {
         this.placeholderFormatter = placeholderFormatter;
+    }
+
+    public ResourceBundleFactory getResourceBundleFactory() {
+        return resourceBundleFactory;
+    }
+
+    public void setResourceBundleFactory(ResourceBundleFactory resourceBundleFactory) {
+        this.resourceBundleFactory = resourceBundleFactory;
     }
 
     public boolean isCacheEnable() {
