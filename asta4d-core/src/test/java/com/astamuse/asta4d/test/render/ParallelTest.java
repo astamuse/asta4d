@@ -22,12 +22,12 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.test.render.infra.TimeCalculator;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
 
 @Test(singleThreaded = true)
 public class ParallelTest extends BaseTest {
@@ -35,9 +35,9 @@ public class ParallelTest extends BaseTest {
     public static class TestRender {
         public Renderer listTextRendering() {
             List<String> list = Arrays.asList("a", "b", "c", "d");
-            Renderer renderer = Renderer.create("div#test", list, new ParallelDataConvertor<String, String>() {
+            Renderer renderer = Renderer.create("div#test", list, new ParallelRowConvertor<String, String>() {
                 @Override
-                public String convert(String obj) {
+                public String convert(int rowIndex, String obj) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -45,6 +45,7 @@ public class ParallelTest extends BaseTest {
                     }
                     return obj + "-sleep";
                 }
+
             });
             return renderer;
         }

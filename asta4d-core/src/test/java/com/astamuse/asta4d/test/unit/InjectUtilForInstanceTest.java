@@ -44,6 +44,10 @@ public class InjectUtilForInstanceTest extends BaseTest {
 
     }
 
+    @Test(enabled = false)
+    public void requireHolder(TestSet holder) {
+    }
+
     @Test
     public void contextSetAndInjectableOnInstance() throws Exception {
         Context ctx = Context.getCurrentThreadContext();
@@ -57,8 +61,27 @@ public class InjectUtilForInstanceTest extends BaseTest {
         assertEquals(set.f2.getValue().longValue(), 12345L);
     }
 
-    @Test(enabled = false)
-    public void requireHolder(TestSet holder) {
+    @Test
+    public void retriveContextSetInScopeFirst() throws Exception {
+        Context ctx = Context.getCurrentThreadContext();
+        ctx.setData("f1", "6678");
+        ctx.setData("f2", "12345");
+
+        // retrieve a set at first
+        TestCls tc = new TestCls();
+        InjectUtil.injectToInstance(tc);
+        TestSet set = tc.myset;
+
+        // save the set into the context
+        ctx.setData("myset", set);
+
+        // retrieve again
+        tc = new TestCls();
+        InjectUtil.injectToInstance(tc);
+
+        // should be the same instance
+        assertEquals(tc.myset == set, true);
+
     }
 
     private static Method getMethod(String name, Class<?>... parameterTypes) throws NoSuchMethodException {

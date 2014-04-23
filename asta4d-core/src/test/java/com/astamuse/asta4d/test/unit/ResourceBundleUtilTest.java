@@ -23,13 +23,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
+import com.astamuse.asta4d.util.i18n.CharsetResourceBundleFactory;
+import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.format.NamedPlaceholderFormatter;
@@ -51,6 +55,12 @@ public class ResourceBundleUtilTest extends BaseTest {
     @BeforeClass
     public void setDefaultLocale() {
         Locale.setDefault(Locale.ROOT);
+    }
+
+    @BeforeTest
+    public void prepareResourceBundle() {
+        Configuration.getConfiguration().setResourceBundleFactory(new LatinEscapingResourceBundleFactory());
+        ResourceBundle.clearCache();
     }
 
     @Test
@@ -126,6 +136,19 @@ public class ResourceBundleUtilTest extends BaseTest {
             params.put("date", helper.getExternalParamValue("weatherreport2", "date"));
             params.put("weather", helper.getExternalParamValue("weatherreport2", "weather"));
             assertEquals(helper.getMessage("weatherreport2", params), "今日の天気は曇りです。");
+        }
+    }
+
+    @Test
+    public void utf8MessageFileJaJp() throws Exception {
+        setUp("utf_8_messages");
+        Configuration.getConfiguration().setResourceBundleFactory(new CharsetResourceBundleFactory());
+        ParamMapResourceBundleHelper helper = new ParamMapResourceBundleHelper(Locale.JAPAN, new NamedPlaceholderFormatter());
+        {
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("date", "明日");
+            params.put("weather", "晴れ");
+            assertEquals(helper.getMessage("weatherreport", params), "明日の天気は晴れです。");
         }
     }
 

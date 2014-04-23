@@ -9,6 +9,64 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>i18n</title>
   
-  <para>...</para>
+  <sect1 id="i18n-message">
+    <title>message stringization</title>
+    <sect2 id="i18n-resource-bundle">
+      <title>Resource bundle</title>
+      <para>Asta4D affords basic i18n support by JDK's built-in resource bundle mechanism. The base name of resource bundle
+      files can be specified by Configuration#setResourceNames which accepts a list of base name. The configured resource bundles
+      will be passed to JDK's <ulink url="http://docs.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String, java.util.Locale, java.lang.ClassLoader)">
+      ResourceBundle#getBundle(String baseName, Locale locale, ClassLoader loader)</ulink> to retrieve messages.</para>
+    </sect2>
+    <sect2 id="i18n-PlaceholderFormatter">
+      <title>PlaceholderFormatter</title>
+      <para>Asta4D supports various parameter formats of message template.</para>
+      <table frame='all'><title>Built-in formatters</title>
+      <tgroup cols='3' align='left' colsep='1' rowsep='1'>
+      <colspec colname='c1'/>
+      <colspec colname='c2'/>
+      <colspec colname='c3'/>
+      <thead>
+        <row>
+          <entry>PlaceholderFormatter</entry>
+          <entry>Description</entry>
+          <entry>Example</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>SymbolPlaceholderFormatter (default)</entry>
+          <entry>Use JDK's <ulink url="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String, java.lang.Object...)">
+          String#format</ulink> to format messages.</entry>
+          <entry>"There are %d items in the %s list."</entry>
+        </row>
+        <row>
+          <entry>NamedPlaceholderFormatter</entry>
+          <entry>Use Apache Commons Lang's <ulink url="http://commons.apache.org/proper/commons-lang/javadocs/api-release/org/apache/commons/lang3/text/StrSubstitutor.html#replace(java.lang.CharSequence)">
+          StrSubstitutor#replace</ulink> to format messages. Use "{" and "}" to represent variables place holder.</entry>
+          <entry>"There are {count} items in the {item-name} list."</entry>
+        </row>
+        <row>
+          <entry>NumberPlaceholderFormatter</entry>
+          <entry>Use JDK's <ulink url="http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html#format(java.lang.String, java.lang.Object...)">
+          MessageFormat#format</ulink> to format messages.</entry>
+          <entry>"There are {1} items in the {2} list."</entry>
+        </row>
+      </tbody>
+      </tgroup>
+      </table>
+      <para>If the built-in formatters cannot meet the needs, customized implementation of PlaceholderFormatter can be configured by Configuration#setPlaceholderFormatter.</para>
+    </sect2>
+    <sect2 id="i18n-ResourceBundleHelper-ParamMapResourceBundleHelper">
+      <title>ResourceBundleHelper|ParamMapResourceBundleHelper</title>
+    </sect2>
+    <sect2 id="i18n-afd-msg">
+      <title>afd:msg</title>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="i18n-template-file">
+    <title>template file search</title>
+  </sect1>
   
 </chapter>

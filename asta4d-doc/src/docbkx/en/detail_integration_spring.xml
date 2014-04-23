@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="chapter-integration-spring"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -9,15 +9,125 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Integration with Spring</title>
   
-  <section>
+  <sect1 id="integrate-spring-ioc">
     <title>Integrate with Spring IOC</title>
-    <para>...</para>
-  </section>
+    <para>Asta4D can be integrated with any dependency injection mechanism. We will introduce how to integrate with Spring IOC 
+    as example.</para>
+    <para>There is a package called asta4d-spring which supplies reference implementation to show how to integrate a DI container 
+    to Asta4D. Firstly, as an alternative for Asta4dServlet introduced in the  previous chapter, SpringInitializableServlet can be 
+    used to initialize Spring configuration automatically. The web.xml file should be like following:</para>
+    
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <!-- integrate with spring -->
+    <servlet>
+        <servlet-name>Asta4D Servlet</servlet-name>
+        <servlet-class>com.astamuse.asta4d.misc.spring.SpringInitializableServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:spring/configuration.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Asta4D Servlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+]]>
+      </programlisting>
+    </example>
+    <para>Secondly, the WebApplicationConfiguration instance should be declared as a bean in spring with additional Spring special
+    configurations:</para>
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+    <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
+        <property name="snippetResolver">
+            <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
+        </property>
+        <property name="instanceResolverList">
+            <list>
+                <bean class="com.astamuse.asta4d.misc.spring.SpringManagedInstanceResolver"/>
+            </list>
+        </property>
+    </bean>
+]]>
+      </programlisting>
+      <remark>The SpringManagedSnippetResolver will retrieve snippet instance from Spring container and the SpringManagedInstanceResolver
+      will also retrieve request handler instance from Spring container. Further the SpringManagedSnippetResolver will treat the snippet
+      name in html template files as bean id.</remark>
+    </example>
+    <para>The following example shows a full image of Spring's configuration for Asta4D:</para>
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+    <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
+        <property name="snippetResolver">
+            <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
+        </property>
+        <property name="instanceResolverList">
+            <list>
+                <bean class="com.astamuse.asta4d.misc.spring.SpringManagedInstanceResolver"/>
+            </list>
+        </property>
+        <property name="pageInterceptorList">
+            <list>
+                <bean class="com.astamuse.asta4d.sample.interceptor.SamplePageInterceptor"/>
+            </list>
+        </property>
+        <property name="snippetInvoker">
+            <bean id="snippetInvoker" class="com.astamuse.asta4d.snippet.DefaultSnippetInvoker">
+                <property name="snippetInterceptorList">
+                    <list>
+                        <bean class="com.astamuse.asta4d.sample.interceptor.SampleSnippetInterceptor"/>
+                    </list>
+                </property>
+            </bean>        
+        </property>
+        <property name="urlMappingRuleInitializer">
+            <bean class="com.astamuse.asta4d.sample.UrlRules"/>
+        </property>
+    </bean>
+    
+    <bean id="ComplicatedSnippet" class="com.astamuse.asta4d.sample.snippet.ComplicatedSnippet" scope="prototype"/>
+    <bean id="FormSnippet" class="com.astamuse.asta4d.sample.snippet.FormSnippet" scope="prototype"/>
+    <bean id="SimpleSnippet" class="com.astamuse.asta4d.sample.snippet.SimpleSnippet" scope="prototype"/>
+    <bean id="ShowCodeSnippet" class="com.astamuse.asta4d.sample.snippet.ShowCodeSnippet" scope="prototype"/>
+    
+    <bean class="com.astamuse.asta4d.sample.handler.LoginHandler"/>
+]]>
+      </programlisting>
+      <remark>Note that Asta4D always treats snippet instance as singleton per request for field injection on snippet, 
+      so the scope of snippet beans should be "prototype" basically except there is no field injection in snippet
+      implementation. For the request handlers, "prototype" is not necessary since there is no field injection on
+      request handler.</remark>
+    </example>
+  </sect1>
   
-  <section>
+  <sect1 id="integrate-spring-mvc">
     <title>Integrate with Spring MVC</title>
-    <para>...</para>
-  </section>
+    <para>Asta4D's template engine can be integrated to Spring MVC as view solution too. The following configuration shows how:</para>
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+    <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateInitializer"/>
+    <bean class="com.astamuse.asta4d.misc.spring.mvc.SpringWebPageViewResolver"/>
+]]>
+      </programlisting>
+    </example>
+
+  </sect1>
 
   
 </chapter>

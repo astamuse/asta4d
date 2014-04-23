@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.data;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.data.convertor.DataConvertor;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
@@ -76,9 +79,23 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             return null;
         }
 
-        Object data = dataHolder.getValue();
-        DataConvertorInvoker dataConvertorInvoker = Configuration.getConfiguration().getDataConvertorInvoker();
-        dataHolder.setValue(dataHolder.getScope(), dataHolder.getName(), dataConvertorInvoker.convert(data, targetType));
+        Object foundData = dataHolder.getValue();
+        Object transformedData;
+
+        Class<?> srcType = new TypeInfo(foundData.getClass()).getType();
+        if (targetType.isAssignableFrom(srcType)) {
+            transformedData = foundData;
+        } else if (srcType.isArray() && targetType.isAssignableFrom(srcType.getComponentType())) {
+            transformedData = Array.get(foundData, 0);
+        } else if (targetType.isArray() && targetType.getComponentType().isAssignableFrom(srcType)) {
+            Object array = Array.newInstance(srcType, 1);
+            Array.set(array, 0, foundData);
+            transformedData = array;
+        } else {
+            transformedData = Configuration.getConfiguration().getDataTypeTransformer().transform(srcType, targetType, foundData);
+        }
+
+        dataHolder.setData(dataHolder.getName(), dataHolder.getScope(), foundData, transformedData);
         return dataHolder;
     }
 
@@ -87,16 +104,13 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         if (Context.class.isAssignableFrom(targetType)) {
             return new ContextDataHolder<>(Context.class.getName(), ByTypeScope, context);
         }
-
         if (targetType.equals(ResourceBundleHelper.class)) {
             return new ContextDataHolder<>(ResourceBundleHelper.class.getName(), ByTypeScope, new ResourceBundleHelper());
-        }
-
-        if (targetType.equals(ParamMapResourceBundleHelper.class)) {
+        } else if (targetType.equals(ParamMapResourceBundleHelper.class)) {
             return new ContextDataHolder<>(ParamMapResourceBundleHelper.class.getName(), ByTypeScope, new ParamMapResourceBundleHelper());
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     @SuppressWarnings("rawtypes")
@@ -111,6 +125,18 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             }
             return holder;
         }
+    }
+
+    private Method findConvertMethod(DataConvertor<?, ?> convertor) {
+        Method[] methods = convertor.getClass().getMethods();
+        Method rtnMethod = null;
+        for (Method m : methods) {
+            if (m.getName().equals("convert") && !m.isBridge()) {
+                rtnMethod = m;
+                break;
+            }
+        }
+        return rtnMethod;
     }
 
 }

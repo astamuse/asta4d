@@ -20,13 +20,12 @@ package com.astamuse.asta4d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
-import com.astamuse.asta4d.data.DataConvertorInvoker;
+import com.astamuse.asta4d.data.DataTypeTransformer;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
-import com.astamuse.asta4d.data.DefaultDataConvertorInvoker;
+import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -39,6 +38,8 @@ import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
+import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
+import com.astamuse.asta4d.util.i18n.ResourceBundleFactory;
 import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
@@ -52,15 +53,17 @@ public class Configuration {
 
     private SnippetExtractor snippetExtractor = new DefaultSnippetExtractor();
 
-    private List<PageInterceptor> pageInterceptorList = createDefaultPageInterceptorList();
+    private List<PageInterceptor> pageInterceptorList = new ArrayList<>();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
-    private DataConvertorInvoker dataConvertorInvoker = new DefaultDataConvertorInvoker();
+    private DataTypeTransformer dataTypeTransformer = new DefaultDataTypeTransformer();
 
     private List<String> resourceNames = null;
 
     private PlaceholderFormatter placeholderFormatter = new SymbolPlaceholderFormatter();
+
+    private ResourceBundleFactory resourceBundleFactory = new LatinEscapingResourceBundleFactory();
 
     private boolean cacheEnable = true;
 
@@ -137,10 +140,6 @@ public class Configuration {
         this.pageInterceptorList = pageInterceptorList;
     }
 
-    protected List<PageInterceptor> createDefaultPageInterceptorList() {
-        return new LinkedList<>();
-    }
-
     public ContextDataFinder getContextDataFinder() {
         return contextDataFinder;
     }
@@ -149,12 +148,12 @@ public class Configuration {
         this.contextDataFinder = contextDataFinder;
     }
 
-    public DataConvertorInvoker getDataConvertorInvoker() {
-        return dataConvertorInvoker;
+    public DataTypeTransformer getDataTypeTransformer() {
+        return dataTypeTransformer;
     }
 
-    public void setDataConvertorInvoker(DataConvertorInvoker dataConvertorInvoker) {
-        this.dataConvertorInvoker = dataConvertorInvoker;
+    public void setDataTypeTransformer(DataTypeTransformer dataTypeTransformer) {
+        this.dataTypeTransformer = dataTypeTransformer;
     }
 
     public List<String> getResourceNames() {
@@ -175,6 +174,14 @@ public class Configuration {
 
     public void setPlaceholderFormatter(PlaceholderFormatter placeholderFormatter) {
         this.placeholderFormatter = placeholderFormatter;
+    }
+
+    public ResourceBundleFactory getResourceBundleFactory() {
+        return resourceBundleFactory;
+    }
+
+    public void setResourceBundleFactory(ResourceBundleFactory resourceBundleFactory) {
+        this.resourceBundleFactory = resourceBundleFactory;
     }
 
     public boolean isCacheEnable() {

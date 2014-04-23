@@ -15,25 +15,30 @@
  * 
  */
 
-package com.astamuse.asta4d.data.builtin;
+package com.astamuse.asta4d.data.convertor;
 
-import com.astamuse.asta4d.data.ArrayDataConvertor;
+import com.astamuse.asta4d.data.InjectUtil;
 
 /**
- * Convert String to Boolean
+ * 
+ * This interface is used by {@link InjectUtil} to convert context data to the
+ * appropriate type automatically
  * 
  * @author e-ryu
  * 
+ * @param <S>
+ *            source type
+ * @param <T>
+ *            target type
  */
-public class String2Bool extends ArrayDataConvertor<String, Boolean> {
+public interface DataConvertor<S, T> {
 
-    @Override
-    public Boolean convert(String s) {
-        if (s == null) {
-            return false;
-        } else {
-            return Boolean.parseBoolean(s);
-        }
-    }
-
+    /**
+     * convert a data from the original type to a certain type
+     * 
+     * @param obj
+     *            the data wanted to be converted
+     * @return converted result
+     */
+    public T convert(S obj);
 }
