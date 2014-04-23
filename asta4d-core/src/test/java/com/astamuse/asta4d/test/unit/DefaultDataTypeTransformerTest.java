@@ -25,12 +25,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.data.DataConvertor;
-import com.astamuse.asta4d.data.DataConvertorInvoker;
 import com.astamuse.asta4d.data.DataOperationException;
+import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
+import com.astamuse.asta4d.data.convertor.DataConvertor;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
-public class DataConvertorInvokerTest extends BaseTest {
+public class DefaultDataTypeTransformerTest extends BaseTest {
 
     public static class PA {
         String value;
@@ -44,6 +44,8 @@ public class DataConvertorInvokerTest extends BaseTest {
             if (this == obj)
                 return true;
             if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
                 return false;
             PA other = (PA) obj;
             if (value == null) {
@@ -70,6 +72,8 @@ public class DataConvertorInvokerTest extends BaseTest {
             if (this == obj)
                 return true;
             if (!super.equals(obj))
+                return false;
+            if (getClass() != obj.getClass())
                 return false;
             PB other = (PB) obj;
             if (otherValue == null) {
@@ -122,16 +126,29 @@ public class DataConvertorInvokerTest extends BaseTest {
         }
     }
 
-    private DataConvertorInvoker invoker;
+    public static class String2LongSpecial implements DataConvertor<String, Long> {
+        @Override
+        public Long convert(String obj) {
+            if (obj.startsWith("special:")) {
+                Long value = Long.parseLong(obj.substring("special:".length()));
+                return value + 100;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    private DefaultDataTypeTransformer invoker;
 
     @BeforeClass
     public void prepareInvoker() {
-        invoker = new DataConvertorInvoker();
+        invoker = new DefaultDataTypeTransformer();
         List<DataConvertor> list = new LinkedList<DataConvertor>();
         list.add(new String2PB());
         list.add(new PA2String());
         list.add(new String2LongArray());
         list.add(new StringArray2Long());
+        list.add(new String2LongSpecial());
         invoker.setDataConvertorList(list);
     }
 
@@ -155,15 +172,17 @@ public class DataConvertorInvokerTest extends BaseTest {
             {String[][].class, Integer.class, new String[][]{{"123","456"}}, 123},
             {String[][][].class, Integer.class, new String[][][]{{{"123","456"}}}, 123},
             //compatible type
-            {String.class, PA.class, "123", new PA("123")},
+            {String.class, PA.class, "123", new PB("123")},
             {PB.class, String.class, new PB("123"), "123"},
+            //transform by content format
+            {String.class, Long.class, "special:398", 498L},
         };
         //@formatter:on
     }
 
     @Test(dataProvider = "test-data")
-    public void testBasicConversion(Class srcType, Class targetType, Object data, Object expectedData) throws DataOperationException {
-        Object ret = invoker.convertData(srcType, targetType, data);
+    public void testTransforming(Class srcType, Class targetType, Object data, Object expectedData) throws DataOperationException {
+        Object ret = invoker.transform(srcType, targetType, data);
         Assert.assertEquals(ret, expectedData);
     }
 }

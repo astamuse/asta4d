@@ -15,9 +15,8 @@
  * 
  */
 
-package com.astamuse.asta4d.data.builtin;
+package com.astamuse.asta4d.data.convertor;
 
-import com.astamuse.asta4d.data.DataConvertor;
 
 /**
  * Convert String to Boolean

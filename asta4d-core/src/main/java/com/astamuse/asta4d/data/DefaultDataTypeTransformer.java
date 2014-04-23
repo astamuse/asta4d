@@ -11,14 +11,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.astamuse.asta4d.data.builtin.String2Bool;
-import com.astamuse.asta4d.data.builtin.String2Int;
-import com.astamuse.asta4d.data.builtin.String2Long;
+import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.data.convertor.DataConvertor;
+import com.astamuse.asta4d.data.convertor.String2Bool;
+import com.astamuse.asta4d.data.convertor.String2Int;
+import com.astamuse.asta4d.data.convertor.String2Long;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class DataConvertorInvoker {
+public class DefaultDataTypeTransformer implements DataTypeTransformer {
 
     private static final class DataConvertorKey {
         private String srcTypeName;
@@ -82,20 +84,18 @@ public class DataConvertorInvoker {
         this.dataConvertorList = list;
     }
 
-    private Pair<Class, Class> extractConvertorTypeInfo(DataConvertor convertor) {
-        Type[] intfs = convertor.getClass().getGenericInterfaces();
-        Class rawCls;
-        for (Type intf : intfs) {
-            if (intf instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) intf;
-                rawCls = (Class) pt.getRawType();
-                if (rawCls.getName().equals(DataConvertor.class.getName())) {
-                    Type[] typeArgs = pt.getActualTypeArguments();
-                    return Pair.of((Class) typeArgs[0], (Class) typeArgs[1]);
-                }
+    public Object transform(Class<?> srcType, Class<?> targetType, Object data) throws DataOperationException {
+        List<DataConvertor> convertorList = findConvertor(srcType, targetType);
+        if (convertorList.isEmpty()) {
+            return null;
+        }
+        Object ret;
+        for (DataConvertor dataConvertor : convertorList) {
+            ret = dataConvertor.convert(data);
+            if (ret != null) {
+                return ret;
             }
         }
-        // TODO should output warning or throw exception
         return null;
     }
 
@@ -105,17 +105,22 @@ public class DataConvertorInvoker {
         List<DataConvertor> foundConvertorList = null;
 
         // find in cache
-        /*
         if (Configuration.getConfiguration().isCacheEnable()) {
-            foundConvertor = convertorCacheMap.get(cacheKey);
+            foundConvertorList = convertorCacheMap.get(cacheKey);
         }
-        */
 
         if (foundConvertorList != null) {
             return foundConvertorList;
+        } else {
+            foundConvertorList = extractConvertors(srcType, targetType);
+            convertorCacheMap.put(cacheKey, foundConvertorList);
+            return foundConvertorList;
         }
+    }
 
-        foundConvertorList = new LinkedList<DataConvertor>();
+    private List<DataConvertor> extractConvertors(Class<?> srcType, Class<?> targetType) {
+
+        List<DataConvertor> foundConvertorList = new LinkedList<DataConvertor>();
 
         // find in list as element to element
         for (DataConvertor convertor : dataConvertorList) {
@@ -230,19 +235,20 @@ public class DataConvertorInvoker {
         return foundConvertorList;
     }
 
-    public Object convertData(Class<?> srcType, Class<?> targetType, Object data) throws DataOperationException {
-        List<DataConvertor> convertorList = findConvertor(srcType, targetType);
-        if (convertorList.isEmpty()) {
-            return null;
-        }
-        Object ret;
-        for (DataConvertor dataConvertor : convertorList) {
-            ret = dataConvertor.convert(data);
-            if (ret != null) {
-                return ret;
+    private Pair<Class, Class> extractConvertorTypeInfo(DataConvertor convertor) {
+        Type[] intfs = convertor.getClass().getGenericInterfaces();
+        Class rawCls;
+        for (Type intf : intfs) {
+            if (intf instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) intf;
+                rawCls = (Class) pt.getRawType();
+                if (rawCls.getName().equals(DataConvertor.class.getName())) {
+                    Type[] typeArgs = pt.getActualTypeArguments();
+                    return Pair.of((Class) typeArgs[0], (Class) typeArgs[1]);
+                }
             }
         }
+        // TODO should output warning or throw exception
         return null;
     }
-
 }

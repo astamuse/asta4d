@@ -15,21 +15,20 @@
  * 
  */
 
-package com.astamuse.asta4d.data.builtin;
+package com.astamuse.asta4d.data.convertor;
 
-import com.astamuse.asta4d.data.DataConvertor;
 
 /**
- * Convert String to Integer
+ * Convert String to Long
  * 
  * @author e-ryu
  * 
  */
-public class String2Int implements DataConvertor<String, Integer> {
+public class String2Long implements DataConvertor<String, Long> {
 
     @Override
-    public Integer convert(String s) {
-        return Integer.parseInt(s);
+    public Long convert(String s) {
+        return Long.parseLong(s);
     }
 
 }

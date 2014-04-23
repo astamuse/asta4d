@@ -15,7 +15,9 @@
  * 
  */
 
-package com.astamuse.asta4d.data;
+package com.astamuse.asta4d.data.convertor;
+
+import com.astamuse.asta4d.data.InjectUtil;
 
 /**
  * 
