@@ -43,53 +43,53 @@
       
     </dependencies>
 
-        <build>
-          <plugins>
-            <plugin>
-              <artifactId>maven-antrun-plugin</artifactId>
-              <version>1.7</version>
-              <executions>
-                <execution>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>run</goal>
-                  </goals>
-                  <configuration>
-                    <target>
-                      <delete dir="../asta4d-archetype-prototype/src"/>
-                      <copy todir="../asta4d-archetype-prototype/src">
-                        <fileset dir="src" includes="**/*" />
-                      </copy>
-                    </target>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-resources-plugin</artifactId>
-              <version>2.6</version>
-              <executions>
-                <execution>
-                  <id>copy-resources</id>
-                  <phase>compile</phase>
-                  <goals>
-                    <goal>copy-resources</goal>
-                  </goals>
-                  <configuration>
-                    <encoding>utf-8</encoding>
-                    <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/src</outputDirectory>
-                    <resources>
-                      <resource>
-                        <directory>src/main/java</directory>
-                      </resource>
-                    </resources>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </build>
+    <build>
+      <plugins>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>run</goal>
+              </goals>
+              <configuration>
+                <target>
+                  <delete dir="../asta4d-archetype-prototype/src"/>
+                  <copy todir="../asta4d-archetype-prototype/src">
+                    <fileset dir="src" includes="**/*" />
+                  </copy>
+                </target>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>2.6</version>
+          <executions>
+            <execution>
+              <id>copy-resources</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <encoding>utf-8</encoding>
+                <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/src</outputDirectory>
+                <resources>
+                  <resource>
+                    <directory>src/main/java</directory>
+                  </resource>
+                </resources>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
 
     <profiles>
       <!-- With this profile, jetty will run during the "test" phase -->
