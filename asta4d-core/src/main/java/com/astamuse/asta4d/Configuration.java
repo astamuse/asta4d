@@ -23,7 +23,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
+import com.astamuse.asta4d.data.DataTypeTransformer;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -54,6 +56,8 @@ public class Configuration {
     private List<PageInterceptor> pageInterceptorList = new ArrayList<>();
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
+
+    private DataTypeTransformer dataTypeTransformer = new DefaultDataTypeTransformer();
 
     private List<String> resourceNames = null;
 
@@ -142,6 +146,14 @@ public class Configuration {
 
     public void setContextDataFinder(ContextDataFinder contextDataFinder) {
         this.contextDataFinder = contextDataFinder;
+    }
+
+    public DataTypeTransformer getDataTypeTransformer() {
+        return dataTypeTransformer;
+    }
+
+    public void setDataTypeTransformer(DataTypeTransformer dataTypeTransformer) {
+        this.dataTypeTransformer = dataTypeTransformer;
     }
 
     public List<String> getResourceNames() {

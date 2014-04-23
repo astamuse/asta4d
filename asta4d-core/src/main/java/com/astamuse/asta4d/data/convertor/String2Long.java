@@ -17,7 +17,6 @@
 
 package com.astamuse.asta4d.data.convertor;
 
-
 /**
  * Convert String to Long
  * 
@@ -28,7 +27,11 @@ public class String2Long implements DataConvertor<String, Long> {
 
     @Override
     public Long convert(String s) {
-        return Long.parseLong(s);
+        try {
+            return Long.parseLong(s);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
     }
 
 }

@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.convertor.DataConvertor;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
@@ -40,8 +41,6 @@ public class DefaultContextDataFinder implements ContextDataFinder {
 
     private final static String ByTypeScope = DefaultContextDataFinder.class.getName() + "#findByType";
 
-    private DataTypeTransformer dataTypeTransformer = new DefaultDataTypeTransformer();
-
     private List<String> dataSearchScopeOrder = getDefaultScopeOrder();
 
     private final static List<String> getDefaultScopeOrder() {
@@ -50,14 +49,6 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         list.add(Context.SCOPE_DEFAULT);
         list.add(Context.SCOPE_GLOBAL);
         return list;
-    }
-
-    public DataTypeTransformer getDataTypeTransformer() {
-        return dataTypeTransformer;
-    }
-
-    public void setDataTypeTransformer(DataTypeTransformer dataTypeTransformer) {
-        this.dataTypeTransformer = dataTypeTransformer;
     }
 
     public List<String> getDataSearchScopeOrder() {
@@ -88,22 +79,23 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             return null;
         }
 
-        Object data = dataHolder.getValue();
+        Object foundData = dataHolder.getValue();
+        Object transformedData;
 
-        Class<?> srcType = new TypeInfo(data.getClass()).getType();
+        Class<?> srcType = new TypeInfo(foundData.getClass()).getType();
         if (targetType.isAssignableFrom(srcType)) {
-            // do nothing
+            transformedData = foundData;
         } else if (srcType.isArray() && targetType.isAssignableFrom(srcType.getComponentType())) {
-            data = Array.get(data, 0);
+            transformedData = Array.get(foundData, 0);
         } else if (targetType.isArray() && targetType.getComponentType().isAssignableFrom(srcType)) {
             Object array = Array.newInstance(srcType, 1);
-            Array.set(array, 0, data);
-            data = array;
+            Array.set(array, 0, foundData);
+            transformedData = array;
         } else {
-            data = dataTypeTransformer.transform(srcType, targetType, data);
+            transformedData = Configuration.getConfiguration().getDataTypeTransformer().transform(srcType, targetType, foundData);
         }
 
-        dataHolder.setData(dataHolder.getName(), dataHolder.getScope(), data);
+        dataHolder.setData(dataHolder.getName(), dataHolder.getScope(), foundData, transformedData);
         return dataHolder;
     }
 

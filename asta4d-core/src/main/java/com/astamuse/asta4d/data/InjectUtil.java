@@ -45,6 +45,7 @@ import com.thoughtworks.paranamer.Paranamer;
  * @author e-ryu
  * 
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class InjectUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(InjectUtil.class);
@@ -58,10 +59,11 @@ public class InjectUtil {
     private static class TargetInfo {
         String name;
         String scope;
+        TypeUnMacthPolicy typeUnMatch;
+        ContextDataSetFactory contextDataSetFactory;
         Class<?> type;
         boolean isContextDataHolder;
         Object defaultValue;
-        ContextDataSetFactory contextDataSetFactory;
 
         void fixForPrimitiveType() {
             TypeInfo typeInfo = new TypeInfo(type);
@@ -108,7 +110,6 @@ public class InjectUtil {
      * @param instance
      * @throws DataOperationException
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public final static void injectToInstance(Object instance) throws DataOperationException {
         try {
             InstanceWireTarget target = getInstanceTarget(instance);
@@ -130,6 +131,8 @@ public class InjectUtil {
                 }
                 ContextDataHolder foundData = findValueForTarget(fi, searchType);
 
+                handleTypeUnMatch(instance, fi, foundData);
+
                 if (fi.isContextDataHolder) {
                     transferDataHolder(foundData, valueHolder);
                     FieldUtils.writeField(fi.field, instance, valueHolder, true);
@@ -147,6 +150,7 @@ public class InjectUtil {
                             valueHolder.getClass().getName() + ". You should define an extended class to return the type class");
                 }
                 ContextDataHolder foundData = findValueForTarget(mi, searchType);
+                handleTypeUnMatch(instance, mi, foundData);
                 if (mi.isContextDataHolder) {
                     transferDataHolder(foundData, valueHolder);
                     mi.method.invoke(instance, valueHolder);
@@ -159,8 +163,49 @@ public class InjectUtil {
         }
     }
 
+    private static void handleTypeUnMatch(Object instance, FieldInfo target, ContextDataHolder valueHolder) throws DataOperationException {
+        handleTypeUnMatch(instance, target.field, null, null, -1, target, valueHolder);
+    }
+
+    private static void handleTypeUnMatch(Object instance, MethodInfo target, ContextDataHolder valueHolder) throws DataOperationException {
+        handleTypeUnMatch(instance, null, target.method, null, -1, target, valueHolder);
+    }
+
+    private static void handleTypeUnMatch(Method method, int methodParameterIndex, TargetInfo target, ContextDataHolder valueHolder)
+            throws DataOperationException {
+        handleTypeUnMatch(null, null, null, method, methodParameterIndex, target, valueHolder);
+    }
+
+    private static void handleTypeUnMatch(Object instance, Field field, Method setter, Method method, int methodParameterIndex,
+            TargetInfo target, ContextDataHolder valueHolder) throws DataOperationException {
+        if (valueHolder.getFoundOriginalData() != null && valueHolder.getValue() == null) {
+            // type unmatched
+            switch (target.typeUnMatch) {
+            case EXCEPTION:
+                String msg = "Found data(%s) cannot be coverted from [%s] to [%s].";
+                msg = String.format(msg, valueHolder.getFoundOriginalData(), valueHolder.getFoundOriginalData().getClass(), target.type);
+                throw new DataOperationException(msg);
+            case DEFAULT_VALUE:
+                valueHolder.setData(valueHolder.getName(), valueHolder.getScope(), target.defaultValue);
+                break;
+            case DEFAULT_VALUE_AND_TRACE:
+                ContextDataHolder traceHolder = new ContextDataHolder();
+                transferDataHolder(valueHolder, traceHolder);
+                if (field != null) {
+                    InjectTrace.saveInstanceInjectionTraceInfo(instance, field, traceHolder);
+                } else if (setter != null) {
+                    InjectTrace.saveInstanceInjectionTraceInfo(instance, setter, traceHolder);
+                } else if (method != null) {
+                    InjectTrace.saveMethodInjectionTraceInfo(method, methodParameterIndex, traceHolder);
+                }
+                valueHolder.setData(valueHolder.getName(), valueHolder.getScope(), target.defaultValue);
+                break;
+            }
+        }
+    }
+
     private static void transferDataHolder(ContextDataHolder from, ContextDataHolder to) {
-        to.setData(from.getName(), from.getScope(), from.getValue());
+        to.setData(from.getName(), from.getScope(), from.getFoundOriginalData(), from.getValue());
     }
 
     private static ContextDataHolder findValueForTarget(TargetInfo targetInfo, Class overrideSearchType) throws DataOperationException {
@@ -298,6 +343,7 @@ public class InjectUtil {
                     }
                 }
                 mi.scope = cd.scope();
+                mi.typeUnMatch = cd.typeUnMatch();
 
                 if (isGet) {
                     // only if the reverse value is explicitly set to true and
@@ -358,6 +404,7 @@ public class InjectUtil {
                         fi.name = cd.name();
                     }
                     fi.scope = cd == null ? "" : cd.scope();
+                    fi.typeUnMatch = cd.typeUnMatch();
                     fi.fixForPrimitiveType();
 
                     ContextDataSet cdSet = ConvertableAnnotationRetriever
@@ -413,7 +460,6 @@ public class InjectUtil {
      * @return Retrieved values
      * @throws DataOperationException
      */
-    @SuppressWarnings("rawtypes")
     public final static Object[] getMethodInjectParams(Method method, ContextDataFinder dataFinder) throws DataOperationException {
         try {
             List<TargetInfo> targetList = getMethodTarget(method);
@@ -438,6 +484,9 @@ public class InjectUtil {
                             valueHolder.getClass().getName() + ". You should define an extended class to return the type class");
                 }
                 foundData = findValueForTarget(target, searchType);
+
+                handleTypeUnMatch(method, i, target, foundData);
+
                 if (target.isContextDataHolder) {
                     transferDataHolder(foundData, valueHolder);
                     params[i] = valueHolder;
@@ -488,6 +537,7 @@ public class InjectUtil {
             cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, target.type.getAnnotations());
             target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
+            target.typeUnMatch = cd == null ? TypeUnMacthPolicy.DEFAULT_VALUE : cd.typeUnMatch();
             if (StringUtils.isEmpty(target.name)) {
                 target.name = parameterNames[i];
             }

@@ -17,7 +17,6 @@
 
 package com.astamuse.asta4d.data.convertor;
 
-
 /**
  * Convert String to Integer
  * 
@@ -28,7 +27,11 @@ public class String2Int implements DataConvertor<String, Integer> {
 
     @Override
     public Integer convert(String s) {
-        return Integer.parseInt(s);
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
     }
 
 }
