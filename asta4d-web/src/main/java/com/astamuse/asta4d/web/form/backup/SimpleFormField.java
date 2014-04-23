@@ -1,13 +1,8 @@
-package com.astamuse.asta4d.web.form;
+package com.astamuse.asta4d.web.form.backup;
 
 import com.astamuse.asta4d.data.ContextDataHolder;
-import com.astamuse.asta4d.data.DataConvertorInvoker;
-import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
 public class SimpleFormField<T> extends ContextDataHolder implements ValidatableFormField<T> {
-
-    private final static DataConvertorInvoker DataConvertorInvoker = WebApplicationConfiguration.getWebApplicationConfiguration()
-            .getDataConvertorInvoker();
 
     private T fieldValue;
 
@@ -23,13 +18,15 @@ public class SimpleFormField<T> extends ContextDataHolder implements Validatable
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setValue(String scope, String name, Object value) {
-        super.setValue(scope, name, value);
+    public void setData(String scope, String name, Object value) {
+        super.setData(scope, name, value);
+        /*
         try {
             fieldValue = (T) DataConvertorInvoker.convert(value, fieldValueType);
         } catch (Exception e) {
             isTypeMismatched = true;
         }
+        */
     }
 
     @Override

@@ -47,6 +47,7 @@ public class WebApplicationConfiguration extends Configuration {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
         this.setContextDataFinder(new WebApplicationContextDataFinder());
         this.setRequestHandlerInvokerFactory(new DefaultRequestHandlerInvokerFactory());
+        this.setPageInterceptorList(createDefaultPageInterceptorList());
 
         // we only allow request scope being reversely injected
         List<String> reverseInjectableScopes = new ArrayList<>();
@@ -55,12 +56,18 @@ public class WebApplicationConfiguration extends Configuration {
 
     }
 
-    @Override
     protected List<PageInterceptor> createDefaultPageInterceptorList() {
         // afford a convenience for global rendering by default
         List<PageInterceptor> pageInterceptorList = new LinkedList<>();
         pageInterceptorList.add(new GlobalRenderingInterceptor());
         return pageInterceptorList;
+    }
+
+    @Override
+    public void setPageInterceptorList(List<PageInterceptor> pageInterceptorList) {
+        List<PageInterceptor> list = createDefaultPageInterceptorList();
+        list.addAll(pageInterceptorList);
+        super.setPageInterceptorList(list);
     }
 
     public final static WebApplicationConfiguration getWebApplicationConfiguration() {
