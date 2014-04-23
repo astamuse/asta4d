@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.data.convertor.DataConvertor;
@@ -21,6 +23,8 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultDataTypeTransformer implements DataTypeTransformer {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultDataTypeTransformer.class);
 
     private static final class DataConvertorKey {
         private String srcTypeName;
@@ -248,7 +252,7 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
                 }
             }
         }
-        // TODO should output warning or throw exception
+        logger.warn("Could not extract type information from DataConvertor:" + convertor.getClass().getName());
         return null;
     }
 }
