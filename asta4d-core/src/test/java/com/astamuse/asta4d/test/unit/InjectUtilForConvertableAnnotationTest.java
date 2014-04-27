@@ -48,6 +48,11 @@ public class InjectUtilForConvertableAnnotationTest extends BaseTest {
                 public Class<? extends ContextDataSetFactory> factory() {
                     return DefaultContextDataSetFactory.class;
                 }
+
+                @Override
+                public boolean singletonInContext() {
+                    return false;
+                }
             };
         }
 

@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,6 +51,8 @@ public class InjectUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(InjectUtil.class);
 
+    private static final String ContextDataSetSingletonMapKey = "ContextDataSetSingletonMapKey#" + InjectUtil.class.getName();
+
     /**
      * A class that present the injectable target information
      * 
@@ -61,6 +64,7 @@ public class InjectUtil {
         String scope;
         TypeUnMacthPolicy typeUnMatch;
         ContextDataSetFactory contextDataSetFactory;
+        boolean isContextDataSetSingletonInContext;
         Class<?> type;
         boolean isContextDataHolder;
         Object defaultValue;
@@ -215,8 +219,25 @@ public class InjectUtil {
         Class searchType = overrideSearchType == null ? targetInfo.type : overrideSearchType;
         ContextDataHolder valueHolder = dataFinder.findDataInContext(context, targetInfo.scope, targetInfo.name, searchType);
         if (valueHolder == null && targetInfo.contextDataSetFactory != null) {
-            Object value = targetInfo.contextDataSetFactory.createInstance(targetInfo.type);
-            injectToInstance(value);
+            Object value;
+            if (targetInfo.isContextDataSetSingletonInContext) {
+                // this map was initialized when the context was initialized
+                HashMap<String, Object> cdSetSingletonMap = context.getData(ContextDataSetSingletonMapKey);
+                // we must synchronize it to avoid concurrent access on the map
+                synchronized (cdSetSingletonMap) {
+                    String clsName = targetInfo.type.getName();
+                    value = cdSetSingletonMap.get(clsName);
+                    if (value == null) {
+                        value = targetInfo.contextDataSetFactory.createInstance(targetInfo.type);
+                        injectToInstance(value);
+                        cdSetSingletonMap.put(clsName, value);
+                    }
+                }
+            } else {
+                value = targetInfo.contextDataSetFactory.createInstance(targetInfo.type);
+                injectToInstance(value);
+            }
+
             valueHolder = new ContextDataHolder(targetInfo.name, targetInfo.scope, value);
         } else if (valueHolder == null) {
             valueHolder = new ContextDataHolder(targetInfo.name, "#DefaultValue", targetInfo.defaultValue);
@@ -375,6 +396,7 @@ public class InjectUtil {
                         mi.contextDataSetFactory = null;
                     } else {
                         mi.contextDataSetFactory = cdSet.factory().newInstance();
+                        mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
                     }
 
                     target.setMethodList.add(mi);
@@ -413,6 +435,7 @@ public class InjectUtil {
                         fi.contextDataSetFactory = null;
                     } else {
                         fi.contextDataSetFactory = cdSet.factory().newInstance();
+                        fi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
                     }
 
                     target.setFieldList.add(fi);
@@ -546,11 +569,16 @@ public class InjectUtil {
                 target.contextDataSetFactory = null;
             } else {
                 target.contextDataSetFactory = cdSet.factory().newInstance();
+                target.isContextDataSetSingletonInContext = cdSet.singletonInContext();
             }
 
             target.fixForPrimitiveType();
             targetList.add(target);
         }
         return targetList;
+    }
+
+    public static final void initContext(Context context) {
+        context.setData(ContextDataSetSingletonMapKey, new HashMap());
     }
 }

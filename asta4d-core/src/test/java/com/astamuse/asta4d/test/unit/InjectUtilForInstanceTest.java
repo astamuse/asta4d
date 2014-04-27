@@ -15,8 +15,20 @@ import com.astamuse.asta4d.test.render.infra.BaseTest;
 
 public class InjectUtilForInstanceTest extends BaseTest {
 
-    @ContextDataSet
+    @ContextDataSet(singletonInContext = false)
     public static class TestSet {
+        @ContextData
+        private long f1;
+        @ContextData
+        public ContextDataHolder<Long> f2 = new ContextDataHolder<>(Long.class);
+
+        public long getF1() {
+            return f1;
+        }
+    }
+
+    @ContextDataSet(singletonInContext = true)
+    public static class TestSingletonSet {
         @ContextData
         private long f1;
         @ContextData
@@ -30,6 +42,9 @@ public class InjectUtilForInstanceTest extends BaseTest {
     public static class TestCls {
         @ContextData
         private TestSet myset;
+
+        @ContextData
+        private TestSingletonSet mySingletonSet;
     }
 
     @Test
@@ -56,9 +71,19 @@ public class InjectUtilForInstanceTest extends BaseTest {
 
         TestCls tc = new TestCls();
         InjectUtil.injectToInstance(tc);
-        TestSet set = tc.myset;
-        assertEquals(set.getF1(), 6678L);
-        assertEquals(set.f2.getValue().longValue(), 12345L);
+
+        assertEquals(tc.myset.getF1(), 6678L);
+        assertEquals(tc.myset.f2.getValue().longValue(), 12345L);
+
+        assertEquals(tc.mySingletonSet.getF1(), 6678L);
+        assertEquals(tc.mySingletonSet.f2.getValue().longValue(), 12345L);
+
+        TestCls tc2 = new TestCls();
+        InjectUtil.injectToInstance(tc2);
+
+        assertEquals(tc.myset == tc2.myset, false);// new instance
+        assertEquals(tc.mySingletonSet == tc2.mySingletonSet, true);// the same instance
+
     }
 
     @Test
