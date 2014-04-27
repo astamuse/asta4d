@@ -39,7 +39,7 @@ public class WebSpecialScopeConvertorTest {
         @SessionData(name = "session")
         public String sessionData;
 
-        @SessionData(name = "session", typeUnMatch = TypeUnMacthPolicy.EXCEPTION)
+        @SessionData(name = "session", typeUnMatch = TypeUnMacthPolicy.DEFAULT_VALUE)
         public String sessionData2;
     }
 
@@ -47,13 +47,13 @@ public class WebSpecialScopeConvertorTest {
     public Object[][] getPathConvertTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
-            {"cookieData", "cook", WebApplicationContext.SCOPE_COOKIE, TypeUnMacthPolicy.DEFAULT_VALUE},
-            {"flashData", "flash", WebApplicationContext.SCOPE_FLASH, TypeUnMacthPolicy.DEFAULT_VALUE},
-            {"headerData", "header", WebApplicationContext.SCOPE_HEADER, TypeUnMacthPolicy.DEFAULT_VALUE},
-            {"pathData", "path", WebApplicationContext.SCOPE_PATHVAR, TypeUnMacthPolicy.DEFAULT_VALUE},
-            {"queryData", "query", WebApplicationContext.SCOPE_QUERYPARAM, TypeUnMacthPolicy.DEFAULT_VALUE},
-            {"sessionData", "session", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.DEFAULT_VALUE},
-            {"sessionData2", "session", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.EXCEPTION},
+            {"cookieData", "cook", WebApplicationContext.SCOPE_COOKIE, TypeUnMacthPolicy.EXCEPTION},
+            {"flashData", "flash", WebApplicationContext.SCOPE_FLASH, TypeUnMacthPolicy.EXCEPTION},
+            {"headerData", "header", WebApplicationContext.SCOPE_HEADER, TypeUnMacthPolicy.EXCEPTION},
+            {"pathData", "path", WebApplicationContext.SCOPE_PATHVAR, TypeUnMacthPolicy.EXCEPTION},
+            {"queryData", "query", WebApplicationContext.SCOPE_QUERYPARAM, TypeUnMacthPolicy.EXCEPTION},
+            {"sessionData", "session", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.EXCEPTION},
+            {"sessionData2", "session", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.DEFAULT_VALUE},
         };
         //@formatter:on
     }
