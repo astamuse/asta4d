@@ -42,6 +42,22 @@ public class TemplateExtractionTest extends BaseTest {
     }
 
     @Test
+    public void loadTempateWithComment() {
+        new SimpleCase("TemplateWithComment.html");
+    }
+
+    public static class MetaRender {
+        public Renderer render() {
+            return Renderer.create("meta", "mm", "0");
+        }
+    }
+
+    @Test
+    public void loadTempateWithSpecialHeadTags() {
+        new SimpleCase("TemplateWithSpecialHeadTags.html");
+    }
+
+    @Test
     public void loadTempateWithEmbed() {
         new SimpleCase("TemplateWithEmbed.html");
     }

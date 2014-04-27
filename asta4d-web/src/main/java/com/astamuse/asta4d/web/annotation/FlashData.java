@@ -15,16 +15,19 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.annotation;
+package com.astamuse.asta4d.web.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.astamuse.asta4d.data.annotation.ContextData;
-import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
+import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-@ContextData(name = RequestDispatcher.KEY_REQUEST_HANDLER_RESULT)
-public @interface RequestHandlerResult {
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+public @interface FlashData {
+    String name() default "";
 
+    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.EXCEPTION;
 }

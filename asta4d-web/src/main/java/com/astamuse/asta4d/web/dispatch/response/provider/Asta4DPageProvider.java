@@ -25,7 +25,7 @@ import org.jsoup.select.Elements;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
-public class Asta4DPageProvider implements ContentProvider<Page> {
+public class Asta4DPageProvider implements ContentProvider {
 
     public final static String AttrBodyOnly = Asta4DPageProvider.class.getName() + "##bodyOnly";
 

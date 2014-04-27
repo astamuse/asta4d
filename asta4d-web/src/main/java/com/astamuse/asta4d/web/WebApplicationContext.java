@@ -58,8 +58,6 @@ public class WebApplicationContext extends Context {
 
     private final static String SAVEKEY_ACCESS_URI = WebApplicationContext.class.getName() + "##SAVEKEY-ACCESS-URI";
 
-    private final static String SESSIONKEY_DATAMAP = WebApplicationContext.class.getName() + "##SESSIONKEY_DATAMAP";
-
     public final static WebApplicationContext getCurrentThreadWebApplicationContext() {
         return Context.getCurrentThreadContext();
     }

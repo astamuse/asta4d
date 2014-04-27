@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.util.data.BinaryDataUtil;
 
-public class BinaryDataProvider implements ContentProvider<InputStream> {
+public class BinaryDataProvider implements ContentProvider {
 
     private InputStream input = null;
 

@@ -60,7 +60,7 @@ public class Asta4dServlet extends HttpServlet {
         super.init(config);
         try {
             WebApplicationConfiguration asta4dConf = createConfiguration();
-            WebApplicatoinConfigurationInitializer.initConfigurationFromFile(config, asta4dConf);
+            createConfigurationInitializer().initConfigurationFromFile(config, asta4dConf);
             Configuration.setConfiguration(asta4dConf);
         } catch (Exception e) {
             throw new ServletException(e);
@@ -124,6 +124,10 @@ public class Asta4dServlet extends HttpServlet {
 
     protected WebApplicationConfiguration createConfiguration() {
         return new WebApplicationConfiguration();
+    }
+
+    protected WebApplicatoinConfigurationInitializer createConfigurationInitializer() {
+        return new WebApplicatoinConfigurationInitializer();
     }
 
 }

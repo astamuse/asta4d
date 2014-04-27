@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 
+//@ShowCode:showFormValidateHandlerStart
 public class FormValidateHandler {
 
     @RequestHandler
@@ -56,3 +57,4 @@ public class FormValidateHandler {
         }
     }
 }
+// @ShowCode:showFormValidateHandlerEnd

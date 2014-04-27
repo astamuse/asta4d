@@ -47,8 +47,11 @@ public class FlashScopeDataManager {
         FlashScopeDataHolder holder = flashScopeMap.remove(flashScopeId);
         if (holder == null) {
             return Collections.emptyMap();
+        } else if (holder.isExpired(System.currentTimeMillis())) {
+            return Collections.emptyMap();
+        } else {
+            return holder.getData();
         }
-        return holder.getData();
     }
 
     void put(String flashScopeId, Map<String, Object> flashScopeData) {

@@ -15,28 +15,23 @@
  * 
  */
 
-package com.astamuse.asta4d.data;
+package com.astamuse.asta4d.data.convertor;
 
 /**
- * 
- * This interface is used by {@link InjectUtil} to convert context data to the
- * appropriate type automatically
+ * Convert String to Long
  * 
  * @author e-ryu
  * 
- * @param <S>
- *            source type
- * @param <T>
- *            target type
  */
-public interface DataConvertor<S, T> {
+public class String2Long implements DataConvertor<String, Long> {
 
-    /**
-     * convert a data from the original type to a certain type
-     * 
-     * @param obj
-     *            the data wanted to be converted
-     * @return converted result
-     */
-    public T convert(S obj);
+    @Override
+    public Long convert(String s) {
+        try {
+            return Long.parseLong(s);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
+    }
+
 }

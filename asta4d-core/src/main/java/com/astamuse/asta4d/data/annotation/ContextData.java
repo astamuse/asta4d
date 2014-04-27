@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.data.InjectUtil;
+import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 
 /**
  * This annotation is for marking a field (including getter/setter method) or a method parameter as {@link Context} associated.
@@ -31,7 +32,7 @@ import com.astamuse.asta4d.data.InjectUtil;
  * @see InjectUtil
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface ContextData {
 
     /**
@@ -54,5 +55,11 @@ public @interface ContextData {
      */
     @Deprecated
     boolean reverse() default false;
+
+    /**
+     * the policy of how to handle the unmatched type on data conversion.
+     * 
+     */
+    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.EXCEPTION;
 
 }

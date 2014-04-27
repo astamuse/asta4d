@@ -21,7 +21,7 @@
         <para>The designers or front-end engineers are keeping complaining the mixed-in dynamic code, as they disturb 
         their efforts of redesigning the page style or structure. And in the mean time, the back-end developers are also 
         complaining that the front-end guys break the working page frequently,  because redesign or the new design is hard 
-        to merge due to the huge cost of source refactoring. </para>
+        to merge due to the huge cost of source refactorying. </para>
         <sbr/>
       </listitem>
 
@@ -32,8 +32,8 @@
       </listitem>
 
       <listitem>
-        <para>The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient 
-        approach like traditional PHP/ASP development.</para>
+        <para>The developers are discontented with the counterproductivity of traditional MVC architecture and desire a more efficient 
+        approach.</para>
         <sbr/>
       </listitem>
 
@@ -57,9 +57,9 @@
       </listitem>
 
       <listitem>
-        <para>View first without controller</para>
-        <para>Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also
-        easier to change than MVC architecture.</para>
+        <para>Testable rendering logic</para>
+        <para>All of the rendering logic in Asta4D is testable and developers can simply test them by writing simple junit cases, 
+        which could replace over than half of selenium tests</para>
         <sbr/>
       </listitem>
       
@@ -72,9 +72,9 @@
       </listitem>
       
       <listitem>
-        <para>View first without controller</para>
+        <para>View first</para>
         <para>Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier 
-        to change than MVC architecture.
+        to change than traditional MVC architecture.
         </para>
         <sbr/>
       </listitem>
@@ -84,6 +84,14 @@
         <para>Asta4D imports the conception of "side-effect" from functional programming languages and separating the "side-effect"
         by request handlers, which afford more flexibility on page rendering because the view layer is side-effect free now. Therefore
         Asta4D allows parallel page rendering in multiple threads as a built-in feature.
+        </para>
+        <sbr/>
+      </listitem>
+      
+      <listitem>
+        <para>Advanced MVC</para>
+        <para>Asta4D affords developers a evolved MVC architecture which is more clarified for the duty of each application layer than
+        the traditional MVC architecture. 
         </para>
         <sbr/>
       </listitem>

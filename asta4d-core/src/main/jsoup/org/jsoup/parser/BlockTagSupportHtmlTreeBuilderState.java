@@ -3,6 +3,7 @@ package org.jsoup.parser;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jsoup.helper.DescendableLinkedList;
 import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Attribute;
@@ -15,8 +16,7 @@ import org.jsoup.nodes.Node;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
 /**
- * The Tree Builder's current state. Each state embodies the processing for the
- * state, and transitions to other states.
+ * The Tree Builder's current state. Each state embodies the processing for the state, and transitions to other states.
  */
 public enum BlockTagSupportHtmlTreeBuilderState {
     Initial {
@@ -143,8 +143,8 @@ public enum BlockTagSupportHtmlTreeBuilderState {
                 } else if (name.equals("head")) {
                     tb.error(this);
                     return false;
-                } else if (name.equals(ExtNodeConstants.BLOCK_NODE_TAG)) {
-                    // here, we allow block tag in head
+                } else if (ArrayUtils.contains(ExtNodeConstants.ASTA4D_IN_HEAD_NODE_TAGS, name)) {
+                    // here, we allow asta4d tags in head
                     tb.insert(start);
                 } else {
                     return anythingElse(t, tb);
@@ -158,7 +158,7 @@ public enum BlockTagSupportHtmlTreeBuilderState {
                     tb.transition(AfterHead);
                 } else if (StringUtil.in(name, "body", "html", "br")) {
                     return anythingElse(t, tb);
-                } else if (name.equals(ExtNodeConstants.BLOCK_NODE_TAG)) {
+                } else if (ArrayUtils.contains(ExtNodeConstants.ASTA4D_IN_HEAD_NODE_TAGS, name)) {
                     // copy these sources from InBody, I think it works well.
                     if (!tb.inScope(name)) {
                         // nothing to close
@@ -174,6 +174,9 @@ public enum BlockTagSupportHtmlTreeBuilderState {
                     tb.error(this);
                     return false;
                 }
+                break;
+            case Character:
+                tb.insert(t.asCharacter());
                 break;
             default:
                 return anythingElse(t, tb);

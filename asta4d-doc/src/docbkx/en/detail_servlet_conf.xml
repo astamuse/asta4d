@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter [
+	<!ENTITY % docvar SYSTEM "../META/var.ent" >
+	%docvar;
+]>
 <chapter xml:id="overview"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
@@ -9,6 +13,181 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Asta4dServlet and configuration</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Asta4dServlet</title>
+    <para>All the http requests are handled by Asta4dServlet which allows developers to override several methods to customize
+    its actions. The web.xml would be like following:</para>
+    <example>
+      <programlisting language="xml">
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <!-- standalone without spring -->
+    <servlet>
+        <servlet-name>Asta4D Servlet</servlet-name>
+        <servlet-class>com.astamuse.asta4d.web.servlet.Asta4dServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Asta4D Servlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+
+]]>
+      </programlisting>
+    </example>
+    
+    <para>The following methods can be overridden:</para>
+    <itemizedlist>
+      <listitem>
+        <para>createConfiguration()</para>
+        <para>Overriding this methods allows developers to configure the framework by code. </para>
+        <example>
+          <programlisting language="java">
+<![CDATA[
+    @Override
+    protected WebApplicationConfiguration createConfiguration() {
+        WebApplicationConfiguration conf = super.createConfiguration();
+        
+        conf.setSnippetResolver(new DefaultSnippetResolver() {
+
+            @Override
+            protected Object createInstance(String snippetName) throws SnippetNotResovlableException {
+                return super.createInstance("com.astamuse.asta4d.sample.snippet." + snippetName);
+            }
+
+        });
+        
+        conf.setUrlMappingRuleInitializer(new UrlRules());
+        
+        conf.getPageInterceptorList().add(new SamplePageInterceptor());
+        
+        return conf;
+    }
+]]>
+          </programlisting>
+        </example>
+      </listitem>
+      <listitem>
+        <para>service()</para>
+        <para>Developers can intercept the http request by overriding this method. The following example shows how to rewrite the access url by adding pre request logic:</para>
+        <example>
+          <programlisting language="java">
+<![CDATA[
+    @Override
+    protected void service() throws Exception {
+        WebApplicationContext context = Context.getCurrentThreadContext();
+        HttpServletRequest request = context.getRequest();
+        String requestURI = request.getRequestURI();
+        if (requestURI.startsWith("/abc/")) {
+            context.setAccessURI(requestURI.substring(5));
+        }
+        super.service();
+    }
+]]>
+          </programlisting>
+        </example>
+        <para>Request time measuring can be performed too:</para>
+        <example>
+          <programlisting language="java">
+<![CDATA[
+    @Override
+    protected void service() throws Exception {
+        long startTime = System.currentTimeMillis();
+        try {
+            super.service();
+        } finally {
+            long endTime = System.currentTimeMillis();
+            System.out.println("request time:" + (endTime - startTime));
+        }
+    }
+]]>
+          </programlisting>
+        </example>
+      </listitem>
+      <listitem>
+        <para>createAsta4dContext()</para>
+        <para>Overriding this methods allows developers to afford customized Context implementation.</para>
+      </listitem>
+      <listitem>
+        <para>createConfigurationInitializer()</para>
+        <para>Overriding this methods allows developers to customize the configuration file initialization logic. See details at next section.</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+  
+  <sect1>
+    <title>Configuration file</title>
+    <para>In the previous section, we introduced that Asta4D can be configured by overriding createConfiguration() method and we also introduced a method called 
+    createConfigurationInitializer which allows customize the configuration file initialization logic. Asta4D allows to be configured by an extra configuration file
+    which will be analyzed by the created configuration initializer. </para>
+    
+    <para>The default implementation of configuration initializer will seek the configuration file by following order:</para>
+    <orderedlist>
+      <listitem>
+        <para>Calling retrievePossibleConfigurationFileNames(Overridable) to retrieve all possible configuration file names which could be an array of String. The default value
+        is "asta4d.conf.properties" only.</para>
+      </listitem>
+      <listitem>
+        <para>Search all the possible names in classpath by order. The first found one will be used.</para>
+      </listitem>
+      <listitem>
+        <para>If there is no configuration file found in classpath, calling retrieveConfigurationFileNameKey(Overridable) to get a key. The default key is "asta4d.conf".</para>
+      </listitem>
+      <listitem>
+        <para>Retrieve the value of key retrieve in previous step by the order as: ServletConfig, JDNI Context, System properties.</para>
+      </listitem>
+      <listitem>
+        <para>If there is a value found in the previous step, open a file as configuration file by treating the found value as a file path.</para>
+      </listitem>
+    </orderedlist>
+    <para>As mentioned above, the two methods of retrievePossibleConfigurationFileNames and retrieveConfigurationFileNameKey can be overridden to customize configuration
+    file name and the file path can be also configured by the key "asta4d.conf" at servlet mapping configuration(ServletConfig), JDNI configuration(JDNI context) or command 
+    line parameter(System properties).</para>
+    
+    <para>Further, the default implementation does only support the format of configuration file as Java standard properties file. All the configured key/value will be treated
+    as setXXX method calling on WebApplicationConfiguration instance. The key can be a dot split string which will be treated as recursive property accessing on 
+    WebApplicationConfiguration instance.</para>
+    <example>
+      <programlisting language="ini">
+<![CDATA[
+urlMappingRuleInitializer=com.astamuse.asta4d.sample.UrlRules
+
+cacheEnable=false
+
+snippetExecutorFactory.threadName=asta4d-sample-snippet
+snippetExecutorFactory.poolSize=100
+
+listExecutorFactory.threadName=asta4d-sample-list
+listExecutorFactory.poolSize=100
+]]>
+      </programlisting>
+    </example>
+    <para>The above configuration equals to the following source:</para>
+    <example>
+      <programlisting language="java">
+<![CDATA[
+WebApplicationConfiguration conf = super.createConfiguration();
+
+conf.setUrlMappingRuleInitializer(new UrlRules());
+
+conf.setCacheEnable(false);
+
+((DefaultExecutorServiceFactory) conf.getSnippetExecutorFactory()).setThreadName("asta4d-sample-snippet");
+((DefaultExecutorServiceFactory) conf.getSnippetExecutorFactory()).setPoolSize(100);
+
+((DefaultExecutorServiceFactory) conf.getListExecutorFactory()).setThreadName("asta4d-sample-list");
+((DefaultExecutorServiceFactory) conf.getListExecutorFactory()).setPoolSize(100);
+]]>
+      </programlisting>
+    </example>
+    
+    <para>All the configurable items can be found at <ulink url="http://astamuse.github.io/asta4d/javadoc/&javadocversion;/com/astamuse/asta4d/web/WebApplicationConfiguration.html">JavaDoc</ulink>.</para>
+  </sect1>
   
 </chapter>

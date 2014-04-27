@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="chapter-detail-var-injection"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -9,6 +9,437 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Variable injection</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Context</title>
+    <sect2>
+      <title>Context/WebApplicationContext</title>
+      <para>Asta4D use "Context" to manage data life cycle. The "Context" in asta4d-core supplies the basic data management mechanism
+      and the WebApplicationContext from asta4d-web afford more powerful extending for web application development. Commonly, we will
+      only use WebApplicationContext in our application. There are two ways to retrieve an instance of WebApplicationContext.</para>
+      <example><title>Retrieve an instance of WebApplicationContext by static method</title>
+      <programlisting language="java">
+<![CDATA[
+WebApplicationContext context = Context.getCurrentThreadContext();
+]]>
+      </programlisting>
+      </example>
+      <example><title>Retrieve an instance of WebApplicationContext by injection</title>
+      <programlisting language="java">
+<![CDATA[
+public class PageSnippet {
 
+    public Renderer render(WebApplicationContext context) {
+        ...
+    }
+}
+]]>
+      </programlisting>
+      </example>
+      
+      <para>As the name of "getCurrentThreadContext" suggested, the context is managed per thread, and also that the context will be
+      initialized before every http request is processed and will be cleared after every http request process has finished.</para>
+      
+      <para>WebApplicationContext affords several methods to retrieving raw servlet apis and other helpful information:</para>
+      <itemizedlist>
+        <listitem>
+          <para>getRequest</para>
+          <para>Return the HttpServletRequest instance of current request.</para>
+        </listitem>
+        <listitem>
+          <para>getResponse</para>
+          <para>Return the HttpServletResponse instance of current request.</para>
+        </listitem>
+        <listitem>
+          <para>getServletContext</para>
+          <para>Return the ServletContext instance of current request.</para>
+        </listitem>
+        <listitem>
+          <para>getAccessURI</para>
+          <para>Return the rewritten url of current request. For details about URL rewritting, see later chapter.</para>
+        </listitem>
+      </itemizedlist>
+    </sect2>
+    <sect2>
+      <title>Scope</title>
+      
+      <para>The context provides a mechanism to manage data by scopes. There are only 3 scopes supplied by asta4d-core's
+      Context, but the WebApplicationContext from asta4d-web supply more scopes to help web application development.</para>
+      
+      <variablelist>
+        <title>Available scopes(with the constant name):</title>
+        <varlistentry>
+          <term>global(SCOPE_GLOBAL)</term>
+          <listitem>
+            <para>The data saved in global scope can be accessed cross all the contexts, you can treat it as a static object pool.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>default(SCOPE_DEFAULT)</term>
+          <listitem>
+            <para>The data saved in default scope can only be access by the current context.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>element attribute(SCOPE_ATTR)</term>
+          <listitem>
+            <para>This scope is related to snippet rendering. An element attribute scope is a wrapping of element attribute. When you
+            try to retrieve data from element attribute scope, the attribute of current rendering target element will be checked and the
+            corresponding attribute value will be returned, further, if there is no corresponding attribute in the current rendering target
+            element's attributes, all the parents of current rendering target element will be checked recursively.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>request(SCOPE_REQUEST)</term>
+          <listitem>
+            <para>The data saved in default scope can only be access in the current http request process. Note that the request scope is
+            simply delegated to the default scope and it is different from servlet api's http request attribute.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>path var(SCOPE_PATHVAR)</term>
+          <listitem>
+            <para>Path var scope represents the variables declared in url rules.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>query parameter(SCOPE_QUERYPARAM)</term>
+          <listitem>
+            <para>Query parameter scope represents the query parameters specified at the part after question mark in an url.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>session(SCOPE_SESSION)</term>
+          <listitem>
+            <para>Session scope represents the data saved in http session.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>header(SCOPE_HEADER)</term>
+          <listitem>
+            <para>Session scope represents the header data from a http request.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>cookie(SCOPE_COOKIE)</term>
+          <listitem>
+            <para>Cookie scope represents the cookie data from a http request.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>flash(SCOPE_FLASH)</term>
+          <listitem>
+            <para>Asta4D affords a mechanism to allow pass data to the redirected http request, which is called flash data.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>Normally, the data saved in context can be accessed by variable injection. If you need get data manually, you can do it as
+      following:</para>      
+      <example><title>Retrieve data from context</title>
+      <programlisting language="java">
+<![CDATA[
+WebApplicationContext context = Context.getCurrentThreadContext();
+
+//from default scope
+Integer count = context.get("saved-count");
+
+//from session
+Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, "saved-count");
+]]>
+      </programlisting>
+      </example>
+
+      <para>You can implement your own customized scope or afford you customized implementation for existing scopes. You need extend from
+      WebApplicationContext then override the method called "createMapForScope".<remark>(If you only want to split your data from default scope, you
+      can simply specify a new scope name and a new scope will be created automatically, the created scope's life cycle is as the same as
+      default scope)</remark>
+      </para>
+      
+      <example><title>Customized memcached drived session management</title>
+      <programlisting language="java">
+<![CDATA[
+public class MyContext extends WebApplicationContext {
+    @Override
+    protected ContextMap createMapForScope(String scope) {
+        ContextMap map = null;
+        switch (scope) {
+        case SCOPE_SESSION: {
+            HttpServletRequest request = getRequest();
+            map = new MemcachedSessionMap(request);
+        default:
+            map = super.createMapForScope(scope);
+        }
+        return map;
+    }
+}
+]]>
+      </programlisting>
+      </example>
+      <para>See later chapter of Asta4dServerlet for how to configure Asta4D to use the customized Context implementation instead of the
+      default WebApplicationContext.</para>
+    </sect2>
+    
+    <sect2>
+      <title>ContextBindData</title>
+      <para>Since all the data query logic are performed at snippet class, we will want to avoid duplicated query on same page
+      rendering. The recommended solution is caching your query result by cache library such as ehcache. But Asta4D also affords
+      you an alternative solution for some simple cases, which is called ContextBindData.</para>
+      
+      <para>ContextBindData can be treated as a lazy load instance field for Java class. It is warranted that a ContextBindData
+      will be initialized only once in a same Asta4D context and it will only be initialized when you first call it. There are 
+      some exceptions for the warranty about initializing only once, we will explain them later.</para>
+      
+      <example>
+      <programlisting language="java">
+<![CDATA[
+public class PageSnippet {
+    
+    @ContextData
+    private int count;
+
+    private ContextBindData<Integer> data = new ContextBindData<Integer>(true) {
+        @Override
+        protected Integer buildData() {
+            return count + 1;
+        }
+
+    };
+
+    public Renderer render() {
+        return Renderer.create("*", data.get());
+    }
+}
+]]>
+      </programlisting>
+      </example>
+      
+      <para>You should have noticed that we pass a "true" to the constructor of ContextBindData, which means we require the warranty
+      that it should be only initialize once in the current context. If we pass nothing or pass a "false" to the constructor, the buildData
+      method may be invoked multiple times in multi-thread rendering, but which is faster than warranted initialization simply because
+      of skipping the multi-thread lock process.</para>
+      
+      <para>There is another case that the ContextBindData would be initialized multiple times even if you construct it by requiring warranty.
+      In template file, we can declare a snippet as parallel, Asta4D will clone a new context from current context if parallel snippet rendering
+      is required, so if the snippet class which holds the ContextBindData is first required in the cloned child context, the multi-thread lock
+      will not be available in the parent context or other cloned child context because the lock is only saved into the current context and will
+      not be spread to other contexts.
+      </para>
+      
+      <para>Again, we recommend to use cache library to avoid duplicated query, but you can use ContextBindData as a simple, light weight
+      alternative.</para>
+      
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Injection</title>
+    <sect2>
+      <title>@ContextData</title>
+      <para>All fields annotated by @ContextData in a snippet class will be initialized/injected automatically when the snippet class instance is initialized.
+      Further, even the method parameters of snippet rendering method and request handle method are automatically injected, you can still customize the injection
+      by extra @ContextData annotation.</para>
+      
+      <para>Note that there are something different between field injection and method parameter injection. The fields of snippet class without @ContextData will 
+      not be injected, but method parameters will be always injected even without @ContextData.</para>
+      
+      <variablelist>
+        <title>Available configurations of @ContextData:</title>
+        <varlistentry>
+          <term>name</term>
+          <listitem>
+            <para>The name of saved data in context. If it is not specified, the field name or parameter name will be used(This requires that you reverse the parameter names
+            when compile).
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>scope</term>
+          <listitem>
+            <para>The scope of saved data in context. If it is no specified, Asta4D will try to search the data in all the scopes by a predefined order:</para>
+              <orderedlist>
+                <listitem>
+                  <para>element attribute(SCOPE_ATTR)</para>
+                </listitem>
+                <listitem>
+                  <para>path var(SCOPE_PATHVAR)</para>
+                </listitem>
+                <listitem>
+                  <para>query parameter(SCOPE_QUERYPARAM)</para>
+                </listitem>
+                <listitem>
+                  <para>flash(SCOPE_FLASH)</para>
+                </listitem>
+                <listitem>
+                  <para>cookie(SCOPE_COOKIE)</para>
+                </listitem>
+                <listitem>
+                  <para>hearder(SCOPE_HEADER)</para>
+                </listitem>
+                <listitem>
+                  <para>request/default(SCOPE_REQUEST/SCOPE_DEFAULT)</para>
+                </listitem>
+                <listitem>
+                  <para>session(SCOPE_SESSION)</para>
+                </listitem>
+                <listitem>
+                  <para>global(SCOPE_GLOBAL)</para>
+                </listitem>
+              </orderedlist>
+              <para>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <xref linkend="sect-ContextDataFinder"/></para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>typeUnMatch</term>
+          <listitem>
+            <para>The policy of how to handle the unmatched type on data conversion. The default action is throw Exception and another two value of "DEFAULT_VALUE" and "DEFAULT_VALUE_AND_TRACE"
+            can be specified.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      
+      <para>There are several scope specified annotations can be used as convenience.</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>@SessionData</para>
+        </listitem>
+        <listitem>
+          <para>@QueryParam</para>
+        </listitem>
+        <listitem>
+          <para>@PathVar</para>
+        </listitem>
+        <listitem>
+          <para>@HeaderData</para>
+        </listitem>
+        <listitem>
+          <para>@CookieData</para>
+        </listitem>
+        <listitem>
+          <para>@FlashData</para>
+        </listitem>
+      </itemizedlist>
+      
+      <remark>All the above annotation have the same configurable items with the original @ContextData annotation except being fixed with according data scope.</remark>
+
+    </sect2>
+    <sect2>
+      <title>@ContextDataSet</title>
+      <para>A pojo class annotated by @ContextDataSet will be treated as a variable holder. If the type of a snippet class field or a method parameter is a class annotated by
+      @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
+      @ContextData will be injected as same as the snippet class field injection. @ContextDataSet can be used to allocate all of the form data into one single instance as a
+      convenience.</para>
+      <example>
+      <programlisting language="java">
+<![CDATA[
+@ContextDataSet
+public static class MySet {
+
+    @ContextData
+    private long f1;
+
+    @ContextData
+    private String f2;
+
+    public long getF1() {
+        return f1;
+    }
+    
+    public String getF2() {
+        return f2;
+    }
+}
+
+public static class MySnippet {
+
+    public void render(MySet holder) {
+    }
+
+}
+
+public static class MySnippet2 {
+
+    @ContextData
+    private MySet holder;
+
+    public void render() {
+    }
+
+}
+
+
+
+]]>
+      </programlisting>
+      <para>Note that even you declared @ContextDataSet on the class, you still need to declare the @ContextData on the field declaration. For method parameter, it is not necessary
+      since all the parameters are injected automatically. Further, for a declared @ContextDataSet, you still need to declare @ContextData on every field you want to be injected.</para>
+      </example>
+      
+      <variablelist>
+        <title>Available configurations of @ContextData:</title>
+        <varlistentry>
+          <term>singletonInContext</term>
+          <listitem>
+            <para>A boolean value to indicate that whether the target ContextDataSet should be singleton in a single context life cycle. The default value is false, which means a new instance
+            would be created at every time when a ConextDataSet is required to inject.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>factory</term>
+          <listitem>
+            <para>A factory class can be used to indicate how to create an instance of ContextDataSet. The default factory will call Class#newInstance() to create a new instance of ContextDataSet.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+      
+    </sect2>
+    <sect2 id="sect-ContextDataFinder">
+      <title>ContextDataFinder</title>
+      <para>Asta4D search data in context by pre configured ContextDataFinder implementation. The default implementation is WebApplicationContextDataFinder. You can supply your own
+      search mechanism by implementing the ContextDataFinder interface or extending from WebApplicationContextDataFinder. WebApplicationContextDataFinder defines the scope search
+      order if scope is not specified, and also returns some special data by hard coding type check:</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>Context/WebApplicationContext</para>
+        </listitem>
+        <listitem>
+          <para>ResourceBundleHelper</para>
+        </listitem>
+        <listitem>
+          <para>ParamMapResourceBundleHelper</para>
+        </listitem>
+        <listitem>
+          <para>HttpServletRequest</para>
+        </listitem>
+        <listitem>
+          <para>HttpServletResponse</para>
+        </listitem>
+        <listitem>
+          <para>ServletContext</para>
+        </listitem>
+        <listitem>
+          <para>UrlMappingRule</para>
+        </listitem>
+      </itemizedlist>
+      
+      <para>The first 3 types are afforded by the parent class of WebApplicationContextDataFinder: DefaultContextDataFinder. To supply your own logic, you can override the 
+      findDataInContext method and the WebApplicationContextDataFinder's source can be treated as reference implementation.</para>
+      
+    </sect2>
+    <sect2>
+      <title>DataConvertor</title>
+    </sect2>
+    <sect2>
+      <title>ContextDataHolder</title>
+    </sect2>
+  </sect1>
 </chapter>

@@ -83,7 +83,7 @@ Renderer renderer = Renderer.create();
       <para>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
       cases. You can also read the Java doc of Renderer for more details.</para>
     </sect2>
-    <sect2>
+    <sect2 id="css selector">
       <title>CSS Selector</title>
       <para>Asta4D is using a modified version of <ulink url="http://jsoup.org/">jsoup library</ulink> to afford CSS selector function.
       Currently, we support the following selectors:
@@ -687,35 +687,149 @@ render.add("#someIdForRenderer", Arrays.asList(123, 456, 789), new ParallelRowRe
   </sect1>
   
   <sect1>
-    <title>Other things about snippet class</title>
-    <itemizedlist>
-      <listitem>
-        <para>Nested snippet</para>
-      </listitem>
-      <listitem>
-        <para>InitializableSnippet</para>
-      </listitem>
-      <listitem>
-        <para>SnippetInterceptor</para>
-      </listitem>
-      <listitem>
-        <para>ContextBindData</para>
-      </listitem>
-    </itemizedlist>
-  </sect1>
+    <title>Other things about snippet and rendering</title>
+    <sect2>
+      <title>Nested snippet</title>
+      <para>Snippet can be declared recursively.There is a convention that the outer snippet will always be executed on a prior order.</para>
+      <example>
+      <programlisting language="xml">
+<![CDATA[
+<div afd:render="OuterSnippet">
+    <div id="inner" afd:render="InnerSnippet">  
+        <p id="name">name:<span>dummy name</span></p>  
+        <p id="age">age:<span>0</span></p>  
+    </div>
+</div>
+]]>
+      </programlisting>
+      </example>
+      <para>In the above example, the "InnerSnippet" will be executed after the "OuterSnippet" has been executed, which also means you can
+      configure the inner snippet dynamically.</para>
+      <example>
+      <programlisting language="java">
+<![CDATA[
+public class OuterSnippet{
 
-  <sect1>
-    <title>Customization</title>
-    <itemizedlist>
-      <listitem>
-        <para>SnippetExtractor</para>
-      </listitem>
-      <listitem>
-        <para>SnippetResolver</para>
-      </listitem>
-      <listitem>
-        <para>SnippetInvoker</para>
-      </listitem>
-    </itemizedlist>
+    public Renderer render(){
+        return Renderer.create("#inner", "hasprofile", "true");
+    }
+
+}
+
+public class InnerSnippet{
+
+    public Renderer render(bool hasprofile){
+        if(hasprofile){
+            return Renderer.create("#name span", "Bob").add("#age span", 27);
+        }else{
+            return Renderer.create("*", Clear);
+        }
+    }
+
+}
+]]>
+      </programlisting>
+      </example>
+    </sect2>
+    <sect2>
+      <title>InitializableSnippet</title>
+      <para>The snippet class instance is singleton in request scope and will be created at the first time a snippet is required. 
+      After the snippet class instance has been created, field value injection will be applied to the created instance once(About
+      detail of value injection, see the later chapter). After all the field has been injected, the framework will check whether
+      the current class implements the "InitializableSnippet" interface, if true, the init method of InitializableSnippet will
+      be invoked once.</para>
+      <example>
+      <programlisting language="java">
+<![CDATA[
+public static class InitSnippet implements InitializableSnippet {
+
+    @ContextData
+    private String value;
+
+    private String resolvedValue;
+
+    @Override
+    public void init() throws SnippetInvokeException {
+        resolvedValue = value + "-resolved";
+    }
+}
+]]>
+      </programlisting>
+      </example>
+      <para>In the above example, the field "value" will be injected after the instance is created, then the init method will be
+      applied to finish the complete initialization logic of the snippet class.</para>
+    </sect2>
+    <sect2>
+      <title>Component rendering</title>
+      <para>For the view first policy, we will treat the template files as first class things. The embed file mechanism allow you
+      separate some view blocks as independent components at template file layer. There is also a snippet class level mechanism that
+      afford you the same ability as embed file, which is called "Component".</para>
+      <para>Why we need "Component"? The embed file can only be include statically, but the "Component" is an extendible Java class
+      which can be configured by arbitrary Java code and polymorphism can be easily performed too. Basically, The "Component" mechanism
+      can help developer to build independent view component easier than static embed file.</para>
+
+      <para>The constructor of Component accepts a string value as an embed file path or an instance of Element, and also an
+      optional AttributesRequire can be specified to provide some initialization parameters as same as the parametrized embedding
+      introduced in the previous section.</para>
+      <example><title>constructors of Component</title>
+      <programlisting language="java">
+<![CDATA[
+    public Component(Element elem, AttributesRequire attrs) throws Exception {
+        ...
+    }
+
+    public Component(Element elem) throws Exception {
+        ...
+    }
+
+    public Component(String path, AttributesRequire attrs) throws Exception {
+        ...
+    }
+
+    public Component(String path) throws Exception {
+        ...
+    }
+]]>
+      </programlisting>
+      </example>
+      
+      <example><title>render a component</title>
+      <programlisting language="java">
+<![CDATA[
+public Renderer render(final String ctype) throws Exception {
+    return Renderer.create("span", new Component("/ComponentRenderingTest_component.html", new AttributesRequire() {
+        @Override
+        protected void prepareAttributes() {
+            this.add("value", ctype);
+        }
+
+    }));
+}
+]]>
+      </programlisting>
+      <para>In this example, the target element specified by the selector "span" will be completely replaced by the result of 
+      Component#toElement().</para>
+      </example>
+      
+      <para>Commonly, we do not render a component as above example, we usually extend from Component and expose a constructor
+      with business initialization parameters or supply a group of business initialization methods, by which we can build an
+      independent view component simply.</para>
+      
+      <para>Further, Component also has a "toHtml" method which will return the html source of the component rendering result.
+      This method can be used by ajax request to acquire a dynamically rendered component.</para>
+    </sect2>
+
+    <sect2>
+      <title>SnippetInterceptor</title>
+    </sect2>
+    <sect2>
+      <title>SnippetExtractor</title>
+    </sect2>
+    <sect2>
+      <title>SnippetResolver</title>
+    </sect2>
+    <sect2>
+      <title>SnippetInvoker</title>
+    </sect2>
   </sect1>
-</chapter>
+</chapter> 

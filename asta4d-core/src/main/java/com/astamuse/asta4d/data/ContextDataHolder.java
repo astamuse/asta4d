@@ -13,6 +13,8 @@ public class ContextDataHolder<T> implements Serializable {
 
     private String scope;
 
+    private Object foundOriginalData;
+
     private T value;
 
     private Class<T> typeCls;
@@ -31,34 +33,38 @@ public class ContextDataHolder<T> implements Serializable {
         this.name = name;
         this.scope = scope;
         this.value = value;
+        this.foundOriginalData = value;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getScope() {
         return scope;
     }
 
-    public void setScope(String scope) {
-        this.scope = scope;
+    public Object getFoundOriginalData() {
+        return foundOriginalData;
     }
 
     public T getValue() {
         return value;
     }
 
-    public void setValue(T value) {
-        this.value = value;
-    }
-
     public Class<T> getTypeCls() {
         return typeCls;
+    }
+
+    public void setData(String name, String scope, T value) {
+        setData(name, scope, value, value);
+    }
+
+    public void setData(String name, String scope, Object foundValue, T transformedValue) {
+        this.name = name;
+        this.scope = scope;
+        this.value = transformedValue;
+        this.foundOriginalData = foundValue;
     }
 
 }

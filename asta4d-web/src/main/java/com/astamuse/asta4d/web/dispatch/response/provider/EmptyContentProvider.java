@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
-public class EmptyContentProvider implements ContentProvider<Object> {
+public class EmptyContentProvider implements ContentProvider {
 
     @Override
     public boolean isContinuable() {

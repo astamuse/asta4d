@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
-import com.astamuse.asta4d.data.DataConvertor;
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
@@ -150,9 +149,9 @@ public class RenderingTest extends BaseTest {
                 Element elem = ElementUtil.parseAsSingle("<strong>BBB:" + i + "</strong>");
                 list.add(elem);
             }
-            Renderer renderer = Renderer.create("div#test", list, new DataConvertor<Element, ChildReplacer>() {
+            Renderer renderer = Renderer.create("div#test", list, new RowConvertor<Element, ChildReplacer>() {
                 @Override
-                public ChildReplacer convert(Element obj) {
+                public ChildReplacer convert(int rowIdx, Element obj) {
                     return new ChildReplacer(obj);
                 }
             });
@@ -165,10 +164,10 @@ public class RenderingTest extends BaseTest {
                 String[] sa = { "aa-" + i, "bb-" + i };
                 list.add(sa);
             }
-            Renderer renderer = Renderer.create("div#test", list, new DataConvertor<String[], Renderer>() {
+            Renderer renderer = Renderer.create("div#test", list, new RowConvertor<String[], Renderer>() {
 
                 @Override
-                public Renderer convert(String[] obj) {
+                public Renderer convert(int rowIdx, String[] obj) {
                     Renderer r = Renderer.create("#s1", obj[0]);
                     r.add("#s2", obj[1]);
                     return r;

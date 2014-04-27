@@ -9,6 +9,7 @@ import java.util.Properties;
 import javax.servlet.ServletConfig;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import com.astamuse.asta4d.web.util.SystemPropertyUtil;
@@ -16,7 +17,7 @@ import com.astamuse.asta4d.web.util.SystemPropertyUtil.PropertyScope;
 
 public class WebApplicatoinConfigurationInitializer {
 
-    public static void initConfigurationFromFile(ServletConfig sc, WebApplicationConfiguration conf) throws Exception {
+    public void initConfigurationFromFile(ServletConfig sc, WebApplicationConfiguration conf) throws Exception {
         String[] fileNames = retrievePossibleConfigurationFileNames();
         InputStream input = null;
         String fileType = null;
@@ -64,7 +65,20 @@ public class WebApplicatoinConfigurationInitializer {
                     Enumeration<Object> keys = ps.keys();
                     while (keys.hasMoreElements()) {
                         String key = keys.nextElement().toString();
-                        BeanUtils.setProperty(conf, key, ps.get(key));
+                        String value = ps.getProperty(key);
+                        try {
+                            BeanUtils.setProperty(conf, key, value);
+                        } catch (IllegalArgumentException ex) {
+                            if (ex.getMessage().indexOf("argument type mismatch") >= 0) {
+                                @SuppressWarnings("rawtypes")
+                                Class cls = PropertyUtils.getPropertyType(conf, key);
+                                if (cls.equals(Class.class)) {
+                                    BeanUtils.setProperty(conf, key, Class.forName(value));
+                                } else {
+                                    BeanUtils.setProperty(conf, key, Class.forName(value).newInstance());
+                                }
+                            }
+                        }
                     }
                     break;
                 default:
@@ -77,17 +91,17 @@ public class WebApplicatoinConfigurationInitializer {
         }
     }
 
-    protected static String[] retrievePossibleConfigurationFileNames() {
+    protected String[] retrievePossibleConfigurationFileNames() {
         // return new String[] {
         // "asta4d.conf.properties, ast4d.conf.js, asta4d.conf.groovy" };
         return new String[] { "asta4d.conf.properties" };
     }
 
-    protected static String retrieveConfigurationFileNameKey() {
+    protected String retrieveConfigurationFileNameKey() {
         return "asta4d.conf";
     }
 
-    protected static String retrieveConfigurationFileName(ServletConfig sc, String key) {
+    protected String retrieveConfigurationFileName(ServletConfig sc, String key) {
         return SystemPropertyUtil.retrievePropertyValue(sc, key, PropertyScope.ServletConfig, PropertyScope.JNDI,
                 PropertyScope.SystemProperty);
     }

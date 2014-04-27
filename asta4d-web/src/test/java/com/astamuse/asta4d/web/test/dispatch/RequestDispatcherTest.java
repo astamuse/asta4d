@@ -235,7 +235,7 @@ public class RequestDispatcherTest {
     }
 
     @Test(dataProvider = "data")
-    public void execute(String method, String url, int status, ContentProvider<?> contentProvider) throws Exception {
+    public void execute(String method, String url, int status, ContentProvider contentProvider) throws Exception {
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();

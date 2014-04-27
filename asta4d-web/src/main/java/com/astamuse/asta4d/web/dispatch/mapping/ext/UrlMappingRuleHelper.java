@@ -154,9 +154,9 @@ public class UrlMappingRuleHelper {
         addRequestHandlerInterceptor(null, interceptorList);
     }
 
-    public void addDefaultRequestHandler(String attrute, Object... handlerList) {
+    public void addDefaultRequestHandler(String attribute, Object... handlerList) {
         for (Object handler : handlerList) {
-            defaultHandlerList.add(new RequestHandlerHolder(attrute, handler));
+            defaultHandlerList.add(new RequestHandlerHolder(attribute, handler));
         }
     }
 

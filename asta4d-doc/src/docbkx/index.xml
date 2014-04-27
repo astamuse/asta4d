@@ -63,6 +63,7 @@
     <xi:include href="en/url_mapping.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/side_effect.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/adv_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>  
 
   <part id="asta4d-reference">
@@ -71,8 +72,6 @@
     <xi:include href="en/detail_snippet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_var_injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_url_rule.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="en/detail_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-    <xi:include href="en/detail_ext_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_i18n.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_servlet_conf.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_integration_spring.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

@@ -23,7 +23,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
+import com.astamuse.asta4d.data.DataTypeTransformer;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
+import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -36,6 +38,8 @@ import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
+import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
+import com.astamuse.asta4d.util.i18n.ResourceBundleFactory;
 import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
@@ -53,9 +57,13 @@ public class Configuration {
 
     private ContextDataFinder contextDataFinder = new DefaultContextDataFinder();
 
+    private DataTypeTransformer dataTypeTransformer = new DefaultDataTypeTransformer();
+
     private List<String> resourceNames = null;
 
     private PlaceholderFormatter placeholderFormatter = new SymbolPlaceholderFormatter();
+
+    private ResourceBundleFactory resourceBundleFactory = new LatinEscapingResourceBundleFactory();
 
     private boolean cacheEnable = true;
 
@@ -140,6 +148,14 @@ public class Configuration {
         this.contextDataFinder = contextDataFinder;
     }
 
+    public DataTypeTransformer getDataTypeTransformer() {
+        return dataTypeTransformer;
+    }
+
+    public void setDataTypeTransformer(DataTypeTransformer dataTypeTransformer) {
+        this.dataTypeTransformer = dataTypeTransformer;
+    }
+
     public List<String> getResourceNames() {
         if (resourceNames == null) {
             resourceNames = new ArrayList<>();
@@ -158,6 +174,14 @@ public class Configuration {
 
     public void setPlaceholderFormatter(PlaceholderFormatter placeholderFormatter) {
         this.placeholderFormatter = placeholderFormatter;
+    }
+
+    public ResourceBundleFactory getResourceBundleFactory() {
+        return resourceBundleFactory;
+    }
+
+    public void setResourceBundleFactory(ResourceBundleFactory resourceBundleFactory) {
+        this.resourceBundleFactory = resourceBundleFactory;
     }
 
     public boolean isCacheEnable() {

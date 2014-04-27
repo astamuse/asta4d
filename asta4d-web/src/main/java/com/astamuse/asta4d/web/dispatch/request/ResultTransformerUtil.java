@@ -30,13 +30,13 @@ public class ResultTransformerUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(ResultTransformerUtil.class);
 
-    public final static ContentProvider<?> transform(Object result, List<ResultTransformer> transformerList) {
+    public final static ContentProvider transform(Object result, List<ResultTransformer> transformerList) {
 
         if (result instanceof ContentProvider) {
-            return (ContentProvider<?>) result;
+            return (ContentProvider) result;
         }
 
-        ContentProvider<?> cp = null;
+        ContentProvider cp = null;
         Object before, after;
         before = result;
         ResultTransformer resultTransformer;
@@ -59,7 +59,7 @@ public class ResultTransformerUtil {
             if (after == null) {
                 continue;
             } else if (after instanceof ContentProvider) {
-                cp = (ContentProvider<?>) after;
+                cp = (ContentProvider) after;
                 break;
             } else {
                 before = after;
@@ -75,19 +75,19 @@ public class ResultTransformerUtil {
         }
     }
 
-    private final static ContentProvider<?> transformMultiResult(MultiResultHolder resultHolder, List<ResultTransformer> transformerList) {
+    private final static ContentProvider transformMultiResult(MultiResultHolder resultHolder, List<ResultTransformer> transformerList) {
         List<Object> resultList = resultHolder.getResultList();
         if (resultList == null || resultList.isEmpty()) {
             String msg = "MultiResultHolder should must hold some result but we got one with an empty list.";
             throw new UnsupportedOperationException(msg);
         }
 
-        List<ContentProvider<?>> cpList = new ArrayList<>(resultList.size());
+        List<ContentProvider> cpList = new ArrayList<>(resultList.size());
         for (Object object : resultList) {
             cpList.add(transform(object, transformerList));
         }
 
-        ContentProvider<?> sp = new SerialProvider(cpList);
+        ContentProvider sp = new SerialProvider(cpList);
         return sp;
     }
 }

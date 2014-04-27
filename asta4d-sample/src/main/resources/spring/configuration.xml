@@ -9,59 +9,40 @@
         http://www.springframework.org/schema/mvc
         http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-    <import resource="snippet.xml"/>
-
-    <!-- Configures the @Controller programming model -->
-    <!--  
-    <mvc:annotation-driven/>
-    <bean class="com.astamuse.asta4d.misc.spring.mvc.controller.GenericController"/>
-
-    <mvc:interceptors>
-        <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateContextInitializer" />
-    </mvc:interceptors>
-    
-    <mvc:resources mapping="/css/**" location="/css/" order="-100"/>
-    <mvc:resources mapping="/js/**" location="/js/" order="-100"/>
-
-	-->
-	
     <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
-        
-        <!--  can be configured by external configuration file too. See asta4d.conf.properties
-        <property name="cacheEnable" value="false"/>
-        -->
-        
         <property name="snippetResolver">
             <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
+        </property>
+        <property name="instanceResolverList">
+            <list>
+                <bean class="com.astamuse.asta4d.misc.spring.SpringManagedInstanceResolver"/>
+            </list>
         </property>
         <property name="pageInterceptorList">
             <list>
                 <bean class="com.astamuse.asta4d.sample.interceptor.SamplePageInterceptor"/>
             </list>
         </property>
-        <property name="snippetInvoker" ref="snippetInvoker"/>
-        <property name="snippetExecutorFactory">
-            <bean class="com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory">
-                <constructor-arg index="0"><value>asta4d-sample-snippet</value></constructor-arg>
-                <constructor-arg index="1"><value>100</value></constructor-arg>
-            </bean>
-        </property>
-        <property name="listExecutorFactory">
-            <bean class="com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory">
-                <constructor-arg index="0"><value>asta4d-sample-snippet</value></constructor-arg>
-                <constructor-arg index="1"><value>200</value></constructor-arg>
-            </bean>
+        <property name="snippetInvoker">
+            <bean id="snippetInvoker" class="com.astamuse.asta4d.snippet.DefaultSnippetInvoker">
+                <property name="snippetInterceptorList">
+                    <list>
+                        <bean class="com.astamuse.asta4d.sample.interceptor.SampleSnippetInterceptor"/>
+                    </list>
+                </property>
+            </bean>        
         </property>
         <property name="urlMappingRuleInitializer">
             <bean class="com.astamuse.asta4d.sample.UrlRules"/>
         </property>
     </bean>
+    
+    <bean id="ComplicatedSnippet" class="com.astamuse.asta4d.sample.snippet.ComplicatedSnippet" scope="prototype"/>
+    <bean id="FormSnippet" class="com.astamuse.asta4d.sample.snippet.FormSnippet" scope="prototype"/>
+    <bean id="SimpleSnippet" class="com.astamuse.asta4d.sample.snippet.SimpleSnippet" scope="prototype"/>
+    <bean id="ShowCodeSnippet" class="com.astamuse.asta4d.sample.snippet.ShowCodeSnippet" scope="prototype"/>
+    
+    <bean class="com.astamuse.asta4d.sample.handler.LoginHandler"/>
+    
 
-    <bean id="snippetInvoker" class="com.astamuse.asta4d.snippet.DefaultSnippetInvoker">
-        <property name="snippetInterceptorList">
-            <list>
-                <bean class="com.astamuse.asta4d.sample.interceptor.SampleSnippetInterceptor"/>
-            </list>
-        </property>
-    </bean>
 </beans>

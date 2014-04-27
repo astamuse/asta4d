@@ -9,7 +9,7 @@
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>0.14.2.10</version>
+  <version>0.14.4.28</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
@@ -94,14 +94,16 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
             <locale>en_US</locale>
+            <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
           </configuration>
           <version>2.9</version>
           <executions>
             <execution>
-              <id>attach-sources</id>
+              <id>create-java-doc</id>
               <phase>verify</phase>
               <goals>
                 <goal>jar</goal>
+                <goal>aggregate-jar</goal>
               </goals>
             </execution>
           </executions>          

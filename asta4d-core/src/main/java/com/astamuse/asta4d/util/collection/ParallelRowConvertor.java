@@ -26,11 +26,11 @@ import com.astamuse.asta4d.Context;
 public abstract class ParallelRowConvertor<S, T> implements RowConvertor<S, T> {
 
     public Future<T> invoke(ExecutorService es, final int rowIndex, final S data) {
-        final Context context = Context.getCurrentThreadContext();
+        final Context context = Context.getCurrentThreadContext().clone();
         return es.submit(new Callable<T>() {
             @Override
             public T call() throws Exception {
-                return Context.with(context.clone(), new Callable<T>() {
+                return Context.with(context, new Callable<T>() {
                     @Override
                     public T call() throws Exception {
                         return convert(rowIndex, data);

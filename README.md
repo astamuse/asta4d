@@ -11,7 +11,7 @@ productivity. But unfortunately, we are still suffering from the following situa
 
 1. The designers or front-end engineers are keeping complaining the mixed-in dynamic code, as they disturb their efforts of redesigning the page style or structure. And in the mean time, the back-end developers are also complaining that the front-end guys break the working page frequently,  because redesign or the new design is hard to merge due to the huge cost of source refactoring. 
 1. The developers are complaining about the poor functionalities of template language which they are using and tired from the various magic skills for complex rendering logic.
-1. The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient approach like traditional PHP/ASP development.
+1. The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient approach.
 
 Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse.com](http://astamuse.com)
 
@@ -95,25 +95,45 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     Asta4D is, by nature, immune from cross-site(XSS/CSRF) problems. You do not need to take care of cross-site any more. All the rendered value would be escaped by default and your clients have no chance to put malicious contents to your server.
 
-1. View first without controller
+1. View first
     
     Asta4D also affords higher productivity than traditional MVC architecture by View First mechanism. And it is also easier to change than MVC architecture.
 
-    There is no a controller which dispatches requests. All the requests will be dispatched by a sort of predefined URL matching rules and will be handled by request handlers. 
+    A controller is not necessary for request dispatch. All the requests cound be dispatched by a sort of predefined URL matching rules and could be forwarded to template files directly, which is called as view first.
     
     ```java
     rules.add("/app/", "/templates/index.html");
-    
-    rules.add("/app/handler")
-         .handler(LoginHandler.class)
-         .handler(EchoHandler.class)
-         .forward(LoginFailure.class, "/templates/error.html")
-         .forward("/templates/success.html");
     ```
 
 1. Isolate side effect with request handler
     
     Asta4D imports the conception of "side-effect" from functional programming languages and separating the "side-effect" by request handlers, which afford more flexibility on page rendering because the view layer is side-effect free now. Therefore Asta4D allows parallel page rendering in multiple threads as a built-in feature.
+
+	[See details about side effect](http://astamuse.github.io/asta4d/userguide/#chapter-side-effect)
+
+1. Advanced MVC
+	
+	Asta4D also affords a evolved MVC architecture which is more clarified for the duty of each application layer than the traditional MVC architecture.
+
+	By traditional MVC architecture, we often have to expand the transaction from the controller layer across to the view layer to combat the lazy load issue, which ugly structure is essentially caused by the tangled controller which holds various unrelated duties.
+  
+	It is also strange that we have to modify our controller's implementation at every time we change the page appearance at view layer. Such situation could not satisfy us since the layers are not uncoupled really.
+  
+	We would say that the traditional controller is indeed a tangled magic container for most logics, a controller will unfortunately be coupled to most layers in the system even our initial purpose of MVC is to uncouple our logics. By contrast, Asta4D allows developers to really uncouple all the tangled logics easily. Basically we could split the traditional controller's duty to following parts:
+	
+	-	request handler
+      
+		Which takes the responsibilities of all the operations with side-effect.
+
+	-	result matching in url rule
+
+		Which dispatches the request to different views according to the result from request handler
+
+	-	snippet class
+
+		Which has the responsibility to render data to the page and also holds the obligation of preparing all the necessary data for page rendering.
+
+	By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.
 
 ## What does "Asta4D" means
 
@@ -134,9 +154,11 @@ The name of Asta4D is from our company's name: astamuse. We explain the "4D" as 
 
 ## Quick start
 
-[Online Sample](http://asta4d-sample.xzer.cloudbees.net/)
+[User Guide](http://astamuse.github.io/asta4d/userguide/index.html)(English, being updated at irregular intervals)
 
 [JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
+
+[Online Sample](http://asta4d-sample.xzer.cloudbees.net/)
 
 There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
 
@@ -144,7 +166,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.2.10               \
+        -DarchetypeVersion=0.14.4.28               \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -165,7 +187,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Additionally, there is an on working [English user guide](http://astamuse.github.com/asta4d/userguide/index.html) which is updated at irregular intervals. There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and there is something changed from it had been written.
+There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and something has changed from when it was written.
 
 ## Best practices
 
@@ -185,19 +207,15 @@ Additionally, there is an on working [English user guide](http://astamuse.github
 
 Immediate tasks: 
 
--   cachable snippet
-
-    A rendered snippet result should can be cached.
-
 -   Rendering helper for validation
     
     Not implementing validaiton which should use third-party implementations such as [JSR 303/349](http://beanvalidation.org/), just help rendering validation result easier.
 
 Want to do: 
 
--   convertable context data annotation
+-   cachable snippet
 
-    Since Java does not support inheriting from annotation, we nned a mechanism to convert any annotation to the default @ContextData annotation for better producibility.
+    A rendered snippet result should can be cached.
 
 -   default value of context data
     
@@ -205,6 +223,37 @@ Want to do:
 
     
 ## Release Notes
+-   0.14.4.28
+    
+    ADD
+	- allow customize ResourceBundle loading and add encoding support for message file
+	- more flexible usage of @ContextData
+		- annotation conversion mechanism(name of @SessionData, @QueryParam can be speficied now)
+		- The policy of how to handle type unmatch situation on context data conversion can be specified now: throw exception(default action), assign default value, record trace information in context.
+		- customized element to array conversion can be supported in context data conversion
+	- more flexible usage of @ContextDataSet
+		- Allow search data by name in context at first for ContextDataSet annotated class data
+		- allow singleton instance of ContextDataSet in single context life cycle
+		- allow create ContextDataSet by specified factory class
+	- afd:comment tag support
+	- allow configuration initializer customizable
+	- allow configure the parameter name of forwarded flash scope data on url
+	- allow rendering Component directly by Render#add method
+
+
+	FIX
+    - potential concurrent hashmap access in ParallelRowConvertor
+    - allow any asta4d's tag in head
+    - make sample project runnable without spring
+    - forwarded flash scope id on url should be encrypted to avoid guessing attack
+    - timeout check is necessary even the target data map of flash data exists
+    - make SpringWebPageView workable
+	
+	REMOVE
+    - deprecated transform methods in ListConvertUtil
+    - dependency from activemq (since we dont need it)
+    - redundant source
+    
 -   0.14.2.10
     
     FIX

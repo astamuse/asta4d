@@ -77,6 +77,10 @@ public class ExtNodeConstants {
     public final static String GROUP_NODE_ATTR_TYPE_FAKE = "fake";
     public final static String GROUP_NODE_ATTR_TYPE_EMBED_WRAPPER = "embed_wrapper";
 
+    public final static String COMMENT_NODE_NAME = "comment";
+    public final static String COMMENT_NODE_TAG = addNS(COMMENT_NODE_NAME);
+    public final static String COMMENT_NODE_TAG_SELECTOR = SelectorUtil.tag(COMMENT_NODE_TAG);
+
     public final static String MSG_NODE_NAME = "msg";
     public final static String MSG_NODE_TAG = addNS(MSG_NODE_NAME);
 
@@ -96,4 +100,14 @@ public class ExtNodeConstants {
     public final static String ATTR_DATAREF_PREFIX = "dataref-";
     public final static String ATTR_DATAREF_PREFIX_WITH_NS = addNS(ATTR_DATAREF_PREFIX);
 
+    //@formatter:off
+    public final static String[] ASTA4D_IN_HEAD_NODE_TAGS = { 
+        BLOCK_NODE_TAG,
+        EMBED_NODE_TAG,
+        SNIPPET_NODE_TAG,
+        GROUP_NODE_TAG,
+        COMMENT_NODE_TAG,
+        MSG_NODE_TAG 
+    };
+    //@formatter:on
 }

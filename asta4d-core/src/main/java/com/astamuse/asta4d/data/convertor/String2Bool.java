@@ -15,21 +15,24 @@
  * 
  */
 
-package com.astamuse.asta4d.data.builtin;
+package com.astamuse.asta4d.data.convertor;
 
-import com.astamuse.asta4d.data.ArrayDataConvertor;
 
 /**
- * Convert String to Long
+ * Convert String to Boolean
  * 
  * @author e-ryu
  * 
  */
-public class String2Long extends ArrayDataConvertor<String, Long> {
+public class String2Bool implements DataConvertor<String, Boolean> {
 
     @Override
-    public Long convert(String s) {
-        return Long.parseLong(s);
+    public Boolean convert(String s) {
+        if (s == null) {
+            return false;
+        } else {
+            return Boolean.parseBoolean(s);
+        }
     }
 
 }

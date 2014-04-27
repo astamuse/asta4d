@@ -27,11 +27,15 @@ import org.springframework.web.servlet.View;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
 public class SpringWebPageView implements View {
 
     private Asta4DPageProvider templateProvider;
+
+    private UrlMappingRule dummyRule = new UrlMappingRule();
 
     public SpringWebPageView(Asta4DPageProvider templateProvider) throws TemplateException {
         super();
@@ -45,11 +49,11 @@ public class SpringWebPageView implements View {
 
     @Override
     public void render(Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Context context = Context.getCurrentThreadContext();
+        WebApplicationContext context = Context.getCurrentThreadContext();
         for (Entry<String, ?> entry : model.entrySet()) {
             context.setData(entry.getKey(), entry.getValue());
         }
-        // templateProvider.produce(response);
+        templateProvider.produce(dummyRule, response);
     }
 
 }

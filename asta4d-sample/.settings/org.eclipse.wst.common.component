@@ -4,13 +4,10 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="asta4d-spring-0.14.2.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-spring/asta4d-spring">
+        <dependent-module archiveName="asta4d-web-0.14.4.28.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-web/asta4d-web">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="asta4d-web-0.14.2.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-web/asta4d-web">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="asta4d-core-0.14.2.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-core/asta4d-core">
+        <dependent-module archiveName="asta4d-core-0.14.4.28.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/asta4d-core/asta4d-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="asta4d-sample"/>

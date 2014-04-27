@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xml:id="overview"
+<chapter xml:id="chapter-detail-url-rule"
     xmlns="http://docbook.org/ns/docbook" version="5.0"
     xmlns:xl="http://www.w3.org/1999/xlink"
     xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -9,6 +9,251 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>URL rule</title>
   
-  <para>...</para>
+  <sect1>
+    <title>Rule apis</title>
+    <sect2>
+      <title>UrlMappingRuleInitializer</title>
+      <para>All the url mapping rules can be supplied by implementing the UrlMappingRuleInitializer interface which can be configured by 
+      WebApplicationConfiguration#setUrlMappingRuleInitializer.</para>
+      
+      <para>UrlMappingRuleInitializer's initUrlMappingRules method does not return configured rules directly, it supply a UrlMappingRuleHelper
+      instance by parameter instead. The UrlMappingRuleHelper afford a group of methods to help developers build url mapping rules.</para>
+      
+      <para>UrlMappingRuleHelper allows add new rule by add methods, which will be discussed in next section, let us see the global configuration
+      methods of UrlMappingRuleHelper at first.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>addDefaultRequestHandler(Object... handlerList)</para>
+        </listitem>
+        <listitem>
+          <para>addDefaultRequestHandler(String attribute, Object... handlerList)</para>
+          <sbr/>
+          <para>There are two overloaded methods of addDefaultRequestHandler. Added request handlers without attribute declaration will be applied 
+          to all the rules and the ones with attribute declaration will be applied to therules with same attribute only.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>addGlobalForward(Object result, String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>addGlobalForward(Object result, String targetPath, int status) </para>
+          <sbr/>
+          <para>There are two overloaded methods of addGlobalForward. The one with status parameter can customize the http response code with specified
+          status code or the default code 200 will be returned to client.</para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>addGlobalRedirect(Object result, String targetPath) </para>
+          <sbr/>
+          <para>A global redirect result mapping can be declared. There is a convention about the format of target path(the normal redirect on special rules follows
+          the same convention):</para>
+          <itemizedlist>
+            <listitem>
+              <para>common url string("http://www.example.com/somepage.html")</para>
+              <para>The target url will be redirected as temporary(code 302).</para>
+            </listitem>
+            <listitem>
+              <para>common url string with prefix("301:http://www.example.com/somepage.html")</para>
+              <para>The target url will be redirected as specified code by the prefix. 301 or 302 are acceptable and "p" or "t" can be used to represent "permanent"
+              or "temporary" as well(which means "301:http://www.example.com/somepage.html" equals to "p:http://www.example.com/somepage.html").</para>
+            </listitem>
+          </itemizedlist>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>addRequestHandlerInterceptor(Object... interceptorList)</para>
+        </listitem>
+        <listitem>
+          <para>addRequestHandlerInterceptor(String attribute, Object... interceptorList)</para>
+          <para><remark>The request handler interceptor is need to be clarified more in the implementation. We skip the description at present.</remark></para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>setDefaultMethod(HttpMethod defaultMethod) </para>
+          <para>The default matching http method for url patterns without http method specified. The default value is GET.</para>
+        </listitem>
+      </itemizedlist>
+    </sect2>
+    <sect2>
+      <title>Handy rules</title>
+      <para>There several add methods from UrlMappingRuleHelper which can be used to add new url rules. According to the certain being called add method, different
+      interface which is called handy rules will be returned for further declaration. Further, all the methods of the returned handy rule interface will return different
+      interface according to the certain method you are calling, it is complex to describe which interface will be returned on certain case, basically we suppose that 
+      the code auto completion function of you editor would help you to know what you can do in the next step.  All of these handy rules and their methods can be treated
+      as a group of DSL to help you build your own url rules for your site. We will describe all the available methods at following regardless of which certain interface
+      it belongs to. After that, we will also describe the basic rule of how the returned handy rules change.</para>
+      
+      <itemizedlist>
+        <listitem>
+          <para>add(String sourcePath)</para>
+        </listitem>
+        <listitem>
+          <para>add(String sourcePath, String targetPath) </para>
+        </listitem>
+        <listitem>
+          <para>add(HttpMethod method, String sourcePath) </para>
+        </listitem>
+        <listitem>
+          <para>add(HttpMethod method, String sourcePath, String targetPath)</para>
+          <sbr/>
+          <para>Add a new url rule. If the http method is not specified. the configured default method(see above setDefaultMethod) will be specified by default. If you
+          want the sourcePath is matched to all the http methods, null can be specified. The targetPath should be a template file path or a redirect target url string
+          with prefix "redirect:", the part after prefix "redirect:" follows the convention of redirect string format introduced in global redirect configuration.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>id(String id)</para>
+          <sbr/>
+          <para>One added rule can be identified by a unique id.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>reMapTo(String ruleId)</para>
+          <sbr/>
+          <para>Multi url patterns can be mapped to the same rule by reMapTo method. See following sample:
+          </para>
+          <example><title>Retrieve an instance of WebApplicationContext by static method</title>
+          <programlisting language="java">
+<![CDATA[
+    rules.add("/app/", "/templates/index.html").id("index-page");
+    
+    rules.add("/app/index").reMapTo("index-page");
+    
+    rules.add("/app/handler").id("app-handler")
+         .handler(LoginHandler.class)
+         .handler(EchoHandler.class)
+         .forward(LoginFailure.class, "/templates/error.html")
+         .forward("/templates/success.html");
+    
+    rules.add("/app/ex-handler").reMapTo("app-handler").attribute("ex-handler");
+        
+]]>
+          </programlisting>
+          <para>In above sample, "/app/index" will be treated as same as the rule identified as "index-page" which sourc path is "/app/". Aslo the "/app/ex-handler"
+          will be configured as same as "/app/handler" with its special attribute configuration "ex-handler". Special path variable and priority can be configured to
+          remapped rules as well.</para>
+          </example>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>attribute(String attribute)</para>
+          <sbr/>
+          <para>Multi attributes can be configured to a rule. The attributes can be used by global rule configurations to add certain extra operations on certain urls
+          which is attributed by certain attribute.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>var(String key, Object value)</para>
+          <sbr/>
+          <para>Static path variables can be configured by this method, that can be accessed by context's path var scope and also can be automatically injected to snippets
+          or request handlers.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>handler(Object... handlerList)</para>
+          <sbr/>
+          <para>Request handlers can be configured by this methods. Multi request handlers are acceptable and the details about multi request handlers will be explained in
+          later section.</para>
+          <para>The parameter of handler method can be arbitrary type: an instance of java.lang.Class or an arbitrary instance.  The framework explains received parameters by
+          the implementation of DeclareInstanceResolver configured by WebApplicationConfiguration. The default implementation provided by framework follows the following rules
+          to explain the declaration of request handler:</para>
+            <orderedlist>
+              <listitem>
+                <para>If an instance of java.lang.Class is specified, the instance of request handler will be created by invoke "newInstance()"
+                on the specified Class.</para>
+              </listitem>
+              <listitem>
+                <para>If a string is specified, the string will be treated as a class name and an instance of java.lang.Class will be created by 
+                calling "Class#forName", then the instance of request handler will be created by invoke "newInstance()" on the created Class.</para>
+              </listitem>
+              <listitem>
+                <para>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
+                it is interesting that we can declare an anonymous class as a request handler:</para>
+                <example>
+                  <programlisting language="java">
+<![CDATA[
+rules.add("/app/handler")  
+     .handler(new Object(){  
+        @RequestHandler  
+        public void handle(){  
+            //  
+        }  
+     }); 
+]]>
+                  </programlisting>
+                </example>
+              </listitem>
+            </orderedlist>
+            <remark>The asta4d-spring package also provides a resolver based on Spring IOC container, the request handler instance will be retrieved by
+            passing the specified parameter to the "Context#getBean" method of spring container. See details of integration of Spring IOC.</remark>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>forward(String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>forward(String targetPath, int status)</para>
+        </listitem>
+        <listitem>
+          <para>forward(Object result, String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>forward(Object result, String targetPath, int status)</para>
+          <sbr/>
+          <para>The request will be forwarded to the target template file with specified status code. The result parameter will be used to match the result from 
+          request handler(if there is any request handler configured for current rule).About result matching, see details in next section.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>redirect(String targetPath)</para>
+        </listitem>
+        <listitem>
+          <para>redirect(Object result, String targetPath)</para>
+          <sbr/>
+          <para>As the same as forward, the request will be redirected(301/302) to the target path. The target path string follows the convention  of redirect string 
+          format introduced in global redirect configuration.
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>json()</para>
+          <sbr/>
+          <para>The result of request handler will be converted to a json string and be returned the client with MIME type "application/json".
+          </para>
+          <sbr/>
+        </listitem>
+        <listitem>
+          <para>rest()</para>
+          <sbr/>
+          <para>This method does nothing for the current url but declared as a comment that suggests the current rule will act as a restful api and will return customized
+          response which would be head only response in many cases.
+          </para>
+          <sbr/>
+        </listitem>
+      </itemizedlist>
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Request handler result process</title>
+    <para>This section will describe some internal mechanism of how asta4d handle the result from a request handler. Especially for the part of result transforming, which is not
+    necessary for normal development but can help you understand how the request handler chain works.</para>
+    <sect2>
+      <title>Content provider</title>
+    </sect2>
+    <sect2>
+      <title>Result transforming</title>
+    </sect2>
+    <sect2>
+      <title>Request handler chain</title>
+    </sect2>
+  </sect1>
 
 </chapter>

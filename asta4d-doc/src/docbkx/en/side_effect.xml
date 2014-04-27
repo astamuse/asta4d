@@ -110,6 +110,7 @@
     </example>
   </section>
 
+<!--  
   <section>
     <title>Compatibility to MVC</title>
     <para>
@@ -128,5 +129,6 @@
       <remark>You can also integrate Asta4D's template only as a view layer implementation for Spring MVC. More details can be found in reference.</remark>
     </para>
   </section>
+-->
 
 </chapter>

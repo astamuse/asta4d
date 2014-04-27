@@ -17,29 +17,10 @@
 
 package com.astamuse.asta4d.web.messaging;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
-
-import java.net.URI;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.TransportConnector;
-import org.apache.activemq.command.ActiveMQObjectMessage;
-
-import com.astamuse.asta4d.util.IdGenerator;
 
 public class MessageManager {
 
+    /*
     private final static MessageManager MANAGER = new MessageManager();
 
     private BrokerService broker;
@@ -172,4 +153,5 @@ public class MessageManager {
             }
         }
     }
+    */
 }

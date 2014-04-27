@@ -42,7 +42,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
      * @see com.astamuse.asta4d.web.dispatch.RequestHandlerInvoker#invoke(com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule)
      */
     @Override
-    public List<ContentProvider<?>> invoke(UrlMappingRule rule) throws Exception {
+    public List<ContentProvider> invoke(UrlMappingRule rule) throws Exception {
         RequestHandlerInvokeExecutor executor = new RequestHandlerInvokeExecutor(rule.getHandlerList(), rule.getResultTransformerList());
         RequestHandlerResultHolder holder = new RequestHandlerResultHolder();
         InterceptorUtil.executeWithInterceptors(holder, buildInterceptorList(rule), executor);
@@ -105,9 +105,9 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
         @Override
         public void execute(RequestHandlerResultHolder holder) throws Exception {
-            List<ContentProvider<?>> cpList = new ArrayList<>();
+            List<ContentProvider> cpList = new ArrayList<>();
             Object result;
-            ContentProvider<?> cp;
+            ContentProvider cp;
             for (Object handler : requestHandlerList) {
                 try {
                     result = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);

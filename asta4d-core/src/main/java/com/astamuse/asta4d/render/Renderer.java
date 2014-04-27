@@ -24,10 +24,10 @@ import java.util.List;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Component;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.DataConvertor;
-import com.astamuse.asta4d.data.concurrent.ParallelDataConvertor;
+import com.astamuse.asta4d.data.convertor.DataConvertor;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;
@@ -345,6 +345,20 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for {@link Component} rendering by given parameter and add it to the current renderer. See
+     * {@link #create(String, Component)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param component
+     *            a component that to be rendered
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Component component) {
+        return add(create(selector, component));
+    }
+
+    /**
      * Create a renderer for element setting by given parameter and add it to the current renderer. See
      * {@link #create(String, ElementSetter)}.
      * 
@@ -408,38 +422,6 @@ public class Renderer {
      * @return the created renderer for chain calling
      */
     public <S, T> Renderer add(String selector, Iterable<S> list, ParallelRowConvertor<S, T> convertor) {
-        return add(create(selector, list, convertor));
-    }
-
-    /**
-     * Create a renderer for list rendering by given parameter with given {@link DataConvertor} and add it to the current renderer. See
-     * {@link #create(String, List)}.
-     * 
-     * This method has been deprecated. Use {@link #add(String, Iterable, RowConvertor)} instead.
-     * 
-     * @param selector
-     * @param list
-     * @param convertor
-     * @return the created renderer for chain calling
-     */
-    @Deprecated
-    public <S, T> Renderer add(String selector, Iterable<S> list, DataConvertor<S, T> convertor) {
-        return add(create(selector, list, convertor));
-    }
-
-    /**
-     * Create a renderer for list rendering by given parameter with given {@link ParallelDataConvertor} and add it to the current renderer.
-     * See {@link #create(String, List)}.
-     * 
-     * This method has been deprecated. Use {@link #add(String, Iterable, ParallelRowConvertor)} instead.
-     * 
-     * @param selector
-     * @param list
-     * @param convertor
-     * @return the created renderer for chain calling
-     */
-    @Deprecated
-    public <S, T> Renderer add(String selector, Iterable<S> list, ParallelDataConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
 
@@ -685,6 +667,25 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for {@link Component} rendering by given parameter.
+     * <p>
+     * The target element specified by the selector will be completely replaced by the result of given {@link Component#toElement()}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param component
+     *            a component that to be rendered
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Component component) {
+        if (treatNullAsRemoveNode && component == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new ElementTransformer(component.toElement()));
+        }
+    }
+
+    /**
      * Create a renderer for element setting by given parameter.
      * <p>
      * The target element specified by the given selector will not be replaced and will be passed to the given {@link ElementSetter} as a
@@ -792,59 +793,6 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (treatNullAsRemoveNode && list == null) {
-            return new Renderer(selector, new ElementRemover());
-        } else {
-            if (Configuration.getConfiguration().isBlockParallelListRendering()) {
-                return create(selector, ListConvertUtil.transform(list, convertor));
-            } else {
-                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
-            }
-        }
-    }
-
-    /**
-     * Create a renderer for list rendering by given parameter with given {@link DataConvertor}. See {@link #create(String, List)}.
-     * 
-     * This method has been deprecated. Use {@link #create(String, Iterable, RowConvertor)} instead.
-     * 
-     * @param selector
-     *            a css selector
-     * @param list
-     *            a list with arbitrary type data
-     * @param convertor
-     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
-     *            Renderer
-     * @return the created renderer
-     */
-    @Deprecated
-    public final static <S, T> Renderer create(String selector, Iterable<S> list, DataConvertor<S, T> convertor) {
-        if (treatNullAsRemoveNode && list == null) {
-            return new Renderer(selector, new ElementRemover());
-        } else {
-            return create(selector, ListConvertUtil.transform(list, convertor));
-        }
-    }
-
-    /**
-     * Create a renderer for list rendering by given parameter with given {@link ParallelDataConvertor}. This method will not block the
-     * current thread and will return immediately.
-     * 
-     * See {@link #create(String, List)}.
-     * 
-     * This method has been deprecated. Use {@link #create(String, Iterable, ParallelRowConvertor)} instead.
-     * 
-     * @param selector
-     *            a css selector
-     * @param list
-     *            a list with arbitrary type data
-     * @param convertor
-     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
-     *            Renderer
-     * @return the created renderer
-     */
-    @Deprecated
-    public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelDataConvertor<S, T> convertor) {
         if (treatNullAsRemoveNode && list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {

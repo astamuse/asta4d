@@ -20,13 +20,16 @@
 				<select id="bloodtype" name="bloodtype">
 					<option/>
 				</select><br />
-				<input type="submit" value="confirm">
+				<input type="submit" value="confirm"><span>(Left the name or age empty then click the confirm, the flash scope data will be performed)</span>
 			</form>
 		</article>
 	</section>
     <!-- @ShowCode:showInputEnd -->
 
     <div afd:render="ShowCodeSnippet:showCode" file="/templates/form/input.html" startMark="showInputStart" endMark="showInputEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/handler/FormValidateHandler.java" startMark="showFormValidateHandlerStart" endMark="showFormValidateHandlerStartEnd">
     </div>
 
     <div afd:render="ShowCodeSnippet:showCode" file="/snippet/FormSnippet.java" startMark="showInputStart" endMark="showInputEnd">

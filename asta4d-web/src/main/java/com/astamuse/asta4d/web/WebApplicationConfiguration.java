@@ -30,6 +30,8 @@ import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 
 public class WebApplicationConfiguration extends Configuration {
 
+    private String flashScopeForwardParameterName = "flash_scope_id";
+
     private RequestHandlerInvokerFactory requestHandlerInvokerFactory;
 
     private List<DeclareInstanceResolver> instanceResolverList = new ArrayList<>();
@@ -52,6 +54,14 @@ public class WebApplicationConfiguration extends Configuration {
 
     public final static WebApplicationConfiguration getWebApplicationConfiguration() {
         return (WebApplicationConfiguration) getConfiguration();
+    }
+
+    public String getFlashScopeForwardParameterName() {
+        return flashScopeForwardParameterName;
+    }
+
+    public void setFlashScopeForwardParameterName(String flashScopeForwardParameterName) {
+        this.flashScopeForwardParameterName = flashScopeForwardParameterName;
     }
 
     public RequestHandlerInvokerFactory getRequestHandlerInvokerFactory() {
