@@ -57,7 +57,7 @@ public @interface ContextData {
     boolean reverse() default false;
 
     /**
-     * he policy of how to handle the unmatched type on data conversion.
+     * the policy of how to handle the unmatched type on data conversion.
      * 
      */
     TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.EXCEPTION;
