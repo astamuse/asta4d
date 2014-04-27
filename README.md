@@ -166,7 +166,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.2.10               \
+        -DarchetypeVersion=0.14.4.28               \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -207,19 +207,15 @@ There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/
 
 Immediate tasks: 
 
--   cachable snippet
-
-    A rendered snippet result should can be cached.
-
 -   Rendering helper for validation
     
     Not implementing validaiton which should use third-party implementations such as [JSR 303/349](http://beanvalidation.org/), just help rendering validation result easier.
 
 Want to do: 
 
--   convertable context data annotation
+-   cachable snippet
 
-    Since Java does not support inheriting from annotation, we nned a mechanism to convert any annotation to the default @ContextData annotation for better producibility.
+    A rendered snippet result should can be cached.
 
 -   default value of context data
     
@@ -227,6 +223,37 @@ Want to do:
 
     
 ## Release Notes
+-   0.14.4.28
+    
+    ADD
+	- allow customize ResourceBundle loading and add encoding support for message file
+	- more flexible usage of @ContextData
+		- annotation conversion mechanism(name of @SessionData, @QueryParam can be speficied now)
+		- The policy of how to handle type unmatch situation on context data conversion can be specified now: throw exception(default action), assign default value, record trace information in context.
+		- customized element to array conversion can be supported in context data conversion
+	- more flexible usage of @ContextDataSet
+		- Allow search data by name in context at first for ContextDataSet annotated class data
+		- allow singleton instance of ContextDataSet in single context life cycle
+		- allow create ContextDataSet by specified factory class
+	- afd:comment tag support
+	- allow configuration initializer customizable
+	- allow configure the parameter name of forwarded flash scope data on url
+	- allow rendering Component directly by Render#add method
+
+
+	FIX
+    - potential concurrent hashmap access in ParallelRowConvertor
+    - allow any asta4d's tag in head
+    - make sample project runnable without spring
+    - forwarded flash scope id on url should be encrypted to avoid guessing attack
+    - timeout check is necessary even the target data map of flash data exists
+    - make SpringWebPageView workable
+	
+	REMOVE
+    - deprecated transform methods in ListConvertUtil
+    - dependency from activemq (since we dont need it)
+    - redundant source
+    
 -   0.14.2.10
     
     FIX
