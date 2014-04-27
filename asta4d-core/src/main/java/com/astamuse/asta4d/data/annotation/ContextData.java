@@ -60,6 +60,6 @@ public @interface ContextData {
      * he policy of how to handle the unmatched type on data conversion.
      * 
      */
-    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.DEFAULT_VALUE;
+    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.EXCEPTION;
 
 }
