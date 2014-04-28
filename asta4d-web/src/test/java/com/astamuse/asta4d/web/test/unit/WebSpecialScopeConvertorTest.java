@@ -3,9 +3,13 @@ package com.astamuse.asta4d.web.test.unit;
 import java.lang.annotation.Annotation;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.web.WebApplicationContext;
@@ -19,7 +23,7 @@ import com.astamuse.asta4d.web.annotation.convertor.WebSpecialScopeConvertor;
 
 public class WebSpecialScopeConvertorTest {
 
-    private static class DataStub {
+    public static class DataStub {
 
         @CookieData(name = "cook")
         public String cookieData;
@@ -43,28 +47,44 @@ public class WebSpecialScopeConvertorTest {
         public String sessionData2;
     }
 
+    @BeforeMethod
+    public void initContext() {
+        Context ctx = new Context();
+        Context.setCurrentThreadContext(ctx);
+    }
+
+    @AfterMethod
+    public void clearContext() {
+        Context.setCurrentThreadContext(null);
+    }
+
     @DataProvider(name = "test-data")
     public Object[][] getPathConvertTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
-            {"cookieData", "cook", WebApplicationContext.SCOPE_COOKIE, TypeUnMacthPolicy.EXCEPTION},
-            {"flashData", "flash", WebApplicationContext.SCOPE_FLASH, TypeUnMacthPolicy.EXCEPTION},
-            {"headerData", "header", WebApplicationContext.SCOPE_HEADER, TypeUnMacthPolicy.EXCEPTION},
-            {"pathData", "path", WebApplicationContext.SCOPE_PATHVAR, TypeUnMacthPolicy.EXCEPTION},
-            {"queryData", "query", WebApplicationContext.SCOPE_QUERYPARAM, TypeUnMacthPolicy.EXCEPTION},
-            {"sessionData", "session", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.EXCEPTION},
-            {"sessionData2", "session", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.DEFAULT_VALUE},
+            {"cookieData", "cook", "cook123", WebApplicationContext.SCOPE_COOKIE, TypeUnMacthPolicy.EXCEPTION},
+            {"flashData", "flash", "flash123", WebApplicationContext.SCOPE_FLASH, TypeUnMacthPolicy.EXCEPTION},
+            {"headerData", "header", "header123", WebApplicationContext.SCOPE_HEADER, TypeUnMacthPolicy.EXCEPTION},
+            {"pathData", "path", "path123", WebApplicationContext.SCOPE_PATHVAR, TypeUnMacthPolicy.EXCEPTION},
+            {"queryData", "query", "query123", WebApplicationContext.SCOPE_QUERYPARAM, TypeUnMacthPolicy.EXCEPTION},
+            {"sessionData", "session", "session123", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.EXCEPTION},
+            {"sessionData2", "session", "session-123", WebApplicationContext.SCOPE_SESSION, TypeUnMacthPolicy.DEFAULT_VALUE},
         };
         //@formatter:on
     }
 
     @Test(dataProvider = "test-data")
-    public void testConversion(String fieldName, String expectedName, String expectedScope, TypeUnMacthPolicy expectedTypeUnMatch)
-            throws Exception {
+    public void testConversion(String fieldName, String expectedName, String expectedValue, String expectedScope,
+            TypeUnMacthPolicy expectedTypeUnMatch) throws Exception {
         Annotation stub = DataStub.class.getField(fieldName).getAnnotations()[0];
         ContextData cd = WebSpecialScopeConvertor.class.newInstance().convert(stub);
         Assert.assertEquals(cd.name(), expectedName);
         Assert.assertEquals(cd.scope(), expectedScope);
         Assert.assertEquals(cd.typeUnMatch(), expectedTypeUnMatch);
+
+        Context.getCurrentThreadContext().setData(expectedScope, expectedName, expectedValue);
+        DataStub stubData = new DataStub();
+        InjectUtil.injectToInstance(stubData);
+        Assert.assertEquals(DataStub.class.getField(fieldName).get(stubData), expectedValue);
     }
 }
