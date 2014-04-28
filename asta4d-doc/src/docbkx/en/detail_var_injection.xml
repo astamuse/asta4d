@@ -293,6 +293,14 @@ public class PageSnippet {
               <para>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <xref linkend="sect-ContextDataFinder"/></para>
           </listitem>
         </varlistentry>
+        <varlistentry>
+          <term>typeUnMatch</term>
+          <listitem>
+            <para>The policy of how to handle the unmatched type on data conversion. The default action is throw Exception and another two value of "DEFAULT_VALUE" and "DEFAULT_VALUE_AND_TRACE"
+            can be specified.
+            </para>
+          </listitem>
+        </varlistentry>
       </variablelist>
       
       <para>There are several scope specified annotations can be used as convenience.</para>
@@ -313,9 +321,12 @@ public class PageSnippet {
         <listitem>
           <para>@CookieData</para>
         </listitem>
+        <listitem>
+          <para>@FlashData</para>
+        </listitem>
       </itemizedlist>
       
-      <remark>Currently, the convenient annotations cannot be configured with variable name. More flexible configuration will be supported in future version.</remark>
+      <remark>All the above annotation have the same configurable items with the original @ContextData annotation except being fixed with according data scope.</remark>
 
     </sect2>
     <sect2>
@@ -324,7 +335,6 @@ public class PageSnippet {
       @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
       @ContextData will be injected as same as the snippet class field injection. @ContextDataSet can be used to allocate all of the form data into one single instance as a
       convenience.</para>
-      
       <example>
       <programlisting language="java">
 <![CDATA[
@@ -370,6 +380,25 @@ public static class MySnippet2 {
       <para>Note that even you declared @ContextDataSet on the class, you still need to declare the @ContextData on the field declaration. For method parameter, it is not necessary
       since all the parameters are injected automatically. Further, for a declared @ContextDataSet, you still need to declare @ContextData on every field you want to be injected.</para>
       </example>
+      
+      <variablelist>
+        <title>Available configurations of @ContextData:</title>
+        <varlistentry>
+          <term>singletonInContext</term>
+          <listitem>
+            <para>A boolean value to indicate that whether the target ContextDataSet should be singleton in a single context life cycle. The default value is false, which means a new instance
+            would be created at every time when a ConextDataSet is required to inject.
+            </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term>factory</term>
+          <listitem>
+            <para>A factory class can be used to indicate how to create an instance of ContextDataSet. The default factory will call Class#newInstance() to create a new instance of ContextDataSet.
+            </para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
       
     </sect2>
     <sect2 id="sect-ContextDataFinder">

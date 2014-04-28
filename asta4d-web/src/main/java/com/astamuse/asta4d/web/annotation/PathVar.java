@@ -29,5 +29,5 @@ import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 public @interface PathVar {
     String name() default "";
 
-    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.DEFAULT_VALUE;
+    TypeUnMacthPolicy typeUnMatch() default TypeUnMacthPolicy.EXCEPTION;
 }

@@ -28,6 +28,7 @@ import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.data.ContextDataHolder;
+import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.util.DelegatedContextMap;
 
@@ -182,6 +183,7 @@ public class Context {
     public void init() {
         clear();
         ContextBindData.initConext(this);
+        InjectUtil.initContext(this);
     }
 
     public void clear() {
