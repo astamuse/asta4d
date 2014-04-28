@@ -23,9 +23,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.data.TypeUnMacthPolicy;
+import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
+import com.astamuse.asta4d.web.annotation.convertor.WebSpecialScopeConvertor;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+@ConvertableAnnotation(WebSpecialScopeConvertor.class)
 public @interface SessionData {
     String name() default "";
 

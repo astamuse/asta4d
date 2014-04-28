@@ -34,10 +34,10 @@ public class WebSpecialScopeConvertor implements AnnotationConvertor<Annotation,
         }
 
         try {
-            Method nameMethod = originalAnnotation.getClass().getMethod("name");
+            Method nameMethod = originalAnnotation.annotationType().getMethod("name");
             String name = (String) nameMethod.invoke(originalAnnotation);
 
-            Method typeUnMatchMethod = originalAnnotation.getClass().getMethod("typeUnMatch");
+            Method typeUnMatchMethod = originalAnnotation.annotationType().getMethod("typeUnMatch");
             TypeUnMacthPolicy typeUnMatch = (TypeUnMacthPolicy) typeUnMatchMethod.invoke(originalAnnotation);
 
             return gen(scope, name, typeUnMatch);

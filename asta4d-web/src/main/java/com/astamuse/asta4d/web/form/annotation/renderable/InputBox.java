@@ -12,5 +12,5 @@ import com.astamuse.asta4d.web.form.annotation.renderable.convert.InputBoxAnnota
 @Target({ ElementType.FIELD })
 @ConvertableAnnotation(InputBoxAnnotationConvertor.class)
 public @interface InputBox {
-    public String name() default "";
+    String name() default "";
 }

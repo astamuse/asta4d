@@ -24,7 +24,7 @@ public class IntelligentFormSnippet<T> {
 
         for (Field field : fieldList) {
             Object v = FieldUtils.readField(field, form, true);
-            render.add("name=[" + field.getName() + "]", v);
+            render.add("[name=" + field.getName() + "]", v);
         }
         return render;
     }

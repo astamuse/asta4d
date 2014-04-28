@@ -12,5 +12,5 @@ import com.astamuse.asta4d.web.form.annotation.convert.FormFieldAnnotationConver
 @Target({ ElementType.FIELD })
 @ConvertableAnnotation(FormFieldAnnotationConvertor.class)
 public @interface FormField {
-    public String name() default "";
+    String name() default "";
 }

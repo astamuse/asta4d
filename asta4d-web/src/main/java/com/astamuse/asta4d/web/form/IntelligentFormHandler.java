@@ -71,7 +71,7 @@ public class IntelligentFormHandler<T> {
         } else {
             DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.instance();
             for (FormValidationMessage formValidationMessage : validationMesssages) {
-                msgHelper.err("name=[" + formValidationMessage.getName() + "]", formValidationMessage.getMessage());
+                msgHelper.err("[name=" + formValidationMessage.getName() + "]", formValidationMessage.getMessage());
             }
             Context.getCurrentThreadContext().setData(IntelligentFormSnippet.PRE_DEFINED_FORM, form);
             RedirectTargetProvider.addFlashScopeData(IntelligentFormSnippet.PRE_DEFINED_FORM, form);

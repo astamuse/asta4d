@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -43,7 +44,6 @@ import org.mockito.stubbing.Answer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -95,12 +95,6 @@ public class RequestDispatcherTest {
     public void setConf() {
         Locale.setDefault(Locale.ROOT);
         Configuration.setConfiguration(configuration);
-    }
-
-    @BeforeTest
-    public void setContext() {
-        WebApplicationContext context = new WebApplicationContext();
-        Context.setCurrentThreadContext(context);
     }
 
     @BeforeMethod
@@ -194,8 +188,16 @@ public class RequestDispatcherTest {
       //@formatter:on
     }
 
-    private final static Asta4DPageProvider getExpectedPage(String path) throws Exception {
-        return new Asta4DPageProvider(Page.buildFromPath(path));
+    private final static Asta4DPageProvider getExpectedPage(final String path) throws Exception {
+        Context ctx = new WebApplicationContext();
+        ctx.init();
+        return Context.with(ctx, new Callable<Asta4DPageProvider>() {
+            @Override
+            public Asta4DPageProvider call() throws Exception {
+                return new Asta4DPageProvider(Page.buildFromPath(path));
+            }
+        });
+
     }
 
     @DataProvider(name = "data")
