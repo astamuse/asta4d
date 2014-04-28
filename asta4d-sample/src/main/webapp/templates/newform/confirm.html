@@ -1,0 +1,41 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
+<title>Asta4D Sample Project</title>
+</head>
+<body onload="prettyPrint()">
+	<h1>Confirm</h1>
+
+    <!-- @ShowCode:showConfirmStart -->
+	<section>
+		<article>
+			<p>Are you sure you have the correct?</p>
+			<dl afd:render="FormSnippet:setInputValue">
+				<dt>name</dt><dd class="name">name:<span>name</span></dd>
+				<dt>age</dt><dd class="age">age:<span>age</span></dd>
+				<dt>bloodtype</dt><dd class="bloodtype">bloodtype:<span>bloodtype</span></dd>
+			</dl>
+			<form action="./complete" method="post">
+				<input type="submit" name="submit" value="send">
+				<input type="submit" name="cancel" value="cancel">
+				<afd:snippet render="FormSnippet:setHiddenValue">
+					<input id="name" name="name" type="hidden" value="" />
+					<input id="age" name="age" type="hidden" value="" />
+					<input id="bloodtype" name="bloodtype" type="hidden" value="" />
+				</afd:snippet>
+			</form>
+		</article>
+	</section>
+    <!-- @ShowCode:showConfirmEnd -->
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/form/confirm.html" startMark="showConfirmStart" endMark="showConfirmEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/FormSnippet.java" startMark="showConfirmStart" endMark="showConfirmEnd">
+    </div>
+</body>
+</html>

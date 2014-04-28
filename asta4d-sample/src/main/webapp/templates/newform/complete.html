@@ -1,0 +1,32 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
+<title>Asta4D Sample Project</title>
+</head>
+<body onload="prettyPrint()">
+	<h1>Complete</h1>
+
+    <!-- @ShowCode:showCompleteStart -->
+	<section>
+		<article>
+			<p>Input flow completed.</p>
+			<dl afd:render="FormSnippet:setInputValue">
+				<dt>name</dt><dd class="name">name:<span>name</span></dd>
+				<dt>age</dt><dd class="age">age:<span>age</span></dd>
+				<dt>bloodtype</dt><dd class="bloodtype">bloodtype:<span>bloodtype</span></dd>
+			</dl>
+		</article>
+	</section>
+    <!-- @ShowCode:showCompleteEnd -->
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/templates/form/complete.html" startMark="showCompleteStart" endMark="showCompleteEnd">
+    </div>
+
+    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/FormSnippet.java" startMark="showCompleteStart" endMark="showCompleteEnd">
+    </div>
+</body>
+</html>

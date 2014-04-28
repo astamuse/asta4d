@@ -47,6 +47,12 @@ public class RedirectTargetProvider implements ContentProvider {
         dataList.add(flashScopeData);
     }
 
+    public static void addFlashScopeData(String name, Object data) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(name, data);
+        addFlashScopeData(map);
+    }
+
     private int status;
     private String targetPath;
     private Map<String, Object> flashScopeData;

@@ -16,16 +16,22 @@ public class TypeUnMatchValidator implements FormValidator {
         for (Field field : fieldList) {
             ContextDataHolder valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field);
             if (valueHolder != null) {
-
+                msgList.add(createTypeUnMatchMessage(valueHolder));
             }
         }
-
         return msgList;
     }
 
-    protected String createTypeUnMatchMessage(ContextDataHolder valueHolder) {
+    protected FormValidationMessage createTypeUnMatchMessage(ContextDataHolder valueHolder) {
         String originalValue = valueHolder.getFoundOriginalData().toString();
-        valueHolder.getTypeCls();
+        String msg = createTypeUnMatchMessage(originalValue, valueHolder.getTypeCls());
+        return new FormValidationMessage(valueHolder.getName(), msg);
+    }
+
+    protected String createTypeUnMatchMessage(String originalValue, Class targetType) {
+        String msg = "%s is expected but value[%s] found.";
+        msg = String.format(msg, targetType.getSimpleName(), originalValue);
+        return msg;
     }
 
 }
