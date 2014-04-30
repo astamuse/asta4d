@@ -223,6 +223,12 @@ Want to do:
 
     
 ## Release Notes
+
+-   0.14.4.30
+    
+    FIX
+    - missing annotation convertor for web convenience annotations
+
 -   0.14.4.28
     
     ADD
