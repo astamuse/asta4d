@@ -166,7 +166,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.4.28               \
+        -DarchetypeVersion=0.14.4.30               \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -174,7 +174,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 or simply follow the wizard by filtered list:
 
     ```
-    mvn archetype:generate -Dfilter=com.astamuse:asta4d-archetype
+    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=0.14.4.30
     ```
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
@@ -223,6 +223,12 @@ Want to do:
 
     
 ## Release Notes
+
+-   0.14.4.30
+    
+    FIX
+    - missing annotation convertor for web convenience annotations
+
 -   0.14.4.28
     
     ADD
