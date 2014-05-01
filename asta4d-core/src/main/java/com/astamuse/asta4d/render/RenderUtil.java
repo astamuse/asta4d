@@ -317,7 +317,12 @@ public class RenderUtil {
         List<Element> elemList = new ArrayList<>(target.select(selector));
 
         if (elemList.isEmpty()) {
-            if (renderAction.isOutputMissingSelectorWarning()) {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                Renderer alternativeRenderer = ((ElementNotFoundHandler) currentRenderer).alternativeRenderer();
+                if (alternativeRenderer != null) {
+                    apply(target, alternativeRenderer);
+                }
+            } else if (renderAction.isOutputMissingSelectorWarning()) {
                 String creationInfo = currentRenderer.getCreationSiteInfo();
                 if (creationInfo == null) {
                     creationInfo = "";
@@ -331,6 +336,11 @@ public class RenderUtil {
             }
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
+        } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
+            }
         }
 
         List<Transformer<?>> transformerList = currentRenderer.getTransformerList();

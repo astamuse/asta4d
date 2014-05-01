@@ -1,5 +1,8 @@
 package com.astamuse.asta4d.web.util.message;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,14 +11,19 @@ import java.util.Map.Entry;
 
 import org.jsoup.nodes.Element;
 
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.util.collection.RowRenderer;
+import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 
 public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
+
+    private final static String FLASH_MSG_LIST_KEY = "FLASH_MSG_LIST_KEY#" + DefaultMessageRenderingHelper.class;
 
     private final static DefaultMessageRenderingHelper instance = new DefaultMessageRenderingHelper();
 
@@ -73,30 +81,41 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
     }
 
     public Renderer createMessageRenderer() {
+        List<MessageHolder> allMsgList = new LinkedList<>();
+
+        List<MessageHolder> flashedList = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_FLASH, FLASH_MSG_LIST_KEY);
+        if (flashedList != null) {
+            allMsgList.addAll(flashedList);
+        }
+
+        allMsgList.addAll(messageList.get());
+
         Renderer renderer = Renderer.create();
 
         final Map<String, List<MessageHolder>> msgMap = new HashMap<>();
         final Map<String, List<String>> alternativeMsgMap = new HashMap<>();
-        List<MessageHolder> mhList;
-        for (MessageHolder mh : messageList.get()) {
-            mhList = msgMap.get(mh.selector);
-            if (mhList == null) {
-                mhList = new LinkedList<>();
-                msgMap.put(mh.selector, mhList);
+        List<MessageHolder> tmpList;
+        for (MessageHolder mh : allMsgList) {
+            tmpList = msgMap.get(mh.selector);
+            if (tmpList == null) {
+                tmpList = new LinkedList<>();
+                msgMap.put(mh.selector, tmpList);
             }
-            mhList.add(mh);
+            tmpList.add(mh);
         }
 
         renderer.disableMissingSelectorWarning();
 
         for (final Entry<String, List<MessageHolder>> item : msgMap.entrySet()) {
-            renderer.add(item.getKey(), item.getValue(), new RowConvertor<MessageHolder, String>() {
+            renderer.add(item.getKey(), item.getValue(), new RowRenderer<MessageHolder>() {
                 @Override
-                public String convert(int rowIndex, MessageHolder obj) {
-                    return obj.message;
+                public Renderer convert(int rowIndex, MessageHolder obj) {
+                    Renderer render = Renderer.create(obj.selector, obj.message);
+                    render.add(obj.selector, "-class", "x-msg-stub");
+                    return render;
                 }
             });
-            renderer.add(item.getKey(), new ElementNotFoundHandler() {
+            renderer.add(new ElementNotFoundHandler(item.getKey()) {
                 @Override
                 public Renderer alternativeRenderer() {
                     List<String> list;
@@ -120,11 +139,20 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
             public void set(Element elem) {
                 Renderer alternativeRenderer = Renderer.create();
                 for (final Entry<String, List<String>> item : alternativeMsgMap.entrySet()) {
-                    alternativeRenderer.add(item.getKey(), item.getValue());
+                    alternativeRenderer.add(item.getKey(), item.getValue(), new RowRenderer<String>() {
+                        @Override
+                        public Renderer convert(int rowIndex, String msg) {
+                            Renderer render = Renderer.create("*", msg);
+                            render.add("*", "-class", "x-msg-stub");
+                            return render;
+                        }
+                    });
                 }
                 RenderUtil.apply(elem, alternativeRenderer);
             }
         });
+
+        renderer.add(".x-msg-stub", Clear);
 
         return renderer;
 
@@ -156,5 +184,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     public void err(String selector, String msg) {
         outputMessage(selector, defaultErrMsgSelector, msg);
+    }
+
+    public void saveMessageListToFlash() {
+        ArrayList<MessageHolder> list = new ArrayList<>(messageList.get());
+        RedirectTargetProvider.addFlashScopeData(FLASH_MSG_LIST_KEY, list);
     }
 }

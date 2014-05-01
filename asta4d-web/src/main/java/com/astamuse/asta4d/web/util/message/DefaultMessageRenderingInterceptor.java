@@ -16,7 +16,7 @@ public class DefaultMessageRenderingInterceptor implements PageInterceptor {
 
     private String messageContainerParentSelector = "body";
 
-    private String messageContainerSnippetFile = "com.astamuse.asta4d.web.util.message.DefaultMessageContainerSnippet.html";
+    private String messageContainerSnippetFile = "/com/astamuse/asta4d/web/util/message/DefaultMessageContainerSnippet.html";
 
     private String cachedSnippet = null;
 

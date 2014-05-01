@@ -30,6 +30,7 @@ import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.GlobalRenderingInterceptor;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
+import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingInterceptor;
 
 public class WebApplicationConfiguration extends Configuration {
 
@@ -47,7 +48,7 @@ public class WebApplicationConfiguration extends Configuration {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
         this.setContextDataFinder(new WebApplicationContextDataFinder());
         this.setRequestHandlerInvokerFactory(new DefaultRequestHandlerInvokerFactory());
-        this.setPageInterceptorList(createDefaultPageInterceptorList());
+        this.setPageInterceptorList(new LinkedList<PageInterceptor>());
 
         // we only allow request scope being reversely injected
         List<String> reverseInjectableScopes = new ArrayList<>();
@@ -60,6 +61,7 @@ public class WebApplicationConfiguration extends Configuration {
         // afford a convenience for global rendering by default
         List<PageInterceptor> pageInterceptorList = new LinkedList<>();
         pageInterceptorList.add(new GlobalRenderingInterceptor());
+        pageInterceptorList.add(new DefaultMessageRenderingInterceptor());
         return pageInterceptorList;
     }
 

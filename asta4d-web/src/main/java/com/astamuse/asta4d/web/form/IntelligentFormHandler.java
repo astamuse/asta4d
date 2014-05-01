@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextDataSetFactory;
+import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
@@ -71,10 +72,13 @@ public class IntelligentFormHandler<T> {
         } else {
             DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.instance();
             for (FormValidationMessage formValidationMessage : validationMesssages) {
-                msgHelper.err("[name=" + formValidationMessage.getName() + "]", formValidationMessage.getMessage());
+                msgHelper.err("#" + formValidationMessage.getName() + "-err-msg", formValidationMessage.getMessage());
             }
             Context.getCurrentThreadContext().setData(IntelligentFormSnippet.PRE_DEFINED_FORM, form);
+
+            msgHelper.saveMessageListToFlash();
             RedirectTargetProvider.addFlashScopeData(IntelligentFormSnippet.PRE_DEFINED_FORM, form);
+            RedirectTargetProvider.addFlashScopeData(IntelligentFormSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
             return CommonFormResult.FAILED;
         }
     }

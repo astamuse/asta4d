@@ -47,6 +47,15 @@ public class InjectUtilForTypeUnMatchTest extends BaseTest {
 
     }
 
+    @Test(expectedExceptions = DataOperationException.class, expectedExceptionsMessageRegExp = ".*cannot be coverted from.*")
+    public void exceptionWhenInjectArrayDataOnMethodSetParam() throws Exception {
+        Context ctx = Context.getCurrentThreadContext();
+        ctx.setData("f1", new String[] { "xx77" });
+
+        Object[] params = InjectUtil.getMethodInjectParams(getMethod("requestHolderForException", TestSetForException.class));
+
+    }
+
     @Test(enabled = false)
     public void requestHolderForException(TestSetForException holder) {
     }
@@ -139,44 +148,6 @@ public class InjectUtilForTypeUnMatchTest extends BaseTest {
     public void requestHolderForDefaultValue(@ContextData(typeUnMatch = TypeUnMacthPolicy.DEFAULT_VALUE) int f1,
             @ContextData(typeUnMatch = TypeUnMacthPolicy.DEFAULT_VALUE_AND_TRACE) int f2) {
     }
-
-    /*
-    @Test
-    public void contextSetAndInjectableOnInstance() throws Exception {
-        Context ctx = Context.getCurrentThreadContext();
-        ctx.setData("f1", "6678");
-        ctx.setData("f2", "12345");
-
-        TestCls tc = new TestCls();
-        InjectUtil.injectToInstance(tc);
-        TestSet set = tc.myset;
-        assertEquals(set.getF1(), 6678L);
-        assertEquals(set.f2.getValue().longValue(), 12345L);
-    }
-
-    @Test
-    public void retriveContextSetInScopeFirst() throws Exception {
-        Context ctx = Context.getCurrentThreadContext();
-        ctx.setData("f1", "6678");
-        ctx.setData("f2", "12345");
-
-        // retrieve a set at first
-        TestCls tc = new TestCls();
-        InjectUtil.injectToInstance(tc);
-        TestSet set = tc.myset;
-
-        // save the set into the context
-        ctx.setData("myset", set);
-
-        // retrieve again
-        tc = new TestCls();
-        InjectUtil.injectToInstance(tc);
-
-        // should be the same instance
-        assertEquals(tc.myset == set, true);
-
-    }
-    */
 
     private static Method getMethod(String name, Class<?>... parameterTypes) throws NoSuchMethodException {
         return InjectUtilForTypeUnMatchTest.class.getMethod(name, parameterTypes);
