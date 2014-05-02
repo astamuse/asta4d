@@ -50,7 +50,7 @@ public class IntelligentFormHandler<T> {
     }
 
     protected FormValidator getValueValidator() {
-        return new TypeUnMatchValidator();
+        return new JsrValidator();
     }
 
     protected List<FormValidationMessage> validate(T form) {

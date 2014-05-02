@@ -7,14 +7,14 @@ import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
 import com.astamuse.asta4d.web.form.FormFieldValueRenderer;
-import com.astamuse.asta4d.web.form.annotation.renderable.convert.InputBoxAnnotationConvertor;
-import com.astamuse.asta4d.web.form.renderer.InputBoxRenderer;
+import com.astamuse.asta4d.web.form.annotation.renderable.convert.SelectBoxAnnotationConvertor;
+import com.astamuse.asta4d.web.form.renderer.SelectBoxRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })
-@ConvertableAnnotation(InputBoxAnnotationConvertor.class)
-public @interface InputBox {
+@ConvertableAnnotation(SelectBoxAnnotationConvertor.class)
+public @interface SelectBox {
     String name() default "";
 
-    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default InputBoxRenderer.class;
+    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default SelectBoxRenderer.class;
 }

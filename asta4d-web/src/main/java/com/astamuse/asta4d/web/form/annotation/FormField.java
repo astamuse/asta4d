@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
+import com.astamuse.asta4d.web.form.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.annotation.convert.FormFieldAnnotationConvertor;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -13,4 +14,6 @@ import com.astamuse.asta4d.web.form.annotation.convert.FormFieldAnnotationConver
 @ConvertableAnnotation(FormFieldAnnotationConvertor.class)
 public @interface FormField {
     String name() default "";
+
+    Class<? extends FormFieldValueRenderer> fieldValueRenderer();
 }

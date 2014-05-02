@@ -27,12 +27,7 @@ import com.astamuse.asta4d.util.collection.RowRenderer;
 public class NewFormSnippet extends CommonFormSnippet<MyForm> {
 
     @Override
-    public Renderer render() throws Exception {
-        Renderer render = super.render();
-        return render.add(renderSupportData(form));
-    }
-
-    private Renderer renderSupportData(MyForm form) {
+    protected Renderer renderFieldSupportData() throws Exception {
         return Renderer.create("#bloodtype option", Arrays.asList(MyForm.BloodType.values()), new RowRenderer<MyForm.BloodType>() {
             @Override
             public Renderer convert(int rowIndex, BloodType row) {
