@@ -30,6 +30,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.convertor.DataConvertor;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
+import com.astamuse.asta4d.render.transformer.RenderableTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.render.transformer.TransformerFactory;
@@ -373,6 +374,20 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for delayed rendering callback. See {@link #create(String, Renderable)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param Renderable
+     *            a callback instance of
+     * 
+     * @return the created renderer
+     */
+    public Renderer add(String selector, Renderable renderable) {
+        return add(create(selector, renderable));
+    }
+
+    /**
      * Create a renderer for recursive renderer rendering by given parameter and add it to the current renderer. See
      * {@link #create(String, Renderer)}.
      * 
@@ -702,6 +717,26 @@ public class Renderer {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementSetterTransformer(setter));
+        }
+    }
+
+    /**
+     * Create a renderer for delayed rendering callback
+     * <p>
+     * The target element specified by the given selector will be renderer by the returned value of {@link Renderable#render()} which will
+     * not be invoked until the target element is actually requiring the rendering action.
+     * 
+     * @param selector
+     *            a css selector
+     * @param Renderable
+     *            a callback instance of Renderable
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Renderable renderable) {
+        if (treatNullAsRemoveNode && renderable == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return new Renderer(selector, new RenderableTransformer(renderable));
         }
     }
 

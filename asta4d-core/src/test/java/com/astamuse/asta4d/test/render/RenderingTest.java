@@ -21,12 +21,16 @@ import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.render.ChildReplacer;
+import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
+import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
@@ -112,6 +116,25 @@ public class RenderingTest extends BaseTest {
             Renderer spanRender = Renderer.create("span#s1", "wow!");
             Renderer divRender = Renderer.create("#d1", spanRender);
             return divRender;
+        }
+
+        public Renderer renderableRendering() {
+            final Map<String, String> valueMap = new HashMap<>();
+            valueMap.put("value", "00");
+            Renderer render = Renderer.create("#test", new ElementSetter() {
+                @Override
+                public void set(Element elem) {
+                    valueMap.put("value", "xx");
+                    // do nothing
+                }
+            });
+            render.add("#test", new Renderable() {
+                @Override
+                public Renderer render() {
+                    return Renderer.create("*", valueMap.get("value"));
+                }
+            });
+            return render;
         }
 
         public Renderer listTextRendering() {
@@ -224,6 +247,10 @@ public class RenderingTest extends BaseTest {
 
     public void testRecursiveRendering() {
         new SimpleCase("Rendering_recursiveRendering.html");
+    }
+
+    public void testRenderableRendering() {
+        new SimpleCase("Rendering_renderableRendering.html");
     }
 
     public void testListElementRendering() {
