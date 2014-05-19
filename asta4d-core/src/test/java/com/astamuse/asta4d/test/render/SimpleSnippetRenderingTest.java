@@ -27,6 +27,12 @@ import com.astamuse.asta4d.test.render.infra.SimpleCase;
 
 public class SimpleSnippetRenderingTest extends BaseTest {
 
+    public static class StaticEmbed {
+        public Renderer render(String ctype) {
+            return Renderer.create("#hellodiv", "statically loaded before snippet being executed");
+        }
+    }
+
     public static class TagEmbed {
         public Renderer render(String ctype) {
             return Renderer.create("span", ctype);
@@ -72,6 +78,10 @@ public class SimpleSnippetRenderingTest extends BaseTest {
 
     public void testTagEmbed() {
         new SimpleCase("SimpleSnippet_TagEmbed.html");
+    }
+
+    public void testStaticEmbed() {
+        new SimpleCase("SimpleSnippet_StaticEmbed.html");
     }
 
     public void testSnippetTag() {
