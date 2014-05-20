@@ -3,9 +3,9 @@ package com.astamuse.asta4d.web.form.annotation.renderable.convert;
 import java.lang.annotation.Annotation;
 
 import com.astamuse.asta4d.util.annotation.AnnotationConvertor;
-import com.astamuse.asta4d.web.form.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.annotation.renderable.InputBox;
+import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
 public class InputBoxAnnotationConvertor implements AnnotationConvertor<InputBox, FormField> {
 

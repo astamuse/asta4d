@@ -1,7 +1,7 @@
 package com.astamuse.asta4d.sample.newform;
 
 import com.astamuse.asta4d.sample.handler.common.SinglePage2StepFormHandler;
-import com.astamuse.asta4d.web.form.CommonFormResult;
+import com.astamuse.asta4d.web.form.intelligent.CommonFormResult;
 
 public class MyFormHandler extends SinglePage2StepFormHandler<MyForm> {
     public MyFormHandler(Class<MyForm> formCls, String templatePrefix) {

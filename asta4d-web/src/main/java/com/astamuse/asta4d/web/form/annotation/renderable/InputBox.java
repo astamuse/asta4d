@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
-import com.astamuse.asta4d.web.form.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.annotation.renderable.convert.InputBoxAnnotationConvertor;
-import com.astamuse.asta4d.web.form.renderer.InputBoxRenderer;
+import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
+import com.astamuse.asta4d.web.form.field.InputBoxRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD })

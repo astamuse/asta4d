@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form;
+package com.astamuse.asta4d.web.form.validation;
 
 import java.util.List;
 import java.util.Set;

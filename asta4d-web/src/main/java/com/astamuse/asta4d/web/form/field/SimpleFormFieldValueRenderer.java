@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.renderer;
+package com.astamuse.asta4d.web.form.field;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
@@ -11,7 +11,6 @@ import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.util.ElementUtil;
-import com.astamuse.asta4d.web.form.FormFieldValueRenderer;
 
 public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRenderer {
 

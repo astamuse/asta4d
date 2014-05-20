@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form;
+package com.astamuse.asta4d.web.form.intelligent;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -20,6 +20,7 @@ import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.annotation.FormField;
+import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 
 public abstract class IntelligentFormSnippet implements InitializableSnippet {
 

@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form;
+package com.astamuse.asta4d.web.form.intelligent;
 
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.web.annotation.QueryParam;

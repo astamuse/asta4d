@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.astamuse.asta4d.web.form.IntelligentFormSnippet;
+import com.astamuse.asta4d.web.form.intelligent.IntelligentFormSnippet;
 
 public class CommonFormSnippet extends IntelligentFormSnippet {
 
