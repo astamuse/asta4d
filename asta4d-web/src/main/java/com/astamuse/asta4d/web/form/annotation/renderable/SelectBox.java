@@ -16,5 +16,9 @@ import com.astamuse.asta4d.web.form.renderer.SelectBoxRenderer;
 public @interface SelectBox {
     String name() default "";
 
+    String editSelector() default "";
+
+    String displaySelector() default "";
+
     Class<? extends FormFieldValueRenderer> fieldValueRenderer() default SelectBoxRenderer.class;
 }

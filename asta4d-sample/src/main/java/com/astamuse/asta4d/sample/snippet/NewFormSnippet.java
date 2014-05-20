@@ -24,11 +24,11 @@ import com.astamuse.asta4d.sample.newform.MyForm;
 import com.astamuse.asta4d.sample.newform.MyForm.BloodType;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 
-public class NewFormSnippet extends CommonFormSnippet<MyForm> {
+public class NewFormSnippet extends CommonFormSnippet {
 
     @Override
-    protected Renderer renderFieldSupportData() throws Exception {
-        return Renderer.create("#bloodtype option", Arrays.asList(MyForm.BloodType.values()), new RowRenderer<MyForm.BloodType>() {
+    protected Renderer renderFieldSupportData(String renderTargetStep, Object form) throws Exception {
+        return Renderer.create("[name=bloodtype] option", Arrays.asList(MyForm.BloodType.values()), new RowRenderer<MyForm.BloodType>() {
             @Override
             public Renderer convert(int rowIndex, BloodType row) {
                 Renderer render = Renderer.create("option", "value", row.name());

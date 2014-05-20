@@ -16,5 +16,9 @@ import com.astamuse.asta4d.web.form.renderer.InputBoxRenderer;
 public @interface InputBox {
     String name() default "";
 
+    String editSelector() default "";
+
+    String displaySelector() default "";
+
     Class<? extends FormFieldValueRenderer> fieldValueRenderer() default InputBoxRenderer.class;
 }

@@ -24,6 +24,16 @@ public class SelectBoxAnnotationConvertor implements AnnotationConvertor<SelectB
             }
 
             @Override
+            public String editSelector() {
+                return originalAnnotation.editSelector();
+            }
+
+            @Override
+            public String displaySelector() {
+                return originalAnnotation.displaySelector();
+            }
+
+            @Override
             public Class<? extends FormFieldValueRenderer> fieldValueRenderer() {
                 return originalAnnotation.fieldValueRenderer();
             }

@@ -13,7 +13,12 @@ import com.astamuse.asta4d.web.form.annotation.convert.FormFieldAnnotationConver
 @Target({ ElementType.FIELD })
 @ConvertableAnnotation(FormFieldAnnotationConvertor.class)
 public @interface FormField {
+
     String name() default "";
+
+    String editSelector() default "";
+
+    String displaySelector() default "";
 
     Class<? extends FormFieldValueRenderer> fieldValueRenderer();
 }

@@ -4,7 +4,7 @@ import com.astamuse.asta4d.render.Renderer;
 
 public class InputBoxRenderer extends SimpleFormFieldValueRenderer {
     @Override
-    public Renderer render(String nonNullString) {
+    public Renderer renderForEdit(String nonNullString) {
         return Renderer.create("input", "value", nonNullString);
     }
 

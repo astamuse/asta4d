@@ -23,17 +23,17 @@ import static com.astamuse.asta4d.web.dispatch.HttpMethod.PUT;
 
 import com.astamuse.asta4d.sample.forward.LoginFailure;
 import com.astamuse.asta4d.sample.handler.AddUserHandler;
-import com.astamuse.asta4d.sample.handler.CommonFormHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
 import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
 import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
+import com.astamuse.asta4d.sample.handler.common.SinglePage2StepFormHandler;
 import com.astamuse.asta4d.sample.newform.MyForm;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
+import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
-import com.astamuse.asta4d.web.form.CommonFormResult;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -97,14 +97,11 @@ public class UrlRules implements UrlMappingRuleInitializer {
         rules.add(POST, "/app/form/confirm").handler(FormValidateHandler.class);
         rules.add(POST, "/app/form/complete").handler(FormCompleteHandler.class);
         
-        rules.add("/app/newform/input", "/templates/newform/input.html");
-        rules.add(POST, "/app/newform/confirm")
-            .handler(new CommonFormHandler<>(MyForm.class))
-            .forward(CommonFormResult.SUCCESS, "/templates/newform/confirm.html")
-            .redirect(CommonFormResult.FAILED, "/app/newform/input");
-        
-        rules.add(POST, "/app/newform/complete").handler(FormCompleteHandler.class);
-
+       // rules.add("/app/newform", "/templates/newform/input.html");
+        rules.add((HttpMethod)null,"/app/newform")
+            .handler(new SinglePage2StepFormHandler<>(MyForm.class, "/templates/newform/"))
+            .forward("/templates/newform/input.html");
+            
         rules.add("/app/localize", "/templates/localize.html");
         //@formatter:on
     }

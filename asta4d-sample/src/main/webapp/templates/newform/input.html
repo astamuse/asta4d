@@ -13,14 +13,11 @@
     <!-- @ShowCode:showInputStart -->
 	<section>
 		<article>
-			<form action="./confirm" method="post" afd:render="NewFormSnippet">
-				<label for="name">name:</label><input id="name" name="name" type="text"/><br />
-				<label for="age">age</label><input id="age" name="age" type="text"/><br />
-				<label for="bloodtype">bloodtype:</label>
-				<select id="bloodtype" name="bloodtype">
-					<option/>
-				</select><br />
-				<input type="submit" value="confirm"><span>(Left the name or age empty then click the confirm, the flash scope data will be performed)</span>
+			<form method="post" afd:render="NewFormSnippet">
+				<afd:embed target="/templates/newform/formContent.html" static></afd:embed>
+				<input type="hidden" name="step-current" value="input">
+				<input type="hidden" name="step-failed" value="input">
+				<button type="submit" name="step-success" value="confirm">confirm</button>
 			</form>
 		</article>
 	</section>

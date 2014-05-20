@@ -14,11 +14,9 @@
 	<section>
 		<article>
 			<p>Input flow completed.</p>
-			<dl afd:render="FormSnippet:setInputValue">
-				<dt>name</dt><dd class="name">name:<span>name</span></dd>
-				<dt>age</dt><dd class="age">age:<span>age</span></dd>
-				<dt>bloodtype</dt><dd class="bloodtype">bloodtype:<span>bloodtype</span></dd>
-			</dl>
+			<afd:snippet render="NewFormSnippet">
+				<afd:embed target="/templates/newform/formContent.html" static></afd:embed>
+			</afd:snippet>
 		</article>
 	</section>
     <!-- @ShowCode:showCompleteEnd -->

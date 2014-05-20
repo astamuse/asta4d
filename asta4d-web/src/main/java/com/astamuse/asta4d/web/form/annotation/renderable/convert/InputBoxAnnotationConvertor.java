@@ -24,9 +24,20 @@ public class InputBoxAnnotationConvertor implements AnnotationConvertor<InputBox
             }
 
             @Override
+            public String editSelector() {
+                return originalAnnotation.editSelector();
+            }
+
+            @Override
+            public String displaySelector() {
+                return originalAnnotation.displaySelector();
+            }
+
+            @Override
             public Class<? extends FormFieldValueRenderer> fieldValueRenderer() {
                 return originalAnnotation.fieldValueRenderer();
             }
+
         };
     }
 
