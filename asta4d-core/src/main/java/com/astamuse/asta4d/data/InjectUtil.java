@@ -108,6 +108,29 @@ public class InjectUtil {
 
     private final static Paranamer paranamer = new AdaptiveParanamer();
 
+    public final static Object retrieveContextDataSetInstance(Class cls, String searchName, String searchScope)
+            throws DataOperationException {
+        try {
+            ContextDataSet cds = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, cls.getAnnotations());
+            TargetInfo info = new TargetInfo();
+            info.contextDataSetFactory = cds.factory().newInstance();
+            info.isContextDataSetSingletonInContext = cds.singletonInContext();
+            info.defaultValue = null;
+            info.name = searchName;
+            info.scope = searchScope;
+            info.type = cls;
+            info.typeUnMatch = TypeUnMacthPolicy.EXCEPTION;
+            ContextDataHolder result = findValueForTarget(info, null);
+            if (result == null) {
+                return null;
+            } else {
+                return result.getValue();
+            }
+        } catch (IllegalAccessException | InstantiationException e) {
+            throw new DataOperationException(e.getMessage(), e);
+        }
+    }
+
     /**
      * Set the value of all the fields marked by {@link ContextData} of the given instance.
      * 
