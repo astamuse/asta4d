@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.intelligent;
+package com.astamuse.asta4d.web.form.flow.common;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -22,16 +22,14 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 
-public abstract class IntelligentFormSnippet implements InitializableSnippet {
+public abstract class AbstractFlowFormSnippet implements InitializableSnippet {
 
     public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#IntelligentFormSnippetBase";
 
-    public static final String RENDER_FOR_EDIT = "RENDER_FOR_EDIT#IntelligentFormSnippetBase";
-
-    @ContextData(name = IntelligentFormHandler.FORM_STEP_TRACE_MAP)
+    @ContextData(name = FlowFormConstants.FORM_STEP_TRACE_MAP)
     protected Map<String, Object> formTraceMap;
 
-    @ContextData(name = IntelligentFormHandler.FORM_STEP_TRACE_MAP_STR, scope = Context.SCOPE_DEFAULT)
+    @ContextData(name = FlowFormConstants.FORM_STEP_TRACE_MAP_STR, scope = Context.SCOPE_DEFAULT)
     protected String formTraceMapStr;
 
     protected boolean renderForEdit(String step) {
@@ -44,12 +42,12 @@ public abstract class IntelligentFormSnippet implements InitializableSnippet {
         InjectTrace.restoreTraceList(list);
     }
 
-    public Renderer render(@ContextData(name = IntelligentFormHandler.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
+    public Renderer render(@ContextData(name = FlowFormConstants.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
         Renderer renderer = Renderer.create("form", new ElementSetter() {
             @Override
             public void set(Element elem) {
                 Element hide = new Element(Tag.valueOf("input"), "");
-                hide.attr("name", IntelligentFormHandler.FORM_STEP_TRACE_MAP_STR);
+                hide.attr("name", FlowFormConstants.FORM_STEP_TRACE_MAP_STR);
                 hide.attr("type", "hidden");
                 hide.attr("value", formTraceMapStr);
                 elem.appendChild(hide);

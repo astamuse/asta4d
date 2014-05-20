@@ -1,11 +1,12 @@
-package com.astamuse.asta4d.sample.handler.common;
+package com.astamuse.asta4d.web.form.flow;
 
 import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.intelligent.CommonFormResult;
+import com.astamuse.asta4d.web.form.flow.common.CommonFormResult;
+import com.astamuse.asta4d.web.form.flow.common.AbstractFlowFormHandler;
 
-public class SinglePage2StepFormHandler<T> extends CommonFormHandler<T> {
+public class SinglePage2StepFormHandler<T> extends AbstractFlowFormHandler<T> {
 
     private String templatePrefix;
 

@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.intelligent;
+package com.astamuse.asta4d.web.form.flow.common;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,29 +28,21 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class IntelligentFormHandler<T> {
+public abstract class AbstractFlowFormHandler<T> {
 
     private static final ObjectMapper JsonMapper = new ObjectMapper();
 
-    public static final String FORM_STEP_TRACE_MAP = "FORM_STEP_TRACE_MAP#IntelligentFormHandler";
-
-    public static final String FORM_STEP_TRACE_MAP_STR = "FORM_STEP_TRACE_MAP_STR#IntelligentFormHandler";
-
-    public static final String FORM_STEP_RENDER_TARGET = "form-step";
-
-    public static final String FORM_STEP_INIT_STEP = "FORM_STEP_INIT_STEP#IntelligentFormHandler";
-
     private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#IntelligentFormHandler";
 
-    private Class<? extends IntelligentFormProcessData> formProcessDataCls;
+    private Class<? extends FormProcessData> formProcessDataCls;
     private Class formCls;
     private ContextDataSetFactory formFactory;
 
-    public IntelligentFormHandler(Class<T> formCls) {
+    public AbstractFlowFormHandler(Class<T> formCls) {
         this(formCls, SimpleFormProcessData.class);
     }
 
-    public IntelligentFormHandler(Class<T> formCls, Class<? extends IntelligentFormProcessData> formProcessDataCls) {
+    public AbstractFlowFormHandler(Class<T> formCls, Class<? extends FormProcessData> formProcessDataCls) {
         this.formCls = formCls;
         this.formProcessDataCls = formProcessDataCls;
 
@@ -75,13 +67,13 @@ public abstract class IntelligentFormHandler<T> {
     }
 
     protected Object handle(boolean returnRenderTarget) throws Exception {
-        IntelligentFormProcessData processData = (IntelligentFormProcessData) InjectUtil.retrieveContextDataSetInstance(formProcessDataCls,
+        FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(formProcessDataCls,
                 "not-exist-IntelligentFormProcessData", "");
 
         String currentStep = processData.getStepCurrent();
 
         if (currentStep == null) {// it means the first time access without existing input data
-            currentStep = FORM_STEP_INIT_STEP;
+            currentStep = FlowFormConstants.FORM_STEP_INIT_STEP;
         } else {
         }
 
@@ -107,8 +99,8 @@ public abstract class IntelligentFormHandler<T> {
             traceMap.remove(currentStep);
             passDataToSnippet(currentStep, renderTarget, traceMap, null);
         } else {
-            if (FORM_STEP_INIT_STEP.equals(currentStep)) {
-                renderTarget = FORM_STEP_INIT_STEP;
+            if (FlowFormConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+                renderTarget = FlowFormConstants.FORM_STEP_INIT_STEP;
             } else {
                 formResult = handle(currentStep, form);
                 if (formResult == CommonFormResult.SUCCESS) {
@@ -129,7 +121,7 @@ public abstract class IntelligentFormHandler<T> {
 
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         try {
-            if (FORM_STEP_INIT_STEP.equals(currentStep)) {
+            if (FlowFormConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
                 return (T) formFactory.createInstance(formCls);
             } else {
                 return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
@@ -191,26 +183,26 @@ public abstract class IntelligentFormHandler<T> {
             DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.instance();
             msgHelper.saveMessageListToFlash();
 
-            RedirectTargetProvider.addFlashScopeData(IntelligentFormSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
+            RedirectTargetProvider.addFlashScopeData(AbstractFlowFormSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
 
-            RedirectTargetProvider.addFlashScopeData(FORM_STEP_TRACE_MAP, traceMap);
+            RedirectTargetProvider.addFlashScopeData(FlowFormConstants.FORM_STEP_TRACE_MAP, traceMap);
 
             String traceData = serializeTraceMap(traceMap);
 
-            RedirectTargetProvider.addFlashScopeData(FORM_STEP_TRACE_MAP_STR, traceData);
+            RedirectTargetProvider.addFlashScopeData(FlowFormConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
-            RedirectTargetProvider.addFlashScopeData(FORM_STEP_RENDER_TARGET, renderTargetStep);
+            RedirectTargetProvider.addFlashScopeData(FlowFormConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
         } else {
 
             WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
 
-            context.setData(FORM_STEP_TRACE_MAP, traceMap);
+            context.setData(FlowFormConstants.FORM_STEP_TRACE_MAP, traceMap);
 
             String traceData = serializeTraceMap(traceMap);
 
-            context.setData(FORM_STEP_TRACE_MAP_STR, traceData);
+            context.setData(FlowFormConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
-            context.setData(FORM_STEP_RENDER_TARGET, renderTargetStep);
+            context.setData(FlowFormConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
         }
     }
 
@@ -239,11 +231,8 @@ public abstract class IntelligentFormHandler<T> {
     }
 
     protected CommonFormResult handle(String currentStep, T form) {
-        WebApplicationContext context = Context.getCurrentThreadContext();
-
         List<FormValidationMessage> validationMesssages = validate(form);
         if (validationMesssages.isEmpty()) {
-            context.setData(IntelligentFormSnippet.RENDER_FOR_EDIT, false);
             return CommonFormResult.SUCCESS;
         } else {
             DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.instance();

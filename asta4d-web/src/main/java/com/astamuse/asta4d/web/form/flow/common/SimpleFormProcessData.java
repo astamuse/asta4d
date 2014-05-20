@@ -1,10 +1,10 @@
-package com.astamuse.asta4d.web.form.intelligent;
+package com.astamuse.asta4d.web.form.flow.common;
 
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.web.annotation.QueryParam;
 
 @ContextDataSet
-public class SimpleFormProcessData implements IntelligentFormProcessData {
+public class SimpleFormProcessData implements FormProcessData {
 
     @QueryParam(name = "step-current")
     private String stepCurrent;
@@ -18,7 +18,7 @@ public class SimpleFormProcessData implements IntelligentFormProcessData {
     @QueryParam(name = "step-back")
     private String stepBack;
 
-    @QueryParam(name = IntelligentFormHandler.FORM_STEP_TRACE_MAP_STR)
+    @QueryParam(name = FlowFormConstants.FORM_STEP_TRACE_MAP_STR)
     private String stepTraceData;
 
     public SimpleFormProcessData() {

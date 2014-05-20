@@ -28,12 +28,12 @@ import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
 import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
-import com.astamuse.asta4d.sample.handler.common.SinglePage2StepFormHandler;
 import com.astamuse.asta4d.sample.newform.MyForm;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.form.flow.SinglePage2StepFormHandler;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 

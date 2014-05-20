@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.astamuse.asta4d.web.form.intelligent.IntelligentFormSnippet;
+import com.astamuse.asta4d.web.form.flow.common.AbstractFlowFormSnippet;
 
-public class CommonFormSnippet extends IntelligentFormSnippet {
+public class CommonFormSnippet extends AbstractFlowFormSnippet {
 
     private static Set<String> NonEditSteps = new HashSet<>();
     static {
