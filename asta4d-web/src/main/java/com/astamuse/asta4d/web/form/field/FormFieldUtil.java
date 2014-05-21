@@ -10,6 +10,7 @@ import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 
 public class FormFieldUtil {
+
     public static final List<Field> retrieveFormFields(Class formCls) {
         List<Field> list = new ArrayList<>(ClassUtil.retrieveAllFieldsIncludeAllSuperClasses(formCls));
         Iterator<Field> it = list.iterator();
@@ -21,6 +22,18 @@ public class FormFieldUtil {
             }
         }
         return list;
+    }
+
+    public static final void storeFieldSupportValueDataToContext(Class formCls, String clsFieldName, Object data) {
 
     }
+
+    public static final void storeFieldSupportValueDataToContext(Field field, Object data) {
+
+    }
+
+    public static final void storeFieldSupportValueDataToContext(String formFieldName, Object data) {
+
+    }
+
 }

@@ -18,24 +18,31 @@
 package com.astamuse.asta4d.sample.snippet;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.astamuse.asta4d.render.Renderer;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.astamuse.asta4d.sample.newform.MyForm;
 import com.astamuse.asta4d.sample.newform.MyForm.BloodType;
-import com.astamuse.asta4d.util.collection.RowRenderer;
+import com.astamuse.asta4d.util.collection.ListConvertUtil;
+import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.impl.SelectBoxAdditionalRenderer;
 
 public class NewFormSnippet extends CommonFormSnippet {
 
     @Override
-    protected Renderer renderFieldSupportData(String renderTargetStep, Object form) throws Exception {
-        return Renderer.create("[name=bloodtype] option", Arrays.asList(MyForm.BloodType.values()), new RowRenderer<MyForm.BloodType>() {
-            @Override
-            public Renderer convert(int rowIndex, BloodType row) {
-                Renderer render = Renderer.create("option", "value", row.name());
-                render.add("option", row.name());
-                return render;
-            }
-        });
+    protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
+        List<FormFieldAdditionalRenderer> list = new LinkedList<>();
+        list.add(new SelectBoxAdditionalRenderer(MyForm.class, "bloodtype").setOptionData(ListConvertUtil.transform(
+                Arrays.asList(MyForm.BloodType.values()), new RowConvertor<MyForm.BloodType, Pair<String, String>>() {
+                    @Override
+                    public Pair<String, String> convert(int rowIndex, BloodType type) {
+                        return Pair.of(type.name(), type.name());
+                    }
+                })));
+        return list;
     }
 
 }

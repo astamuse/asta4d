@@ -1,6 +1,7 @@
-package com.astamuse.asta4d.web.form.field;
+package com.astamuse.asta4d.web.form.field.impl;
 
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.web.form.field.SimpleFormFieldValueRenderer;
 
 public class InputBoxRenderer extends SimpleFormFieldValueRenderer {
     @Override

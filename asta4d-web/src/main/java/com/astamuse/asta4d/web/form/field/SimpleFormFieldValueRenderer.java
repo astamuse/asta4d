@@ -52,6 +52,8 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
             }
         });
 
+        // render.addDebugger("before " + displayTargetSelector);
+
         // render the shown value to target element by displayTargetSelector
         render.add(displayTargetSelector, new Renderable() {
 

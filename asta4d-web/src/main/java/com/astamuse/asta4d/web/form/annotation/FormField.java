@@ -21,4 +21,5 @@ public @interface FormField {
     String displaySelector() default "";
 
     Class<? extends FormFieldValueRenderer> fieldValueRenderer();
+
 }
