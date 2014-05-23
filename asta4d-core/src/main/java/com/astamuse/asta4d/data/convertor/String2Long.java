@@ -23,7 +23,7 @@ package com.astamuse.asta4d.data.convertor;
  * @author e-ryu
  * 
  */
-public class String2Long implements DataConvertor<String, Long> {
+public class String2Long implements DataTypeConvertor<String, Long> {
 
     @Override
     public Long convert(String s) {

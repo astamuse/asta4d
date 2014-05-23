@@ -23,7 +23,7 @@ package com.astamuse.asta4d.data.convertor;
  * @author e-ryu
  * 
  */
-public class String2Int implements DataConvertor<String, Integer> {
+public class String2Int implements DataTypeConvertor<String, Integer> {
 
     @Override
     public Integer convert(String s) {

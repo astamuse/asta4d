@@ -17,14 +17,13 @@
 
 package com.astamuse.asta4d.data.convertor;
 
-
 /**
  * Convert String to Boolean
  * 
  * @author e-ryu
  * 
  */
-public class String2Bool implements DataConvertor<String, Boolean> {
+public class String2Bool implements DataTypeConvertor<String, Boolean> {
 
     @Override
     public Boolean convert(String s) {

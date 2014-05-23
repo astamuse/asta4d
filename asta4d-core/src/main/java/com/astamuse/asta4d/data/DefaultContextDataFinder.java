@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.convertor.DataConvertor;
+import com.astamuse.asta4d.data.convertor.DataTypeConvertor;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
@@ -127,7 +127,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
     }
 
-    private Method findConvertMethod(DataConvertor<?, ?> convertor) {
+    private Method findConvertMethod(DataTypeConvertor<?, ?> convertor) {
         Method[] methods = convertor.getClass().getMethods();
         Method rtnMethod = null;
         for (Method m : methods) {
