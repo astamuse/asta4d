@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -60,6 +61,8 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
  * 
  */
 public class RenderUtil {
+
+    public static final String PSEUDO_ROOT_SELECTOR = ":root";
 
     private final static Logger logger = LoggerFactory.getLogger(RenderUtil.class);
 
@@ -314,7 +317,13 @@ public class RenderUtil {
 
         String selector = currentRenderer.getSelector();
 
-        List<Element> elemList = new ArrayList<>(target.select(selector));
+        List<Element> elemList;
+        if (PSEUDO_ROOT_SELECTOR.equals(selector)) {
+            elemList = new LinkedList<Element>();
+            elemList.add(target);
+        } else {
+            elemList = new ArrayList<>(target.select(selector));
+        }
 
         if (elemList.isEmpty()) {
             if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {

@@ -55,6 +55,11 @@ public class RenderingTest extends BaseTest {
             return renderer;
         }
 
+        public Renderer pseudoRootRendering() {
+            Renderer renderer = Renderer.create(":root", "rendering at pseudo root");
+            return renderer;
+        }
+
         public Renderer normalAttrSetting() {
             Renderer renderer = new GoThroughRenderer();
             renderer.add("#testadd", "+v", "2");
@@ -216,6 +221,10 @@ public class RenderingTest extends BaseTest {
 
     public void testTextRendering() {
         new SimpleCase("Rendering_textRendering.html");
+    }
+
+    public void testPseudoRootRendering() {
+        new SimpleCase("Rendering_pseudoRootRendering.html");
     }
 
     public void testNormalAttrSetting() {
