@@ -23,6 +23,7 @@ import java.util.List;
 import org.jsoup.nodes.Element;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
@@ -86,6 +87,20 @@ public class AdvancedRenderingTest extends BaseTest {
             renderer.add(":root", Renderer.create("div", "t2"));
             return renderer;
         }
+
+        public Renderer pseudoRootRenderingWithElementNotFoundHandler() {
+
+            Renderer renderer = Renderer.create(":root", Renderer.create("div", "t1"));
+            renderer.add(new ElementNotFoundHandler("span") {
+                @Override
+                public Renderer alternativeRenderer() {
+                    return Renderer.create(":root", Renderer.create("div", "t2"));
+                }
+            });
+            renderer.add(":root", Renderer.create("div", "t3"));
+
+            return renderer;
+        }
     }
 
     public AdvancedRenderingTest() {
@@ -94,7 +109,7 @@ public class AdvancedRenderingTest extends BaseTest {
 
     @Test
     public void testPseudoRootRenderingOnFackedGroup() {
-        new SimpleCase("AdvancedRendering_pseudoRootRenderingOnFakedGroup.html");
+        new SimpleCase("AdvancedRendering_pseudoRootRendering.html");
     }
 
     @Test

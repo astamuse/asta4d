@@ -42,6 +42,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.concurrent.ConcurrentRenderHelper;
 import com.astamuse.asta4d.render.concurrent.FutureRendererHolder;
+import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -294,7 +295,7 @@ public class RenderUtil {
             return;
         }
 
-        Renderer currentRenderer = rendererList.get(startIndex);
+        final Renderer currentRenderer = rendererList.get(startIndex);
 
         RendererType rendererType = currentRenderer.getRendererType();
 
@@ -316,6 +317,7 @@ public class RenderUtil {
         }
 
         String selector = currentRenderer.getSelector();
+        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
 
         List<Element> elemList;
         if (PSEUDO_ROOT_SELECTOR.equals(selector)) {
@@ -327,10 +329,9 @@ public class RenderUtil {
 
         if (elemList.isEmpty()) {
             if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
-                Renderer alternativeRenderer = ((ElementNotFoundHandler) currentRenderer).alternativeRenderer();
-                if (alternativeRenderer != null) {
-                    apply(target, alternativeRenderer);
-                }
+                elemList.add(target);
+                transformerList.clear();
+                transformerList.add(new RendererTransformer(((ElementNotFoundHandler) currentRenderer).alternativeRenderer()));
             } else if (renderAction.isOutputMissingSelectorWarning()) {
                 String creationInfo = currentRenderer.getCreationSiteInfo();
                 if (creationInfo == null) {
@@ -342,9 +343,10 @@ public class RenderUtil {
                         "There is no element found for selector [{}]{}, if it is deserved, try Renderer#disableMissingSelectorWarning() "
                                 + "to disable this message and Renderer#enableMissingSelectorWarning could enable this warning again in "
                                 + "your renderer chain", selector, creationInfo);
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
             }
-            apply(target, rendererList, renderAction, startIndex + 1, count);
-            return;
+
         } else {
             if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
                 apply(target, rendererList, renderAction, startIndex + 1, count);
@@ -352,16 +354,16 @@ public class RenderUtil {
             }
         }
 
-        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
-
         Element delayedElement = null;
         Element resultNode;
         // TODO we suppose that the element is listed as the order from parent
         // to children, so we reverse it. Perhaps we need a real order process
         // to ensure the wanted order.
         Collections.reverse(elemList);
+        boolean renderForRoot;
         for (Element elem : elemList) {
-            if (!PSEUDO_ROOT_SELECTOR.equals(selector)) {
+            renderForRoot = PSEUDO_ROOT_SELECTOR.equals(selector) || rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER;
+            if (!renderForRoot) {
                 // faked group node will be not applied by renderers(only when the current selector is not the pseudo :root)
                 if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
                         ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
