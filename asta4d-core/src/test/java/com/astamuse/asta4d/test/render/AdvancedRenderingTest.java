@@ -78,10 +78,23 @@ public class AdvancedRenderingTest extends BaseTest {
             render.add("#inner", "-outerList", (Object) null);
             return render;
         }
+
+        public Renderer pseudoRootRenderingOnFackedGroup() {
+            // The recursive renderer will create a faked group on the target root, which causes the pseudo :root selector failed.
+            // So we have to handle this case.
+            Renderer renderer = Renderer.create(":root", Renderer.create("div", "t1"));
+            renderer.add(":root", Renderer.create("div", "t2"));
+            return renderer;
+        }
     }
 
     public AdvancedRenderingTest() {
 
+    }
+
+    @Test
+    public void testPseudoRootRenderingOnFackedGroup() {
+        new SimpleCase("AdvancedRendering_pseudoRootRenderingOnFakedGroup.html");
     }
 
     @Test

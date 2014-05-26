@@ -361,11 +361,14 @@ public class RenderUtil {
         // to ensure the wanted order.
         Collections.reverse(elemList);
         for (Element elem : elemList) {
-            // faked group node will be not applied by renderers
-            if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
-                    ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
-                continue;
+            if (!PSEUDO_ROOT_SELECTOR.equals(selector)) {
+                // faked group node will be not applied by renderers(only when the current selector is not the pseudo :root)
+                if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
+                        ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
+                    continue;
+                }
             }
+
             if (elem == target) {
                 delayedElement = elem;
                 continue;
