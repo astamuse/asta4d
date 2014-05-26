@@ -160,28 +160,35 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
-            //basic cases
+                
+             //for enum
             {String.class, TestEnum.class, "OK", TestEnum.OK},
-            /*
+            {String[].class, TestEnum[].class, new String[]{"OK","OK", "NG"}, new TestEnum[]{TestEnum.OK,TestEnum.OK,TestEnum.NG}},
+            
+            //basic cases
             {String.class, Integer.class, "123", 123},
             {String.class, Integer[].class, "123", new Integer[]{123}},
             {String[].class, Integer[].class, new String[]{"123", "456"}, new Integer[]{123, 456}},
             {String[].class, Integer.class, new String[]{"123", "456"}, 123},
+            
             //explicit array conversion
             {String.class, Long[].class, "123,456", new Long[]{123L, 456L}},
             {String[].class, Long.class, new String[]{"123","456"}, 456L},
+            
             //recursive array conversion
             {String.class, Integer[][].class, "123", null},//don't support
             {String[].class, Integer[][].class, new String[]{"123", "456"}, null},//don't support
             {String.class, Long[][].class, "123,456", new Long[][]{{123L, 456L}}},
             {String[][].class, Integer.class, new String[][]{{"123","456"}}, 123},
             {String[][][].class, Integer.class, new String[][][]{{{"123","456"}}}, 123},
+            
             //compatible type
             {String.class, PA.class, "123", new PB("123")},
             {PB.class, String.class, new PB("123"), "123"},
+            
             //transform by content format
             {String.class, Long.class, "special:398", 498L},
-            */
+            
         };
         //@formatter:on
     }
@@ -189,6 +196,9 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
     @Test(dataProvider = "test-data")
     public void testTransforming(Class srcType, Class targetType, Object data, Object expectedData) throws DataOperationException {
         Object ret = invoker.transform(srcType, targetType, data);
+        if (expectedData != null) {
+            Assert.assertTrue(expectedData.getClass().isAssignableFrom(ret.getClass()));
+        }
         Assert.assertEquals(ret, expectedData);
     }
 }

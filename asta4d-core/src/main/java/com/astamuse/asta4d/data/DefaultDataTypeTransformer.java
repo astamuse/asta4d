@@ -125,7 +125,7 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
         }
     }
 
-    private List<DataTypeConvertor> extractConvertors(Class<?> srcType, Class<?> targetType) {
+    private List<DataTypeConvertor> extractConvertors(final Class<?> srcType, final Class<?> targetType) {
 
         List<DataTypeConvertor> foundConvertorList = new LinkedList<DataTypeConvertor>();
 
@@ -167,7 +167,7 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
                                     }
 
                                     int length = Array.getLength(obj);
-                                    Object targetArray = Array.newInstance(typePair.getRight(), length);
+                                    Object targetArray = Array.newInstance(targetType.getComponentType(), length);
 
                                     for (int i = 0; i < length; i++) {
                                         Array.set(targetArray, i, originalConvertor.convert(Array.get(obj, i)));
@@ -201,7 +201,7 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
                                     if (typePair == null) {
                                         return null;
                                     }
-                                    Object array = Array.newInstance(typePair.getRight(), 1);
+                                    Object array = Array.newInstance(targetType.getComponentType(), 1);
                                     Array.set(array, 0, originalConvertor.convert(obj));
                                     return array;
                                 }
