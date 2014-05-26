@@ -46,13 +46,12 @@ public class ElementUtil {
     /**
      * parse given html source to a single Element
      * <p>
-     * <b>ATTENTION</b>: this method will cause a potential XSS problem, so be
-     * sure that you have escaped the passed html string if necessary.
+     * <b>ATTENTION</b>: this method will cause a potential XSS problem, so be sure that you have escaped the passed html string if
+     * necessary.
      * 
      * @param html
      *            the html source
-     * @return a Element object which contains the dom tree created from passed
-     *         html source
+     * @return a Element object which contains the dom tree created from passed html source
      */
     public final static Element parseAsSingle(String html) {
         Element body = Jsoup.parseBodyFragment(html).body();
@@ -71,8 +70,7 @@ public class ElementUtil {
     }
 
     /**
-     * there is a bug in jsoup, so we implement a safe empty by ourselves.
-     * https://github.com/jhy/jsoup/issues/239
+     * there is a bug in jsoup, so we implement a safe empty by ourselves. https://github.com/jhy/jsoup/issues/239
      * 
      * @param node
      */
@@ -84,8 +82,7 @@ public class ElementUtil {
     }
 
     /**
-     * there is a bug in jsoup, so we implement a safe empty by ourselves.
-     * https://github.com/jhy/jsoup/issues/278
+     * there is a bug in jsoup, so we implement a safe empty by ourselves. https://github.com/jhy/jsoup/issues/278
      * 
      * @param node
      */
@@ -133,6 +130,9 @@ public class ElementUtil {
         Element rm;
         while (it.hasNext()) {
             rm = it.next();
+            if (target == rm) {
+                continue;
+            }
             if (rm.ownerDocument() == null) {
                 continue;
             }
