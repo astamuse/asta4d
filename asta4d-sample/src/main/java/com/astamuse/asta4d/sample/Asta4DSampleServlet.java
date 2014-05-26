@@ -1,9 +1,7 @@
 package com.astamuse.asta4d.sample;
 
-import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
 import com.astamuse.asta4d.sample.interceptor.SamplePageInterceptor;
 import com.astamuse.asta4d.sample.interceptor.SampleSnippetInterceptor;
-import com.astamuse.asta4d.sample.util.BloodTypeConvertor;
 import com.astamuse.asta4d.snippet.DefaultSnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
@@ -29,8 +27,6 @@ public class Asta4DSampleServlet extends Asta4dServlet {
             }
 
         });
-
-        ((DefaultDataTypeTransformer) conf.getDataTypeTransformer()).getDataConvertorList().add(new BloodTypeConvertor());
 
         conf.getPageInterceptorList().add(new SamplePageInterceptor());
 

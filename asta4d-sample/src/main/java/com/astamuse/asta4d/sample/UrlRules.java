@@ -29,11 +29,11 @@ import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
 import com.astamuse.asta4d.sample.newform.MyForm;
+import com.astamuse.asta4d.sample.newform.MyFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
-import com.astamuse.asta4d.web.form.flow.SinglePage2StepFormHandler;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -99,7 +99,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
        // rules.add("/app/newform", "/templates/newform/input.html");
         rules.add((HttpMethod)null,"/app/newform")
-            .handler(new SinglePage2StepFormHandler<>(MyForm.class, "/templates/newform/"))
+            .handler(new MyFormHandler(MyForm.class, "/templates/newform/"))
             .forward("/templates/newform/input.html");
             
         rules.add("/app/localize", "/templates/localize.html");

@@ -1,16 +1,16 @@
 package com.astamuse.asta4d.web.form.field.impl;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.collection.RowRenderer;
+import com.astamuse.asta4d.web.form.field.AdditionalDataUtil;
+import com.astamuse.asta4d.web.form.field.OptionValueMap;
+import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldAdditionalRenderer;
 
 public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRenderer {
@@ -18,18 +18,18 @@ public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRender
     private static class OptGroup {
 
         String groupName;
-        List<Pair<String, String>> optionList;
+        OptionValueMap optionMap;
 
-        public OptGroup(String groupName, List<Pair<String, String>> optionList) {
+        public OptGroup(String groupName, OptionValueMap optionMap) {
             super();
             this.groupName = groupName;
-            this.optionList = optionList;
+            this.optionMap = optionMap;
         }
     }
 
     private List<OptGroup> optGroupList = new LinkedList<>();
 
-    private List<Pair<String, String>> optionList = null;
+    private OptionValueMap optionMap;
 
     public SelectBoxAdditionalRenderer(Field field) {
         super(field);
@@ -39,55 +39,56 @@ public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRender
         super(cls, fieldName);
     }
 
-    public SelectBoxAdditionalRenderer setOptionData(List<Pair<String, String>> optionList) {
+    public SelectBoxAdditionalRenderer setOptionData(OptionValueMap optionMap) {
         if (CollectionUtils.isNotEmpty(optGroupList)) {
             throw new RuntimeException("Option list without group is not allowed because there are existing option groups");
         }
-        this.optionList = optionList;
+        this.optionMap = optionMap;
         return this;
     }
 
-    public SelectBoxAdditionalRenderer addOptionGroup(String groupName, List<Pair<String, String>> optionList) {
-        if (CollectionUtils.isNotEmpty(optionList)) {
+    public SelectBoxAdditionalRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
+        if (optionMap != null) {
             throw new RuntimeException("Option list group is not allowed because there are existing option list without group");
         }
-        optGroupList.add(new OptGroup(groupName, optionList));
+        optGroupList.add(new OptGroup(groupName, optionMap));
         return this;
     }
 
     @Override
     public Renderer preRender(String editSelector, String displaySelector) {
-
-        Map<String, String> storingValueMap = new HashMap<>();
-
         Renderer renderer = super.preRender(editSelector, displaySelector);
         if (CollectionUtils.isNotEmpty(optGroupList)) {
-            renderer.add(renderOptionGroup(editSelector, optGroupList, storingValueMap));
-        } else if (CollectionUtils.isNotEmpty(optionList)) {
-            renderer.add(renderOptionList(editSelector, optionList, storingValueMap));
+            renderer.add(renderOptionGroup(editSelector, optGroupList));
+            List<OptionValuePair> allList = new LinkedList<>();
+            for (OptGroup optGrp : optGroupList) {
+                allList.addAll(optGrp.optionMap.getOptionList());
+            }
+            OptionValueMap allMap = new OptionValueMap(allList);
+            AdditionalDataUtil.storeDataToContextBySelector(editSelector, displaySelector, allMap);
+        } else if (optionMap != null) {
+            renderer.add(renderOptionList(editSelector, optionMap));
+            AdditionalDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
         }
-
-        SelectBoxRenderer.storeValueMapToContext(editSelector, displaySelector, storingValueMap);
 
         return renderer;
     }
 
-    private Renderer renderOptionGroup(String editSelector, List<OptGroup> groupList, final Map<String, String> valueMap) {
+    private Renderer renderOptionGroup(String editSelector, List<OptGroup> groupList) {
         return Renderer.create(editSelector, Renderer.create("optGroup:eq(0)", groupList, new RowRenderer<OptGroup>() {
             @Override
             public Renderer convert(int rowIndex, OptGroup row) {
-                return Renderer.create("optGroup", "label", row.groupName).add(renderOptionList("optGroup", row.optionList, valueMap));
+                return Renderer.create("optGroup", "label", row.groupName).add(renderOptionList("optGroup", row.optionMap));
             }
         }));
     }
 
-    private Renderer renderOptionList(String editSelector, List<Pair<String, String>> optList, final Map<String, String> valueMap) {
+    private Renderer renderOptionList(String editSelector, final OptionValueMap valueMap) {
 
-        return Renderer.create(editSelector, Renderer.create("option:eq(0)", optList, new RowRenderer<Pair<String, String>>() {
+        return Renderer.create(editSelector, Renderer.create("option:eq(0)", valueMap.getOptionList(), new RowRenderer<OptionValuePair>() {
             @Override
-            public Renderer convert(int rowIndex, Pair<String, String> row) {
-                valueMap.put(row.getLeft(), row.getRight());
-                return Renderer.create("option", "value", row.getLeft()).add("option", row.getRight());
+            public Renderer convert(int rowIndex, OptionValuePair row) {
+                return Renderer.create("option", "value", row.getValue()).add("option", row.getDisplayText());
             }
         }));
     }

@@ -14,35 +14,27 @@
  * limitations under the License.
  *
  */
-
 package com.astamuse.asta4d.sample.snippet;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.astamuse.asta4d.sample.newform.MyForm;
 import com.astamuse.asta4d.sample.newform.MyForm.BloodType;
-import com.astamuse.asta4d.util.collection.ListConvertUtil;
-import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.sample.newform.MyForm.Language;
+import com.astamuse.asta4d.sample.newform.MyForm.SEX;
 import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.impl.CheckBoxAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.impl.RadioBoxAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectBoxAdditionalRenderer;
 
 public class NewFormSnippet extends CommonFormSnippet {
-
     @Override
     protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
         List<FormFieldAdditionalRenderer> list = new LinkedList<>();
-        list.add(new SelectBoxAdditionalRenderer(MyForm.class, "bloodtype").setOptionData(ListConvertUtil.transform(
-                Arrays.asList(MyForm.BloodType.values()), new RowConvertor<MyForm.BloodType, Pair<String, String>>() {
-                    @Override
-                    public Pair<String, String> convert(int rowIndex, BloodType type) {
-                        return Pair.of(type.name(), type.name());
-                    }
-                })));
+        list.add(new SelectBoxAdditionalRenderer(MyForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
+        list.add(new RadioBoxAdditionalRenderer(MyForm.class, "sex").setOptionData(SEX.asOptionValueMap));
+        list.add(new CheckBoxAdditionalRenderer(MyForm.class, "language").setOptionData(Language.asOptionValueMap));
         return list;
     }
-
 }

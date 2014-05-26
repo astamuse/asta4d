@@ -14,7 +14,7 @@ import com.astamuse.asta4d.util.ElementUtil;
 
 public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRenderer {
 
-    private String getNonNullString(Object value) {
+    protected String getNonNullString(Object value) {
         String v = value == null ? "" : value.toString();
         if (v == null) {
             v = "";
@@ -23,7 +23,7 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
     }
 
     @Override
-    public final Renderer renderForEdit(String editTargetSelector, Object value) {
+    public Renderer renderForEdit(String editTargetSelector, Object value) {
         return Renderer.create(editTargetSelector, renderForEdit(getNonNullString(value)));
     }
 
@@ -103,8 +103,9 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
     }
 
     protected Renderer addAlternativeDom(final String editTargetSelector, final String nonNullString) {
-
-        return new Renderer(editTargetSelector, new ElementTransformer(null) {
+        Renderer renderer = Renderer.create();
+        renderer.addDebugger("before alternative display for " + editTargetSelector);
+        renderer.add(new Renderer(editTargetSelector, new ElementTransformer(null) {
             @Override
             public Element invoke(Element elem) {
                 GroupNode group = new GroupNode();
@@ -119,8 +120,9 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
                 return group;
             }
 
-        });
-
+        }));
+        renderer.addDebugger("after alternative display for " + editTargetSelector);
+        return renderer;
     }
 
 }
