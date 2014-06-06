@@ -267,7 +267,8 @@ public class RequestDispatcherTest {
 
         dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
 
-        // verify status at first then when contentProvider is null, we do not need to do more verification
+        // verify status at first then when contentProvider is null, we do not
+        // need to do more verification
         if (status != 0) {
             verify(response).setStatus(status);
         }
@@ -297,7 +298,7 @@ public class RequestDispatcherTest {
             }
         }).when(expectedResponse).addHeader(anyString(), anyString());
 
-        UrlMappingRule currentRule = context.getData(RequestDispatcher.KEY_CURRENT_RULE);
+        UrlMappingRule currentRule = context.getCurrentRule();
         contentProvider.produce(currentRule, expectedResponse);
 
         // verify extra contents like headers and output stream
