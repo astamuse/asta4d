@@ -17,14 +17,21 @@
 
 package com.astamuse.asta4d.web.dispatch.request.transformer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 
 public class DefaultExceptionTransformer implements ResultTransformer {
 
+    private static final Logger logger = LoggerFactory.getLogger(DefaultExceptionTransformer.class);
+
     @Override
     public Object transformToContentProvider(Object result) {
         if (result instanceof Throwable) {
+            Throwable t = (Throwable) result;
+            logger.error(t.getMessage(), t);
             return new HeaderInfoProvider(500, false);
         } else {
             return null;

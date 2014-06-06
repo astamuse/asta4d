@@ -63,10 +63,16 @@ public class HandyRuleWithForward {
     }
 
     public void json() {
+        if (!rule.getResultTransformerList().isEmpty()) {
+            throw new RuntimeException("Cannot declare json transforming on a rule in which there has been forward/redirect declaration.");
+        }
         (new HandyRuleWithAttrOnly(rule)).var(UrlMappingRuleHelper.RULE_TYPE_VAR_NAME, UrlMappingRuleHelper.RULE_TYPE_JSON);
     }
 
     public void rest() {
+        if (!rule.getResultTransformerList().isEmpty()) {
+            throw new RuntimeException("Cannot declare rest transforming on a rule in which there has been forward/redirect declaration.");
+        }
         (new HandyRuleWithAttrOnly(rule)).var(UrlMappingRuleHelper.RULE_TYPE_VAR_NAME, UrlMappingRuleHelper.RULE_TYPE_REST);
     }
 }

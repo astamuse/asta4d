@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -409,20 +410,24 @@ public class UrlMappingRuleHelper {
     }
 
     private void reOrganizeJsonTransformers(UrlMappingRule rule) {
-        List<ResultTransformer> transformerList = rule.getResultTransformerList();
-        transformerList.add(0, defaultJsonTransformer);
+        List<ResultTransformer> transformerList = new LinkedList<>();
         if (jsonTransformer != null) {
-            transformerList.add(0, jsonTransformer);
+            transformerList.add(jsonTransformer);
         }
+
+        transformerList.add(new DefaultExceptionTransformer());
+        transformerList.add(defaultJsonTransformer);
+
         rule.setResultTransformerList(transformerList);
     }
 
     private void reOrganizeRestTransformers(UrlMappingRule rule) {
-        List<ResultTransformer> transformerList = rule.getResultTransformerList();
-        transformerList.add(0, defaultRestTransformer);
+        List<ResultTransformer> transformerList = new LinkedList<>();
         if (restTransformer != null) {
-            transformerList.add(0, restTransformer);
+            transformerList.add(restTransformer);
         }
+        transformerList.add(new DefaultExceptionTransformer());
+        transformerList.add(defaultRestTransformer);
         rule.setResultTransformerList(transformerList);
     }
 
