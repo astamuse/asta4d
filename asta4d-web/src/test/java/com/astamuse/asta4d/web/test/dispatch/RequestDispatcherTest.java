@@ -62,6 +62,7 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
@@ -148,6 +149,17 @@ public class RequestDispatcherTest {
         rules.addGlobalForward(NullPointerException.class, "/NullPointerException", 501);
         rules.addGlobalForward(Exception.class, "/Exception", 500);
 
+        rules.registerJsonTransformer(new ResultTransformer() {
+            @Override
+            public Object transformToContentProvider(Object result) {
+                if (result instanceof Throwable) {
+                    return new HeaderInfoProvider(500);
+                } else {
+                    return null;
+                }
+            }
+        });
+
         //@formatter:off
         
         rules.add("/index").id("index-page").attribute("index-original").var("indexVar", "index_var")
@@ -173,12 +185,8 @@ public class RequestDispatcherTest {
         
         rules.add("/getjson").handler(new TestJsonHandler(123)).json();
         rules.add("/rewrite-attr").json();
-        rules.add("/jsonerror").handler(new Object(){
-            @RequestHandler
-            public Object foo(){
-                throw TestExceptionInstance;
-            }
-        }).json();
+
+        rules.add("/customizedJsonHandler").handler(TestCustomizedJsonHandler.class).json();
         
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
@@ -217,7 +225,7 @@ public class RequestDispatcherTest {
                 { "delete", "/restapi", 401, null }, 
                 { "get", "/getjson", 0, new JsonDataProvider(new TestJsonObject(123))},
                 { "get", "/rewrite-attr", 0, new JsonDataProvider(new TestJsonObject(358)) },
-                { "get", "/jsonerror", 0, new JsonDataProvider(TestExceptionInstance) },
+                { "get", "/customizedJsonHandler", 500, new HeaderInfoProvider(500) },
                 
                 //TODO it seems that there is missing the way to declare return status for json transforming when exceptions occur 
                 //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
@@ -347,6 +355,14 @@ public class RequestDispatcherTest {
         public TestJsonObject handle() {
             TestJsonObject obj = new TestJsonObject(value);
             return obj;
+        }
+    }
+
+    public static class TestCustomizedJsonHandler {
+
+        @RequestHandler
+        public Object handle() {
+            throw new RuntimeException("TestCustomizedJsonHandler");
         }
     }
 
