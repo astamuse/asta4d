@@ -166,7 +166,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.4.30               \
+        -DarchetypeVersion=0.14.606              \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -174,7 +174,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 or simply follow the wizard by filtered list:
 
     ```
-    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=0.14.4.30
+    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=0.14.606
     ```
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
@@ -223,6 +223,16 @@ Want to do:
 
     
 ## Release Notes
+
+-   0.14.606
+
+    ADD
+    - support a callback rendering interface called Renderable
+    - support static embeding which will embed the target file to the holding file when the holding file is initialized
+    - allow customize json and rest result transformer
+    
+    FIX
+    - template files are locked due to the input stream is not closed
 
 -   0.14.4.30
     
