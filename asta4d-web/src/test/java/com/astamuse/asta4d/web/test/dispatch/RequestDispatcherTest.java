@@ -62,6 +62,7 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
@@ -72,7 +73,9 @@ import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
 
-    private NullPointerException TestExceptionInstance = new NullPointerException();
+    private static class JsonContentNotFoundException extends RuntimeException {
+
+    }
 
     private RequestDispatcher dispatcher = new RequestDispatcher();
 
@@ -127,7 +130,7 @@ public class RequestDispatcherTest {
         // calling when add default handler
         rules.addDefaultRequestHandler("rewrite-attr", DoNothingHandler.class);
 
-        rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(358));
+        rules.addDefaultRequestHandler("rewrite-attr", new TestJsonHandler(new TestJsonObject(358)));
 
         rules.addDefaultRequestHandler("remap-with-attr", new Object() {
 
@@ -147,6 +150,17 @@ public class RequestDispatcherTest {
         rules.addGlobalForward(TemplateNotFoundException.class, "/notfound", 404);
         rules.addGlobalForward(NullPointerException.class, "/NullPointerException", 501);
         rules.addGlobalForward(Exception.class, "/Exception", 500);
+
+        rules.registerJsonTransformer(new ResultTransformer() {
+            @Override
+            public Object transformToContentProvider(Object result) {
+                if (result instanceof JsonContentNotFoundException) {
+                    return new HeaderInfoProvider(404);
+                } else {
+                    return null;
+                }
+            }
+        });
 
         //@formatter:off
         
@@ -171,14 +185,12 @@ public class RequestDispatcherTest {
         
         rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
         
-        rules.add("/getjson").handler(new TestJsonHandler(123)).json();
+        rules.add("/getjson").handler(new TestJsonHandler(new TestJsonObject(123))).json();
         rules.add("/rewrite-attr").json();
-        rules.add("/jsonerror").handler(new Object(){
-            @RequestHandler
-            public Object foo(){
-                throw TestExceptionInstance;
-            }
-        }).json();
+
+        rules.add("/json404").handler(new TestJsonHandler(new JsonContentNotFoundException())).json();
+        
+        rules.add("/json500").handler(new TestJsonHandler(new RuntimeException())).json();
         
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
@@ -217,7 +229,8 @@ public class RequestDispatcherTest {
                 { "delete", "/restapi", 401, null }, 
                 { "get", "/getjson", 0, new JsonDataProvider(new TestJsonObject(123))},
                 { "get", "/rewrite-attr", 0, new JsonDataProvider(new TestJsonObject(358)) },
-                { "get", "/jsonerror", 0, new JsonDataProvider(TestExceptionInstance) },
+                { "get", "/json404", 404, new HeaderInfoProvider(404) },
+                { "get", "/json500", 500, new HeaderInfoProvider(500) },
                 
                 //TODO it seems that there is missing the way to declare return status for json transforming when exceptions occur 
                 //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
@@ -267,7 +280,8 @@ public class RequestDispatcherTest {
 
         dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
 
-        // verify status at first then when contentProvider is null, we do not need to do more verification
+        // verify status at first then when contentProvider is null, we do not
+        // need to do more verification
         if (status != 0) {
             verify(response).setStatus(status);
         }
@@ -297,7 +311,7 @@ public class RequestDispatcherTest {
             }
         }).when(expectedResponse).addHeader(anyString(), anyString());
 
-        UrlMappingRule currentRule = context.getData(RequestDispatcher.KEY_CURRENT_RULE);
+        UrlMappingRule currentRule = context.getCurrentRule();
         contentProvider.produce(currentRule, expectedResponse);
 
         // verify extra contents like headers and output stream
@@ -336,16 +350,15 @@ public class RequestDispatcherTest {
 
     public static class TestJsonHandler {
 
-        private int value;
+        private Object returnValue;
 
-        public TestJsonHandler(int value) {
-            this.value = value;
+        public TestJsonHandler(Object returnValue) {
+            this.returnValue = returnValue;
         }
 
         @RequestHandler
-        public TestJsonObject handle() {
-            TestJsonObject obj = new TestJsonObject(value);
-            return obj;
+        public Object handle() {
+            return returnValue;
         }
     }
 

@@ -46,6 +46,7 @@ public class ExtNodeConstants {
 
     public final static String EMBED_NODE_ATTR_TARGET = "target";
     public final static String EMBED_NODE_ATTR_BLOCK = "block";
+    public final static String EMBED_NODE_ATTR_STATIC = "static";
 
     public final static String SNIPPET_NODE_NAME = "snippet";
     public final static String SNIPPET_NODE_TAG = addNS(SNIPPET_NODE_NAME);

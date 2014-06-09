@@ -95,7 +95,16 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
                 cachedTemplateMap.put(cacheKey, getNotFoundHolder());
                 return null;
             }
-            t = new Template(info.getPath(), input);
+            try {
+                t = new Template(info.getPath(), input);
+            } finally {
+                // we have to close the input stream to avoid file lock
+                try {
+                    input.close();
+                } catch (Exception ex) {
+                    logger.error("Error occured when close input stream of " + info.getPath(), ex);
+                }
+            }
             cachedTemplateMap.put(cacheKey, t);
             return t;
         } catch (Exception e) {
@@ -128,6 +137,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
         private InputStream getInput() {
             return input;
         }
+
     }
 
 }

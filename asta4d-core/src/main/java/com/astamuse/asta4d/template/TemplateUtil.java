@@ -42,22 +42,22 @@ public class TemplateUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
-    public final static void regulateElement(Element elem) {
-        regulateSnippets(elem);
-        regulateEmbed(elem);
+    public final static void regulateElement(Document doc) throws TemplateException {
+        regulateSnippets(doc);
+        regulateEmbed(doc);
     }
 
     private final static String createSnippetRef() {
         return "sn-" + IdGenerator.createId();
     }
 
-    private final static void regulateSnippets(Element elem) {
+    private final static void regulateSnippets(Document doc) {
 
         // find nodes emebed with snippet attribute
         String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
         snippetSelector = SelectorUtil.not(snippetSelector, ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
 
-        List<Element> embedSnippets = new ArrayList<>(elem.select(snippetSelector));
+        List<Element> embedSnippets = new ArrayList<>(doc.select(snippetSelector));
         // Element
         // Node parent;
         SnippetNode fakedSnippetNode;
@@ -87,7 +87,7 @@ public class TemplateUtil {
          */
 
         // first, we regulate the snippets to legal form
-        List<Element> snippetNodes = elem.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
+        List<Element> snippetNodes = doc.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
         String status;
         for (Element sn : snippetNodes) {
             // regulate status
@@ -128,16 +128,41 @@ public class TemplateUtil {
         // then let us check the nested relation for nodes without block attr
         snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_BLOCK);
         snippetSelector = SelectorUtil.not(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, snippetSelector);
-        snippetNodes = elem.select(snippetSelector);
+        snippetNodes = doc.select(snippetSelector);
         setBlockingParentSnippetId(snippetNodes);
     }
 
-    private final static void regulateEmbed(Element elem) {
+    private final static void regulateEmbed(Document doc) throws TemplateException {
+        // load static embed at first
+        loadStaticEmebed(doc);
         // check nodes without block attr for blocking parent snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.EMBED_NODE_ATTR_BLOCK);
         selector = SelectorUtil.not(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR, selector);
-        List<Element> embedElemes = elem.select(selector);
+        List<Element> embedElemes = doc.select(selector);
         setBlockingParentSnippetId(embedElemes);
+    }
+
+    private final static void loadStaticEmebed(Document doc) throws TemplateException {
+
+        String selector = SelectorUtil.attr(SelectorUtil.tag(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR),
+                ExtNodeConstants.EMBED_NODE_ATTR_STATIC, null);
+
+        int embedNodeListCount;
+        do {
+            List<Element> embedNodeList = doc.select(selector);
+            embedNodeListCount = embedNodeList.size();
+            Iterator<Element> embedNodeIterator = embedNodeList.iterator();
+            Element embed;
+            Element embedContent;
+            while (embedNodeIterator.hasNext()) {
+                embed = embedNodeIterator.next();
+                embedContent = getEmbedNodeContent(embed);
+                mergeBlock(doc, embedContent);
+                embed.before(embedContent);
+                embed.remove();
+            }
+        } while (embedNodeListCount > 0);
+
     }
 
     private final static void setBlockingParentSnippetId(List<Element> elems) {

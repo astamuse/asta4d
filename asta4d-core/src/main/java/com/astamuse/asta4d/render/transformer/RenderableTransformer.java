@@ -15,18 +15,24 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.request.transformer;
+package com.astamuse.asta4d.render.transformer;
 
-import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
-import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
-import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
+import org.jsoup.nodes.Element;
 
-public class JsonTransformer implements ResultTransformer {
+import com.astamuse.asta4d.render.Renderable;
+import com.astamuse.asta4d.render.Renderer;
+
+public class RenderableTransformer extends Transformer<Renderable> {
+
+    public RenderableTransformer(Renderable content) {
+        super(content);
+    }
 
     @Override
-    public Object transformToContentProvider(Object result) {
-        JsonDataProvider provider = DeclareInstanceUtil.createInstance(JsonDataProvider.class);
-        provider.setData(result);
-        return provider;
+    protected Element transform(Element elem, Renderable content) {
+        Renderer render = content.render();
+        RendererTransformer delegatedTransformer = new RendererTransformer(render);
+        return delegatedTransformer.invoke(elem);
     }
+
 }

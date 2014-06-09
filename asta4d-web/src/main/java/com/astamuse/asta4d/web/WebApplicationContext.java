@@ -30,6 +30,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.ContextMap;
 import com.astamuse.asta4d.util.DelegatedContextMap;
 import com.astamuse.asta4d.util.UnmodifiableContextMap;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.util.context.SessionMap;
 
 public class WebApplicationContext extends Context {
@@ -57,6 +58,8 @@ public class WebApplicationContext extends Context {
     private final static String SAVEKEY_SERVLET_CONTEXT = WebApplicationContext.class.getName() + "##SAVEKEY-SERVLET-CONTEXT";
 
     private final static String SAVEKEY_ACCESS_URI = WebApplicationContext.class.getName() + "##SAVEKEY-ACCESS-URI";
+
+    public final static String SAVEKEY_CURRENT_RULE = WebApplicationContext.class.getName() + "##SAVEKEY_CURRENT_RULE";
 
     public final static WebApplicationContext getCurrentThreadWebApplicationContext() {
         return Context.getCurrentThreadContext();
@@ -92,6 +95,14 @@ public class WebApplicationContext extends Context {
 
     public String getAccessURI() {
         return this.getData(SAVEKEY_ACCESS_URI);
+    }
+
+    public void setCurrentRule(UrlMappingRule rule) {
+        this.setData(SAVEKEY_CURRENT_RULE, rule);
+    }
+
+    public UrlMappingRule getCurrentRule() {
+        return this.getData(SAVEKEY_CURRENT_RULE);
     }
 
     @SuppressWarnings("unchecked")

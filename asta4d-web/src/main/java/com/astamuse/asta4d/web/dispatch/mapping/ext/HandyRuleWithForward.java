@@ -19,14 +19,10 @@ package com.astamuse.asta4d.web.dispatch.mapping.ext;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.MultiResultHolder;
-import com.astamuse.asta4d.web.dispatch.request.transformer.JsonTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
-import com.astamuse.asta4d.web.dispatch.request.transformer.StopTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 
 public class HandyRuleWithForward {
-
-    private final static JsonTransformer jsonTransformer = new JsonTransformer();
 
     protected UrlMappingRule rule;
 
@@ -67,10 +63,16 @@ public class HandyRuleWithForward {
     }
 
     public void json() {
-        rule.getResultTransformerList().add(jsonTransformer);
+        if (!rule.getResultTransformerList().isEmpty()) {
+            throw new RuntimeException("Cannot declare json transforming on a rule in which there has been forward/redirect declaration.");
+        }
+        (new HandyRuleWithAttrOnly(rule)).var(UrlMappingRuleHelper.RULE_TYPE_VAR_NAME, UrlMappingRuleHelper.RULE_TYPE_JSON);
     }
 
     public void rest() {
-        rule.getResultTransformerList().add(new StopTransformer());
+        if (!rule.getResultTransformerList().isEmpty()) {
+            throw new RuntimeException("Cannot declare rest transforming on a rule in which there has been forward/redirect declaration.");
+        }
+        (new HandyRuleWithAttrOnly(rule)).var(UrlMappingRuleHelper.RULE_TYPE_VAR_NAME, UrlMappingRuleHelper.RULE_TYPE_REST);
     }
 }

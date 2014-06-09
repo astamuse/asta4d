@@ -28,7 +28,6 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.DefaultContextDataFinder;
-import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
@@ -62,7 +61,7 @@ public class WebApplicationContextDataFinder extends DefaultContextDataFinder {
             return new ContextDataHolder<>(ServletContext.class.getName(), ByTypeScope,
                     ((WebApplicationContext) context).getServletContext());
         } else if (type.equals(UrlMappingRule.class)) {
-            return new ContextDataHolder<>(UrlMappingRule.class.getName(), ByTypeScope, context.getData(RequestDispatcher.KEY_CURRENT_RULE));
+            return new ContextDataHolder<>(UrlMappingRule.class.getName(), ByTypeScope, ((WebApplicationContext) context).getCurrentRule());
         } else {
             return super.findDataInContext(context, scope, name, type);
         }

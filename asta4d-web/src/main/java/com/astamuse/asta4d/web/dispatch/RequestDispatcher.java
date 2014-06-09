@@ -41,8 +41,6 @@ import com.astamuse.asta4d.web.util.redirect.RedirectUtil;
 
 public class RequestDispatcher {
 
-    public final static String KEY_CURRENT_RULE = RequestDispatcher.class.getName() + "##KEY_CURRENT_RULE";
-
     public final static String KEY_REQUEST_HANDLER_RESULT = "RequestDispatcher##KEY_REQUEST_HANDLER_RESULT";
 
     private final static Logger logger = LoggerFactory.getLogger(RequestDispatcher.class);
@@ -87,7 +85,7 @@ public class RequestDispatcher {
         writePathVarToContext(context, result.getPathVarMap());
 
         UrlMappingRule rule = result.getRule();
-        context.setData(KEY_CURRENT_RULE, rule);
+        context.setCurrentRule(rule);
         writePathVarToContext(context, rule.getExtraVarMap());
         restoreFlashScopeData(context, request);
 
