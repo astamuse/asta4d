@@ -127,7 +127,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                         }
                         list.add(mh.message);
                     }
-                    return null;
+                    return Renderer.create();
                 }
             });
         }// end for loop
