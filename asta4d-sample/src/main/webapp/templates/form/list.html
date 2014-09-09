@@ -1,0 +1,52 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../js/prettify.js"></script>
+<title>Asta4D Sample Project</title>
+<script>
+function saveId(v){
+	document.getElementById("checkedRowId").setAttribute("value", v);
+}
+function getId(v){
+	document.getElementById("checkedRowId").getAttribute("value");
+}
+function onestepadd(){
+	location.href="form/onestep/edit?action=add";
+	
+}
+</script>
+</head>
+<body onload="prettyPrint()">
+	<h1>list</h1>
+
+	<table border=1 afd:render="form.ListSnippet">
+	<tr>
+		<th>&nbsp;</th>
+		<th>name</th>
+		<th>age</th>
+		<th>sex</th>
+		<th>blood</th>
+		<th>language</th>
+	</tr>
+	<tr class="x-row">
+		<td class="x-check"><input name="_id" type=radio value="" onclick="saveId(this.value)"></td>
+		<td class="x-name">name</td>
+		<td class="x-age">age</td>
+		<td class="x-sex">sex</td>
+		<td class="x-blood">blood</td>
+		<td class="x-language"><span>lang1</span><span afd:clear>lang2</span></td>
+	</tr>
+	</table>
+	<input type=hidden id="checkedRowId">
+	<ul>
+	<li>one step: <input type=button value="add" onclick="onestepadd()"> <input type=button value="modify">
+	<li>with confirm and complete<input type=button value="add"> <input type=button value="modify">
+	<li>splitted input<input type=button value="add"> <input type=button value="modify">
+	</ul>
+	<input type=button value="delete">
+	
+</body>
+</html>

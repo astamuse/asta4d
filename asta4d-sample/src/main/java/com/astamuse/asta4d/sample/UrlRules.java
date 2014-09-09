@@ -28,7 +28,7 @@ import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
 import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
-import com.astamuse.asta4d.sample.newform.MyForm;
+import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.newform.MyFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
@@ -93,16 +93,25 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
         rules.add("/app/contextdata", "/templates/contextdata.html");
 
+        
+        rules.add("/app/form", "/templates/form/list.html");
+        rules.add(GET, "/app/form/onestep/edit", "/templates/form/list.html");
+        
+        
         rules.add("/app/form/input", "/templates/form/input.html");
         rules.add(POST, "/app/form/confirm").handler(FormValidateHandler.class);
         rules.add(POST, "/app/form/complete").handler(FormCompleteHandler.class);
         
        // rules.add("/app/newform", "/templates/newform/input.html");
         rules.add((HttpMethod)null,"/app/newform")
-            .handler(new MyFormHandler(MyForm.class, "/templates/newform/"))
+            .handler(new MyFormHandler(PersonForm.class, "/templates/newform/"))
             .forward("/templates/newform/input.html");
             
         rules.add("/app/localize", "/templates/localize.html");
+        
+        
+        
+        
         //@formatter:on
     }
 }

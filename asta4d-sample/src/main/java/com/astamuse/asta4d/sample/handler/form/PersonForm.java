@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.sample.newform;
+package com.astamuse.asta4d.sample.handler.form;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
@@ -16,7 +16,7 @@ import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 
 @Form
-public class MyForm {
+public class PersonForm {
 
     public static enum BloodType {
         A, B, O, AB;
