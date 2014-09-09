@@ -15,7 +15,7 @@ public class JsrValidator implements FormValidator {
 
     protected ValidatorFactory defaultFactory = Validation.buildDefaultValidatorFactory();
     protected Validator defaultValidator = defaultFactory.getValidator();
-    protected RowConvertor<ConstraintViolation<Object>, FormValidationMessage> ConstraintVilationConvertor = new RowConvertor<ConstraintViolation<Object>, FormValidationMessage>() {
+    protected RowConvertor<ConstraintViolation<Object>, FormValidationMessage> ConstraintViolationConvertor = new RowConvertor<ConstraintViolation<Object>, FormValidationMessage>() {
 
         @Override
         public FormValidationMessage convert(int rowIndex, ConstraintViolation<Object> cv) {
@@ -30,6 +30,6 @@ public class JsrValidator implements FormValidator {
     @Override
     public List<FormValidationMessage> validate(Object form) {
         Set<ConstraintViolation<Object>> cvs = defaultValidator.validate(form);
-        return ListConvertUtil.transform(cvs, ConstraintVilationConvertor);
+        return ListConvertUtil.transform(cvs, ConstraintViolationConvertor);
     }
 }
