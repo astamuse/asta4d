@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.flow.common;
+package com.astamuse.asta4d.web.form.flow.base;
 
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.web.annotation.QueryParam;
@@ -18,7 +18,7 @@ public class SimpleFormProcessData implements FormProcessData {
     @QueryParam(name = "step-back")
     private String stepBack;
 
-    @QueryParam(name = FlowFormConstants.FORM_STEP_TRACE_MAP_STR)
+    @QueryParam(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR)
     private String stepTraceData;
 
     public SimpleFormProcessData() {

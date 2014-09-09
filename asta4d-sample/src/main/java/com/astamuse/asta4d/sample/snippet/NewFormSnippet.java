@@ -27,8 +27,9 @@ import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.CheckBoxAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioBoxAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectBoxAdditionalRenderer;
+import com.astamuse.asta4d.web.form.flow.common.ClassicalFormFlowSnippet;
 
-public class NewFormSnippet extends CommonFormSnippet {
+public class NewFormSnippet extends ClassicalFormFlowSnippet {
     @Override
     protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
         List<FormFieldAdditionalRenderer> list = new LinkedList<>();

@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.flow.common;
+package com.astamuse.asta4d.web.form.flow.base;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class AbstractFlowFormHandler<T> {
+public abstract class AbstractFormFlowHandler<T> {
 
     private static final ObjectMapper JsonMapper = new ObjectMapper();
 
@@ -38,11 +38,11 @@ public abstract class AbstractFlowFormHandler<T> {
     private Class formCls;
     private ContextDataSetFactory formFactory;
 
-    public AbstractFlowFormHandler(Class<T> formCls) {
+    public AbstractFormFlowHandler(Class<T> formCls) {
         this(formCls, SimpleFormProcessData.class);
     }
 
-    public AbstractFlowFormHandler(Class<T> formCls, Class<? extends FormProcessData> formProcessDataCls) {
+    public AbstractFormFlowHandler(Class<T> formCls, Class<? extends FormProcessData> formProcessDataCls) {
         this.formCls = formCls;
         this.formProcessDataCls = formProcessDataCls;
 
@@ -73,7 +73,7 @@ public abstract class AbstractFlowFormHandler<T> {
         String currentStep = processData.getStepCurrent();
 
         if (currentStep == null) {// it means the first time access without existing input data
-            currentStep = FlowFormConstants.FORM_STEP_INIT_STEP;
+            currentStep = FormFlowConstants.FORM_STEP_INIT_STEP;
         } else {
         }
 
@@ -99,8 +99,8 @@ public abstract class AbstractFlowFormHandler<T> {
             traceMap.remove(currentStep);
             passDataToSnippet(currentStep, renderTarget, traceMap, null);
         } else {
-            if (FlowFormConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
-                renderTarget = FlowFormConstants.FORM_STEP_INIT_STEP;
+            if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+                renderTarget = FormFlowConstants.FORM_STEP_INIT_STEP;
             } else {
                 formResult = handle(currentStep, form);
                 if (formResult == CommonFormResult.SUCCESS) {
@@ -121,7 +121,7 @@ public abstract class AbstractFlowFormHandler<T> {
 
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         try {
-            if (FlowFormConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+            if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
                 return (T) formFactory.createInstance(formCls);
             } else {
                 return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
@@ -183,26 +183,26 @@ public abstract class AbstractFlowFormHandler<T> {
             DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.instance();
             msgHelper.saveMessageListToFlash();
 
-            RedirectTargetProvider.addFlashScopeData(AbstractFlowFormSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
+            RedirectTargetProvider.addFlashScopeData(AbstractFormFlowSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
 
-            RedirectTargetProvider.addFlashScopeData(FlowFormConstants.FORM_STEP_TRACE_MAP, traceMap);
+            RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
 
             String traceData = serializeTraceMap(traceMap);
 
-            RedirectTargetProvider.addFlashScopeData(FlowFormConstants.FORM_STEP_TRACE_MAP_STR, traceData);
+            RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
-            RedirectTargetProvider.addFlashScopeData(FlowFormConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
+            RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
         } else {
 
             WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
 
-            context.setData(FlowFormConstants.FORM_STEP_TRACE_MAP, traceMap);
+            context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
 
             String traceData = serializeTraceMap(traceMap);
 
-            context.setData(FlowFormConstants.FORM_STEP_TRACE_MAP_STR, traceData);
+            context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
-            context.setData(FlowFormConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
+            context.setData(FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
         }
     }
 

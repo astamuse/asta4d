@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.flow.common;
+package com.astamuse.asta4d.web.form.flow.base;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
-public abstract class AbstractFlowFormSnippet implements InitializableSnippet {
+public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
     private static class FieldRenderingInfo {
         String editSelector;
@@ -39,13 +39,13 @@ public abstract class AbstractFlowFormSnippet implements InitializableSnippet {
 
     public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#IntelligentFormSnippetBase";
 
-    @ContextData(name = FlowFormConstants.FORM_STEP_TRACE_MAP)
+    @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP)
     protected Map<String, Object> formTraceMap;
 
-    @ContextData(name = FlowFormConstants.FORM_STEP_TRACE_MAP_STR, scope = Context.SCOPE_DEFAULT)
+    @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR, scope = Context.SCOPE_DEFAULT)
     protected String formTraceMapStr;
 
-    protected boolean renderForEdit(String step) {
+    protected boolean renderForEdit(String step, String fieldName) {
         return true;
     }
 
@@ -98,12 +98,12 @@ public abstract class AbstractFlowFormSnippet implements InitializableSnippet {
         return info;
     }
 
-    public Renderer render(@ContextData(name = FlowFormConstants.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
+    public Renderer render(@ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
         Renderer renderer = Renderer.create("form", new ElementSetter() {
             @Override
             public void set(Element elem) {
                 Element hide = new Element(Tag.valueOf("input"), "");
-                hide.attr("name", FlowFormConstants.FORM_STEP_TRACE_MAP_STR);
+                hide.attr("name", FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
                 hide.attr("type", "hidden");
                 hide.attr("value", formTraceMapStr);
                 elem.appendChild(hide);
@@ -148,7 +148,7 @@ public abstract class AbstractFlowFormSnippet implements InitializableSnippet {
 
             // render.addDebugger("whole form before: " + field.getName());
 
-            if (renderForEdit(renderTargetStep)) {
+            if (renderForEdit(renderTargetStep, field.getName())) {
                 render.add(renderingInfo.valueRenderer.renderForEdit(renderingInfo.editSelector, v));
             } else {
                 render.add(renderingInfo.valueRenderer.renderForDisplay(renderingInfo.editSelector, renderingInfo.displaySelector, v));

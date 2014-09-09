@@ -1,26 +1,26 @@
-package com.astamuse.asta4d.web.form.flow;
+package com.astamuse.asta4d.web.form.flow.common;
 
 import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.common.CommonFormResult;
-import com.astamuse.asta4d.web.form.flow.common.AbstractFlowFormHandler;
+import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 
-public class SinglePage2StepFormHandler<T> extends AbstractFlowFormHandler<T> {
+public abstract class ClassicalFormFlowHandler<T> extends AbstractFormFlowHandler<T> {
 
     private String templatePrefix;
 
-    public SinglePage2StepFormHandler(Class<T> formCls, String templatePrefix) {
+    public ClassicalFormFlowHandler(Class<T> formCls, String templatePrefix) {
         super(formCls);
         this.templatePrefix = templatePrefix;
     }
 
     protected boolean isConfirmStep(String step) {
-        return "confirm".equalsIgnoreCase(step);
+        return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
     }
 
     protected boolean isCompleteStep(String step) {
-        return "complete".equalsIgnoreCase(step);
+        return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
     }
 
     @RequestHandler

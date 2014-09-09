@@ -1,10 +1,10 @@
-package com.astamuse.asta4d.web.form.flow;
+package com.astamuse.asta4d.web.form.flow.common;
 
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.common.CommonFormResult;
-import com.astamuse.asta4d.web.form.flow.common.AbstractFlowFormHandler;
+import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 
-public class OneStepFormHandler<T> extends AbstractFlowFormHandler<T> {
+public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
 
     public OneStepFormHandler(Class<T> formCls) {
         super(formCls);

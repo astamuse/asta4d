@@ -1,9 +1,9 @@
 package com.astamuse.asta4d.sample.newform;
 
-import com.astamuse.asta4d.web.form.flow.SinglePage2StepFormHandler;
-import com.astamuse.asta4d.web.form.flow.common.CommonFormResult;
+import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
+import com.astamuse.asta4d.web.form.flow.common.ClassicalFormFlowHandler;
 
-public class MyFormHandler extends SinglePage2StepFormHandler<MyForm> {
+public class MyFormHandler extends ClassicalFormFlowHandler<MyForm> {
     public MyFormHandler(Class<MyForm> formCls, String templatePrefix) {
         super(formCls, templatePrefix);
     }
@@ -13,7 +13,7 @@ public class MyFormHandler extends SinglePage2StepFormHandler<MyForm> {
         CommonFormResult result = super.handle(currentStep, form);
         if (result == CommonFormResult.SUCCESS && isConfirmStep(currentStep)) {
             try {
-                // do update
+                // do update here
                 return CommonFormResult.SUCCESS;
             } catch (Exception ex) {
                 return CommonFormResult.FAILED;
