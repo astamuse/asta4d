@@ -25,9 +25,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
-import com.astamuse.asta4d.data.convertor.DataTypeConvertor;
+import com.astamuse.asta4d.data.convertor.DataValueConvertor;
+import com.astamuse.asta4d.data.convertor.UnsupportedValueException;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
 public class DefaultDataTypeTransformerTest extends BaseTest {
@@ -90,7 +90,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
 
     }
 
-    public static class String2PB implements DataTypeConvertor<String, PB> {
+    public static class String2PB implements DataValueConvertor<String, PB> {
         @Override
         public PB convert(String obj) {
             PB ret = new PB(obj);
@@ -99,7 +99,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
 
     }
 
-    public static class PA2String implements DataTypeConvertor<PA, String> {
+    public static class PA2String implements DataValueConvertor<PA, String> {
         @Override
         public String convert(PA obj) {
             return obj.value.substring(0, obj.value.indexOf("-PA"));
@@ -107,7 +107,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
 
     }
 
-    public static class String2LongArray implements DataTypeConvertor<String, Long[]> {
+    public static class String2LongArray implements DataValueConvertor<String, Long[]> {
         @Override
         public Long[] convert(String obj) {
             String[] array = obj.split(",");
@@ -119,7 +119,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
         }
     }
 
-    public static class StringArray2Long implements DataTypeConvertor<String[], Long> {
+    public static class StringArray2Long implements DataValueConvertor<String[], Long> {
         @Override
         public Long convert(String[] obj) {
             if (obj.length == 1) {
@@ -130,7 +130,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
         }
     }
 
-    public static class String2LongSpecial implements DataTypeConvertor<String, Long> {
+    public static class String2LongSpecial implements DataValueConvertor<String, Long> {
         @Override
         public Long convert(String obj) {
             if (obj.startsWith("special:")) {
@@ -147,7 +147,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
     @BeforeClass
     public void prepareInvoker() {
         invoker = new DefaultDataTypeTransformer();
-        List<DataTypeConvertor> list = new LinkedList<DataTypeConvertor>();
+        List<DataValueConvertor> list = new LinkedList<DataValueConvertor>();
         list.add(new String2PB());
         list.add(new PA2String());
         list.add(new String2LongArray());
@@ -194,7 +194,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
     }
 
     @Test(dataProvider = "test-data")
-    public void testTransforming(Class srcType, Class targetType, Object data, Object expectedData) throws DataOperationException {
+    public void testTransforming(Class srcType, Class targetType, Object data, Object expectedData) throws UnsupportedValueException {
         Object ret = invoker.transform(srcType, targetType, data);
         if (expectedData != null) {
             Assert.assertTrue(expectedData.getClass().isAssignableFrom(ret.getClass()));

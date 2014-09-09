@@ -26,7 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.convertor.DataTypeConvertor;
+import com.astamuse.asta4d.data.convertor.DataValueConvertor;
+import com.astamuse.asta4d.data.convertor.UnsupportedValueException;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 
@@ -80,7 +81,8 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
 
         Object foundData = dataHolder.getValue();
-        Object transformedData;
+        Object transformedData = null;
+        UnsupportedValueException usve = null;
 
         Class<?> srcType = new TypeInfo(foundData.getClass()).getType();
         if (targetType.isAssignableFrom(srcType)) {
@@ -92,10 +94,17 @@ public class DefaultContextDataFinder implements ContextDataFinder {
             Array.set(array, 0, foundData);
             transformedData = array;
         } else {
-            transformedData = Configuration.getConfiguration().getDataTypeTransformer().transform(srcType, targetType, foundData);
+            try {
+                transformedData = Configuration.getConfiguration().getDataTypeTransformer().transform(srcType, targetType, foundData);
+            } catch (UnsupportedValueException ex) {
+                usve = ex;
+            }
         }
-
-        dataHolder.setData(dataHolder.getName(), dataHolder.getScope(), foundData, transformedData);
+        if (usve == null) {
+            dataHolder.setData(dataHolder.getName(), dataHolder.getScope(), foundData, transformedData);
+        } else {
+            dataHolder.setData(dataHolder.getName(), InjectUtil.ContextDataTypeUnMatchScope, foundData, transformedData);
+        }
         return dataHolder;
     }
 
@@ -127,7 +136,7 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         }
     }
 
-    private Method findConvertMethod(DataTypeConvertor<?, ?> convertor) {
+    private Method findConvertMethod(DataValueConvertor<?, ?> convertor) {
         Method[] methods = convertor.getClass().getMethods();
         Method rtnMethod = null;
         for (Method m : methods) {

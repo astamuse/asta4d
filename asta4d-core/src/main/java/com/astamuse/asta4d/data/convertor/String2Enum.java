@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.data.convertor;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * convert string to enum
  * 
@@ -7,14 +9,17 @@ package com.astamuse.asta4d.data.convertor;
  * 
  */
 @SuppressWarnings("rawtypes")
-public class String2Enum implements DataTypeConvertorTargetTypeConvertable<String, Enum> {
+public class String2Enum implements DataValueConvertorTargetTypeConvertable<String, Enum> {
     @Override
-    public DataTypeConvertor<String, Enum> convert(final Class<Enum> targetType) {
-        return new DataTypeConvertor<String, Enum>() {
+    public DataValueConvertor<String, Enum> convert(final Class<Enum> targetType) {
+        return new DataValueConvertor<String, Enum>() {
             @SuppressWarnings("unchecked")
             @Override
-            public Enum convert(String obj) {
-                return Enum.valueOf(targetType, obj);
+            public Enum convert(String s) throws UnsupportedValueException {
+                if (StringUtils.isEmpty(s)) {
+                    return null;
+                }
+                return Enum.valueOf(targetType, s);
             }
         };
     }

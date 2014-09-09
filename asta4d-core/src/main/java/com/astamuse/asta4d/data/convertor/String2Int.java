@@ -17,20 +17,25 @@
 
 package com.astamuse.asta4d.data.convertor;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Convert String to Integer
  * 
  * @author e-ryu
  * 
  */
-public class String2Int implements DataTypeConvertor<String, Integer> {
+public class String2Int implements DataValueConvertor<String, Integer> {
 
     @Override
-    public Integer convert(String s) {
+    public Integer convert(String s) throws UnsupportedValueException {
+        if (StringUtils.isEmpty(s)) {
+            return null;
+        }
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException nfe) {
-            return null;
+            throw new UnsupportedValueException();
         }
     }
 

@@ -53,7 +53,8 @@ public class InjectUtil {
 
     private static final String ContextDataSetSingletonMapKey = "ContextDataSetSingletonMapKey#" + InjectUtil.class.getName();
 
-    private static final String ContextDataNotFoundScope = "#ContextDataNotFoundScope";
+    public static final String ContextDataNotFoundScope = "#ContextDataNotFoundScope";
+    public static final String ContextDataTypeUnMatchScope = "#ContextDataTypeUnMatchScope";
 
     /**
      * A class that present the injectable target information
@@ -207,8 +208,8 @@ public class InjectUtil {
 
     private static void handleTypeUnMatch(Object instance, Field field, Method setter, Method method, int methodParameterIndex,
             TargetInfo target, ContextDataHolder valueHolder) throws DataOperationException {
-        if (valueHolder.getFoundOriginalData() != null && valueHolder.getValue() == null) {
-            // type unmatched
+        // type unmatched
+        if (ContextDataTypeUnMatchScope.equals(valueHolder.getScope())) {
             switch (target.typeUnMatch) {
             case EXCEPTION:
                 String msg = "Found data(%s) cannot be coverted from [%s] to [%s].";
@@ -532,7 +533,6 @@ public class InjectUtil {
                             valueHolder.getClass().getName() + ". You should define an extended class to return the type class");
                 }
                 foundData = findValueForTarget(target, searchType);
-
                 handleTypeUnMatch(method, i, target, foundData);
 
                 if (target.isContextDataHolder) {
