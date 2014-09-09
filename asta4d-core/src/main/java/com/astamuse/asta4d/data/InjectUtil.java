@@ -53,6 +53,8 @@ public class InjectUtil {
 
     private static final String ContextDataSetSingletonMapKey = "ContextDataSetSingletonMapKey#" + InjectUtil.class.getName();
 
+    private static final String ContextDataNotFoundScope = "#ContextDataNotFoundScope";
+
     /**
      * A class that present the injectable target information
      * 
@@ -263,7 +265,7 @@ public class InjectUtil {
 
             valueHolder = new ContextDataHolder(targetInfo.name, targetInfo.scope, value);
         } else if (valueHolder == null) {
-            valueHolder = new ContextDataHolder(targetInfo.name, "#DefaultValue", targetInfo.defaultValue);
+            valueHolder = new ContextDataHolder(targetInfo.name, ContextDataNotFoundScope, targetInfo.defaultValue);
         }
         return valueHolder;
 
