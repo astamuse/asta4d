@@ -389,6 +389,9 @@ public class RenderUtil {
         if (delayedElement == null) {
             apply(target, rendererList, renderAction, startIndex + 1, count);
         } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER && delayedElement instanceof Document) {
+                delayedElement = delayedElement.child(0);
+            }
             for (Transformer<?> transformer : transformerList) {
                 resultNode = transformer.invoke(delayedElement);
                 delayedElement.before(resultNode);
