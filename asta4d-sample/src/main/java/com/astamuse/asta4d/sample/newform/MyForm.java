@@ -1,7 +1,6 @@
 package com.astamuse.asta4d.sample.newform;
 
 import javax.validation.constraints.Max;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -59,12 +58,13 @@ public class MyForm {
 
     @InputBox
     @Max(23)
+    @NotEmpty
     private Integer age;
 
     @SelectBox(name = "bloodtype")
     private BloodType bloodType = BloodType.AB;
 
-    @NotNull
+    @NotEmpty
     @RadioBox
     private SEX sex;
 
