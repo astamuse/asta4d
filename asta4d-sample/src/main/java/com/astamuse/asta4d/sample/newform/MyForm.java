@@ -104,4 +104,12 @@ public class MyForm {
         this.sex = sex;
     }
 
+    public Language[] getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language[] language) {
+        this.language = language;
+    }
+
 }

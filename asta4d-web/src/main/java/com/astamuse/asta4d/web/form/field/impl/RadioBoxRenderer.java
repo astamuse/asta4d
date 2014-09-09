@@ -28,12 +28,8 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
         return renderer;
     }
 
-    @Override
-    public Renderer renderForDisplay(final String editTargetSelector, final String displayTargetSelector, final String nonNullString) {
-
+    protected Renderer retrieveAndCreateValueMap(final String editTargetSelector, final String displayTargetSelector) {
         Renderer render = Renderer.create();
-
-        // retrieve and create a value map here
         if (AdditionalDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
 
             final List<Pair<String, String>> inputList = new LinkedList<>();
@@ -68,6 +64,16 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
             AdditionalDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector, new OptionValueMap(optionList));
         }
+        return render;
+    }
+
+    @Override
+    public Renderer renderForDisplay(final String editTargetSelector, final String displayTargetSelector, final String nonNullString) {
+
+        Renderer render = Renderer.create();
+
+        // retrieve and create a value map here
+        render.add(retrieveAndCreateValueMap(editTargetSelector, displayTargetSelector));
 
         return render.add(super.renderForDisplay(editTargetSelector, displayTargetSelector, nonNullString));
     }
