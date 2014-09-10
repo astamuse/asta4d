@@ -2,11 +2,17 @@ package com.astamuse.asta4d.web.form.flow.classical;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
+import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 
 public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandler<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(MultiStepFormFlowHandler.class);
 
     private String templatePrefix;
 
@@ -29,8 +35,33 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
     }
 
     protected String createTemplateFilePathForStep(String step) {
+        if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(step)) {
+            step = firstStepName();
+        }
         return templatePrefix + step + ".html";
     }
+
+    protected String firstStepName() {
+        return ClassicalFormFlowConstant.STEP_INPUT;
+    }
+
+    @Override
+    protected CommonFormResult handle(String currentStep, T form) {
+        CommonFormResult result = super.handle(currentStep, form);
+        if (result == CommonFormResult.SUCCESS && isConfirmStep(currentStep)) {
+            try {
+                updateForm(form);
+                return CommonFormResult.SUCCESS;
+            } catch (Exception ex) {
+                logger.error("error occured on step:" + currentStep, ex);
+                return CommonFormResult.FAILED;
+            }
+        } else {
+            return result;
+        }
+    }
+
+    protected abstract void updateForm(T form);
 
     @SuppressWarnings("unchecked")
     @Override

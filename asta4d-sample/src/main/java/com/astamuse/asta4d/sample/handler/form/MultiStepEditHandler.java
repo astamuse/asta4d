@@ -1,16 +1,14 @@
-package com.astamuse.asta4d.sample.handler.form.onestep;
+package com.astamuse.asta4d.sample.handler.form;
 
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.web.annotation.QueryParam;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
-import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
+import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
-public class EditHandler extends OneStepFormHandler<PersonForm> {
+public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
 
     @ContextDataSet
     public static class ExtraInfo {
@@ -20,14 +18,14 @@ public class EditHandler extends OneStepFormHandler<PersonForm> {
         Integer id;
     }
 
-    public EditHandler() {
-        super(PersonForm.class);
+    public MultiStepEditHandler() {
+        super(PersonForm.class, "/templates/form/multistep/");
     }
 
     @RequestHandler
-    public CommonFormResult handle(ExtraInfo extra) throws Exception {
+    public String handle(ExtraInfo extra) throws Exception {
         saveExtraDataToContext(extra);
-        return super.handleWithCommonFormResult();
+        return super.handle();
     }
 
     @Override

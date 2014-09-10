@@ -21,6 +21,17 @@ function onestepmod(){
 	location.href="form/onestep/edit?action=edit&id="+getId();
 	
 }
+
+function mstepadd(){
+	location.href="form/multistep?action=add";
+	
+}
+
+function mstepmod(){
+	location.href="form/multistep?action=edit&id="+getId();
+	
+}
+
 </script>
 </head>
 <body onload="prettyPrint()">
@@ -47,7 +58,7 @@ function onestepmod(){
 	<input type=hidden id="checkedRowId">
 	<ul>
 	<li>one step: <input type=button value="add" onclick="onestepadd()"> <input type=button value="modify" onclick="onestepmod()">
-	<li>with confirm and complete<input type=button value="add"> <input type=button value="modify">
+	<li>with confirm and complete<input type=button value="add" onclick="mstepadd()"> <input type=button value="modify" onclick="mstepmod()">
 	<li>splitted input<input type=button value="add"> <input type=button value="modify">
 	</ul>
 	<input type=button value="delete">

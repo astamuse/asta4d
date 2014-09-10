@@ -29,4 +29,10 @@ public class MyFormHandler extends MultiStepFormFlowHandler<PersonForm> {
         return new PersonForm();
     }
 
+    @Override
+    protected void updateForm(PersonForm form) {
+        // TODO Auto-generated method stub
+
+    }
+
 }
