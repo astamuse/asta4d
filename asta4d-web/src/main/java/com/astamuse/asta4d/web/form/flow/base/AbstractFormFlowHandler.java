@@ -11,12 +11,9 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.ContextDataSetFactory;
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
-import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
@@ -38,7 +35,6 @@ public abstract class AbstractFormFlowHandler<T> {
 
     private Class<? extends FormProcessData> formProcessDataCls;
     private Class formCls;
-    private ContextDataSetFactory formFactory;
 
     public AbstractFormFlowHandler(Class<T> formCls) {
         this(formCls, SimpleFormProcessData.class);
@@ -47,18 +43,11 @@ public abstract class AbstractFormFlowHandler<T> {
     public AbstractFormFlowHandler(Class<T> formCls, Class<? extends FormProcessData> formProcessDataCls) {
         this.formCls = formCls;
         this.formProcessDataCls = formProcessDataCls;
-
-        ContextDataSet cds = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, formCls.getAnnotations());
-        try {
-            formFactory = cds.factory().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected abstract T createInitForm();
 
-    protected String handleWithRenderTargetResult() throws Exception {
+    protected String handleWithRenderTargetStep() throws Exception {
         return (String) handle(true);
     }
 
@@ -78,9 +67,13 @@ public abstract class AbstractFormFlowHandler<T> {
         Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, form);
     }
 
-    protected Object handle(boolean returnRenderTarget) throws Exception {
+    protected Object handle(boolean returnRenderTargetStep) throws Exception {
         FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(formProcessDataCls,
                 "not-exist-IntelligentFormProcessData", "");
+
+        if (processData.getStepExit() != null) {
+            return null;
+        }
 
         String currentStep = processData.getStepCurrent();
 
@@ -104,29 +97,29 @@ public abstract class AbstractFormFlowHandler<T> {
 
         traceMap.put(currentStep, form);
 
-        String renderTarget = null;
+        String renderTargetStep = null;
         CommonFormResult formResult = null;
 
         if (processData.getStepBack() != null) {
-            renderTarget = processData.getStepBack();
+            renderTargetStep = processData.getStepBack();
             traceMap.remove(currentStep);
-            passDataToSnippet(currentStep, renderTarget, traceMap, null);
+            passDataToSnippet(currentStep, renderTargetStep, traceMap, null);
         } else {
             if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
-                renderTarget = FormFlowConstants.FORM_STEP_INIT_STEP;
+                renderTargetStep = FormFlowConstants.FORM_STEP_INIT_STEP;
             } else {
                 formResult = handle(currentStep, form);
                 if (formResult == CommonFormResult.SUCCESS) {
-                    renderTarget = processData.getStepSuccess();
+                    renderTargetStep = processData.getStepSuccess();
                 } else {
-                    renderTarget = processData.getStepFailed();
+                    renderTargetStep = processData.getStepFailed();
                 }
             }
-            passDataToSnippet(currentStep, renderTarget, traceMap, formResult);
+            passDataToSnippet(currentStep, renderTargetStep, traceMap, formResult);
         }
 
-        if (returnRenderTarget) {
-            return renderTarget;
+        if (returnRenderTargetStep) {
+            return renderTargetStep;
         } else {
             return formResult;
         }

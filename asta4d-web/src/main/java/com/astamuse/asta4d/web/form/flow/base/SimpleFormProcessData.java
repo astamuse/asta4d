@@ -6,6 +6,9 @@ import com.astamuse.asta4d.web.annotation.QueryParam;
 @ContextDataSet
 public class SimpleFormProcessData implements FormProcessData {
 
+    @QueryParam(name = "step-exit")
+    private String stepExit;
+
     @QueryParam(name = "step-current")
     private String stepCurrent;
 
@@ -42,6 +45,11 @@ public class SimpleFormProcessData implements FormProcessData {
 
     public String getStepTraceData() {
         return stepTraceData;
+    }
+
+    @Override
+    public String getStepExit() {
+        return stepExit;
     }
 
 }

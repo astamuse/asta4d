@@ -26,7 +26,7 @@ public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
     @RequestHandler
     public CommonFormResult handle(ExtraInfo extra) throws Exception {
         saveExtraDataToContext(extra);
-        return super.handleWithCommonFormResult();
+        return super.handle();
     }
 
     @Override

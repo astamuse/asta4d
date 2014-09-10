@@ -15,9 +15,10 @@
 		<article>
 			<form method="post" afd:render="NewFormSnippet">
 				<afd:embed target="/templates/form/formContent.html" static></afd:embed>
-				<input type="hidden" name="step-current" value="edit">
-				<input type="hidden" name="step-failed" value="edit">
+				<input type="hidden" name="step-current" value="input">
+				<input type="hidden" name="step-failed" value="input">
 				<button type="submit" name="step-success" value="complete">save</button>
+				<button type="submit" name="step-exit" value="exit">cancel</button>
 			</form>
 		</article>
 	</section>

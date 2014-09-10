@@ -29,6 +29,11 @@ public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
     }
 
     @Override
+    protected boolean treatCompleteStepAsExit() {
+        return true;
+    }
+
+    @Override
     protected PersonForm createInitForm() {
         ExtraInfo extra = getExtraDataFromContext();
         switch (extra.action) {

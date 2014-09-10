@@ -5,7 +5,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
@@ -21,6 +20,8 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         this.templatePrefix = templatePrefix;
     }
 
+    protected abstract void updateForm(T form);
+
     protected boolean isConfirmStep(String step) {
         return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
     }
@@ -29,20 +30,28 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
     }
 
-    @RequestHandler
-    public String handle() throws Exception {
-        return createTemplateFilePathForStep(handleWithRenderTargetResult());
+    protected String firstStepName() {
+        return ClassicalFormFlowConstant.STEP_INPUT;
+    }
+
+    protected boolean treatCompleteStepAsExit() {
+        return false;
+    }
+
+    protected String handle() throws Exception {
+        return createTemplateFilePathForStep(handleWithRenderTargetStep());
     }
 
     protected String createTemplateFilePathForStep(String step) {
+        if (isCompleteStep(step) && treatCompleteStepAsExit()) {
+            return null;
+        }
+
         if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(step)) {
             step = firstStepName();
         }
-        return templatePrefix + step + ".html";
-    }
 
-    protected String firstStepName() {
-        return ClassicalFormFlowConstant.STEP_INPUT;
+        return templatePrefix + step + ".html";
     }
 
     @Override
@@ -61,8 +70,6 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         }
     }
 
-    protected abstract void updateForm(T form);
-
     @SuppressWarnings("unchecked")
     @Override
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
@@ -71,6 +78,10 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         } else {
             return super.retrieveFormInstance(traceMap, currentStep);
         }
+    }
+
+    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
+        return ClassicalFormFlowConstant.STEP_COMPLETE.equals(renderTargetStep) && treatCompleteStepAsExit();
     }
 
     @Override

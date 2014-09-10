@@ -14,6 +14,10 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
         super(formCls);
     }
 
+    protected CommonFormResult handle() throws Exception {
+        return handleWithCommonFormResult();
+    }
+
     @Override
     protected CommonFormResult handle(String currentStep, T form) {
         CommonFormResult result = super.handle(currentStep, form);
