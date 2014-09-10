@@ -34,6 +34,8 @@ public abstract class AbstractFormFlowHandler<T> {
 
     private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#IntelligentFormHandler";
 
+    private static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#IntelligentFormHandler";
+
     private Class<? extends FormProcessData> formProcessDataCls;
     private Class formCls;
     private ContextDataSetFactory formFactory;
@@ -54,9 +56,7 @@ public abstract class AbstractFormFlowHandler<T> {
         }
     }
 
-    protected void savePreDefinedForm(T form) {
-        Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, form);
-    }
+    protected abstract T createInitForm();
 
     protected String handleWithRenderTargetResult() throws Exception {
         return (String) handle(true);
@@ -64,6 +64,18 @@ public abstract class AbstractFormFlowHandler<T> {
 
     protected CommonFormResult handleWithCommonFormResult() throws Exception {
         return (CommonFormResult) handle(false);
+    }
+
+    protected <D> void saveExtraDataToContext(D actionInfo) {
+        Context.getCurrentThreadContext().setData(FORM_EXTRA_DATA, actionInfo);
+    }
+
+    protected <D> D getExtraDataFromContext() {
+        return Context.getCurrentThreadContext().getData(FORM_EXTRA_DATA);
+    }
+
+    private void savePreDefinedForm(T form) {
+        Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, form);
     }
 
     protected Object handle(boolean returnRenderTarget) throws Exception {
@@ -74,6 +86,7 @@ public abstract class AbstractFormFlowHandler<T> {
 
         if (currentStep == null) {// it means the first time access without existing input data
             currentStep = FormFlowConstants.FORM_STEP_INIT_STEP;
+            savePreDefinedForm(createInitForm());
         } else {
         }
 
@@ -121,11 +134,7 @@ public abstract class AbstractFormFlowHandler<T> {
 
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         try {
-            if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
-                return (T) formFactory.createInstance(formCls);
-            } else {
-                return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
-            }
+            return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
         } catch (DataOperationException e) {
             throw new RuntimeException(e);
         }

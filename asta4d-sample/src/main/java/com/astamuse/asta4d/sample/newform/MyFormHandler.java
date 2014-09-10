@@ -2,9 +2,9 @@ package com.astamuse.asta4d.sample.newform;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
-import com.astamuse.asta4d.web.form.flow.common.ClassicalFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 
-public class MyFormHandler extends ClassicalFormFlowHandler<PersonForm> {
+public class MyFormHandler extends MultiStepFormFlowHandler<PersonForm> {
     public MyFormHandler(Class<PersonForm> formCls, String templatePrefix) {
         super(formCls, templatePrefix);
     }
@@ -22,7 +22,11 @@ public class MyFormHandler extends ClassicalFormFlowHandler<PersonForm> {
         } else {
             return result;
         }
+    }
 
+    @Override
+    protected PersonForm createInitForm() {
+        return new PersonForm();
     }
 
 }

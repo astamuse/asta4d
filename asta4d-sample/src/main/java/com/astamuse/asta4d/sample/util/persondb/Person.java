@@ -1,5 +1,9 @@
 package com.astamuse.asta4d.sample.util.persondb;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.beanutils.BeanUtils;
+
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 
 public class Person extends PersonForm implements Cloneable {
@@ -37,4 +41,13 @@ public class Person extends PersonForm implements Cloneable {
         return (Person) super.clone();
     }
 
+    public static Person createByForm(PersonForm form) {
+        Person p = new Person();
+        try {
+            BeanUtils.copyProperties(p, form);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return p;
+    }
 }

@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.flow.common;
+package com.astamuse.asta4d.web.form.flow.classical;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowSnippet;
 
-public abstract class ClassicalFormFlowSnippet extends AbstractFormFlowSnippet {
+public abstract class MultiStepFormFlowSnippet extends AbstractFormFlowSnippet {
 
     protected static Set<String> NonEditSteps = new HashSet<>();
     static {

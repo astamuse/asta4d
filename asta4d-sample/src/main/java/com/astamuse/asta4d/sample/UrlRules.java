@@ -29,11 +29,13 @@ import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
+import com.astamuse.asta4d.sample.handler.form.onestep.EditHandler;
 import com.astamuse.asta4d.sample.newform.MyFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -95,6 +97,15 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
         
         rules.add("/app/form", "/templates/form/list.html");
+        rules.add(GET, "/app/form/onestep/edit")
+             .handler(EditHandler.class)
+             .forward("/templates/form/onestep/edit.html");
+             
+        rules.add(POST, "/app/form/onestep/edit")
+             .handler(EditHandler.class)
+             .forward(CommonFormResult.FAILED, "/templates/form/onestep/edit.html")
+             .redirect("/app/form");
+        
         rules.add(GET, "/app/form/onestep/edit", "/templates/form/list.html");
         
         

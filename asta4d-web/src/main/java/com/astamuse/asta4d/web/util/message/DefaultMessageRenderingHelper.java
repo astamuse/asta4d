@@ -107,29 +107,41 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         renderer.disableMissingSelectorWarning();
 
         for (final Entry<String, List<MessageHolder>> item : msgMap.entrySet()) {
-            renderer.add(item.getKey(), item.getValue(), new RowRenderer<MessageHolder>() {
-                @Override
-                public Renderer convert(int rowIndex, MessageHolder obj) {
-                    Renderer render = Renderer.create(obj.selector, obj.message);
-                    render.add(obj.selector, "-class", "x-msg-stub");
-                    return render;
-                }
-            });
-            renderer.add(new ElementNotFoundHandler(item.getKey()) {
-                @Override
-                public Renderer alternativeRenderer() {
-                    List<String> list;
-                    for (MessageHolder mh : item.getValue()) {
-                        list = alternativeMsgMap.get(mh.alternativeSelector);
-                        if (list == null) {
-                            list = new LinkedList<>();
-                            alternativeMsgMap.put(mh.alternativeSelector, list);
-                        }
-                        list.add(mh.message);
+            if (item.getKey() == null) {
+                List<String> list;
+                for (MessageHolder mh : item.getValue()) {
+                    list = alternativeMsgMap.get(mh.alternativeSelector);
+                    if (list == null) {
+                        list = new LinkedList<>();
+                        alternativeMsgMap.put(mh.alternativeSelector, list);
                     }
-                    return Renderer.create();
+                    list.add(mh.message);
                 }
-            });
+            } else {
+                renderer.add(item.getKey(), item.getValue(), new RowRenderer<MessageHolder>() {
+                    @Override
+                    public Renderer convert(int rowIndex, MessageHolder obj) {
+                        Renderer render = Renderer.create(obj.selector, obj.message);
+                        render.add(obj.selector, "-class", "x-msg-stub");
+                        return render;
+                    }
+                });
+                renderer.add(new ElementNotFoundHandler(item.getKey()) {
+                    @Override
+                    public Renderer alternativeRenderer() {
+                        List<String> list;
+                        for (MessageHolder mh : item.getValue()) {
+                            list = alternativeMsgMap.get(mh.alternativeSelector);
+                            if (list == null) {
+                                list = new LinkedList<>();
+                                alternativeMsgMap.put(mh.alternativeSelector, list);
+                            }
+                            list.add(mh.message);
+                        }
+                        return Renderer.create();
+                    }
+                });
+            }
         }// end for loop
 
         renderer.enableMissingSelectorWarning();

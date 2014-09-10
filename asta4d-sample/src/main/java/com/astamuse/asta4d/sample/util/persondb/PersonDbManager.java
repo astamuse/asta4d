@@ -11,14 +11,14 @@ import org.apache.commons.collections.Predicate;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 
-public class DbManager {
-    private static DbManager instance = new DbManager();
+public class PersonDbManager {
+    private static PersonDbManager instance = new PersonDbManager();
 
-    private DbManager() {
+    private PersonDbManager() {
         initPersonList();
     }
 
-    public static DbManager instance() {
+    public static PersonDbManager instance() {
         return instance;
     }
 
@@ -50,8 +50,22 @@ public class DbManager {
         }
     }
 
-    public synchronized List<Person> getAll() {
+    public synchronized List<Person> findAll() {
         return new ArrayList<>(personList);
+    }
+
+    public synchronized Person find(final int id) {
+        Person p = (Person) CollectionUtils.find(personList, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return ((Person) object).getId() == id;
+            }
+        });
+        try {
+            return p.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public synchronized void add(Person person) {
@@ -76,12 +90,7 @@ public class DbManager {
     }
 
     public synchronized void remove(final Person person) {
-        Person existingPerson = (Person) CollectionUtils.find(personList, new Predicate() {
-            @Override
-            public boolean evaluate(Object object) {
-                return ((Person) object).getId() == person.getId();
-            }
-        });
+        Person existingPerson = find(person.getId());
         if (existingPerson == null) {
             throw new IllegalArgumentException("person does not exist");
         }

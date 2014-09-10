@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.form.flow.common;
+package com.astamuse.asta4d.web.form.flow.classical;
 
 import java.util.Map;
 
@@ -6,11 +6,11 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 
-public abstract class ClassicalFormFlowHandler<T> extends AbstractFormFlowHandler<T> {
+public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandler<T> {
 
     private String templatePrefix;
 
-    public ClassicalFormFlowHandler(Class<T> formCls, String templatePrefix) {
+    public MultiStepFormFlowHandler(Class<T> formCls, String templatePrefix) {
         super(formCls);
         this.templatePrefix = templatePrefix;
     }

@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.sample.util.persondb.DbManager;
+import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 
 public class ListSnippet {
 
     public Renderer render() {
-        List<Person> personList = DbManager.instance().getAll();
+        List<Person> personList = PersonDbManager.instance().findAll();
         return Renderer.create(".x-row", personList, new RowRenderer<Person>() {
             @Override
             public Renderer convert(int rowIndex, Person row) {
