@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package com.astamuse.asta4d.sample.snippet;
+package com.astamuse.asta4d.sample.snippet.form;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +29,7 @@ import com.astamuse.asta4d.web.form.field.impl.RadioBoxAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectBoxAdditionalRenderer;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
 
-public class NewFormSnippet extends MultiStepFormFlowSnippet {
+public class MultiStepFormSnippet extends MultiStepFormFlowSnippet {
     @Override
     protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
         List<FormFieldAdditionalRenderer> list = new LinkedList<>();
