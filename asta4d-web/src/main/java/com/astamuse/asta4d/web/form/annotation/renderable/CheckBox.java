@@ -11,7 +11,7 @@ import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.field.impl.CheckBoxRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @ConvertableAnnotation(CheckBoxAnnotationConvertor.class)
 public @interface CheckBox {
     String name() default "";

@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.web.form.validation;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,19 +7,33 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.data.ContextDataHolder;
+import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectTrace;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 
 public class TypeUnMatchValidator implements FormValidator {
 
     @Override
     public List<FormValidationMessage> validate(Object form) {
-        List<Field> fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
+        List<AnnotatedPropertyInfo<FormField>> fieldList;
+        try {
+            fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
+        } catch (DataOperationException e) {
+            throw new RuntimeException(e);
+        }
         List<FormValidationMessage> msgList = new LinkedList<>();
-        for (Field field : fieldList) {
-            ContextDataHolder valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field);
+        for (AnnotatedPropertyInfo<FormField> field : fieldList) {
+
+            ContextDataHolder valueHolder;
+            if (field.getField() != null) {
+                valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field.getField());
+            } else {
+                valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field.getSetter());
+            }
             if (valueHolder != null) {
                 msgList.add(createTypeUnMatchMessage(field, valueHolder));
             }
@@ -28,7 +41,7 @@ public class TypeUnMatchValidator implements FormValidator {
         return msgList;
     }
 
-    protected FormValidationMessage createTypeUnMatchMessage(Field field, ContextDataHolder valueHolder) {
+    protected FormValidationMessage createTypeUnMatchMessage(AnnotatedPropertyInfo<FormField> field, ContextDataHolder valueHolder) {
         String msgTemplate = retrieveTypeUnMatchMessageTemplate();
         String fieldName = retrieveFieldName(field);
         String targetTypeName = retrieveTargetTypeName(field.getType());
@@ -42,7 +55,7 @@ public class TypeUnMatchValidator implements FormValidator {
         return "%s is expecting %s but value[%s] found.";
     }
 
-    protected String retrieveFieldName(Field field) {
+    protected String retrieveFieldName(AnnotatedPropertyInfo<FormField> field) {
         return field.getName();
     }
 

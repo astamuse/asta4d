@@ -43,9 +43,9 @@ public class PersonDbManager {
             p.setId((Integer) d[idx++]);
             p.setName((String) d[idx++]);
             p.setAge((Integer) d[idx++]);
-            p.setSex((PersonForm.SEX) d[idx++]);
-            p.setBloodType((PersonForm.BloodType) d[idx++]);
-            p.setLanguage((PersonForm.Language[]) d[idx++]);
+            p.setSex((Person.SEX) d[idx++]);
+            p.setBloodType((Person.BloodType) d[idx++]);
+            p.setLanguage((Person.Language[]) d[idx++]);
             personList.add(p);
         }
     }

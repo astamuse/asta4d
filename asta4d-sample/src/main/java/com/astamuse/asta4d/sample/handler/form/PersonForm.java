@@ -1,116 +1,89 @@
 package com.astamuse.asta4d.sample.handler.form;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.CheckBox;
 import com.astamuse.asta4d.web.form.annotation.renderable.InputBox;
 import com.astamuse.asta4d.web.form.annotation.renderable.RadioBox;
 import com.astamuse.asta4d.web.form.annotation.renderable.SelectBox;
-import com.astamuse.asta4d.web.form.field.OptionValueMap;
-import com.astamuse.asta4d.web.form.field.OptionValuePair;
 
 @Form
-public class PersonForm {
+public class PersonForm extends Person {
 
-    public static enum BloodType {
-        A, B, O, AB;
-
-        public static final OptionValueMap asOptionValueMap = OptionValueMap.build(BloodType.values(),
-                new RowConvertor<BloodType, OptionValuePair>() {
-                    @Override
-                    public OptionValuePair convert(int rowIndex, BloodType obj) {
-                        return new OptionValuePair(obj.name(), obj.name());
-                    }
-                });
+    public static PersonForm buildFromPerson(Person p) {
+        PersonForm form = new PersonForm();
+        try {
+            BeanUtils.copyProperties(form, p);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return form;
     }
 
-    public static enum SEX {
-        Male, Female;
+    private String action;
 
-        public static final OptionValueMap asOptionValueMap = OptionValueMap.build(SEX.values(), new RowConvertor<SEX, OptionValuePair>() {
-            @Override
-            public OptionValuePair convert(int rowIndex, SEX obj) {
-                return new OptionValuePair(obj.name(), obj.name());
-            }
-        });
+    public String getAction() {
+        return action;
     }
 
-    public static enum Language {
-        English, Japanese, Chinese;
-
-        public static final OptionValueMap asOptionValueMap = OptionValueMap.build(Language.values(),
-                new RowConvertor<Language, OptionValuePair>() {
-                    @Override
-                    public OptionValuePair convert(int rowIndex, Language obj) {
-                        return new OptionValuePair(obj.name(), obj.name());
-                    }
-                });
+    @Override
+    @InputBox(name = "data_id")
+    public int getId() {
+        return super.getId();
     }
 
-    @InputBox
+    @Override
     @NotBlank
-    private String name;
-
     @InputBox
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
     @Max(23)
     @NotNull
-    private Integer age;
+    @InputBox
+    public Integer getAge() {
+        return super.getAge();
+    }
 
+    @Override
+    @NotNull
     @SelectBox(name = "bloodtype")
-    private BloodType bloodType = BloodType.AB;
+    public BloodType getBloodType() {
+        return super.getBloodType();
+    }
 
+    @Override
     @NotNull
     @RadioBox
-    private SEX sex;
+    public SEX getSex() {
+        return super.getSex();
+    }
 
+    @Override
     @NotEmpty
     @CheckBox
-    private Language[] language;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public BloodType getBloodType() {
-        return bloodType;
-    }
-
-    public void setBloodType(BloodType bloodType) {
-        this.bloodType = bloodType;
-    }
-
-    public SEX getSex() {
-        return sex;
-    }
-
-    public void setSex(SEX sex) {
-        this.sex = sex;
-    }
-
     public Language[] getLanguage() {
-        return language;
+        return super.getLanguage();
     }
 
-    public void setLanguage(Language[] language) {
-        this.language = language;
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
     }
 
 }

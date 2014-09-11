@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.web.form.field.impl;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,10 +36,6 @@ public class RadioBoxAdditionalRenderer extends SimpleFormFieldAdditionalRendere
 
     private String targetInputElementIdReferenceAttr = null;
     private OptionValueMap optionMap = null;
-
-    public RadioBoxAdditionalRenderer(Field field) {
-        super(field);
-    }
 
     public RadioBoxAdditionalRenderer(Class cls, String fieldName) {
         super(cls, fieldName);

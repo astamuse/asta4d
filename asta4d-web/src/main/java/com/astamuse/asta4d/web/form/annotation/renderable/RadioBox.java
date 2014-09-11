@@ -11,7 +11,7 @@ import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioBoxRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @ConvertableAnnotation(RadioBoxAnnotationConvertor.class)
 public @interface RadioBox {
     String name() default "";

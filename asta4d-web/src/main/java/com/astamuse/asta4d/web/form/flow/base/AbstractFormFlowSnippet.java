@@ -1,13 +1,11 @@
 package com.astamuse.asta4d.web.form.flow.base;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
@@ -20,7 +18,7 @@ import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.InitializableSnippet;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
-import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
@@ -35,7 +33,7 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         FormFieldValueRenderer valueRenderer;
     }
 
-    private static final Map<Field, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
+    private static final Map<AnnotatedPropertyInfo<FormField>, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
 
     public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#IntelligentFormSnippetBase";
 
@@ -55,21 +53,15 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         InjectTrace.restoreTraceList(list);
     }
 
-    private FieldRenderingInfo getRenderingInfo(Field f) {
+    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo<FormField> f) {
         FieldRenderingInfo info = FieldRenderingInfoMap.get(f);
         if (info == null) {
 
-            FormField ffAnno = ConvertableAnnotationRetriever.retrieveAnnotation(FormField.class, f.getAnnotations());
-            if (ffAnno == null) {
-                throw new RuntimeException(f + " is not annotated by @FormField");
-            }
-
             info = new FieldRenderingInfo();
 
-            String fieldName = ffAnno.name();
-            if (StringUtils.isEmpty(fieldName)) {
-                fieldName = f.getName();
-            }
+            FormField ffAnno = f.getAnnotation();
+
+            String fieldName = f.getName();
 
             String editSelector = ffAnno.editSelector();
             if (StringUtils.isEmpty(editSelector)) {
@@ -130,15 +122,22 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
             render.add(formFieldAdditionalRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
-        List<Field> fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
+        List<AnnotatedPropertyInfo<FormField>> fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
 
-        for (Field field : fieldList) {
-            Object v = FieldUtils.readField(field, form, true);
+        for (AnnotatedPropertyInfo<FormField> field : fieldList) {
+            Object v = field.retrieveValue(form);
 
             // TODO wrong rendering for null
             if (v == null) {
                 @SuppressWarnings("rawtypes")
-                ContextDataHolder valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field);
+                ContextDataHolder valueHolder;
+
+                if (field.getField() != null) {
+                    valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field.getField());
+                } else {
+                    valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field.getSetter());
+                }
+
                 if (valueHolder != null) {
                     v = valueHolder.getFoundOriginalData();
                 }

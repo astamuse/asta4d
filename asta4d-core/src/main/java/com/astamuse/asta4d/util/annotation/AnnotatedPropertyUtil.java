@@ -18,6 +18,8 @@ public class AnnotatedPropertyUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(AnnotatedPropertyUtil.class);
 
+    // TODO allow method property to override field property to avoid duplicated properties
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <A extends Annotation> List<AnnotatedPropertyInfo<A>> retrieveProperties(Class cls, Class<A> annotationCls)
             throws DataOperationException {
@@ -37,6 +39,7 @@ public class AnnotatedPropertyUtil {
                 info.setField(f);
                 info.setGetter(null);
                 info.setSetter(null);
+                info.setType(f.getType());
                 infoList.add(info);
             }
         }
@@ -99,9 +102,13 @@ public class AnnotatedPropertyUtil {
                 }
                 info.setGetter(getter);
             }
+
+            info.setType(info.getGetter().getReturnType());
+
             infoList.add(info);
         }
 
         return infoList;
     }
+
 }

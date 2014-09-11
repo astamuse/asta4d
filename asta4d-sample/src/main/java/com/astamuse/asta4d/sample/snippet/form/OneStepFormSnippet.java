@@ -20,9 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
-import com.astamuse.asta4d.sample.handler.form.PersonForm.BloodType;
-import com.astamuse.asta4d.sample.handler.form.PersonForm.Language;
-import com.astamuse.asta4d.sample.handler.form.PersonForm.SEX;
+import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
+import com.astamuse.asta4d.sample.util.persondb.Person.Language;
+import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
 import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.CheckBoxAdditionalRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioBoxAdditionalRenderer;

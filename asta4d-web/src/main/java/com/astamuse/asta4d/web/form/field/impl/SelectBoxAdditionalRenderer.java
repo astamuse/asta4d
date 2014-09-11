@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.web.form.field.impl;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,10 +29,6 @@ public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRender
     private List<OptGroup> optGroupList = new LinkedList<>();
 
     private OptionValueMap optionMap;
-
-    public SelectBoxAdditionalRenderer(Field field) {
-        super(field);
-    }
 
     public SelectBoxAdditionalRenderer(Class cls, String fieldName) {
         super(cls, fieldName);

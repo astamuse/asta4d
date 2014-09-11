@@ -11,7 +11,7 @@ import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.field.impl.InputBoxRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @ConvertableAnnotation(InputBoxAnnotationConvertor.class)
 public @interface InputBox {
     String name() default "";

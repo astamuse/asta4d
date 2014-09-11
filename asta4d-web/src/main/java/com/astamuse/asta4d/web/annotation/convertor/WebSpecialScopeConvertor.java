@@ -62,11 +62,6 @@ public class WebSpecialScopeConvertor implements AnnotationConvertor<Annotation,
             }
 
             @Override
-            public boolean reverse() {
-                return false;
-            }
-
-            @Override
             public String name() {
                 return name;
             }

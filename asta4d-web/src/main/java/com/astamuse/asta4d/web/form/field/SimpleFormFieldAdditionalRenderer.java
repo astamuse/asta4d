@@ -1,24 +1,22 @@
 package com.astamuse.asta4d.web.form.field;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.util.ClassUtil;
-import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 
 public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldAdditionalRenderer {
 
-    private static final Map<String, Field> FieldCacheMap = new ConcurrentHashMap<>();
+    private static final Map<String, AnnotatedPropertyInfo<FormField>> FieldCacheMap = new ConcurrentHashMap<>();
 
-    private Field field;
+    private AnnotatedPropertyInfo<FormField> field;
 
-    public SimpleFormFieldAdditionalRenderer(Field field) {
+    public SimpleFormFieldAdditionalRenderer(AnnotatedPropertyInfo<FormField> field) {
         this.field = field;
     }
 
@@ -26,25 +24,27 @@ public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldAddi
         this(retrieveField(cls, fieldName));
     }
 
-    private static final Field retrieveField(Class cls, String fieldName) {
+    private static final AnnotatedPropertyInfo<FormField> retrieveField(Class cls, String fieldName) {
         String cacheKey = cls.getName() + ":" + fieldName;
-        Field field = FieldCacheMap.get(cacheKey);
+        AnnotatedPropertyInfo<FormField> field = FieldCacheMap.get(cacheKey);
         if (field == null) {
-            List<Field> list = new ArrayList<>(ClassUtil.retrieveAllFieldsIncludeAllSuperClasses(cls));
-            for (Field f : list) {
-                FormField ffAnno = ConvertableAnnotationRetriever.retrieveAnnotation(FormField.class, f.getAnnotations());
-                if (ffAnno == null) {
-                    continue;
-                } else if (f.getName().equals(fieldName)) {
-                    field = f;
+            List<AnnotatedPropertyInfo<FormField>> list;
+            try {
+                list = FormFieldUtil.retrieveFormFields(cls);
+            } catch (DataOperationException e) {
+                throw new RuntimeException(e);
+            }
+            for (AnnotatedPropertyInfo<FormField> p : list) {
+                if (fieldName.equals(p.getName())) {
+                    field = p;
                     break;
-                } else if (ffAnno.name().equals(fieldName)) {
-                    field = f;
+                } else if (p.getField() != null && p.getField().getName().equals(fieldName)) {
+                    field = p;
                     break;
                 }
             }
             if (field == null) {
-                throw new RuntimeException("Could not find a field named or annotated with name [" + fieldName + "]");
+                throw new RuntimeException("Could not find a form field named or annotated with name [" + fieldName + "]");
             }
             if (Configuration.getConfiguration().isCacheEnable()) {
                 FieldCacheMap.put(cacheKey, field);
@@ -54,7 +54,7 @@ public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldAddi
     }
 
     @Override
-    public Field targetField() {
+    public AnnotatedPropertyInfo<FormField> targetField() {
         return field;
     }
 

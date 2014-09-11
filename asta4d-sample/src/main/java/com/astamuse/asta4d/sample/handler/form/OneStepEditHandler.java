@@ -36,7 +36,7 @@ public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
         case "add":
             return new PersonForm();
         case "edit":
-            return PersonDbManager.instance().find(extra.id);
+            return PersonForm.buildFromPerson(PersonDbManager.instance().find(extra.id));
         }
         return null;
     }
