@@ -104,7 +104,7 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
 
     protected Renderer addAlternativeDom(final String editTargetSelector, final String nonNullString) {
         Renderer renderer = Renderer.create();
-        renderer.addDebugger("before alternative display for " + editTargetSelector);
+        // renderer.addDebugger("before alternative display for " + editTargetSelector);
         renderer.add(new Renderer(editTargetSelector, new ElementTransformer(null) {
             @Override
             public Element invoke(Element elem) {
@@ -121,7 +121,7 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
             }
 
         }));
-        renderer.addDebugger("after alternative display for " + editTargetSelector);
+        // renderer.addDebugger("after alternative display for " + editTargetSelector);
         return renderer;
     }
 

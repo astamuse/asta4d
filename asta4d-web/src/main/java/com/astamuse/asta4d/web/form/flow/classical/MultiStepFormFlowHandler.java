@@ -5,6 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
@@ -38,7 +39,8 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return false;
     }
 
-    protected String handle() throws Exception {
+    @RequestHandler
+    public String handle() throws Exception {
         return createTemplateFilePathForStep(handleWithRenderTargetStep());
     }
 

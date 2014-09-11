@@ -50,7 +50,7 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
                     for (Pair<String, String> input : inputList) {
                         String id = input.getLeft();
                         final String value = input.getRight();
-                        render.add(SelectorUtil.attr(RadioBoxAdditionalRenderer.LABEL_REF_ATTR, id),
+                        render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, id),
                                 Renderer.create("label", new ElementSetter() {
                                     @Override
                                     public void set(Element elem) {
@@ -112,7 +112,7 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
             public Renderer render() {
                 Renderer renderer = Renderer.create();
                 for (String inputId : unMatchedIdList) {
-                    renderer.add(hideTarget(SelectorUtil.attr(RadioBoxAdditionalRenderer.LABEL_REF_ATTR, inputId)));
+                    renderer.add(hideTarget(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, inputId)));
                 }
                 if (matchedIdList.isEmpty()) {
                     renderer.add(superAddAlternativeDom(editTargetSelector, nonNullString));

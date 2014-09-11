@@ -102,6 +102,7 @@ public class FormFieldUtil {
 
     private static final Map<String, List<AnnotatedPropertyInfo<FormField>>> FieldsMap = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("rawtypes")
     public static final List<AnnotatedPropertyInfo<FormField>> retrieveFormFields(Class formCls) throws DataOperationException {
         List<AnnotatedPropertyInfo<FormField>> list = FieldsMap.get(formCls.getName());
         if (list == null) {

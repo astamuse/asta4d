@@ -6,19 +6,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
-import com.astamuse.asta4d.web.form.annotation.renderable.convert.InputBoxAnnotationConvertor;
+import com.astamuse.asta4d.web.form.annotation.renderable.convert.CommonInputAnnotationConvertor;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
-import com.astamuse.asta4d.web.form.field.impl.InputBoxRenderer;
+import com.astamuse.asta4d.web.form.field.impl.InputHiddenRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-@ConvertableAnnotation(InputBoxAnnotationConvertor.class)
-public @interface InputBox {
+@ConvertableAnnotation(CommonInputAnnotationConvertor.class)
+public @interface InputHidden {
+
     String name() default "";
 
     String editSelector() default "";
 
     String displaySelector() default "";
 
-    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default InputBoxRenderer.class;
+    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default InputHiddenRenderer.class;
 }

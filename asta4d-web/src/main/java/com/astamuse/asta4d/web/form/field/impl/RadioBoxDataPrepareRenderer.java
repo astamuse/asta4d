@@ -23,7 +23,7 @@ import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldAdditionalRenderer;
 
-public class RadioBoxAdditionalRenderer extends SimpleFormFieldAdditionalRenderer {
+public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRenderer {
 
     public static final String LABEL_REF_ATTR = Configuration.getConfiguration().getTagNameSpace() + ":" + "label-ref-for-inputbox-id";
 
@@ -37,16 +37,16 @@ public class RadioBoxAdditionalRenderer extends SimpleFormFieldAdditionalRendere
     private String targetInputElementIdReferenceAttr = null;
     private OptionValueMap optionMap = null;
 
-    public RadioBoxAdditionalRenderer(Class cls, String fieldName) {
+    public RadioBoxDataPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
-    public RadioBoxAdditionalRenderer setOptionData(OptionValueMap optionMap) {
+    public RadioBoxDataPrepareRenderer setOptionData(OptionValueMap optionMap) {
         this.optionMap = optionMap;
         return this;
     }
 
-    public RadioBoxAdditionalRenderer setTargetInputElementIdReferenceAttr(String attrName) {
+    public RadioBoxDataPrepareRenderer setTargetInputElementIdReferenceAttr(String attrName) {
         this.targetInputElementIdReferenceAttr = attrName;
         return this;
     }

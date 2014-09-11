@@ -12,7 +12,7 @@ import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldAdditionalRenderer;
 
-public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRenderer {
+public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRenderer {
 
     private static class OptGroup {
 
@@ -30,11 +30,11 @@ public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRender
 
     private OptionValueMap optionMap;
 
-    public SelectBoxAdditionalRenderer(Class cls, String fieldName) {
+    public SelectBoxDataPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
-    public SelectBoxAdditionalRenderer setOptionData(OptionValueMap optionMap) {
+    public SelectBoxDataPrepareRenderer setOptionData(OptionValueMap optionMap) {
         if (CollectionUtils.isNotEmpty(optGroupList)) {
             throw new RuntimeException("Option list without group is not allowed because there are existing option groups");
         }
@@ -42,7 +42,7 @@ public class SelectBoxAdditionalRenderer extends SimpleFormFieldAdditionalRender
         return this;
     }
 
-    public SelectBoxAdditionalRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
+    public SelectBoxDataPrepareRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
         if (optionMap != null) {
             throw new RuntimeException("Option list group is not allowed because there are existing option list without group");
         }

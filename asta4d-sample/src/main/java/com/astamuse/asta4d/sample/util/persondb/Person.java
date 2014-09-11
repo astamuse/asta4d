@@ -56,6 +56,8 @@ public class Person implements Cloneable {
 
     private Language[] language;
 
+    private String memo;
+
     public String getName() {
         return name;
     }
@@ -104,6 +106,14 @@ public class Person implements Cloneable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 
     @Override

@@ -12,9 +12,11 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.CheckBox;
-import com.astamuse.asta4d.web.form.annotation.renderable.InputBox;
+import com.astamuse.asta4d.web.form.annotation.renderable.Input;
+import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
 import com.astamuse.asta4d.web.form.annotation.renderable.RadioBox;
 import com.astamuse.asta4d.web.form.annotation.renderable.SelectBox;
+import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
 
 @Form
 public class PersonForm extends Person {
@@ -31,19 +33,20 @@ public class PersonForm extends Person {
 
     private String action;
 
+    @InputHidden
     public String getAction() {
         return action;
     }
 
     @Override
-    @InputBox(name = "data_id")
+    @InputHidden(name = "data_id")
     public int getId() {
         return super.getId();
     }
 
     @Override
     @NotBlank
-    @InputBox
+    @Input
     public String getName() {
         return super.getName();
     }
@@ -51,7 +54,7 @@ public class PersonForm extends Person {
     @Override
     @Max(23)
     @NotNull
-    @InputBox
+    @Input
     public Integer getAge() {
         return super.getAge();
     }
@@ -75,6 +78,12 @@ public class PersonForm extends Person {
     @CheckBox
     public Language[] getLanguage() {
         return super.getLanguage();
+    }
+
+    @Override
+    @Textarea
+    public String getMemo() {
+        return super.getMemo();
     }
 
     public void setAction(String action) {

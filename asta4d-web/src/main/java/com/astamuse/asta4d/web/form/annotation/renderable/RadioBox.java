@@ -6,13 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
-import com.astamuse.asta4d.web.form.annotation.renderable.convert.RadioBoxAnnotationConvertor;
+import com.astamuse.asta4d.web.form.annotation.renderable.convert.CommonInputAnnotationConvertor;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioBoxRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-@ConvertableAnnotation(RadioBoxAnnotationConvertor.class)
+@ConvertableAnnotation(CommonInputAnnotationConvertor.class)
 public @interface RadioBox {
     String name() default "";
 

@@ -130,7 +130,7 @@ public class CheckBoxRenderer extends RadioBoxRenderer {
             public Renderer render() {
                 Renderer renderer = Renderer.create();
                 for (String inputId : unMatchedIdList) {
-                    renderer.add(hideTarget(SelectorUtil.attr(RadioBoxAdditionalRenderer.LABEL_REF_ATTR, inputId)));
+                    renderer.add(hideTarget(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, inputId)));
                 }
                 if (matchedIdList.isEmpty()) {
                     renderer.add(addDefaultAlternativeDom(editTargetSelector, valueList));

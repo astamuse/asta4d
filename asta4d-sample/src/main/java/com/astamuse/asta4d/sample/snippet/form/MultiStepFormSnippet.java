@@ -24,18 +24,18 @@ import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
 import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
 import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
-import com.astamuse.asta4d.web.form.field.impl.CheckBoxAdditionalRenderer;
-import com.astamuse.asta4d.web.form.field.impl.RadioBoxAdditionalRenderer;
-import com.astamuse.asta4d.web.form.field.impl.SelectBoxAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.impl.CheckBoxDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.impl.RadioBoxDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.impl.SelectBoxDataPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
 
 public class MultiStepFormSnippet extends MultiStepFormFlowSnippet {
     @Override
     protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
         List<FormFieldAdditionalRenderer> list = new LinkedList<>();
-        list.add(new SelectBoxAdditionalRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
-        list.add(new RadioBoxAdditionalRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
-        list.add(new CheckBoxAdditionalRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
+        list.add(new SelectBoxDataPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
+        list.add(new RadioBoxDataPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
+        list.add(new CheckBoxDataPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
         return list;
     }
 }

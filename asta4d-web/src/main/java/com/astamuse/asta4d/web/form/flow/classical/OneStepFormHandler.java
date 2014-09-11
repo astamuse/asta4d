@@ -3,6 +3,7 @@ package com.astamuse.asta4d.web.form.flow.classical;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 
@@ -14,7 +15,8 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
         super(formCls);
     }
 
-    protected CommonFormResult handle() throws Exception {
+    @RequestHandler
+    public CommonFormResult handle() throws Exception {
         return handleWithCommonFormResult();
     }
 
