@@ -61,7 +61,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
         // create wrapper for input element
         final WrapperIdHolder wrapperIdHolder = new WrapperIdHolder();
 
-        renderer.addDebugger("before wrapping");
+        // renderer.addDebugger("before wrapping");
 
         renderer.add(new Renderer(editSelector, new ElementTransformer(null) {
             @Override
@@ -100,7 +100,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
             }
         }));
 
-        renderer.addDebugger("before collecting relocating");
+        // renderer.addDebugger("before collecting relocating");
 
         renderer.add(":root", new Renderable() {
             @Override
@@ -123,7 +123,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
             }
         });
 
-        renderer.addDebugger("before relocating");
+        // renderer.addDebugger("before relocating");
         renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
@@ -156,7 +156,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
         // here we finished restructure the input element and its related label element and then we begin to manufacture all the input/label
         // pairs for option list
 
-        renderer.addDebugger("before rendering value");
+        // renderer.addDebugger("before rendering value");
         renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
@@ -183,7 +183,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
             }
         });
 
-        renderer.addDebugger("after rendering value");
+        // /renderer.addDebugger("after rendering value");
 
         // even we cheated the rendering engine, we should set the type of group node created to faked for fast clean up
         renderer.add(":root", new Renderable() {
@@ -203,7 +203,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
             }
         });
 
-        renderer.addDebugger("after uncheating");
+        // renderer.addDebugger("after uncheating");
 
         AdditionalDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
 

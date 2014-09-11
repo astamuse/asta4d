@@ -1,5 +1,6 @@
 package com.astamuse.asta4d.web.form.flow.base;
 
+import java.lang.reflect.Array;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
                 }
 
                 if (valueHolder != null) {
-                    v = valueHolder.getFoundOriginalData();
+                    v = convertRawTraceDataToRenderingData(field.getName(), field.getType(), valueHolder.getFoundOriginalData());
                 }
             }
 
@@ -175,6 +176,20 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
      */
     protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
         return new LinkedList<>();
+    }
+
+    protected Object convertRawTraceDataToRenderingData(String fieldName, Class fieldDataType, Object rawTraceData) {
+        if (fieldDataType.isArray() && rawTraceData.getClass().isArray()) {
+            return rawTraceData;
+        } else if (rawTraceData.getClass().isArray()) {// but field data type is not array
+            if (Array.getLength(rawTraceData) > 0) {
+                return Array.get(rawTraceData, 0);
+            } else {
+                return null;
+            }
+        } else {
+            return rawTraceData;
+        }
     }
 
 }

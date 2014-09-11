@@ -138,4 +138,9 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "AnnotatedPropertyInfo [name=" + name + "]";
+    }
+
 }
