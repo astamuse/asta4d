@@ -159,17 +159,6 @@ public class InjectTest extends BaseTest {
 
     }
 
-    public static class ReverseRenderFirst {
-
-        @ContextData(scope = ReverseInjectableScope, reverse = true)
-        private String reverseValue;
-
-        public Renderer render() {
-            reverseValue = "set by frist";
-            return new GoThroughRenderer();
-        }
-    }
-
     public static class ReverseRenderSecond {
 
         @ContextData(scope = ReverseInjectableScope)
@@ -251,7 +240,4 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testInstanceTypeConvertor.html");
     }
 
-    public void testReverseInjection() {
-        new SimpleCase("Inject_testReverseInjection.html");
-    }
 }

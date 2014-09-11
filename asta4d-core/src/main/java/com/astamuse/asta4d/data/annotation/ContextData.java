@@ -47,16 +47,6 @@ public @interface ContextData {
     String scope() default "";
 
     /**
-     * It is only valid on field or getter method, if it is set to true, when a snippet execution finished, the current value of the field
-     * will be reversely injected to Context.
-     * 
-     * This specification is not necessary and it also complicate the variable injection mechanism. It should be removed at sometime.
-     * 
-     */
-    @Deprecated
-    boolean reverse() default false;
-
-    /**
      * the policy of how to handle the unmatched type on data conversion.
      * 
      */

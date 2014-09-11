@@ -35,7 +35,8 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.util.Asta4DWarningException;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.Paranamer;
@@ -324,179 +325,62 @@ public class InjectUtil {
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();
 
-        ContextData cd;
+        List<AnnotatedPropertyInfo<ContextData>> propertyList = AnnotatedPropertyUtil.retrieveProperties(cls, ContextData.class);
 
-        // at first, retrieve methods information
+        for (AnnotatedPropertyInfo<ContextData> prop : propertyList) {
+            ContextData cd = prop.getAnnotation();
+            String name = cd.name();
+            if (StringUtils.isEmpty(name)) {
+                name = prop.getName();
+            }
 
-        // TODO we should use class name to confirm contextdata annotation
-        // because they are possibly from different class loader. The problem is
-        // whether it is a problem?
-        Method[] mtds = cls.getMethods();
-        for (Method method : mtds) {
-            cd = ConvertableAnnotationRetriever.retrieveAnnotation(ContextData.class, method.getAnnotations());
-            if (cd != null) {
-                // cd = method.getAnnotation(ContextData.class);
+            if (prop.getField() != null) {
+                Field field = prop.getField();
+                FieldInfo fi = new FieldInfo();
+                fi.name = name;
+                fi.field = field;
+                fi.type = field.getType();
+                fi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(fi.type);
+
+                fi.scope = cd.scope();
+                fi.typeUnMatch = cd.typeUnMatch();
+                fi.fixForPrimitiveType();
+
+                ContextDataSet cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, fi.type.getAnnotations());
+                if (cdSet == null) {
+                    fi.contextDataSetFactory = null;
+                } else {
+                    fi.contextDataSetFactory = cdSet.factory().newInstance();
+                    fi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
+                }
+
+                target.setFieldList.add(fi);
+
+            } else {// for method
                 MethodInfo mi = new MethodInfo();
-
-                mi.method = method;
-
-                boolean isGet = false;
-                boolean isSet = false;
-                String declaredName = cd.name();
-                String propertySuffixe = method.getName();
-                if (propertySuffixe.startsWith("set")) {
-                    propertySuffixe = propertySuffixe.substring(3);
-                    isSet = true;
-                } else if (propertySuffixe.startsWith("get")) {
-                    propertySuffixe = propertySuffixe.substring(3);
-                    isGet = true;
-                } else if (propertySuffixe.startsWith("is")) {
-                    propertySuffixe = propertySuffixe.substring(2);
-                    isSet = true;
-                } else {
-                    switch (method.getParameterTypes().length) {
-                    case 1:
-                        isSet = true;
-                        break;
-                    default:
-                        String msg = String.format("Method [%s]:[%s] can not be treated as a setter method.", cls.getName(),
-                                method.toGenericString());
-                        throw new DataOperationException(msg);
-
-                    }
-                    propertySuffixe = null;
+                mi.name = name;
+                mi.method = prop.getSetter();
+                if (mi.method == null) {
+                    throw new DataOperationException("Could not find setter method for annotated property:" + name);
                 }
+                mi.type = mi.method.getParameterTypes()[0];
+                mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
 
-                if (StringUtils.isEmpty(declaredName)) {
-                    char[] cs = propertySuffixe.toCharArray();
-                    cs[0] = Character.toLowerCase(cs[0]);
-                    mi.name = new String(cs);
-                } else {
-                    mi.name = declaredName;
-                }
                 mi.scope = cd.scope();
                 mi.typeUnMatch = cd.typeUnMatch();
+                mi.fixForPrimitiveType();
 
-                if (isGet) {
-                    // only if the reverse value is explicitly set to true and
-                    // the scope is contained in the allowing reverse injection
-                    // list
-                    if (cd.reverse()) {
-                        if (reverseTargetScopes.contains(mi.scope)) {
-                            mi.type = method.getReturnType();
-                            mi.fixForPrimitiveType();
-                            target.getMethodList.add(mi);
-                        } else {
-                            String msg = String.format(
-                                    "Only scope in [%s] can be marked as reverse injectable but found scope as %s (%s:%s).",
-                                    reverseTargetScopes.toString(), mi.scope, cls.getName(), mi.name);
-                            Asta4DWarningException awe = new Asta4DWarningException(msg);
-                            logger.warn(msg, awe);
-                        }
-                    }
-
-                    // allow annotation on getter
-
-                    if (propertySuffixe != null) {// null is impossible
-                        String setterName = "set" + propertySuffixe;
-                        Method setter = null;
-                        try {
-                            setter = cls.getMethod(setterName, method.getReturnType());
-
-                        } catch (NoSuchMethodException | SecurityException e) {
-                            String msg = "Could not find setter method:[%s(%s)] for annotated getter:[%s]";
-                            throw new DataOperationException(String.format(msg, setterName, method.getReturnType().getName(),
-                                    method.getName()));
-                        }
-                        mi.method = setter;
-                        mi.type = setter.getParameterTypes()[0];
-                        mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
-                        mi.fixForPrimitiveType();
-
-                        ContextDataSet cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class,
-                                mi.type.getAnnotations());
-                        if (cdSet == null) {
-                            mi.contextDataSetFactory = null;
-                        } else {
-                            mi.contextDataSetFactory = cdSet.factory().newInstance();
-                            mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
-                        }
-
-                        target.setMethodList.add(mi);
-                    }
-
+                ContextDataSet cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, mi.type.getAnnotations());
+                if (cdSet == null) {
+                    mi.contextDataSetFactory = null;
+                } else {
+                    mi.contextDataSetFactory = cdSet.factory().newInstance();
+                    mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
                 }
-
-                if (isSet) {
-                    mi.type = method.getParameterTypes()[0];
-                    mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
-                    mi.fixForPrimitiveType();
-
-                    ContextDataSet cdSet = ConvertableAnnotationRetriever
-                            .retrieveAnnotation(ContextDataSet.class, mi.type.getAnnotations());
-                    if (cdSet == null) {
-                        mi.contextDataSetFactory = null;
-                    } else {
-                        mi.contextDataSetFactory = cdSet.factory().newInstance();
-                        mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
-                    }
-
-                    target.setMethodList.add(mi);
-                }
+                target.setMethodList.add(mi);
 
             }
-        }
 
-        // then retrieve fields information
-        String objCls = Object.class.getName();
-        Field[] flds;
-        FieldInfo fi;
-        while (!cls.getName().equals(objCls)) {
-            flds = cls.getDeclaredFields();
-            for (Field field : flds) {
-                cd = ConvertableAnnotationRetriever.retrieveAnnotation(ContextData.class, field.getAnnotations());
-                if (cd != null) {
-                    fi = new FieldInfo();
-                    fi.field = field;
-                    fi.type = field.getType();
-                    fi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(fi.type);
-
-                    String delcaredName = cd == null ? "" : cd.name();
-                    if (StringUtils.isEmpty(delcaredName)) {
-                        fi.name = field.getName();
-                    } else {
-                        fi.name = cd.name();
-                    }
-                    fi.scope = cd == null ? "" : cd.scope();
-                    fi.typeUnMatch = cd.typeUnMatch();
-                    fi.fixForPrimitiveType();
-
-                    ContextDataSet cdSet = ConvertableAnnotationRetriever
-                            .retrieveAnnotation(ContextDataSet.class, fi.type.getAnnotations());
-                    if (cdSet == null) {
-                        fi.contextDataSetFactory = null;
-                    } else {
-                        fi.contextDataSetFactory = cdSet.factory().newInstance();
-                        fi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
-                    }
-
-                    target.setFieldList.add(fi);
-
-                    if (cd.reverse()) {//
-                        if (reverseTargetScopes.contains(fi.scope)) {
-                            target.getFieldList.add(fi);
-                        } else {
-                            String msg = String.format(
-                                    "Only scope in [%s] can be marked as reverse injectable but found scope as %s (%s:%s).",
-                                    reverseTargetScopes.toString(), fi.scope, cls.getName(), fi.name);
-                            Asta4DWarningException awe = new Asta4DWarningException(msg);
-                            logger.warn(msg, awe);
-                        }
-                    }
-
-                }
-            }
-            cls = cls.getSuperclass();
         }
 
         return target;
