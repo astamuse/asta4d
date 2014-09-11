@@ -343,51 +343,36 @@ public class InjectUtil {
                 boolean isGet = false;
                 boolean isSet = false;
                 String declaredName = cd.name();
+                String propertySuffixe = method.getName();
+                if (propertySuffixe.startsWith("set")) {
+                    propertySuffixe = propertySuffixe.substring(3);
+                    isSet = true;
+                } else if (propertySuffixe.startsWith("get")) {
+                    propertySuffixe = propertySuffixe.substring(3);
+                    isGet = true;
+                } else if (propertySuffixe.startsWith("is")) {
+                    propertySuffixe = propertySuffixe.substring(2);
+                    isSet = true;
+                } else {
+                    switch (method.getParameterTypes().length) {
+                    case 1:
+                        isSet = true;
+                        break;
+                    default:
+                        String msg = String.format("Method [%s]:[%s] can not be treated as a setter method.", cls.getName(),
+                                method.toGenericString());
+                        throw new DataOperationException(msg);
+
+                    }
+                    propertySuffixe = null;
+                }
 
                 if (StringUtils.isEmpty(declaredName)) {
-                    String name = method.getName();
-                    if (name.startsWith("set")) {
-                        name = name.substring(3);
-                        isSet = true;
-                    } else if (name.startsWith("get")) {
-                        name = name.substring(3);
-                        isGet = true;
-                    } else if (name.startsWith("is")) {
-                        name = name.substring(2);
-                        isSet = true;
-                    } else {
-
-                        switch (method.getParameterTypes().length) {
-                        case 0:
-                            isGet = true;
-                            break;
-                        case 1:
-                            isSet = true;
-                            break;
-                        default:
-                            String msg = String.format("Method [%s]:[%s] can not be treated as a getter or setter method.", cls.getName(),
-                                    method.toGenericString());
-                            throw new DataOperationException(msg);
-
-                        }
-                    }
-                    char[] cs = name.toCharArray();
+                    char[] cs = propertySuffixe.toCharArray();
                     cs[0] = Character.toLowerCase(cs[0]);
                     mi.name = new String(cs);
-
                 } else {
                     mi.name = declaredName;
-                    int typeLength = method.getParameterTypes().length;
-                    if (typeLength == 0) {
-                        isGet = true;
-                    } else if (typeLength == 1) {
-                        isSet = true;
-                    } else {
-                        String msg = String.format(
-                                "Only one parameter is allowed on a method declared with ContextData annoataion.(%s:%s)", cls.getName(),
-                                mi.name);
-                        throw new DataOperationException(msg);
-                    }
                 }
                 mi.scope = cd.scope();
                 mi.typeUnMatch = cd.typeUnMatch();
@@ -409,6 +394,37 @@ public class InjectUtil {
                             logger.warn(msg, awe);
                         }
                     }
+
+                    // allow annotation on getter
+
+                    if (propertySuffixe != null) {// null is impossible
+                        String setterName = "set" + propertySuffixe;
+                        Method setter = null;
+                        try {
+                            setter = cls.getMethod(setterName, method.getReturnType());
+
+                        } catch (NoSuchMethodException | SecurityException e) {
+                            String msg = "Could not find setter method:[%s(%s)] for annotated getter:[%s]";
+                            throw new DataOperationException(String.format(msg, setterName, method.getReturnType().getName(),
+                                    method.getName()));
+                        }
+                        mi.method = setter;
+                        mi.type = setter.getParameterTypes()[0];
+                        mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
+                        mi.fixForPrimitiveType();
+
+                        ContextDataSet cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class,
+                                mi.type.getAnnotations());
+                        if (cdSet == null) {
+                            mi.contextDataSetFactory = null;
+                        } else {
+                            mi.contextDataSetFactory = cdSet.factory().newInstance();
+                            mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
+                        }
+
+                        target.setMethodList.add(mi);
+                    }
+
                 }
 
                 if (isSet) {
