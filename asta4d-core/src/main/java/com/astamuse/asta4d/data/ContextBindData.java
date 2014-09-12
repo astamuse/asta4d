@@ -23,8 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 import com.astamuse.asta4d.Context;
 
 /**
- * a ContextBindData is supposed to be cache in the current thread Context and
- * should only be initialized once
+ * a ContextBindData is supposed to be cache in the current thread Context and should only be initialized once
  * 
  * @author e-ryu
  * 
@@ -52,26 +51,16 @@ public abstract class ContextBindData<T> {
     }
 
     /**
-     * If contextSynchronizable is set to false, no synchronization operations
-     * will be performed and it is just a convenience for lazy load data.
+     * If contextSynchronizable is set to false, no synchronization operations will be performed and it is just a convenience for lazy load
+     * data.
      * 
-     * Otherwise, if contextSynchronizable is set to true, a Context based lock
-     * will be performed and the data will be load only once in the current
-     * context environment.
+     * Otherwise, if contextSynchronizable is set to true, a Context based lock will be performed and the data will be load only once in the
+     * current context environment.
      * 
      * @param doSynchronize
      */
     public ContextBindData(boolean contextSynchronizable) {
         this.contextSynchronizable = contextSynchronizable;
-        if (contextSynchronizable) {
-            Context context = Context.getCurrentThreadContext();
-            ConcurrentMap<String, Object> map = context.getData(MapKey);
-            Object obj = map.get(bindKey);
-            if (obj == null) {
-                obj = new DataWithLock();
-                obj = map.putIfAbsent(bindKey, obj);
-            }
-        }
     }
 
     public final static void initConext(Context context) {
@@ -101,6 +90,13 @@ public abstract class ContextBindData<T> {
 
         // map will not be null since we have initialized it in constructor
         DataWithLock dl = (DataWithLock) map.get(bindKey);
+        if (dl == null) {
+            dl = new DataWithLock();
+            DataWithLock prev = (DataWithLock) map.putIfAbsent(bindKey, dl);
+            if (prev != null) {
+                dl = prev;
+            }
+        }
         if (!dl.valid) {
             Object data;
             // TODO I want to read jvm code...

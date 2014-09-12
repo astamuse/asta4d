@@ -25,12 +25,16 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.DefaultDataTypeTransformer;
-import com.astamuse.asta4d.data.convertor.DataConvertor;
+import com.astamuse.asta4d.data.convertor.DataValueConvertor;
+import com.astamuse.asta4d.data.convertor.UnsupportedValueException;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
 public class DefaultDataTypeTransformerTest extends BaseTest {
+
+    public static enum TestEnum {
+        OK, NG;
+    }
 
     public static class PA {
         String value;
@@ -86,7 +90,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
 
     }
 
-    public static class String2PB implements DataConvertor<String, PB> {
+    public static class String2PB implements DataValueConvertor<String, PB> {
         @Override
         public PB convert(String obj) {
             PB ret = new PB(obj);
@@ -95,7 +99,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
 
     }
 
-    public static class PA2String implements DataConvertor<PA, String> {
+    public static class PA2String implements DataValueConvertor<PA, String> {
         @Override
         public String convert(PA obj) {
             return obj.value.substring(0, obj.value.indexOf("-PA"));
@@ -103,7 +107,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
 
     }
 
-    public static class String2LongArray implements DataConvertor<String, Long[]> {
+    public static class String2LongArray implements DataValueConvertor<String, Long[]> {
         @Override
         public Long[] convert(String obj) {
             String[] array = obj.split(",");
@@ -115,7 +119,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
         }
     }
 
-    public static class StringArray2Long implements DataConvertor<String[], Long> {
+    public static class StringArray2Long implements DataValueConvertor<String[], Long> {
         @Override
         public Long convert(String[] obj) {
             if (obj.length == 1) {
@@ -126,7 +130,7 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
         }
     }
 
-    public static class String2LongSpecial implements DataConvertor<String, Long> {
+    public static class String2LongSpecial implements DataValueConvertor<String, Long> {
         @Override
         public Long convert(String obj) {
             if (obj.startsWith("special:")) {
@@ -143,46 +147,58 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
     @BeforeClass
     public void prepareInvoker() {
         invoker = new DefaultDataTypeTransformer();
-        List<DataConvertor> list = new LinkedList<DataConvertor>();
+        List<DataValueConvertor> list = new LinkedList<DataValueConvertor>();
         list.add(new String2PB());
         list.add(new PA2String());
         list.add(new String2LongArray());
         list.add(new StringArray2Long());
         list.add(new String2LongSpecial());
-        invoker.setDataConvertorList(list);
+        invoker.setDataTypeConvertorList(list);
     }
 
     @DataProvider(name = "test-data")
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
-                {String[].class, Integer[][].class, new String[]{"123", "456"}, null},
+                
+             //for enum
+            {String.class, TestEnum.class, "OK", TestEnum.OK},
+            {String[].class, TestEnum[].class, new String[]{"OK","OK", "NG"}, new TestEnum[]{TestEnum.OK,TestEnum.OK,TestEnum.NG}},
+            
             //basic cases
             {String.class, Integer.class, "123", 123},
             {String.class, Integer[].class, "123", new Integer[]{123}},
             {String[].class, Integer[].class, new String[]{"123", "456"}, new Integer[]{123, 456}},
             {String[].class, Integer.class, new String[]{"123", "456"}, 123},
+            
             //explicit array conversion
             {String.class, Long[].class, "123,456", new Long[]{123L, 456L}},
             {String[].class, Long.class, new String[]{"123","456"}, 456L},
+            
             //recursive array conversion
             {String.class, Integer[][].class, "123", null},//don't support
             {String[].class, Integer[][].class, new String[]{"123", "456"}, null},//don't support
             {String.class, Long[][].class, "123,456", new Long[][]{{123L, 456L}}},
             {String[][].class, Integer.class, new String[][]{{"123","456"}}, 123},
             {String[][][].class, Integer.class, new String[][][]{{{"123","456"}}}, 123},
+            
             //compatible type
             {String.class, PA.class, "123", new PB("123")},
             {PB.class, String.class, new PB("123"), "123"},
+            
             //transform by content format
             {String.class, Long.class, "special:398", 498L},
+            
         };
         //@formatter:on
     }
 
     @Test(dataProvider = "test-data")
-    public void testTransforming(Class srcType, Class targetType, Object data, Object expectedData) throws DataOperationException {
+    public void testTransforming(Class srcType, Class targetType, Object data, Object expectedData) throws UnsupportedValueException {
         Object ret = invoker.transform(srcType, targetType, data);
+        if (expectedData != null) {
+            Assert.assertTrue(expectedData.getClass().isAssignableFrom(ret.getClass()));
+        }
         Assert.assertEquals(ret, expectedData);
     }
 }

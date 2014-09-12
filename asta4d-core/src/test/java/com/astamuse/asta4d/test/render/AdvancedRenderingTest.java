@@ -23,6 +23,7 @@ import java.util.List;
 import org.jsoup.nodes.Element;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
@@ -78,10 +79,37 @@ public class AdvancedRenderingTest extends BaseTest {
             render.add("#inner", "-outerList", (Object) null);
             return render;
         }
+
+        public Renderer pseudoRootRenderingOnFackedGroup() {
+            // The recursive renderer will create a faked group on the target root, which causes the pseudo :root selector failed.
+            // So we have to handle this case.
+            Renderer renderer = Renderer.create(":root", Renderer.create("div", "t1"));
+            renderer.add(":root", Renderer.create("div", "t2"));
+            return renderer;
+        }
+
+        public Renderer pseudoRootRenderingWithElementNotFoundHandler() {
+
+            Renderer renderer = Renderer.create(":root", Renderer.create("div", "t1"));
+            renderer.add(new ElementNotFoundHandler("span") {
+                @Override
+                public Renderer alternativeRenderer() {
+                    return Renderer.create(":root", Renderer.create("div", "t2"));
+                }
+            });
+            renderer.add(":root", Renderer.create("div", "t3"));
+
+            return renderer;
+        }
     }
 
     public AdvancedRenderingTest() {
 
+    }
+
+    @Test
+    public void testPseudoRootRenderingOnFackedGroup() {
+        new SimpleCase("AdvancedRendering_pseudoRootRendering.html");
     }
 
     @Test

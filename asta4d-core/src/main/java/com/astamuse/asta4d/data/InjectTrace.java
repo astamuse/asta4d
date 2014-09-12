@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import com.astamuse.asta4d.Context;
 
@@ -114,4 +116,21 @@ public class InjectTrace {
     private static final String createTraceKey(Method m, int parameterIndex) {
         return m.getDeclaringClass().getName() + ":" + m.toString() + ":" + parameterIndex;
     }
+
+    public static final List retrieveTraceList() {
+        Context context = Context.getCurrentThreadContext();
+        return context.getData(InstanceTraceListSaveKey);
+    }
+
+    public static final void restoreTraceList(List restoreList) {
+        if (restoreList == null) {
+            return;
+        }
+        for (TraceMap map : (InstanceTraceList) restoreList) {
+            for (Entry<String, ContextDataHolder> entry : map.entrySet()) {
+                saveInstanceInjectionTraceInfo(map.targetInstance, entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
 }

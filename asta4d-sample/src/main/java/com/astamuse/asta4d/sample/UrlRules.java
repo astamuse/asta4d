@@ -24,13 +24,15 @@ import static com.astamuse.asta4d.web.dispatch.HttpMethod.PUT;
 import com.astamuse.asta4d.sample.forward.LoginFailure;
 import com.astamuse.asta4d.sample.handler.AddUserHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
-import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
-import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
+import com.astamuse.asta4d.sample.handler.form.MultiStepEditHandler;
+import com.astamuse.asta4d.sample.handler.form.OneStepEditHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
+import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -90,11 +92,28 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
         rules.add("/app/contextdata", "/templates/contextdata.html");
 
-        rules.add("/app/form/input", "/templates/form/input.html");
-        rules.add(POST, "/app/form/confirm").handler(FormValidateHandler.class);
-        rules.add(POST, "/app/form/complete").handler(FormCompleteHandler.class);
-
+        
+        rules.add("/app/form", "/templates/form/list.html");
+        
+        rules.add(GET, "/app/form/onestep/edit")
+             .handler(OneStepEditHandler.class)
+             .forward("/templates/form/onestep/edit.html");
+             
+        rules.add(POST, "/app/form/onestep/edit")
+             .handler(OneStepEditHandler.class)
+             .forward(CommonFormResult.FAILED, "/templates/form/onestep/edit.html")
+             .redirect("/app/form");
+        
+        rules.add((HttpMethod)null, "/app/form/multistep")
+            .handler(MultiStepEditHandler.class)
+            .redirect("/app/form");
+        
+           
         rules.add("/app/localize", "/templates/localize.html");
+        
+        
+        
+        
         //@formatter:on
     }
 }

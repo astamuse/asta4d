@@ -18,15 +18,19 @@
 package com.astamuse.asta4d.web;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
+import com.astamuse.asta4d.web.util.GlobalRenderingInterceptor;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
+import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingInterceptor;
 
 public class WebApplicationConfiguration extends Configuration {
 
@@ -44,12 +48,28 @@ public class WebApplicationConfiguration extends Configuration {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
         this.setContextDataFinder(new WebApplicationContextDataFinder());
         this.setRequestHandlerInvokerFactory(new DefaultRequestHandlerInvokerFactory());
+        this.setPageInterceptorList(new LinkedList<PageInterceptor>());
 
         // we only allow request scope being reversely injected
         List<String> reverseInjectableScopes = new ArrayList<>();
         reverseInjectableScopes.add(WebApplicationContext.SCOPE_REQUEST);
         this.setReverseInjectableScopes(reverseInjectableScopes);
 
+    }
+
+    protected List<PageInterceptor> createDefaultPageInterceptorList() {
+        // afford a convenience for global rendering by default
+        List<PageInterceptor> pageInterceptorList = new LinkedList<>();
+        pageInterceptorList.add(new GlobalRenderingInterceptor());
+        pageInterceptorList.add(new DefaultMessageRenderingInterceptor());
+        return pageInterceptorList;
+    }
+
+    @Override
+    public void setPageInterceptorList(List<PageInterceptor> pageInterceptorList) {
+        List<PageInterceptor> list = createDefaultPageInterceptorList();
+        list.addAll(pageInterceptorList);
+        super.setPageInterceptorList(list);
     }
 
     public final static WebApplicationConfiguration getWebApplicationConfiguration() {

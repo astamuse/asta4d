@@ -201,7 +201,9 @@ public class RequestDispatcherTest {
     }
 
     private final static Asta4DPageProvider getExpectedPage(final String path) throws Exception {
-        return Context.with(new WebApplicationContext(), new Callable<Asta4DPageProvider>() {
+        Context ctx = new WebApplicationContext();
+        ctx.init();
+        return Context.with(ctx, new Callable<Asta4DPageProvider>() {
             @Override
             public Asta4DPageProvider call() throws Exception {
                 return new Asta4DPageProvider(Page.buildFromPath(path));

@@ -21,8 +21,7 @@ import com.astamuse.asta4d.data.InjectUtil;
 
 /**
  * 
- * This interface is used by {@link InjectUtil} to convert context data to the
- * appropriate type automatically
+ * This interface is used by {@link InjectUtil} to convert context data to the appropriate type automatically
  * 
  * @author e-ryu
  * 
@@ -31,7 +30,7 @@ import com.astamuse.asta4d.data.InjectUtil;
  * @param <T>
  *            target type
  */
-public interface DataConvertor<S, T> {
+public interface DataValueConvertor<S, T> {
 
     /**
      * convert a data from the original type to a certain type
@@ -40,5 +39,5 @@ public interface DataConvertor<S, T> {
      *            the data wanted to be converted
      * @return converted result
      */
-    public T convert(S obj);
+    public T convert(S obj) throws UnsupportedValueException;
 }

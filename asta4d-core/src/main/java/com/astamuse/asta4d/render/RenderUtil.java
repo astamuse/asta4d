@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -41,6 +42,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.concurrent.ConcurrentRenderHelper;
 import com.astamuse.asta4d.render.concurrent.FutureRendererHolder;
+import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
@@ -60,6 +62,8 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
  * 
  */
 public class RenderUtil {
+
+    public static final String PSEUDO_ROOT_SELECTOR = ":root";
 
     private final static Logger logger = LoggerFactory.getLogger(RenderUtil.class);
 
@@ -291,7 +295,7 @@ public class RenderUtil {
             return;
         }
 
-        Renderer currentRenderer = rendererList.get(startIndex);
+        final Renderer currentRenderer = rendererList.get(startIndex);
 
         RendererType rendererType = currentRenderer.getRendererType();
 
@@ -313,11 +317,22 @@ public class RenderUtil {
         }
 
         String selector = currentRenderer.getSelector();
+        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
 
-        List<Element> elemList = new ArrayList<>(target.select(selector));
+        List<Element> elemList;
+        if (PSEUDO_ROOT_SELECTOR.equals(selector)) {
+            elemList = new LinkedList<Element>();
+            elemList.add(target);
+        } else {
+            elemList = new ArrayList<>(target.select(selector));
+        }
 
         if (elemList.isEmpty()) {
-            if (renderAction.isOutputMissingSelectorWarning()) {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                elemList.add(target);
+                transformerList.clear();
+                transformerList.add(new RendererTransformer(((ElementNotFoundHandler) currentRenderer).alternativeRenderer()));
+            } else if (renderAction.isOutputMissingSelectorWarning()) {
                 String creationInfo = currentRenderer.getCreationSiteInfo();
                 if (creationInfo == null) {
                     creationInfo = "";
@@ -328,12 +343,16 @@ public class RenderUtil {
                         "There is no element found for selector [{}]{}, if it is deserved, try Renderer#disableMissingSelectorWarning() "
                                 + "to disable this message and Renderer#enableMissingSelectorWarning could enable this warning again in "
                                 + "your renderer chain", selector, creationInfo);
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
             }
-            apply(target, rendererList, renderAction, startIndex + 1, count);
-            return;
-        }
 
-        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
+        } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
+            }
+        }
 
         Element delayedElement = null;
         Element resultNode;
@@ -341,12 +360,17 @@ public class RenderUtil {
         // to children, so we reverse it. Perhaps we need a real order process
         // to ensure the wanted order.
         Collections.reverse(elemList);
+        boolean renderForRoot;
         for (Element elem : elemList) {
-            // faked group node will be not applied by renderers
-            if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
-                    ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
-                continue;
+            renderForRoot = PSEUDO_ROOT_SELECTOR.equals(selector) || rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER;
+            if (!renderForRoot) {
+                // faked group node will be not applied by renderers(only when the current selector is not the pseudo :root)
+                if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
+                        ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
+                    continue;
+                }
             }
+
             if (elem == target) {
                 delayedElement = elem;
                 continue;
@@ -365,6 +389,9 @@ public class RenderUtil {
         if (delayedElement == null) {
             apply(target, rendererList, renderAction, startIndex + 1, count);
         } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER && delayedElement instanceof Document) {
+                delayedElement = delayedElement.child(0);
+            }
             for (Transformer<?> transformer : transformerList) {
                 resultNode = transformer.invoke(delayedElement);
                 delayedElement.before(resultNode);

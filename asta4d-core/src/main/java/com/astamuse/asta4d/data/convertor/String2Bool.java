@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.data.convertor;
 
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Convert String to Boolean
@@ -24,12 +25,12 @@ package com.astamuse.asta4d.data.convertor;
  * @author e-ryu
  * 
  */
-public class String2Bool implements DataConvertor<String, Boolean> {
+public class String2Bool implements DataValueConvertor<String, Boolean> {
 
     @Override
-    public Boolean convert(String s) {
-        if (s == null) {
-            return false;
+    public Boolean convert(String s) throws UnsupportedValueException {
+        if (StringUtils.isEmpty(s)) {
+            return null;
         } else {
             return Boolean.parseBoolean(s);
         }

@@ -27,7 +27,6 @@ import org.jsoup.nodes.Element;
 import com.astamuse.asta4d.Component;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.convertor.DataConvertor;
 import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.render.transformer.RenderableTransformer;
@@ -428,8 +427,8 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter with given {@link DataConvertor} and add it to the current renderer. See
-     * {@link #create(String, Iterable, ParallelRowConvertor)}.
+     * Create a renderer for list rendering by given parameter with given {@link ParallelRowConvertor} and add it to the current renderer.
+     * See {@link #create(String, Iterable, ParallelRowConvertor)}.
      * 
      * @param selector
      * @param list
