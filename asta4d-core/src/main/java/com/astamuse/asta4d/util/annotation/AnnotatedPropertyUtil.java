@@ -79,6 +79,7 @@ public class AnnotatedPropertyUtil {
 
             if (isGet) {
                 info.setGetter(method);
+                info.setType(method.getReturnType());
                 String setterName = "set" + propertySuffixe;
                 Method setter = null;
                 try {
@@ -92,6 +93,7 @@ public class AnnotatedPropertyUtil {
 
             if (isSet) {
                 info.setSetter(method);
+                info.setType(method.getParameterTypes()[0]);
                 String getterName = "get" + propertySuffixe;
                 Method getter = null;
                 try {
@@ -102,8 +104,6 @@ public class AnnotatedPropertyUtil {
                 }
                 info.setGetter(getter);
             }
-
-            info.setType(info.getGetter().getReturnType());
 
             infoList.add(info);
         }
