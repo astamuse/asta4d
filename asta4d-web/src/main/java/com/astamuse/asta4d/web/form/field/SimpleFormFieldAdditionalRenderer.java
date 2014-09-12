@@ -10,7 +10,7 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 
-public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldAdditionalRenderer {
+public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldDataPrepareRenderer {
 
     private static final Map<String, AnnotatedPropertyInfo<FormField>> FieldCacheMap = new ConcurrentHashMap<>();
 

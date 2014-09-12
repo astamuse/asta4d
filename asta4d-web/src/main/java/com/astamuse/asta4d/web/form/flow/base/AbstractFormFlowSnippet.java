@@ -22,7 +22,7 @@ import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.annotation.FormField;
-import com.astamuse.asta4d.web.form.field.FormFieldAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
@@ -116,11 +116,11 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
         render.disableMissingSelectorWarning();
 
-        List<FormFieldAdditionalRenderer> fieldAdditionalRendererList = retrieveFieldAdditionalRenderer(renderTargetStep, form);
+        List<FormFieldDataPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldDataPrepareRenderer(renderTargetStep, form);
 
-        for (FormFieldAdditionalRenderer formFieldAdditionalRenderer : fieldAdditionalRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldAdditionalRenderer.targetField());
-            render.add(formFieldAdditionalRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
+        for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
+            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField());
+            render.add(formFieldDataPrepareRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
         List<AnnotatedPropertyInfo<FormField>> fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
@@ -156,9 +156,9 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
         }
 
-        for (FormFieldAdditionalRenderer formFieldAdditionalRenderer : fieldAdditionalRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldAdditionalRenderer.targetField());
-            render.add(formFieldAdditionalRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
+        for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
+            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField());
+            render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
         return render;
@@ -174,7 +174,7 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
      * @return
      * @throws Exception
      */
-    protected List<FormFieldAdditionalRenderer> retrieveFieldAdditionalRenderer(String renderTargetStep, Object form) {
+    protected List<FormFieldDataPrepareRenderer> retrieveFieldDataPrepareRenderer(String renderTargetStep, Object form) {
         return new LinkedList<>();
     }
 
