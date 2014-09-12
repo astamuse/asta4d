@@ -45,6 +45,10 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
     }
 
     protected String createTemplateFilePathForStep(String step) {
+        if (step == null) {// exit flow
+            return null;
+        }
+
         if (isCompleteStep(step) && treatCompleteStepAsExit()) {
             return null;
         }
