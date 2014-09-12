@@ -97,16 +97,16 @@
             <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
           </configuration>
           <version>2.9</version>
-          <executions>
+          <!--executions>
             <execution>
               <id>create-java-doc</id>
-              <phase>verify</phase>
+              <phase>package</phase>
               <goals>
                 <goal>jar</goal>
                 <goal>aggregate-jar</goal>
               </goals>
             </execution>
-          </executions>          
+          </executions-->          
         </plugin>  
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
