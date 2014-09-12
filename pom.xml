@@ -9,7 +9,7 @@
   
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>0.14.609-SNAPSHOT</version>
+  <version>0.14.912-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
