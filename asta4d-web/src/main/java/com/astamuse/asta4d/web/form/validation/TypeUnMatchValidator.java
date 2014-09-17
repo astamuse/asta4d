@@ -7,26 +7,21 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.data.ContextDataHolder;
-import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.annotation.FormField;
-import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 
 public class TypeUnMatchValidator implements FormValidator {
 
     @Override
     public List<FormValidationMessage> validate(Object form) {
-        List<AnnotatedPropertyInfo<FormField>> fieldList;
-        try {
-            fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
-        } catch (DataOperationException e) {
-            throw new RuntimeException(e);
-        }
+        List<AnnotatedPropertyInfo> fieldList;
+        fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
+
         List<FormValidationMessage> msgList = new LinkedList<>();
-        for (AnnotatedPropertyInfo<FormField> field : fieldList) {
+        for (AnnotatedPropertyInfo field : fieldList) {
 
             ContextDataHolder valueHolder;
             if (field.getField() != null) {
@@ -41,7 +36,7 @@ public class TypeUnMatchValidator implements FormValidator {
         return msgList;
     }
 
-    protected FormValidationMessage createTypeUnMatchMessage(AnnotatedPropertyInfo<FormField> field, ContextDataHolder valueHolder) {
+    protected FormValidationMessage createTypeUnMatchMessage(AnnotatedPropertyInfo field, ContextDataHolder valueHolder) {
         String msgTemplate = retrieveTypeUnMatchMessageTemplate();
         String fieldName = retrieveFieldName(field);
         String targetTypeName = retrieveTargetTypeName(field.getType());
@@ -55,7 +50,7 @@ public class TypeUnMatchValidator implements FormValidator {
         return "%s is expecting %s but value[%s] found.";
     }
 
-    protected String retrieveFieldName(AnnotatedPropertyInfo<FormField> field) {
+    protected String retrieveFieldName(AnnotatedPropertyInfo field) {
         return field.getName();
     }
 

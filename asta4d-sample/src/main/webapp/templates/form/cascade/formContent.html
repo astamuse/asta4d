@@ -5,11 +5,18 @@
 <body>
 <script>
 function addJob(){
+	var personIdElem = document.getElementById("data-id");
+	var personId = personIdElem.getAttribute("value");
+	if(personId == null){
+		personId = "-1";
+	}
+	
 	var jobLengthElem = document.getElementById("job-length");
 	var jobLength = parseInt(jobLengthElem.getAttribute("value"));
 	
 	var container = document.getElementById("job-experence");
-	var newJobInputHtml="year:<input type=\"text\" name=\"job-year-"+jobLength+"\">desc:<input type=\"text\" name=\"job-description-"+jobLength+"\">";
+	var newJobInputHtml="<input type=\"hidden\" name=\"job-person-id-"+jobLength+"\" value=\""+personId+"\">";
+	newJobInputHtml+="year:<input type=\"text\" name=\"job-year-"+jobLength+"\">desc:<input type=\"text\" name=\"job-description-"+jobLength+"\">";
 	var newJobWrapper = document.createElement("div");
 	newJobWrapper.id = "job-experence-row";
 	newJobWrapper.innerHTML = newJobInputHtml;
@@ -49,7 +56,7 @@ function addJob(){
 		</td>
 	</tr>
 </table>
-<input type="hidden" name="data_id">
+<input type="hidden" id="data-id" name="data-id">
 <input type="hidden" name="action">
 <input type="hidden" name="job-length" id="job-length" value="0">
 </body>

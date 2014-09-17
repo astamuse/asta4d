@@ -4,12 +4,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 
-public class AnnotatedPropertyInfo<A extends Annotation> {
+public class AnnotatedPropertyInfo {
 
     private String name;
+
+    private String beanPropertyName;
 
     private Field field;
 
@@ -19,7 +22,7 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
 
     private Class type;
 
-    private A annotation;
+    private List<Annotation> annotationList;
 
     public String getName() {
         return name;
@@ -27,6 +30,14 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getBeanPropertyName() {
+        return beanPropertyName;
+    }
+
+    public void setBeanPropertyName(String beanPropertyName) {
+        this.beanPropertyName = beanPropertyName;
     }
 
     public Field getField() {
@@ -63,12 +74,18 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
         this.type = type;
     }
 
-    public A getAnnotation() {
-        return annotation;
+    @SuppressWarnings("unchecked")
+    public <A extends Annotation> A getAnnotation(Class<A> annotationCls) {
+        for (Annotation anno : annotationList) {
+            if (annotationCls.isAssignableFrom(anno.getClass())) {
+                return (A) anno;
+            }
+        }
+        return null;
     }
 
-    public void setAnnotation(A annotation) {
-        this.annotation = annotation;
+    public void setAnnotations(List<Annotation> annotationList) {
+        this.annotationList = annotationList;
     }
 
     public void assginValue(Object instance, Object value) throws IllegalAccessException, IllegalArgumentException,
@@ -90,17 +107,9 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((annotation == null) ? 0 : annotation.hashCode());
-        result = prime * result + ((field == null) ? 0 : field.hashCode());
-        result = prime * result + ((getter == null) ? 0 : getter.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((setter == null) ? 0 : setter.hashCode());
-        return result;
+        return (name == null) ? 0 : name.hashCode();
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -110,10 +119,10 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
         if (getClass() != obj.getClass())
             return false;
         AnnotatedPropertyInfo other = (AnnotatedPropertyInfo) obj;
-        if (annotation == null) {
-            if (other.annotation != null)
+        if (annotationList == null) {
+            if (other.annotationList != null)
                 return false;
-        } else if (!annotation.equals(other.annotation))
+        } else if (!annotationList.equals(other.annotationList))
             return false;
         if (field == null) {
             if (other.field != null)
@@ -134,6 +143,11 @@ public class AnnotatedPropertyInfo<A extends Annotation> {
             if (other.setter != null)
                 return false;
         } else if (!setter.equals(other.setter))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
             return false;
         return true;
     }

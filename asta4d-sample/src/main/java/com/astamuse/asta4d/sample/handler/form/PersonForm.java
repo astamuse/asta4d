@@ -3,7 +3,6 @@ package com.astamuse.asta4d.sample.handler.form;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
@@ -35,7 +34,7 @@ public class PersonForm extends Person {
     }
 
     @Override
-    @InputHidden(name = "data_id")
+    @InputHidden(name = "data-id")
     public Integer getId() {
         return super.getId();
     }
@@ -65,7 +64,6 @@ public class PersonForm extends Person {
     }
 
     @Override
-    @NotEmpty
     @CheckBox
     public Language[] getLanguage() {
         return super.getLanguage();

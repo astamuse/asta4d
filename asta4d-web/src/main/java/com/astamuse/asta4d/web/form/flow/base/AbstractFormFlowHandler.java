@@ -15,11 +15,10 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
-import com.astamuse.asta4d.web.form.annotation.FormField;
-import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.form.validation.FormValidator;
 import com.astamuse.asta4d.web.form.validation.JsrValidator;
@@ -132,16 +131,16 @@ public abstract class AbstractFormFlowHandler<T> {
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         try {
             T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
-            List<AnnotatedPropertyInfo<FormField>> list = FormFieldUtil.retrieveFormFields(formCls);
+            List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
             Context currentContext = Context.getCurrentThreadContext();
-            for (final AnnotatedPropertyInfo<FormField> field : list) {
-                CascadeFormField cff = FormFieldUtil.retrieveCascadeFormFieldAnnotation(field);
+            for (final AnnotatedPropertyInfo field : list) {
+                CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
                 if (cff != null) {
                     if (field.retrieveValue(form) != null) {
                         continue;
                     }
 
-                    AnnotatedPropertyInfo<FormField> arrayLengthField = FormFieldUtil.retrieveFormField(formCls, cff.arrayLengthField());
+                    AnnotatedPropertyInfo arrayLengthField = AnnotatedPropertyUtil.retrievePropertyByName(formCls, cff.arrayLengthField());
                     if (arrayLengthField == null) {
                         throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] was not found");
                     }

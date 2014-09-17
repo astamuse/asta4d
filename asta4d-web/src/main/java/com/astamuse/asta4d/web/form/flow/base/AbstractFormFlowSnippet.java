@@ -21,11 +21,11 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.InitializableSnippet;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
 public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
@@ -45,7 +45,7 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         }
     }
 
-    private static final Map<AnnotatedPropertyInfo<FormField>, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
+    private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
 
     public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#IntelligentFormSnippetBase";
 
@@ -65,13 +65,13 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         InjectTrace.restoreTraceList(list);
     }
 
-    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo<FormField> f, int cascadeFormArrayIndex) {
+    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int cascadeFormArrayIndex) {
         FieldRenderingInfo info = FieldRenderingInfoMap.get(f);
         if (info == null) {
 
             info = new FieldRenderingInfo();
 
-            FormField ffAnno = f.getAnnotation();
+            FormField ffAnno = f.getAnnotation(FormField.class);
 
             String fieldName = f.getName();
 
@@ -150,13 +150,13 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
     private Renderer renderValues(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
         Renderer render = Renderer.create();
-        List<AnnotatedPropertyInfo<FormField>> fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
+        List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
 
-        for (AnnotatedPropertyInfo<FormField> field : fieldList) {
+        for (AnnotatedPropertyInfo field : fieldList) {
 
             Object v = field.retrieveValue(form);
 
-            CascadeFormField cff = FormFieldUtil.retrieveCascadeFormFieldAnnotation(field);
+            CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
             if (cff != null) {
                 String containerSelector = cff.containerSelector();
 

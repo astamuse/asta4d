@@ -325,19 +325,15 @@ public class InjectUtil {
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();
 
-        List<AnnotatedPropertyInfo<ContextData>> propertyList = AnnotatedPropertyUtil.retrieveProperties(cls, ContextData.class);
+        List<AnnotatedPropertyInfo> propertyList = AnnotatedPropertyUtil.retrieveProperties(cls);
 
-        for (AnnotatedPropertyInfo<ContextData> prop : propertyList) {
-            ContextData cd = prop.getAnnotation();
-            String name = cd.name();
-            if (StringUtils.isEmpty(name)) {
-                name = prop.getName();
-            }
+        for (AnnotatedPropertyInfo prop : propertyList) {
+            ContextData cd = prop.getAnnotation(ContextData.class);
 
             if (prop.getField() != null) {
                 Field field = prop.getField();
                 FieldInfo fi = new FieldInfo();
-                fi.name = name;
+                fi.name = prop.getName();
                 fi.field = field;
                 fi.type = field.getType();
                 fi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(fi.type);
@@ -358,10 +354,10 @@ public class InjectUtil {
 
             } else {// for method
                 MethodInfo mi = new MethodInfo();
-                mi.name = name;
+                mi.name = prop.getName();
                 mi.method = prop.getSetter();
                 if (mi.method == null) {
-                    throw new DataOperationException("Could not find setter method for annotated property:" + name);
+                    throw new DataOperationException("Could not find setter method for annotated property:" + prop.getName());
                 }
                 mi.type = mi.method.getParameterTypes()[0];
                 mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
