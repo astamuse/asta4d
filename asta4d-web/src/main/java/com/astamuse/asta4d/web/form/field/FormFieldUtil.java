@@ -10,11 +10,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
+import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
+import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 
 public class FormFieldUtil {
@@ -113,7 +117,8 @@ public class FormFieldUtil {
 
                     if (prop.getField() == null) {
                         if (prop.getGetter() == null || prop.getSetter() == null) {
-                            throw new DataOperationException("@FormField annotated methods must be paired as getter and setter");
+                            throw new DataOperationException("@FormField annotated methods must be paired as getter and setter:" +
+                                    prop.getName());
                         }
                     }
 
@@ -133,4 +138,31 @@ public class FormFieldUtil {
         return list;
     }
 
+    @SuppressWarnings("unchecked")
+    public static final AnnotatedPropertyInfo<FormField> retrieveFormField(final Class formCls, final String fieldName)
+            throws DataOperationException {
+        List<AnnotatedPropertyInfo<FormField>> list = retrieveFormFields(formCls);
+        return (AnnotatedPropertyInfo<FormField>) CollectionUtils.find(list, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                AnnotatedPropertyInfo<FormField> ff = (AnnotatedPropertyInfo<FormField>) object;
+                return ff.getName().equals(fieldName);
+            }
+        });
+    }
+
+    public static final CascadeFormField retrieveCascadeFormFieldAnnotation(AnnotatedPropertyInfo<FormField> field) {
+        if (field.getField() != null) {
+            return ConvertableAnnotationRetriever.retrieveAnnotation(CascadeFormField.class, field.getField().getAnnotations());
+        } else {
+            CascadeFormField cff = ConvertableAnnotationRetriever.retrieveAnnotation(CascadeFormField.class, field.getGetter()
+                    .getAnnotations());
+            if (cff != null) {
+                return cff;
+            } else {
+                return ConvertableAnnotationRetriever.retrieveAnnotation(CascadeFormField.class, field.getSetter().getAnnotations());
+            }
+        }
+
+    }
 }

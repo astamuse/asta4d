@@ -1,12 +1,7 @@
 package com.astamuse.asta4d.sample.handler.form;
 
-import com.astamuse.asta4d.data.DataOperationException;
-import com.astamuse.asta4d.data.InjectUtil;
-import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.sample.handler.form.OneStepEditHandler.ExtraInfo;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
-import com.astamuse.asta4d.web.annotation.QueryParam;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
@@ -28,22 +23,9 @@ public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
         return true;
     }
 
-    @ContextDataSet
-    public static class InitInfo {
-        @QueryParam
-        String action;
-        @QueryParam
-        Integer id;
-    }
-
     @Override
     protected PersonForm createInitForm() {
-        InitInfo extra = new InitInfo();
-        try {
-            InjectUtil.injectToInstance(extra);
-        } catch (DataOperationException e) {
-            throw new RuntimeException(e);
-        }
+        ExtraInfo extra = getExtraDataFromContext();
         PersonForm form = null;
         switch (extra.action) {
         case "add":

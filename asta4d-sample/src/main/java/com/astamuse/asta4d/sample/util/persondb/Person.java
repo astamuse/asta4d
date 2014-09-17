@@ -2,14 +2,19 @@ package com.astamuse.asta4d.sample.util.persondb;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 
-public class Person implements Cloneable {
+public class Person implements IdentifiableEntity, Cloneable {
 
     public static enum BloodType {
         A, B, O, AB;
@@ -58,6 +63,7 @@ public class Person implements Cloneable {
 
     private String memo;
 
+    @NotBlank
     public String getName() {
         return name;
     }
@@ -66,6 +72,8 @@ public class Person implements Cloneable {
         this.name = name;
     }
 
+    @Max(45)
+    @NotNull
     public Integer getAge() {
         return age;
     }
@@ -74,6 +82,7 @@ public class Person implements Cloneable {
         this.age = age;
     }
 
+    @NotNull
     public BloodType getBloodType() {
         return bloodType;
     }
@@ -82,6 +91,7 @@ public class Person implements Cloneable {
         this.bloodType = bloodType;
     }
 
+    @NotNull
     public SEX getSex() {
         return sex;
     }
@@ -90,6 +100,7 @@ public class Person implements Cloneable {
         this.sex = sex;
     }
 
+    @NotEmpty
     public Language[] getLanguage() {
         return language;
     }
@@ -98,13 +109,13 @@ public class Person implements Cloneable {
         this.language = language;
     }
 
-    private int id;
+    private Integer id;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -118,7 +129,7 @@ public class Person implements Cloneable {
 
     @Override
     public int hashCode() {
-        return id;
+        return id == null ? 0 : id;
     }
 
     @Override
@@ -136,8 +147,8 @@ public class Person implements Cloneable {
     }
 
     @Override
-    public Person clone() throws CloneNotSupportedException {
-        return (Person) super.clone();
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     public static Person createByForm(PersonForm form) {

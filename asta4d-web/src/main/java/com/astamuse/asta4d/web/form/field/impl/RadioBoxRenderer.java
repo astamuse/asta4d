@@ -5,6 +5,7 @@ import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
@@ -82,8 +83,16 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
     protected Renderer addAlternativeDom(final String editTargetSelector, final String nonNullString) {
         Renderer renderer = Renderer.create();
 
-        final String matchSelector = SelectorUtil.attr("value", nonNullString);
-        final String unMatchSelector = SelectorUtil.not(matchSelector);
+        final String matchSelector;
+        final String unMatchSelector;
+
+        if (StringUtils.isEmpty(nonNullString)) {
+            matchSelector = ":not(*)";
+            unMatchSelector = editTargetSelector;
+        } else {
+            matchSelector = SelectorUtil.attr("value", nonNullString);
+            unMatchSelector = SelectorUtil.not(matchSelector);
+        }
 
         final List<String> matchedIdList = new LinkedList<>();
         final List<String> unMatchedIdList = new LinkedList<>();

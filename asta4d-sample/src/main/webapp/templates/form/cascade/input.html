@@ -1,0 +1,29 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link href="../../../css/common.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../../../css/prettify.css" type="text/css" media="all">
+<script type="text/javascript" src="../../../js/prettify.js"></script>
+<title>Asta4D Sample Project</title>
+</head>
+<body onload="prettyPrint()">
+	<h1>Input</h1>
+
+    <!-- @ShowCode:showInputStart -->
+	<section>
+		<article>
+			<form method="post" afd:render="form.CascadeFormSnippet">
+				<afd:embed target="/templates/form/cascade/formContent.html" static></afd:embed>
+				<input type="hidden" name="step-current" value="input">
+				<input type="hidden" name="step-failed" value="input">
+				<button type="submit" name="step-success" value="confirm">confirm</button>
+				<button type="submit" name="step-exit" value="exit">cancel</button>
+			</form>
+		</article>
+	</section>
+    <!-- @ShowCode:showInputEnd -->
+
+
+</body>
+</html>

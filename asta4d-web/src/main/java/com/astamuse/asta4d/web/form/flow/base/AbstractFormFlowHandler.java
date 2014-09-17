@@ -2,6 +2,7 @@ package com.astamuse.asta4d.web.form.flow.base;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -11,11 +12,14 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.DataOperationException;
 import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
+import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
+import com.astamuse.asta4d.web.form.annotation.FormField;
+import com.astamuse.asta4d.web.form.field.FormFieldUtil;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.form.validation.FormValidator;
 import com.astamuse.asta4d.web.form.validation.JsrValidator;
@@ -127,8 +131,50 @@ public abstract class AbstractFormFlowHandler<T> {
 
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         try {
-            return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
-        } catch (DataOperationException e) {
+            T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
+            List<AnnotatedPropertyInfo<FormField>> list = FormFieldUtil.retrieveFormFields(formCls);
+            Context currentContext = Context.getCurrentThreadContext();
+            for (final AnnotatedPropertyInfo<FormField> field : list) {
+                CascadeFormField cff = FormFieldUtil.retrieveCascadeFormFieldAnnotation(field);
+                if (cff != null) {
+                    if (field.retrieveValue(form) != null) {
+                        continue;
+                    }
+
+                    AnnotatedPropertyInfo<FormField> arrayLengthField = FormFieldUtil.retrieveFormField(formCls, cff.arrayLengthField());
+                    if (arrayLengthField == null) {
+                        throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] was not found");
+                    }
+
+                    final Integer len = (Integer) arrayLengthField.retrieveValue(form);
+                    if (len == null) {
+                        throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] is null");
+                    }
+
+                    final Object[] array = (Object[]) Array.newInstance(field.getType().getComponentType(), len);
+                    for (int i = 0; i < len; i++) {
+                        final int seq = i;
+                        Context.with(new DelatedContext(currentContext, seq), new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Object subform = field.getType().getComponentType().newInstance();
+                                    InjectUtil.injectToInstance(subform);
+                                    // TODO retrieve typeunmatch errors and add array index information
+                                    Array.set(array, seq, subform);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
+
+                    }
+
+                    field.assginValue(form, array);
+                }
+            }
+            return form;
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

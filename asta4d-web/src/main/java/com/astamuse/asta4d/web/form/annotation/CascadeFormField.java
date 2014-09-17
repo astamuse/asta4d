@@ -6,20 +6,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
-import com.astamuse.asta4d.web.form.annotation.convert.FormFieldAnnotationConvertor;
-import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
+import com.astamuse.asta4d.web.form.annotation.convert.CascadeFormFieldAnnotationConvertor;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-@ConvertableAnnotation(FormFieldAnnotationConvertor.class)
-public @interface FormField {
+@ConvertableAnnotation(CascadeFormFieldAnnotationConvertor.class)
+public @interface CascadeFormField {
 
     String name() default "";
 
-    String editSelector() default "";
+    String arrayLengthField() default "";
 
-    String displaySelector() default "";
-
-    Class<? extends FormFieldValueRenderer> fieldValueRenderer();
+    String containerSelector() default "";
 
 }

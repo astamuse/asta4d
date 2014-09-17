@@ -1,0 +1,56 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<script>
+function addJob(){
+	var jobLengthElem = document.getElementById("job-length");
+	var jobLength = parseInt(jobLengthElem.getAttribute("value"));
+	
+	var container = document.getElementById("job-experence");
+	var newJobInputHtml="year:<input type=\"text\" name=\"job-year-"+jobLength+"\">desc:<input type=\"text\" name=\"job-description-"+jobLength+"\">";
+	var newJobWrapper = document.createElement("div");
+	newJobWrapper.id = "job-experence-row";
+	newJobWrapper.innerHTML = newJobInputHtml;
+	container.appendChild(newJobWrapper);
+	
+	jobLength++;
+	jobLengthElem.setAttribute("value", jobLength);
+	
+
+}
+</script>
+<table border=0>
+	<tr><td>name:</td><td class="name"><input name="name" type="text"/></td></tr>
+	<tr><td>age:</td><td class="age"><input name="age" type="text"/></td></tr>
+	<tr><td>sex:</td><td class="sex"><input id="sex" name="sex" type="radio"/><label for="sex">M</label></td></tr>
+	<tr><td>bloodtype:</td><td class="bloodtype">
+		<select id="bloodtype" name="bloodtype">
+			<option value="A">A</option>
+			<option value="R" afd:clear>R</option>
+		</select>
+	</td></tr>
+	<tr><td>language:</td><td class="language"><input id="language" name="language" type="checkbox"/><label for="language">M</label></td></tr>
+	<tr><td>memo:</td><td class="memo">
+	<textarea name="memo"></textarea>
+	</td></tr>
+	<tr>
+		<td>job experences:</td>
+		<td>
+			<a href="javascript:addJob()">add job experence</a>
+			<div id="job-experence">
+				<div id="job-experence-row">
+					<input type="hidden" name="job-id-@">
+					<input type="hidden" name="job-person-id-@">
+					year:<input type="text" name="job-year-@">desc:<input type="text" name="job-description-@">
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
+<input type="hidden" name="data_id">
+<input type="hidden" name="action">
+<input type="hidden" name="job-length" id="job-length" value="0">
+</body>
+</html>

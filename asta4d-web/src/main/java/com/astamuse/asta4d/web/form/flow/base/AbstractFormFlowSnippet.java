@@ -1,6 +1,7 @@
 package com.astamuse.asta4d.web.form.flow.base;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.astamuse.asta4d.snippet.InitializableSnippet;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldUtil;
@@ -32,6 +34,15 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         String editSelector;
         String displaySelector;
         FormFieldValueRenderer valueRenderer;
+
+        FieldRenderingInfo replaceArrayIndex(int index) {
+            FieldRenderingInfo newInfo = new FieldRenderingInfo();
+            String rep = String.valueOf(index);
+            newInfo.editSelector = StringUtils.replace(editSelector, "@", rep);
+            newInfo.displaySelector = StringUtils.replace(displaySelector, "@", rep);
+            newInfo.valueRenderer = valueRenderer;
+            return newInfo;
+        }
     }
 
     private static final Map<AnnotatedPropertyInfo<FormField>, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
@@ -54,7 +65,7 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         InjectTrace.restoreTraceList(list);
     }
 
-    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo<FormField> f) {
+    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo<FormField> f, int cascadeFormArrayIndex) {
         FieldRenderingInfo info = FieldRenderingInfoMap.get(f);
         if (info == null) {
 
@@ -88,7 +99,11 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
                 FieldRenderingInfoMap.put(f, info);
             }
         }
-        return info;
+        if (cascadeFormArrayIndex >= 0) {
+            return info.replaceArrayIndex(cascadeFormArrayIndex);
+        } else {
+            return info;
+        }
     }
 
     public Renderer render(@ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
@@ -105,10 +120,10 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
         Object form = formTraceMap.get(renderTargetStep);
 
-        return renderer.add(renderFieldValue(renderTargetStep, form));
+        return renderer.add(renderFieldValue(renderTargetStep, form, -1));
     }
 
-    protected Renderer renderFieldValue(String renderTargetStep, Object form) throws Exception {
+    protected Renderer renderFieldValue(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
         Renderer render = Renderer.create();
         if (form == null) {
             return render;
@@ -119,16 +134,52 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
         List<FormFieldDataPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldDataPrepareRenderer(renderTargetStep, form);
 
         for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField());
+            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), cascadeFormArrayIndex);
             render.add(formFieldDataPrepareRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
+        render.add(renderValues(renderTargetStep, form, cascadeFormArrayIndex));
+
+        for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
+            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), cascadeFormArrayIndex);
+            render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
+        }
+
+        return render;
+    }
+
+    private Renderer renderValues(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
+        Renderer render = Renderer.create();
         List<AnnotatedPropertyInfo<FormField>> fieldList = FormFieldUtil.retrieveFormFields(form.getClass());
 
         for (AnnotatedPropertyInfo<FormField> field : fieldList) {
+
             Object v = field.retrieveValue(form);
 
-            // TODO wrong rendering for null
+            CascadeFormField cff = FormFieldUtil.retrieveCascadeFormFieldAnnotation(field);
+            if (cff != null) {
+                String containerSelector = cff.containerSelector();
+
+                if (field.getType().isArray()) {
+                    int len = Array.getLength(v);
+                    List<Renderer> subRendererList = new ArrayList<>(len);
+                    for (int i = 0; i < len; i++) {
+                        Object subForm = Array.get(v, i);
+                        Renderer subRenderer = rewriteCascadeFormArrayFieldsRef(renderTargetStep, subForm, i);
+                        subRendererList.add(subRenderer.add(renderFieldValue(renderTargetStep, subForm, i)));
+                    }
+                    render.add(containerSelector, subRendererList);
+                } else {
+
+                    if (StringUtils.isNotEmpty(containerSelector)) {
+                        render.add(containerSelector, renderFieldValue(renderTargetStep, v, -1));
+                    } else {
+                        render.add(renderFieldValue(renderTargetStep, v, -1));
+                    }
+                }
+                continue;
+            }
+
             if (v == null) {
                 @SuppressWarnings("rawtypes")
                 ContextDataHolder valueHolder;
@@ -144,7 +195,7 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
                 }
             }
 
-            FieldRenderingInfo renderingInfo = getRenderingInfo(field);
+            FieldRenderingInfo renderingInfo = getRenderingInfo(field, cascadeFormArrayIndex);
 
             // render.addDebugger("whole form before: " + field.getName());
 
@@ -153,19 +204,29 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
             } else {
                 render.add(renderingInfo.valueRenderer.renderForDisplay(renderingInfo.editSelector, renderingInfo.displaySelector, v));
             }
-
         }
-
-        for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField());
-            render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
-        }
-
         return render;
     }
 
     protected String displayElementSelectorForField(String fieldName) {
         return "#" + fieldName + "-display";
+    }
+
+    protected Renderer rewriteCascadeFormArrayFieldsRef(final String renderTargetStep, final Object form, final int cascadeFormArrayIndex) {
+        return Renderer.create("[id],[name]", new ElementSetter() {
+            @Override
+            public void set(Element elem) {
+                String id = elem.id();
+                String name = elem.attr("name");
+                String rep = String.valueOf(cascadeFormArrayIndex);
+                if (StringUtils.isNotEmpty(id)) {
+                    elem.attr("id", StringUtils.replace(id, "@", rep));
+                }
+                if (StringUtils.isNotEmpty(name)) {
+                    elem.attr("name", StringUtils.replace(name, "@", rep));
+                }
+            }
+        });
     }
 
     /**

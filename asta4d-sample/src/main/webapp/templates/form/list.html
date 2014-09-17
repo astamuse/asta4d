@@ -15,21 +15,25 @@ function getId(){
 }
 function onestepadd(){
 	location.href="form/onestep/edit?action=add";
-	
 }
 function onestepmod(){
 	location.href="form/onestep/edit?action=edit&id="+getId();
-	
 }
 
 function mstepadd(){
 	location.href="form/multistep?action=add";
-	
 }
 
 function mstepmod(){
-	location.href="form/multistep?action=edit&id="+getId();
-	
+	location.href="form/multistep?action=edit&id="+getId();	
+}
+
+function casadd(){
+	location.href="form/cascade?action=add";
+}
+
+function casmod(){
+	location.href="form/cascade?action=edit&id="+getId();	
 }
 
 </script>
@@ -59,6 +63,7 @@ function mstepmod(){
 	<ul>
 	<li>one step: <input type=button value="add" onclick="onestepadd()"> <input type=button value="modify" onclick="onestepmod()">
 	<li>with confirm and complete<input type=button value="add" onclick="mstepadd()"> <input type=button value="modify" onclick="mstepmod()">
+	<li>cascade form(with array child form)<input type=button value="add" onclick="casadd()"> <input type=button value="modify" onclick="casmod()">
 	<li>splitted input<input type=button value="add(not implemented)" disabled> <input type=button value="modify(not implemented)" disabled>
 	</ul>
 	<input type=button value="delete(not implemented)" disabled>

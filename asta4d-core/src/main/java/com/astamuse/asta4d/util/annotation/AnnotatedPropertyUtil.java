@@ -97,7 +97,7 @@ public class AnnotatedPropertyUtil {
                 String getterName = "get" + propertySuffixe;
                 Method getter = null;
                 try {
-                    getter = cls.getMethod(getterName, method.getReturnType());
+                    getter = cls.getMethod(getterName);
                 } catch (NoSuchMethodException | SecurityException e) {
                     String msg = "Could not find getter method:[{}:{}] in class[{}] for annotated setter:[{}]";
                     logger.warn(msg, new Object[] { getterName, method.getReturnType().getName(), cls.getName(), method.getName() });

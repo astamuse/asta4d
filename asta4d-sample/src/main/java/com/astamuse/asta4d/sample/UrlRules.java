@@ -26,6 +26,7 @@ import com.astamuse.asta4d.sample.handler.AddUserHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
+import com.astamuse.asta4d.sample.handler.form.CascadeEditHandler;
 import com.astamuse.asta4d.sample.handler.form.MultiStepEditHandler;
 import com.astamuse.asta4d.sample.handler.form.OneStepEditHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
@@ -106,6 +107,10 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add((HttpMethod)null, "/app/form/multistep")
             .handler(MultiStepEditHandler.class)
+            .redirect("/app/form");
+        
+        rules.add((HttpMethod)null, "/app/form/cascade")
+            .handler(CascadeEditHandler.class)
             .redirect("/app/form");
         
            
