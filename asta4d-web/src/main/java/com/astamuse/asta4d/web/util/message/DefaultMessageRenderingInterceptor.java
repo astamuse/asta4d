@@ -1,87 +1,97 @@
 package com.astamuse.asta4d.web.util.message;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.astamuse.asta4d.interceptor.PageInterceptor;
+import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.template.Template;
+import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
 public class DefaultMessageRenderingInterceptor implements PageInterceptor {
 
-    private String messageContainerParentSelector = "body";
-
-    private String messageContainerSnippetFile = "/com/astamuse/asta4d/web/util/message/DefaultMessageContainerSnippet.html";
-
-    private String cachedSnippet = null;
+    private Elements cachedSnippet = null;
 
     public DefaultMessageRenderingInterceptor() {
         super();
     }
 
-    public DefaultMessageRenderingInterceptor(String messageContainerParentSelector, String messageContainerSnippetFile) {
-        super();
-        this.messageContainerParentSelector = messageContainerParentSelector;
-        this.messageContainerSnippetFile = messageContainerSnippetFile;
-    }
-
     @Override
     public void prePageRendering(Renderer renderer) {
-        renderer.add(messageContainerParentSelector, new ElementSetter() {
-            @Override
-            public void set(Element elem) {
-                elem.prepend(retrieveContainerSnippet());
-            }
-        });
+
     }
 
     @Override
     public void postPageRendering(Renderer renderer) {
+        final WebApplicationConfiguration configuration = WebApplicationConfiguration.getWebApplicationConfiguration();
         Renderer msgRenderer = retrieveMessageRenderingHelper().createMessageRenderer();
+
         if (msgRenderer != null) {
+            renderer.add(new ElementNotFoundHandler(configuration.getMessageGlobalContainerSelector()) {
+                @Override
+                public Renderer alternativeRenderer() {
+                    // add global message container if not exists
+                    return Renderer.create(configuration.getMessageGlobalContainerParentSelector(), new ElementSetter() {
+                        @Override
+                        public void set(Element elem) {
+                            List<Element> elems = new ArrayList<>(retrieveCachedContainerSnippet());
+                            Collections.reverse(elems);
+                            for (Element child : elems) {
+                                elem.prependChild(ElementUtil.safeClone(child));
+                            }
+                        }
+                    });
+                }// alternativeRenderer
+            });// ElementNotFoundHandler
+
             renderer.add(msgRenderer);
         }
     }
 
-    protected String retrieveContainerSnippet() {
-        if (cachedSnippet == null) {
-            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(messageContainerSnippetFile);
-            try {
-                String snippet = IOUtils.toString(stream, StandardCharsets.UTF_8);
-                if (WebApplicationConfiguration.getWebApplicationConfiguration().isCacheEnable()) {
-                    cachedSnippet = snippet;
-                }
-                return snippet;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+    protected Elements retrieveCachedContainerSnippet() {
+        if (WebApplicationConfiguration.getWebApplicationConfiguration().isCacheEnable()) {
+            if (cachedSnippet == null) {
+                cachedSnippet = retrieveContainerSnippet();
             }
-        } else {
             return cachedSnippet;
+        } else {
+            return retrieveContainerSnippet();
         }
 
     }
 
+    protected Elements retrieveContainerSnippet() {
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
+        String path = conf.getMessageGlobalContainerSnippetFilePath();
+        Template template;
+        try {
+            // at first, we treat the configured snippet file as a template file
+            template = conf.getTemplateResolver().findTemplate(path);
+            if (template == null) {
+                // then treat it as classpath resource
+                InputStream input = this.getClass().getClassLoader().getResourceAsStream(path);
+                if (input == null) {
+                    throw new NullPointerException("Configured message container snippet file[" + path + "] was not found");
+                }
+                template = new Template(path, input);
+            }
+            return template.getDocumentClone().body().children();
+        } catch (TemplateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected MessageRenderingHelper retrieveMessageRenderingHelper() {
         return DefaultMessageRenderingHelper.instance();
-    }
-
-    public void setMessageContainerParentSelector(String messageContainerParentSelector) {
-        this.messageContainerParentSelector = messageContainerParentSelector;
-    }
-
-    public void setMessageContainerSnippetFile(String messageContainerSnippetFile) {
-        this.messageContainerSnippetFile = messageContainerSnippetFile;
     }
 
 }

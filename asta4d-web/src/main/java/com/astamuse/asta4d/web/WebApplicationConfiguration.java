@@ -23,18 +23,26 @@ import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
+import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
-import com.astamuse.asta4d.web.util.GlobalRenderingInterceptor;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingInterceptor;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
+
+    private String messageGlobalContainerParentSelector = "body";
+
+    private String messageGlobalContainerSelector = "#global-msg-container";
+
+    private String messageGlobalContainerSnippetFilePath = "/com/astamuse/asta4d/web/util/message/DefaultMessageContainerSnippet.html";
+
+    private PageInterceptor messageRenderingPageInterceptor = new DefaultMessageRenderingInterceptor();
 
     private RequestHandlerInvokerFactory requestHandlerInvokerFactory;
 
@@ -60,8 +68,21 @@ public class WebApplicationConfiguration extends Configuration {
     protected List<PageInterceptor> createDefaultPageInterceptorList() {
         // afford a convenience for global rendering by default
         List<PageInterceptor> pageInterceptorList = new LinkedList<>();
-        pageInterceptorList.add(new GlobalRenderingInterceptor());
-        pageInterceptorList.add(new DefaultMessageRenderingInterceptor());
+        // configurable message rendering interceptor
+        pageInterceptorList.add(new PageInterceptor() {
+
+            @Override
+            public void prePageRendering(Renderer renderer) {
+                WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingPageInterceptor()
+                        .prePageRendering(renderer);
+            }
+
+            @Override
+            public void postPageRendering(Renderer renderer) {
+                WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingPageInterceptor()
+                        .postPageRendering(renderer);
+            }
+        });
         return pageInterceptorList;
     }
 
@@ -82,6 +103,38 @@ public class WebApplicationConfiguration extends Configuration {
 
     public void setFlashScopeForwardParameterName(String flashScopeForwardParameterName) {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
+    }
+
+    public String getMessageGlobalContainerParentSelector() {
+        return messageGlobalContainerParentSelector;
+    }
+
+    public void setMessageGlobalContainerParentSelector(String messageGlobalContainerParentSelector) {
+        this.messageGlobalContainerParentSelector = messageGlobalContainerParentSelector;
+    }
+
+    public String getMessageGlobalContainerSelector() {
+        return messageGlobalContainerSelector;
+    }
+
+    public void setMessageGlobalContainerSelector(String messageGlobalContainerSelector) {
+        this.messageGlobalContainerSelector = messageGlobalContainerSelector;
+    }
+
+    public String getMessageGlobalContainerSnippetFilePath() {
+        return messageGlobalContainerSnippetFilePath;
+    }
+
+    public void setMessageGlobalContainerSnippetFilePath(String messageGlobalContainerSnippetFilePath) {
+        this.messageGlobalContainerSnippetFilePath = messageGlobalContainerSnippetFilePath;
+    }
+
+    public PageInterceptor getMessageRenderingPageInterceptor() {
+        return messageRenderingPageInterceptor;
+    }
+
+    public void setMessageRenderingPageInterceptor(PageInterceptor messageRenderingPageInterceptor) {
+        this.messageRenderingPageInterceptor = messageRenderingPageInterceptor;
     }
 
     public RequestHandlerInvokerFactory getRequestHandlerInvokerFactory() {

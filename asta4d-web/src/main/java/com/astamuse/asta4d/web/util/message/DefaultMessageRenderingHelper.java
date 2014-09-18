@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.web.util.message;
 
-import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,6 +16,7 @@ import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.collection.RowRenderer;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 
@@ -52,8 +51,6 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         });
     }
 
-    private String defaultGlobalContainerSelector = "#global-msg-container";
-
     private String defaultInfoMsgSelector = "#info-msg li";
 
     private String defaultWarnMsgSelector = "#warn-msg li";
@@ -73,10 +70,6 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     public final static DefaultMessageRenderingHelper instance() {
         return instance;
-    }
-
-    public void setDefaultGlobalContainerSelector(String defaultGlobalContainerSelector) {
-        this.defaultGlobalContainerSelector = defaultGlobalContainerSelector;
     }
 
     public void setDefaultInfoMsgSelector(String defaultInfoMsgSelector) {
@@ -100,6 +93,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         }
 
         allMsgList.addAll(messageList.get());
+
+        if (allMsgList.isEmpty()) {
+            return null;
+        }
 
         Renderer renderer = Renderer.create();
 
@@ -133,7 +130,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                     @Override
                     public Renderer convert(int rowIndex, MessageHolder obj) {
                         Renderer render = Renderer.create(obj.selector, obj.message);
-                        render.add(obj.selector, "-class", "x-msg-stub");
+                        // render.add(obj.selector, "-class", "x-msg-stub");
                         return render;
                     }
                 });
@@ -157,7 +154,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
         renderer.enableMissingSelectorWarning();
 
-        renderer.add(defaultGlobalContainerSelector, new ElementSetter() {
+        renderer.add(WebApplicationConfiguration.getWebApplicationConfiguration().getMessageGlobalContainerSelector(), new ElementSetter() {
             @Override
             public void set(Element elem) {
                 Renderer alternativeRenderer = Renderer.create();
@@ -166,7 +163,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                         @Override
                         public Renderer convert(int rowIndex, String msg) {
                             Renderer render = Renderer.create("*", msg);
-                            render.add("*", "-class", "x-msg-stub");
+                            // render.add("*", "-class", "x-msg-stub");
                             return render;
                         }
                     });
@@ -175,7 +172,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
             }
         });
 
-        renderer.add(".x-msg-stub", Clear);
+        // renderer.add(".x-msg-stub", Clear);
 
         return renderer;
 
