@@ -11,6 +11,8 @@ public class JobExperence implements IdentifiableEntity, Cloneable {
 
     private Integer personId;
 
+    @Min(1900)
+    @Max(2020)
     private Integer year;
 
     private String description;
@@ -34,8 +36,6 @@ public class JobExperence implements IdentifiableEntity, Cloneable {
         this.personId = personId;
     }
 
-    @Min(1900)
-    @Max(2020)
     public Integer getYear() {
         return year;
     }
