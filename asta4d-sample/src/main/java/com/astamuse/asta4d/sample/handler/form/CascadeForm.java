@@ -2,6 +2,8 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import javax.validation.Valid;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
@@ -16,8 +18,9 @@ public class CascadeForm {
     @InputHidden(name = "job-length")
     private Integer jobLength;
 
-    @CascadeFormField(arrayLengthField = "job-length", containerSelector = "#job-experence-row")
+    @CascadeFormField(name = "job", arrayLengthField = "job-length", containerSelector = "#job-experence-row")
     @Valid
+    @NotEmpty
     private JobForm[] jobForms;
 
     public PersonForm getPersonForm() {

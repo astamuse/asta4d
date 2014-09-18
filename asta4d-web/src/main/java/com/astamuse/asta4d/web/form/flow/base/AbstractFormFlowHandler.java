@@ -130,13 +130,17 @@ public abstract class AbstractFormFlowHandler<T> {
 
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         try {
-            T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
+            final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
             List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
             Context currentContext = Context.getCurrentThreadContext();
             for (final AnnotatedPropertyInfo field : list) {
                 CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
                 if (cff != null) {
                     if (field.retrieveValue(form) != null) {
+                        continue;
+                    }
+
+                    if (StringUtils.isEmpty(cff.arrayLengthField())) {
                         continue;
                     }
 
@@ -159,8 +163,23 @@ public abstract class AbstractFormFlowHandler<T> {
                                 try {
                                     Object subform = field.getType().getComponentType().newInstance();
                                     InjectUtil.injectToInstance(subform);
-                                    // TODO retrieve typeunmatch errors and add array index information
                                     Array.set(array, seq, subform);
+                                    // TODO retrieve typeunmatch errors and add array index information
+                                    /*
+                                    List<AnnotatedPropertyInfo> subPropList = AnnotatedPropertyUtil.retrieveProperties(subform.getClass());
+                                    for (AnnotatedPropertyInfo subProp : subPropList) {
+                                        ContextDataHolder valueHolder;
+                                        if (subProp.getField() != null) {
+                                            valueHolder = InjectTrace.getInstanceInjectionTraceInfo(subform, subProp.getField());
+                                        } else {
+                                            valueHolder = InjectTrace.getInstanceInjectionTraceInfo(subform, subProp.getSetter());
+                                        }
+                                        if (valueHolder != null) {
+                                            String rewriteName = CascadeFormUtil.rewriteFieldName(subProp.getName(), seq);
+                                            InjectTrace.saveInstanceInjectionTraceInfo(array, rewriteName, valueHolder);
+                                        }
+                                    }
+                                    */
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }

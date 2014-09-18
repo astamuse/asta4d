@@ -64,6 +64,7 @@ public class InjectUtil {
      * 
      */
     private static class TargetInfo {
+        AnnotatedPropertyInfo propertyInfo;
         String name;
         String scope;
         TypeUnMacthPolicy typeUnMatch;
@@ -333,6 +334,7 @@ public class InjectUtil {
             if (prop.getField() != null) {
                 Field field = prop.getField();
                 FieldInfo fi = new FieldInfo();
+                fi.propertyInfo = prop;
                 fi.name = prop.getName();
                 fi.field = field;
                 fi.type = field.getType();
@@ -354,6 +356,7 @@ public class InjectUtil {
 
             } else {// for method
                 MethodInfo mi = new MethodInfo();
+                mi.propertyInfo = prop;
                 mi.name = prop.getName();
                 mi.method = prop.getSetter();
                 if (mi.method == null) {
