@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,7 +33,13 @@ import com.astamuse.asta4d.web.util.redirect.RedirectUtil;
 
 public class RedirectTargetProvider implements ContentProvider {
 
+    private static final List<Runnable> beforeRedirectTaskList = new CopyOnWriteArrayList<Runnable>();
+
     private static final String FlashScopeDataListKey = RedirectTargetProvider.class.getName() + "##FlashScopeDataListKey";
+
+    public static void registerBeforeRedirectTask(Runnable runnable) {
+        beforeRedirectTaskList.add(runnable);
+    }
 
     public static void addFlashScopeData(Map<String, Object> flashScopeData) {
         if (flashScopeData == null || flashScopeData.isEmpty()) {
@@ -114,6 +121,11 @@ public class RedirectTargetProvider implements ContentProvider {
         if (url == null) {
             addFlashScopeData(flashScopeData);
         } else {
+
+            for (Runnable runnable : beforeRedirectTaskList) {
+                runnable.run();
+            }
+
             Map<String, Object> dataMap = new HashMap<String, Object>();
             WebApplicationContext context = Context.getCurrentThreadContext();
             List<Map<String, Object>> dataList = context.getData(FlashScopeDataListKey);

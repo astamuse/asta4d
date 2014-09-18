@@ -246,8 +246,6 @@ public abstract class AbstractFormFlowHandler<T> {
     protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap, CommonFormResult result) {
         T form = (T) traceMap.get(currentStep);
         if (passDataToSnippetByFlash(currentStep, renderTargetStep, form, result)) {
-            DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.instance();
-            msgHelper.saveMessageListToFlash();
 
             RedirectTargetProvider.addFlashScopeData(AbstractFormFlowSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
 

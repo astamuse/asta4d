@@ -41,6 +41,17 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     }
 
+    static {
+        // register a before redirect task
+        RedirectTargetProvider.registerBeforeRedirectTask(new Runnable() {
+            @Override
+            public void run() {
+                List<MessageHolder> list = new ArrayList<>(instance.messageList.get());
+                RedirectTargetProvider.addFlashScopeData(FLASH_MSG_LIST_KEY, list);
+            }
+        });
+    }
+
     private String defaultGlobalContainerSelector = "#global-msg-container";
 
     private String defaultInfoMsgSelector = "#info-msg li";
@@ -198,8 +209,4 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         outputMessage(selector, defaultErrMsgSelector, msg);
     }
 
-    public void saveMessageListToFlash() {
-        ArrayList<MessageHolder> list = new ArrayList<>(messageList.get());
-        RedirectTargetProvider.addFlashScopeData(FLASH_MSG_LIST_KEY, list);
-    }
 }
