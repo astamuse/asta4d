@@ -204,14 +204,20 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     public Renderer createMessageRenderer() {
         Renderer renderer = Renderer.create();
-        renderer.add(prepareAlternativeContainer());
-        renderer.add(renderMesssages());
-        renderer.add(postMessageRendering());
+
+        Renderer message = renderMesssages();
+        if (message != null) {
+            renderer.add(prepareAlternativeContainer());
+            renderer.add(message);
+            renderer.add(postMessageRendering());
+        }
+
         return renderer;
     }
 
     protected Renderer prepareAlternativeContainer() {
-        return new ElementNotFoundHandler(messageGlobalContainerSelector) {
+
+        return Renderer.create(messageGlobalContainerParentSelector, new ElementNotFoundHandler(messageGlobalContainerSelector) {
             @Override
             public Renderer alternativeRenderer() {
                 // add global message container if not exists
@@ -226,7 +232,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                     }
                 });
             }// alternativeRenderer
-        };// ElementNotFoundHandler
+        });// ElementNotFoundHandler
     }
 
     protected Renderer postMessageRendering() {
@@ -249,11 +255,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
         allMsgList.addAll(messageList.get());
 
-        Renderer renderer = Renderer.create();
-
         if (allMsgList.isEmpty()) {
-            return renderer;
+            return null;
         }
+        Renderer renderer = Renderer.create();
 
         final Map<MessageRenderingSelector, List<MessageHolder>> msgMap = new HashMap<>();
         final Map<MessageRenderingSelector, List<String>> alternativeMsgMap = new HashMap<>();
