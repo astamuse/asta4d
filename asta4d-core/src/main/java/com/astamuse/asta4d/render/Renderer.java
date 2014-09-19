@@ -107,6 +107,9 @@ public class Renderer {
     }
 
     private void init(String selector, List<Transformer<?>> transformerList) {
+        if (selector == null) {
+            throw new NullPointerException("selector cannot be null");
+        }
         this.selector = selector;
         this.transformerList = transformerList;
         chain = new ArrayList<>();
