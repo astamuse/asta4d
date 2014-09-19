@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextBindData;
@@ -31,9 +33,9 @@ import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider
 
 public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
-    private final static String FLASH_MSG_LIST_KEY = "FLASH_MSG_LIST_KEY#" + DefaultMessageRenderingHelper.class;
+    private static final Logger logger = LoggerFactory.getLogger(DefaultMessageRenderingHelper.class);
 
-    private final static DefaultMessageRenderingHelper instance = new DefaultMessageRenderingHelper();
+    private final static String FLASH_MSG_LIST_KEY = "FLASH_MSG_LIST_KEY#" + DefaultMessageRenderingHelper.class;
 
     protected final static class MessageHolder {
         MessageRenderingSelector selector;
@@ -54,6 +56,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         private String duplicator;
 
         private String valueTarget;
+
+        public MessageRenderingSelector() {
+
+        }
 
         public MessageRenderingSelector(String duplicator, String valueTarget) {
             super();
@@ -109,9 +115,11 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
     static {
         // register a before redirect task
         RedirectTargetProvider.registerBeforeRedirectTask(new Runnable() {
+            DefaultMessageRenderingHelper helper = new DefaultMessageRenderingHelper();
+
             @Override
             public void run() {
-                List<MessageHolder> list = new ArrayList<>(instance.messageList.get());
+                List<MessageHolder> list = new ArrayList<>(helper.messageList.get());
                 if (!list.isEmpty()) {
                     RedirectTargetProvider.addFlashScopeData(FLASH_MSG_LIST_KEY, list);
                 }
@@ -131,7 +139,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     private MessageRenderingSelector messageGlobalErrSelector = new MessageRenderingSelector("#err-msg li", ":root");
 
-    private String messageDuplicatorIndicatorAttrName = "messageduplicator";
+    private String messageDuplicatorIndicatorAttrName = "afd:message-duplicator";
 
     private Elements cachedSnippet = null;
 
@@ -213,9 +221,8 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         if (message != null) {
             renderer.add(prepareAlternativeContainer());
             renderer.add(message);
-            renderer.add(postMessageRendering());
         }
-
+        renderer.add(postMessageRendering());
         return renderer;
     }
 
@@ -241,7 +248,11 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     protected Renderer postMessageRendering() {
         // remove all the remaining message duplicators which may not be referenced in message outputting, which is why they are remaining
-        return Renderer.create(SelectorUtil.attr(messageDuplicatorIndicatorAttrName), Clear);
+        Renderer render = Renderer.create();
+        render.disableMissingSelectorWarning();
+        render.add(SelectorUtil.attr(messageDuplicatorIndicatorAttrName), Clear);
+        render.enableMissingSelectorWarning();
+        return render;
     }
 
     /**
