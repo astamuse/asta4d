@@ -143,10 +143,11 @@ public class InjectUtil {
      * @throws DataOperationException
      */
     public final static void injectToInstance(Object instance) throws DataOperationException {
-        try {
-            InstanceWireTarget target = getInstanceTarget(instance);
 
-            for (FieldInfo fi : target.setFieldList) {
+        InstanceWireTarget target = getInstanceTarget(instance);
+
+        for (FieldInfo fi : target.setFieldList) {
+            try {
                 ContextDataHolder valueHolder = null;
                 if (fi.isContextDataHolder) {
                     valueHolder = (ContextDataHolder) FieldUtils.readField(fi.field, instance);
@@ -171,10 +172,14 @@ public class InjectUtil {
                 } else {
                     FieldUtils.writeField(fi.field, instance, foundData.getValue(), true);
                 }
-
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException e) {
+                throw new DataOperationException("Exception when inject value to " + fi.field.toString(), e);
             }
 
-            for (MethodInfo mi : target.setMethodList) {
+        }
+
+        for (MethodInfo mi : target.setMethodList) {
+            try {
                 ContextDataHolder valueHolder = mi.createDataHolderInstance();
                 Class searchType = valueHolder.getTypeCls();
                 if (searchType == null) {
@@ -189,10 +194,11 @@ public class InjectUtil {
                 } else {
                     mi.method.invoke(instance, foundData.getValue());
                 }
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e) {
+                throw new DataOperationException("Exception when inject value to " + mi.method.toString(), e);
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
-            throw new DataOperationException("Exception when inject value to instance of " + instance.getClass().toString(), e);
         }
+
     }
 
     private static void handleTypeUnMatch(Object instance, FieldInfo target, ContextDataHolder valueHolder) throws DataOperationException {
@@ -296,14 +302,13 @@ public class InjectUtil {
                 value = mi.method.invoke(instance);
                 context.setData(mi.scope, mi.name, value);
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             String msg = String.format("Exception when inject value from instance of [%s] to Context.", instance.getClass().toString());
             throw new DataOperationException(msg, e);
         }
     }
 
-    private final static InstanceWireTarget getInstanceTarget(Object instance) throws DataOperationException, InstantiationException,
-            IllegalAccessException {
+    private final static InstanceWireTarget getInstanceTarget(Object instance) throws DataOperationException {
         boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
         InstanceWireTarget target = null;
         if (cacheEnable) {
@@ -319,8 +324,7 @@ public class InjectUtil {
         return target;
     }
 
-    private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException, InstantiationException,
-            IllegalAccessException {
+    private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException {
         List<String> reverseTargetScopes = Configuration.getConfiguration().getReverseInjectableScopes();
 
         InstanceWireTarget target = new InstanceWireTarget();
@@ -328,58 +332,64 @@ public class InjectUtil {
 
         List<AnnotatedPropertyInfo> propertyList = AnnotatedPropertyUtil.retrieveProperties(cls);
 
-        for (AnnotatedPropertyInfo prop : propertyList) {
-            ContextData cd = prop.getAnnotation(ContextData.class);
+        try {
+            for (AnnotatedPropertyInfo prop : propertyList) {
+                ContextData cd = prop.getAnnotation(ContextData.class);
 
-            if (prop.getField() != null) {
-                Field field = prop.getField();
-                FieldInfo fi = new FieldInfo();
-                fi.propertyInfo = prop;
-                fi.name = prop.getName();
-                fi.field = field;
-                fi.type = field.getType();
-                fi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(fi.type);
+                if (prop.getField() != null) {
+                    Field field = prop.getField();
+                    FieldInfo fi = new FieldInfo();
+                    fi.propertyInfo = prop;
+                    fi.name = prop.getName();
+                    fi.field = field;
+                    fi.type = field.getType();
+                    fi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(fi.type);
 
-                fi.scope = cd.scope();
-                fi.typeUnMatch = cd.typeUnMatch();
-                fi.fixForPrimitiveType();
+                    fi.scope = cd.scope();
+                    fi.typeUnMatch = cd.typeUnMatch();
+                    fi.fixForPrimitiveType();
 
-                ContextDataSet cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, fi.type.getAnnotations());
-                if (cdSet == null) {
-                    fi.contextDataSetFactory = null;
-                } else {
-                    fi.contextDataSetFactory = cdSet.factory().newInstance();
-                    fi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
+                    ContextDataSet cdSet = ConvertableAnnotationRetriever
+                            .retrieveAnnotation(ContextDataSet.class, fi.type.getAnnotations());
+                    if (cdSet == null) {
+                        fi.contextDataSetFactory = null;
+                    } else {
+                        fi.contextDataSetFactory = cdSet.factory().newInstance();
+                        fi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
+                    }
+
+                    target.setFieldList.add(fi);
+
+                } else {// for method
+                    MethodInfo mi = new MethodInfo();
+                    mi.propertyInfo = prop;
+                    mi.name = prop.getName();
+                    mi.method = prop.getSetter();
+                    if (mi.method == null) {
+                        throw new DataOperationException("Could not find setter method for annotated property:" + prop.getName());
+                    }
+                    mi.type = mi.method.getParameterTypes()[0];
+                    mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
+
+                    mi.scope = cd.scope();
+                    mi.typeUnMatch = cd.typeUnMatch();
+                    mi.fixForPrimitiveType();
+
+                    ContextDataSet cdSet = ConvertableAnnotationRetriever
+                            .retrieveAnnotation(ContextDataSet.class, mi.type.getAnnotations());
+                    if (cdSet == null) {
+                        mi.contextDataSetFactory = null;
+                    } else {
+                        mi.contextDataSetFactory = cdSet.factory().newInstance();
+                        mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
+                    }
+                    target.setMethodList.add(mi);
+
                 }
-
-                target.setFieldList.add(fi);
-
-            } else {// for method
-                MethodInfo mi = new MethodInfo();
-                mi.propertyInfo = prop;
-                mi.name = prop.getName();
-                mi.method = prop.getSetter();
-                if (mi.method == null) {
-                    throw new DataOperationException("Could not find setter method for annotated property:" + prop.getName());
-                }
-                mi.type = mi.method.getParameterTypes()[0];
-                mi.isContextDataHolder = ContextDataHolder.class.isAssignableFrom(mi.type);
-
-                mi.scope = cd.scope();
-                mi.typeUnMatch = cd.typeUnMatch();
-                mi.fixForPrimitiveType();
-
-                ContextDataSet cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, mi.type.getAnnotations());
-                if (cdSet == null) {
-                    mi.contextDataSetFactory = null;
-                } else {
-                    mi.contextDataSetFactory = cdSet.factory().newInstance();
-                    mi.isContextDataSetSingletonInContext = cdSet.singletonInContext();
-                }
-                target.setMethodList.add(mi);
 
             }
-
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new DataOperationException("Exception occured on generating injection information of " + instance.getClass(), e);
         }
 
         return target;
