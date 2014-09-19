@@ -107,6 +107,8 @@ public class Page {
                 RenderUtil.applyClearAction(doc, true);
             }
         });
+        // clear after page interceptors was executed
+        RenderUtil.applyClearAction(doc, true);
         return doc;
     }
 
