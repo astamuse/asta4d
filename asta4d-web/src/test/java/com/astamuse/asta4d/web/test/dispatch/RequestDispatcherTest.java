@@ -107,7 +107,7 @@ public class RequestDispatcherTest {
             context = new WebApplicationContext();
             Context.setCurrentThreadContext(context);
         }
-        context.clear();
+        context.init();
         WebApplicationContext webContext = (WebApplicationContext) context;
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
