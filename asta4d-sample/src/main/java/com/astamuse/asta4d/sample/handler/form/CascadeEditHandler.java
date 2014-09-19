@@ -2,7 +2,6 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import java.util.List;
 
-import com.astamuse.asta4d.sample.MessageRenderingHelperFactory;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
 import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
@@ -10,6 +9,7 @@ import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
+import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 public class CascadeEditHandler extends MultiStepFormFlowHandler<CascadeForm> {
 
@@ -73,7 +73,7 @@ public class CascadeEditHandler extends MultiStepFormFlowHandler<CascadeForm> {
                 JobExperenceDbManager.instance().add(job);
             }
 
-            MessageRenderingHelperFactory.getHelper().info("data inserted");
+            DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
             break;
         case "edit":
             PersonDbManager.instance().update(pform);
@@ -86,7 +86,7 @@ public class CascadeEditHandler extends MultiStepFormFlowHandler<CascadeForm> {
                 }
             }
 
-            MessageRenderingHelperFactory.getHelper().info("update succeed");
+            DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
             break;
         default:
             //

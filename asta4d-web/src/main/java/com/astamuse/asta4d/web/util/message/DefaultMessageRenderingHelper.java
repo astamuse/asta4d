@@ -146,6 +146,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         super();
     }
 
+    public static DefaultMessageRenderingHelper getConfiguredInstance() {
+        return (DefaultMessageRenderingHelper) WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingHelper();
+    }
+
     public String getMessageGlobalContainerParentSelector() {
         return messageGlobalContainerParentSelector;
     }

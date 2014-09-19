@@ -16,7 +16,6 @@ import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
-import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
@@ -37,8 +36,7 @@ public abstract class AbstractFormFlowHandler<T> {
 
     private static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#IntelligentFormHandler";
 
-    private DefaultMessageRenderingHelper msgHelper = (DefaultMessageRenderingHelper) WebApplicationConfiguration
-            .getWebApplicationConfiguration().getMessageRenderingHelper();
+    private DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
 
     private Class<? extends FormProcessData> formProcessDataCls;
     private Class formCls;
