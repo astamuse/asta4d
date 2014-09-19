@@ -30,19 +30,14 @@ import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
-import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingInterceptor;
+import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
+import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
 
-    private String messageGlobalContainerParentSelector = "body";
-
-    private String messageGlobalContainerSelector = "#global-msg-container";
-
-    private String messageGlobalContainerSnippetFilePath = "/com/astamuse/asta4d/web/util/message/DefaultMessageContainerSnippet.html";
-
-    private PageInterceptor messageRenderingPageInterceptor = new DefaultMessageRenderingInterceptor();
+    private MessageRenderingHelper messageRenderingHelper = new DefaultMessageRenderingHelper();
 
     private RequestHandlerInvokerFactory requestHandlerInvokerFactory;
 
@@ -73,14 +68,15 @@ public class WebApplicationConfiguration extends Configuration {
 
             @Override
             public void prePageRendering(Renderer renderer) {
-                WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingPageInterceptor()
-                        .prePageRendering(renderer);
+                // do nothing
             }
 
             @Override
             public void postPageRendering(Renderer renderer) {
-                WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingPageInterceptor()
-                        .postPageRendering(renderer);
+                MessageRenderingHelper helper = WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingHelper();
+                if (helper != null) {
+                    renderer.add(helper.createMessageRenderer());
+                }
             }
         });
         return pageInterceptorList;
@@ -105,36 +101,12 @@ public class WebApplicationConfiguration extends Configuration {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
     }
 
-    public String getMessageGlobalContainerParentSelector() {
-        return messageGlobalContainerParentSelector;
+    public MessageRenderingHelper getMessageRenderingHelper() {
+        return messageRenderingHelper;
     }
 
-    public void setMessageGlobalContainerParentSelector(String messageGlobalContainerParentSelector) {
-        this.messageGlobalContainerParentSelector = messageGlobalContainerParentSelector;
-    }
-
-    public String getMessageGlobalContainerSelector() {
-        return messageGlobalContainerSelector;
-    }
-
-    public void setMessageGlobalContainerSelector(String messageGlobalContainerSelector) {
-        this.messageGlobalContainerSelector = messageGlobalContainerSelector;
-    }
-
-    public String getMessageGlobalContainerSnippetFilePath() {
-        return messageGlobalContainerSnippetFilePath;
-    }
-
-    public void setMessageGlobalContainerSnippetFilePath(String messageGlobalContainerSnippetFilePath) {
-        this.messageGlobalContainerSnippetFilePath = messageGlobalContainerSnippetFilePath;
-    }
-
-    public PageInterceptor getMessageRenderingPageInterceptor() {
-        return messageRenderingPageInterceptor;
-    }
-
-    public void setMessageRenderingPageInterceptor(PageInterceptor messageRenderingPageInterceptor) {
-        this.messageRenderingPageInterceptor = messageRenderingPageInterceptor;
+    public void setMessageRenderingHelper(MessageRenderingHelper messageRenderingHelper) {
+        this.messageRenderingHelper = messageRenderingHelper;
     }
 
     public RequestHandlerInvokerFactory getRequestHandlerInvokerFactory() {

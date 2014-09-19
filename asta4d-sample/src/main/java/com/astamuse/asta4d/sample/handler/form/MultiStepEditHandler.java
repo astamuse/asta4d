@@ -1,10 +1,10 @@
 package com.astamuse.asta4d.sample.handler.form;
 
+import com.astamuse.asta4d.sample.MessageRenderingHelperFactory;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
-import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
 
@@ -44,14 +44,14 @@ public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
         switch (form.getAction()) {
         case "add":
             PersonDbManager.instance().add(Person.createByForm(form));
-            DefaultMessageRenderingHelper.instance().info("data inserted");
+            MessageRenderingHelperFactory.getHelper().info("data inserted");
             break;
         case "edit":
             Person p = Person.createByForm(form);
             Person existingPerson = PersonDbManager.instance().find(form.getId());
             p.setId(existingPerson.getId());
             PersonDbManager.instance().update(p);
-            DefaultMessageRenderingHelper.instance().info("update succeed");
+            MessageRenderingHelperFactory.getHelper().info("update succeed");
             break;
         default:
             //

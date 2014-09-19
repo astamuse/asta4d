@@ -1,11 +1,11 @@
 package com.astamuse.asta4d.sample.handler.form;
 
+import com.astamuse.asta4d.sample.MessageRenderingHelperFactory;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
-import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
 
@@ -37,14 +37,14 @@ public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
         switch (extra.action) {
         case "add":
             PersonDbManager.instance().add(Person.createByForm(form));
-            DefaultMessageRenderingHelper.instance().info("data inserted");
+            MessageRenderingHelperFactory.getHelper().info("data inserted");
             break;
         case "edit":
             Person p = Person.createByForm(form);
             Person existingPerson = PersonDbManager.instance().find(extra.id);
             p.setId(existingPerson.getId());
             PersonDbManager.instance().update(p);
-            DefaultMessageRenderingHelper.instance().info("update succeed");
+            MessageRenderingHelperFactory.getHelper().info("update succeed");
             break;
         default:
             //
