@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.util.redirect;
+package com.astamuse.asta4d.web.util;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
-import com.astamuse.asta4d.web.util.SecureIdGenerator;
+import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerUtil;
 
 public class RedirectUtil {
 
@@ -33,12 +33,14 @@ public class RedirectUtil {
     private static final String KEY_FLASH_SCOPE_ID = WebApplicationConfiguration.getWebApplicationConfiguration()
             .getFlashScopeForwardParameterName();
 
+    private static final long DATA_EXPIRE_TIME_MILLI_SECONDS = 30_000;
+
     public static String setFlashScopeData(String url, Map<String, Object> flashScopeData) {
         if (flashScopeData == null || flashScopeData.isEmpty()) {
             return url;
         }
         String flashScopeId = SecureIdGenerator.createEncryptedURLSafeId();
-        FlashScopeDataManager.getInstance().put(flashScopeId, flashScopeData);
+        TimeoutDataManagerUtil.getManager().put(flashScopeId, flashScopeData, DATA_EXPIRE_TIME_MILLI_SECONDS);
         if (url.contains("?")) {
             return url + '&' + KEY_FLASH_SCOPE_ID + '=' + flashScopeId;
         } else {
@@ -52,7 +54,12 @@ public class RedirectUtil {
         if (StringUtils.isEmpty(flashScopeId)) {
             return Collections.emptyMap();
         } else {
-            return FlashScopeDataManager.getInstance().get(flashScopeId);
+            Map<String, Object> savedMap = TimeoutDataManagerUtil.getManager().get(flashScopeId);
+            if (savedMap == null) {
+                return Collections.emptyMap();
+            } else {
+                return savedMap;
+            }
         }
 
     }

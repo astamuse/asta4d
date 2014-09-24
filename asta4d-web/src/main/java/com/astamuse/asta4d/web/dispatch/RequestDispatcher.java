@@ -37,7 +37,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
-import com.astamuse.asta4d.web.util.redirect.RedirectUtil;
+import com.astamuse.asta4d.web.util.RedirectUtil;
 
 public class RequestDispatcher {
 

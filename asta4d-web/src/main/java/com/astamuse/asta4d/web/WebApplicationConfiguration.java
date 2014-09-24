@@ -32,10 +32,14 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
+import com.astamuse.asta4d.web.util.timeout.DefaultTimeoutDataManagerFactory;
+import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerFactory;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
+
+    private TimeoutDataManagerFactory timeoutDataManagerFactory = new DefaultTimeoutDataManagerFactory();
 
     private MessageRenderingHelper messageRenderingHelper = new DefaultMessageRenderingHelper();
 
@@ -94,6 +98,14 @@ public class WebApplicationConfiguration extends Configuration {
 
     public void setFlashScopeForwardParameterName(String flashScopeForwardParameterName) {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
+    }
+
+    public TimeoutDataManagerFactory getTimeoutDataManagerFactory() {
+        return timeoutDataManagerFactory;
+    }
+
+    public void setTimeoutDataManagerFactory(TimeoutDataManagerFactory timeoutDataManagerFactory) {
+        this.timeoutDataManagerFactory = timeoutDataManagerFactory;
     }
 
     public MessageRenderingHelper getMessageRenderingHelper() {
