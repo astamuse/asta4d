@@ -24,6 +24,7 @@ import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.collection.RowRenderer;
@@ -387,7 +388,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                 template = new Template(messageGlobalContainerSnippetFilePath, input);
             }
             return template.getDocumentClone().body().children();
-        } catch (TemplateException e) {
+        } catch (TemplateException | TemplateNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

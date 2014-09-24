@@ -42,7 +42,7 @@ public class TemplateUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
-    public final static void regulateElement(Document doc) throws TemplateException {
+    public final static void regulateElement(Document doc) throws TemplateException, TemplateNotFoundException {
         regulateSnippets(doc);
         regulateEmbed(doc);
     }
@@ -132,7 +132,7 @@ public class TemplateUtil {
         setBlockingParentSnippetId(snippetNodes);
     }
 
-    private final static void regulateEmbed(Document doc) throws TemplateException {
+    private final static void regulateEmbed(Document doc) throws TemplateException, TemplateNotFoundException {
         // load static embed at first
         loadStaticEmebed(doc);
         // check nodes without block attr for blocking parent snippets
@@ -142,7 +142,7 @@ public class TemplateUtil {
         setBlockingParentSnippetId(embedElemes);
     }
 
-    private final static void loadStaticEmebed(Document doc) throws TemplateException {
+    private final static void loadStaticEmebed(Document doc) throws TemplateException, TemplateNotFoundException {
 
         String selector = SelectorUtil.attr(SelectorUtil.tag(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR),
                 ExtNodeConstants.EMBED_NODE_ATTR_STATIC, null);
@@ -212,7 +212,7 @@ public class TemplateUtil {
         }
     }
 
-    public final static Element getEmbedNodeContent(Element elem) throws TemplateException {
+    public final static Element getEmbedNodeContent(Element elem) throws TemplateException, TemplateNotFoundException {
         String target;
         Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
@@ -222,10 +222,6 @@ public class TemplateUtil {
             throw new TemplateException(message);
         }
         Template embedTarget = templateResolver.findTemplate(target);
-        if (embedTarget == null) {
-            String message = "Target of emebed node not found[" + elem.toString() + "]";
-            throw new TemplateException(message);
-        }
 
         // TODO all of the following process should be merged into template
         // analyze process and be cached.

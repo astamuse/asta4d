@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.dispatch.request.transformer;
+package com.astamuse.asta4d.template;
 
 public class TemplateNotFoundException extends Exception {
 

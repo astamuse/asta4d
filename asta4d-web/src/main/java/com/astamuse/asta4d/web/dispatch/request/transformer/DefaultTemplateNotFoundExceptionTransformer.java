@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.web.dispatch.request.transformer;
 
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 

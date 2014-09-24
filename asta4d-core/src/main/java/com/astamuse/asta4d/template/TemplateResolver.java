@@ -61,7 +61,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
         }
     }
 
-    private static Template getNotFoundHolder() throws TemplateException {
+    private static Template getNotFoundHolder() throws TemplateException, TemplateNotFoundException {
         if (NotFoundHolder == null) {
             String dummyHolderContent = "##NOT-FOUND-HOLDER##";
             NotFoundHolder = new Template(dummyHolderContent, new ByteArrayInputStream(dummyHolderContent.getBytes()));
@@ -69,7 +69,16 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
         return NotFoundHolder;
     }
 
-    public Template findTemplate(String path) throws TemplateException {
+    /**
+     * 
+     * @param path
+     * @return
+     * @throws TemplateException
+     *             error occurs when parsing template file
+     * @throws TemplateNotFoundException
+     *             template file does not exist
+     */
+    public Template findTemplate(String path) throws TemplateException, TemplateNotFoundException {
         try {
 
             Map<String, Template> cachedTemplateMap = getCachedTemplateMap();
@@ -79,7 +88,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
             Template t = cachedTemplateMap.get(cacheKey);
             if (t != null) {
                 if (t == NotFoundHolder) {
-                    return null;
+                    throw new TemplateNotFoundException(path);
                 } else {
                     return t;
                 }
@@ -88,12 +97,12 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
             TemplateInfo info = searchResource("/", LocalizeUtil.getCandidatePaths(path, locale));
             if (info == null) {
                 cachedTemplateMap.put(cacheKey, getNotFoundHolder());
-                return null;
+                throw new TemplateNotFoundException(path);
             }
             InputStream input = info.getInput();
             if (input == null) {
                 cachedTemplateMap.put(cacheKey, getNotFoundHolder());
-                return null;
+                throw new TemplateNotFoundException(path);
             }
             try {
                 t = new Template(info.getPath(), input);
@@ -107,6 +116,8 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
             }
             cachedTemplateMap.put(cacheKey, t);
             return t;
+        } catch (TemplateNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new TemplateException(path + " resolve error", e);
         }

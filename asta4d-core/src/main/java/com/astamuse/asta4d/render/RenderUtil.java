@@ -48,6 +48,7 @@ import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
@@ -87,7 +88,8 @@ public class RenderUtil {
      * @throws SnippetInvokeException
      * @throws TemplateException
      */
-    public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
+    public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException,
+            TemplateNotFoundException {
         if (doc == null) {
             return;
         }

@@ -17,18 +17,18 @@
 
 package com.astamuse.asta4d.test.unit;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
 public class TemplateResolverTest extends BaseTest {
 
-    @Test
-    public void templateNotFoundTest() throws TemplateException {
+    @Test(expectedExceptions = TemplateNotFoundException.class)
+    public void templateNotFoundTest() throws TemplateException, TemplateNotFoundException {
         TemplateResolver resolver = new TemplateResolver() {
             @Override
             protected TemplateInfo loadResource(String name) {
@@ -37,6 +37,5 @@ public class TemplateResolverTest extends BaseTest {
 
         };
         Template template = resolver.findTemplate("test");
-        Assert.assertNull(template);
     }
 }
