@@ -20,7 +20,7 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
-import com.astamuse.asta4d.render.RenderUtil;
+import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
@@ -219,31 +219,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
         Renderer message = renderMesssages();
         if (message != null) {
-            renderer.add(prepareAlternativeContainer());
             renderer.add(message);
         }
         renderer.add(postMessageRendering());
         return renderer;
-    }
-
-    protected Renderer prepareAlternativeContainer() {
-
-        return Renderer.create(messageGlobalContainerParentSelector, new ElementNotFoundHandler(messageGlobalContainerSelector) {
-            @Override
-            public Renderer alternativeRenderer() {
-                // add global message container if not exists
-                return Renderer.create(messageGlobalContainerParentSelector, new ElementSetter() {
-                    @Override
-                    public void set(Element elem) {
-                        List<Element> elems = new ArrayList<>(retrieveCachedContainerSnippet());
-                        Collections.reverse(elems);
-                        for (Element child : elems) {
-                            elem.prependChild(ElementUtil.safeClone(child));
-                        }
-                    }
-                });
-            }// alternativeRenderer
-        });// ElementNotFoundHandler
     }
 
     protected Renderer postMessageRendering() {
@@ -330,22 +309,48 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
         renderer.enableMissingSelectorWarning();
 
-        renderer.add(messageGlobalContainerSelector, new ElementSetter() {
+        renderer.add(messageGlobalContainerParentSelector, new Renderable() {
             @Override
-            public void set(Element elem) {
-                Renderer alternativeRenderer = Renderer.create();
-                for (final Entry<MessageRenderingSelector, List<String>> item : alternativeMsgMap.entrySet()) {
-                    final MessageRenderingSelector selector = item.getKey();
-                    alternativeRenderer.add(selector.duplicator, item.getValue(), new RowRenderer<String>() {
+            public Renderer render() {
+                Renderer renderer = Renderer.create();
+                if (!alternativeMsgMap.isEmpty()) {
+                    renderer.add(new ElementNotFoundHandler(messageGlobalContainerSelector) {
                         @Override
-                        public Renderer convert(int rowIndex, String msg) {
-                            Renderer render = Renderer.create(selector.valueTarget, msg);
-                            render.add(":root", messageDuplicatorIndicatorAttrName, Clear);
-                            return render;
+                        public Renderer alternativeRenderer() {
+                            // add global message container if not exists
+                            return Renderer.create(":root", new ElementSetter() {
+                                @Override
+                                public void set(Element elem) {
+                                    List<Element> elems = new ArrayList<>(retrieveCachedContainerSnippet());
+                                    Collections.reverse(elems);
+                                    for (Element child : elems) {
+                                        elem.prependChild(ElementUtil.safeClone(child));
+                                    }
+                                }
+                            });
+                        }// alternativeRenderer
+                    });// ElementNotFoundHandler
+
+                    renderer.add(messageGlobalContainerSelector, new Renderable() {
+                        @Override
+                        public Renderer render() {
+                            Renderer alternativeMsgRenderer = Renderer.create();
+                            for (final Entry<MessageRenderingSelector, List<String>> item : alternativeMsgMap.entrySet()) {
+                                final MessageRenderingSelector selector = item.getKey();
+                                alternativeMsgRenderer.add(selector.duplicator, item.getValue(), new RowRenderer<String>() {
+                                    @Override
+                                    public Renderer convert(int rowIndex, String msg) {
+                                        Renderer render = Renderer.create(selector.valueTarget, msg);
+                                        render.add(":root", messageDuplicatorIndicatorAttrName, Clear);
+                                        return render;
+                                    }
+                                });
+                            }
+                            return alternativeMsgRenderer;
                         }
-                    });
+                    });// messageGlobalContainerSelector
                 }
-                RenderUtil.apply(elem, alternativeRenderer);
+                return renderer;
             }
         });
 

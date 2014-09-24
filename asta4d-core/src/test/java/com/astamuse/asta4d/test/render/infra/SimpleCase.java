@@ -35,10 +35,10 @@ public class SimpleCase {
         String ostr = null;
         String cstr = null;
         try {
-            Page originPage = Page.buildFromPath("/com/astamuse/asta4d/test/render/templates/" + templateFileName);
+            Page originPage = Page.buildFromPath(retrieveTempateFielParentPath() + templateFileName);
             ostr = revert2comparableString(originPage);
 
-            cstr = revert2comparableString("/com/astamuse/asta4d/test/render/confirms/" + confirmFileName);
+            cstr = revert2comparableString(retrieveConfirmFielParentPath() + confirmFileName);
 
             Assert.assertEquals(ostr, cstr);
 
@@ -47,6 +47,14 @@ public class SimpleCase {
             output(confirmFileName + ":expected result", cstr);
             throw new RuntimeException("verify failed", t);
         }
+    }
+
+    protected String retrieveTempateFielParentPath() {
+        return "/com/astamuse/asta4d/test/render/templates/";
+    }
+
+    protected String retrieveConfirmFielParentPath() {
+        return "/com/astamuse/asta4d/test/render/confirms/";
     }
 
     private String revert2comparableString(Page page) {
