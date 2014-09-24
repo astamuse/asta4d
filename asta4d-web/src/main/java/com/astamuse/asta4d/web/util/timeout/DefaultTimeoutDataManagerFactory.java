@@ -6,6 +6,8 @@ public class DefaultTimeoutDataManagerFactory implements TimeoutDataManagerFacto
 
     private int maxDataSize = 1000_000;
 
+    private boolean sessionAware = true;
+
     public long getExpireExcutorPeriodInMinutes() {
         return expireExcutorPeriodInMinutes;
     }
@@ -22,9 +24,17 @@ public class DefaultTimeoutDataManagerFactory implements TimeoutDataManagerFacto
         this.maxDataSize = maxDataSize;
     }
 
+    public boolean isSessionAware() {
+        return sessionAware;
+    }
+
+    public void setSessionAware(boolean sessionAware) {
+        this.sessionAware = sessionAware;
+    }
+
     @Override
     public TimeoutDataManager create() {
-        return new DefaultTimeoutDataManager(expireExcutorPeriodInMinutes, maxDataSize);
+        return new DefaultSessionAwareTimeoutDataManager(expireExcutorPeriodInMinutes, maxDataSize, sessionAware);
     }
 
 }

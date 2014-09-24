@@ -25,7 +25,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultTimeoutDataManager implements TimeoutDataManager {
+import org.apache.commons.lang3.StringUtils;
+
+import com.astamuse.asta4d.util.IdGenerator;
+import com.astamuse.asta4d.web.WebApplicationContext;
+
+public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager {
+
+    private static final String CheckSessionIdKey = DefaultSessionAwareTimeoutDataManager.class + "#CheckSessionIdKey";
 
     private final ConcurrentHashMap<String, DataHolder> dataMap = new ConcurrentHashMap<>();
 
@@ -33,8 +40,11 @@ public class DefaultTimeoutDataManager implements TimeoutDataManager {
 
     private final int maxDataSize;
 
-    public DefaultTimeoutDataManager(long expireExcutorPeriodInMinutes, int maxDataSize) {
+    private final boolean sessionAware;
+
+    public DefaultSessionAwareTimeoutDataManager(long expireExcutorPeriodInMinutes, int maxDataSize, boolean sessionAware) {
         this.maxDataSize = maxDataSize;
+        this.sessionAware = sessionAware;
         service.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -56,13 +66,28 @@ public class DefaultTimeoutDataManager implements TimeoutDataManager {
             return null;
         } else if (holder.isExpired(System.currentTimeMillis())) {
             return null;
-        } else {
+        } else if (StringUtils.equals(retrieveSessionId(false), holder.sessionId)) {
             return (T) holder.getData();
+        } else {
+            return null;
         }
     }
 
     public void put(String dataId, Object data, long expireMilliSeconds) {
-        dataMap.putIfAbsent(dataId, new DataHolder(data, expireMilliSeconds));
+        dataMap.putIfAbsent(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
+    }
+
+    protected String retrieveSessionId(boolean create) {
+        String sessionId = null;
+        if (sessionAware) {
+            WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
+            sessionId = context.getData(WebApplicationContext.SCOPE_SESSION, CheckSessionIdKey);
+            if (sessionId == null && create) {
+                sessionId = IdGenerator.createId();
+                context.setData(WebApplicationContext.SCOPE_SESSION, CheckSessionIdKey, sessionId);
+            }
+        }
+        return sessionId;
     }
 
     public void shutdown() {
@@ -79,8 +104,10 @@ public class DefaultTimeoutDataManager implements TimeoutDataManager {
         private final Object data;
         private final long creationTime;
         private final long expireMilliSeconds;
+        private final String sessionId;
 
-        private DataHolder(Object data, long expireMilliSeconds) {
+        private DataHolder(Object data, long expireMilliSeconds, String sessionId) {
+            this.sessionId = sessionId;
             this.data = data;
             this.expireMilliSeconds = expireMilliSeconds;
             this.creationTime = System.currentTimeMillis();
