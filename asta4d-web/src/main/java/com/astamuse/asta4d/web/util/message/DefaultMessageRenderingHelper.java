@@ -376,8 +376,9 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         Template template;
         try {
             // at first, we treat the configured snippet file as a template file
-            template = conf.getTemplateResolver().findTemplate(messageGlobalContainerSnippetFilePath);
-            if (template == null) {
+            try {
+                template = conf.getTemplateResolver().findTemplate(messageGlobalContainerSnippetFilePath);
+            } catch (TemplateNotFoundException e) {
                 // then treat it as classpath resource
                 // TODO use MultiSearchPathResourceLoader instead for i18n
                 InputStream input = this.getClass().getClassLoader().getResourceAsStream(messageGlobalContainerSnippetFilePath);
