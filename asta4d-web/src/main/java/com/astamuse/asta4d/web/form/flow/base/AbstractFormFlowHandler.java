@@ -36,8 +36,6 @@ public abstract class AbstractFormFlowHandler<T> {
 
     private static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#IntelligentFormHandler";
 
-    private DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
-
     private Class<? extends FormProcessData> formProcessDataCls;
     private Class formCls;
 
@@ -302,7 +300,8 @@ public abstract class AbstractFormFlowHandler<T> {
             return CommonFormResult.SUCCESS;
         } else {
             for (FormValidationMessage formValidationMessage : validationMesssages) {
-                msgHelper.err("#" + formValidationMessage.getName() + "-err-msg", formValidationMessage.getMessage());
+                DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + formValidationMessage.getName() + "-err-msg",
+                        formValidationMessage.getMessage());
             }
             return CommonFormResult.FAILED;
         }
