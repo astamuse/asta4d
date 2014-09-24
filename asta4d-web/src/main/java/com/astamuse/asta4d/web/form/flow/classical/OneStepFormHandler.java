@@ -26,6 +26,7 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
         if (result == CommonFormResult.SUCCESS) {
             try {
                 updateForm(form);
+                clearSavedTraceMap();
                 return CommonFormResult.SUCCESS;
             } catch (Exception ex) {
                 logger.error("error occured on step:" + currentStep, ex);

@@ -1,9 +1,6 @@
 package com.astamuse.asta4d.web.form.flow.base;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,14 +20,12 @@ import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.form.validation.FormValidator;
 import com.astamuse.asta4d.web.form.validation.JsrValidator;
 import com.astamuse.asta4d.web.form.validation.TypeUnMatchValidator;
+import com.astamuse.asta4d.web.util.SecureIdGenerator;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerUtil;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractFormFlowHandler<T> {
-
-    private static final ObjectMapper JsonMapper = new ObjectMapper();
 
     private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#IntelligentFormHandler";
 
@@ -80,12 +75,6 @@ public abstract class AbstractFormFlowHandler<T> {
 
         String currentStep = processData.getStepCurrent();
 
-        if (currentStep == null) {// it means the first time access without existing input data
-            currentStep = FormFlowConstants.FORM_STEP_INIT_STEP;
-            savePreDefinedForm(createInitForm());
-        } else {
-        }
-
         String traceData = processData.getStepTraceData();
 
         Map<String, Object> traceMap;
@@ -93,7 +82,17 @@ public abstract class AbstractFormFlowHandler<T> {
         if (StringUtils.isEmpty(traceData)) {
             traceMap = new HashMap<>();
         } else {
-            traceMap = deserializeTraceMap(traceData);
+            traceMap = restoreTraceMap(traceData);
+            if (traceMap == null) {
+                traceMap = new HashMap<>();
+            }
+        }
+
+        // the first time access without existing input data or saved tracemap could not be retrieved(usually due to timeout)
+        if (currentStep == null || traceMap.isEmpty()) {
+            currentStep = FormFlowConstants.FORM_STEP_INIT_STEP;
+            savePreDefinedForm(createInitForm());
+        } else {
         }
 
         T form = retrieveFormInstance(traceMap, currentStep);
@@ -197,72 +196,52 @@ public abstract class AbstractFormFlowHandler<T> {
         }
     }
 
-    protected String serializeTraceMap(Map<String, Object> traceMap) {
-        try {
-            Map<String, byte[]> rawMap = new HashMap<>();
-            for (Map.Entry<String, Object> traceEntry : traceMap.entrySet()) {
-                Object form = traceEntry.getValue();
-                ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
+    protected String saveTraceMap(Map<String, Object> traceMap) {
+        String id = SecureIdGenerator.createEncryptedURLSafeId();
+        TimeoutDataManagerUtil.getManager().put(id, traceMap, cachedTraceMapLivingTimeInMilliSeconds());
+        return id;
+    }
 
-                byte[] clsName = form.getClass().getName().getBytes();
-                byte[] lenBytes = ByteBuffer.allocate(4).putInt(clsName.length).array();
+    protected Map<String, Object> restoreTraceMap(String data) {
+        return TimeoutDataManagerUtil.getManager().get(data);
+    }
 
-                bos.write(lenBytes);
-                bos.write(clsName);
-                JsonMapper.writeValue(bos, form);
-
-                rawMap.put(traceEntry.getKey(), bos.toByteArray());
-
-            }
-            return JsonMapper.writeValueAsString(rawMap);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    protected void clearSavedTraceMap() {
+        WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
+        String id = context.getData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
+        if (StringUtils.isNotEmpty(id)) {
+            TimeoutDataManagerUtil.getManager().get(id);
         }
     }
 
-    protected Map<String, Object> deserializeTraceMap(String s) {
-        try {
-            Map<String, byte[]> rawMap = JsonMapper.readValue(s, new TypeReference<HashMap<String, byte[]>>() {
-            });
-            Map<String, Object> traceMap = new HashMap<>();
-            for (Map.Entry<String, byte[]> rawEntry : rawMap.entrySet()) {
-                byte[] data = rawEntry.getValue();
-                ByteBuffer bb = ByteBuffer.wrap(data);
-
-                int clsNameLen = bb.getInt();
-
-                String clsName = new String(data, 4, clsNameLen);
-
-                ByteArrayInputStream bis = new ByteArrayInputStream(data, 4 + clsNameLen, data.length - 4 - clsNameLen);
-                Object form = JsonMapper.readValue(bis, Class.forName(clsName));
-                traceMap.put(rawEntry.getKey(), form);
-            }
-            return traceMap;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+    protected long cachedTraceMapLivingTimeInMilliSeconds() {
+        // 30 minutes
+        return 30 * 60 * 1000L;
     }
 
     protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap, CommonFormResult result) {
         T form = (T) traceMap.get(currentStep);
+        WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
+
         if (passDataToSnippetByFlash(currentStep, renderTargetStep, form, result)) {
 
             RedirectTargetProvider.addFlashScopeData(AbstractFormFlowSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
 
             RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
 
-            String traceData = serializeTraceMap(traceMap);
+            String traceData = saveTraceMap(traceMap);
+
+            // used by clearSavedTraceMap
+            context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
             RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
             RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
         } else {
 
-            WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
-
             context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
 
-            String traceData = serializeTraceMap(traceMap);
+            String traceData = saveTraceMap(traceMap);
 
             context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
 
