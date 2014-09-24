@@ -53,11 +53,6 @@ public class WebApplicationConfiguration extends Configuration {
         this.setRequestHandlerInvokerFactory(new DefaultRequestHandlerInvokerFactory());
         this.setPageInterceptorList(new LinkedList<PageInterceptor>());
 
-        // we only allow request scope being reversely injected
-        List<String> reverseInjectableScopes = new ArrayList<>();
-        reverseInjectableScopes.add(WebApplicationContext.SCOPE_REQUEST);
-        this.setReverseInjectableScopes(reverseInjectableScopes);
-
     }
 
     protected List<PageInterceptor> createDefaultPageInterceptorList() {

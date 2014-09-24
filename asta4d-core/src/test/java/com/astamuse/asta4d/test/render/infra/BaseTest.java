@@ -32,8 +32,6 @@ import com.astamuse.asta4d.template.ClasspathTemplateResolver;
 @Test
 public class BaseTest {
 
-    public final static String ReverseInjectableScope = "ReverseInjectableScope";
-
     private final static Configuration configuration = new Configuration() {
         {
             ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
@@ -46,7 +44,6 @@ public class BaseTest {
             snippetResolver.setSearchPathList(snippetBasePackages);
             this.setSnippetResolver(snippetResolver);
 
-            this.setReverseInjectableScopes(Arrays.asList(ReverseInjectableScope));
             this.setOutputAsPrettyPrint(true);
 
             this.setSaveCallstackInfoOnRendererCreation(true);

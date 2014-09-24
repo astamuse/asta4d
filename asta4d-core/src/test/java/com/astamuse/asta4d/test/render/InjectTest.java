@@ -159,16 +159,6 @@ public class InjectTest extends BaseTest {
 
     }
 
-    public static class ReverseRenderSecond {
-
-        @ContextData(scope = ReverseInjectableScope)
-        private String reverseValue;
-
-        public Renderer render() {
-            return Renderer.create("*", reverseValue);
-        }
-    }
-
     public void testMethodDefaultSearch() {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "pv", "pv-value at context");

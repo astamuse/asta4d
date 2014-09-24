@@ -325,7 +325,6 @@ public class InjectUtil {
     }
 
     private final static InstanceWireTarget createInstanceTarget(Object instance) throws DataOperationException {
-        List<String> reverseTargetScopes = Configuration.getConfiguration().getReverseInjectableScopes();
 
         InstanceWireTarget target = new InstanceWireTarget();
         Class<?> cls = instance.getClass();

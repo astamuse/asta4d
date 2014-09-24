@@ -18,7 +18,6 @@
 package com.astamuse.asta4d;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,11 +77,6 @@ public class Configuration {
     private ExecutorServiceFactory listExecutorFactory = new DefaultExecutorServiceFactory("asta4d-list", 600);
 
     private ParallelRecursivePolicy parallelRecursivePolicyForListRendering = ParallelRecursivePolicy.EXCEPTION;
-
-    /**
-     * at present, the following items are regarded as global settings
-     */
-    private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
     private List<String> clearNodeClasses = new ArrayList<>();
 
@@ -238,14 +232,6 @@ public class Configuration {
 
     public void setBlockParallelListRendering(boolean blockParallelListRendering) {
         this.blockParallelListRendering = blockParallelListRendering;
-    }
-
-    public List<String> getReverseInjectableScopes() {
-        return reverseInjectableScopes;
-    }
-
-    public void setReverseInjectableScopes(List<String> reverseInjectableScopes) {
-        this.reverseInjectableScopes = reverseInjectableScopes;
     }
 
     public List<String> getClearNodeClasses() {
