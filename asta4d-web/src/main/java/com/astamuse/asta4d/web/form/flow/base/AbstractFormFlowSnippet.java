@@ -35,9 +35,8 @@ public abstract class AbstractFormFlowSnippet {
 
         FieldRenderingInfo replaceArrayIndex(int index) {
             FieldRenderingInfo newInfo = new FieldRenderingInfo();
-            String rep = String.valueOf(index);
-            newInfo.editSelector = StringUtils.replace(editSelector, "@", rep);
-            newInfo.displaySelector = StringUtils.replace(displaySelector, "@", rep);
+            newInfo.editSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(editSelector, index);
+            newInfo.displaySelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(displaySelector, index);
             newInfo.valueRenderer = valueRenderer;
             return newInfo;
         }

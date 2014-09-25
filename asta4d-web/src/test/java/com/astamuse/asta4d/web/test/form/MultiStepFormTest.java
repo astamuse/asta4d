@@ -32,10 +32,11 @@ import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.test.WebTestBase;
 
-public class MultiStepFormHandlerTest extends WebTestBase {
+public class MultiStepFormTest extends WebTestBase {
 
     private static final String FAKE_TRACE_MAP_ID = "FAKE_TRACE_MAP_ID";
 
@@ -81,7 +82,7 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         @Valid
         private SubForm subForm;
 
-        @CascadeFormField(containerSelector = "subArray-container", arrayLengthField = "subArrayLength")
+        @CascadeFormField(containerSelector = "#subArray-container", arrayLengthField = "subArrayLength")
         @NotEmpty
         @Valid
         private SubArray[] subArray;
@@ -90,7 +91,7 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         @NotNull
         private Integer subArrayLength;
 
-        @CascadeFormField(containerSelector = "subArray-container", arrayLengthField = "subArrayLength2")
+        @CascadeFormField(containerSelector = "#subArray2-container", arrayLengthField = "subArrayLength2")
         @NotEmpty
         @Valid
         private SubArray2[] subArray2;
@@ -174,6 +175,10 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         }
     }
 
+    public static class TestFormSnippet extends MultiStepFormFlowSnippet {
+        // do nothing
+    }
+
     private Enumeration<String> requestParametersEnum(Map<String, String[]> map) {
         return Collections.enumeration(map.keySet());
     }
@@ -226,6 +231,8 @@ public class MultiStepFormHandlerTest extends WebTestBase {
 
         Assert.assertEquals(handler.handle(), "/testform/input.html");
 
+        new FormRenderCase("MultiStepForm_initInput.html");
+
     }
 
     private Map<String, String[]> requestParameters_inputWithoutTraceMap = new HashMap<String, String[]>() {
@@ -246,6 +253,8 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         TestFormHandler handler = new TestFormHandler();
 
         Assert.assertEquals(handler.handle(), "/testform/input.html");
+
+        new FormRenderCase("MultiStepForm_inputWithoutTraceMap.html");
     }
 
     private Map<String, String[]> requestParameters_inputWithTypeUnMatchError = new HashMap<String, String[]>() {
@@ -278,6 +287,8 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         handler.assertMessage("id", IntegerTypeUnMatch);
         handler.assertMessage("subData", IntegerTypeUnMatch);
         handler.assertMessage("year-0", IntegerTypeUnMatch);
+
+        new FormRenderCase("MultiStepForm_inputWithTypeUnMatchError.html");
     }
 
     private Map<String, String[]> requestParameters_inputWithValueValidationError = new HashMap<String, String[]>() {
@@ -318,6 +329,8 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         handler.assertMessage("year-0", MsgMax);
         handler.assertMessage("year-1", MsgMax);
         handler.assertMessage("subArray2", MsgNotEmpty);
+
+        new FormRenderCase("MultiStepForm_inputWithValueValidationError.html");
     }
 
     private Map<String, String[]> requestParameters_goToConfirm = new HashMap<String, String[]>() {
@@ -347,6 +360,10 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         Assert.assertEquals(handler.handle(), "/testform/confirm.html");
 
         handler.assertMessageSize(0);
+
+        new FormRenderCase("MultiStepForm_goToConfirm.html");
+
+        new FormRenderCase("MultiStepForm_goToConfirm_withDisplay.html");
     }
 
     private Map<String, String[]> requestParameters_exit = new HashMap<String, String[]>() {
@@ -395,6 +412,8 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         Assert.assertEquals(handler.handle(), "/testform/input.html");
 
         handler.assertMessageSize(0);
+
+        new FormRenderCase("MultiStepForm_goBack.html");
     }
 
     @Test(dependsOnMethods = "testGoBack")
@@ -430,5 +449,10 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         Assert.assertEquals(savedForm.subArray[1].year.intValue(), 1999);
         Assert.assertEquals(savedForm.subArray2.length, 1);
         Assert.assertEquals(savedForm.subArray2[0].age.intValue(), 88);
+
+        // should be same as confirm
+        new FormRenderCase("MultiStepForm_goToConfirm.html");
+
+        new FormRenderCase("MultiStepForm_goToConfirm_withDisplay.html");
     }
 }
