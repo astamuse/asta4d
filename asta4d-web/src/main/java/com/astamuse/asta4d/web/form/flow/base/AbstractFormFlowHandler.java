@@ -73,13 +73,14 @@ public abstract class AbstractFormFlowHandler<T> {
         FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(formProcessDataCls,
                 "not-exist-IntelligentFormProcessData", "");
 
+        String traceData = processData.getStepTraceData();
+
         if (processData.getStepExit() != null) {
+            clearSavedTraceMap(traceData);
             return null;
         }
 
         String currentStep = processData.getStepCurrent();
-
-        String traceData = processData.getStepTraceData();
 
         Map<String, Object> traceMap;
 
@@ -122,6 +123,12 @@ public abstract class AbstractFormFlowHandler<T> {
                 }
             }
             passDataToSnippet(currentStep, renderTargetStep, traceMap, formResult);
+        }
+
+        if (isCompleteStep(renderTargetStep)) {
+            WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
+            String newTraceData = context.getData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
+            clearSavedTraceMap(newTraceData);
         }
 
         if (returnRenderTargetStep) {
@@ -205,11 +212,9 @@ public abstract class AbstractFormFlowHandler<T> {
         return TimeoutDataManagerUtil.getManager().get(data);
     }
 
-    protected void clearSavedTraceMap() {
-        WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
-        String id = context.getData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
-        if (StringUtils.isNotEmpty(id)) {
-            TimeoutDataManagerUtil.getManager().get(id);
+    protected void clearSavedTraceMap(String traceData) {
+        if (StringUtils.isNotEmpty(traceData)) {
+            TimeoutDataManagerUtil.getManager().get(traceData);
         }
     }
 
@@ -263,6 +268,8 @@ public abstract class AbstractFormFlowHandler<T> {
     protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
         return false;
     }
+
+    protected abstract boolean isCompleteStep(String step);
 
     protected FormValidator getTypeUnMatchValidator() {
         return new TypeUnMatchValidator();

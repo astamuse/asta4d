@@ -27,6 +27,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
     }
 
+    @Override
     protected boolean isCompleteStep(String step) {
         return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
     }
@@ -46,12 +47,10 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
 
     protected String createTemplateFilePathForStep(String step) {
         if (step == null) {// exit flow
-            clearSavedTraceMap();
             return null;
         }
 
         if (isCompleteStep(step)) {
-            clearSavedTraceMap();
             if (treatCompleteStepAsExit()) {
                 return null;
             }

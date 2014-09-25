@@ -15,6 +15,14 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
         super(formCls);
     }
 
+    /**
+     * 
+     * @return {@link CommonFormResult#SUCCESS}: final step of current form flow succeed and want to exit current form flow<br>
+     *         {@link CommonFormResult#FAILED}: final step of current form flow succeed and want to forward to the first(initial) step of
+     *         current form flow<br>
+     *         <code>null</code>: there is nothing to do and want to go to the first step of current form flow
+     * @throws Exception
+     */
     @RequestHandler
     public CommonFormResult handle() throws Exception {
         return handleWithCommonFormResult();
@@ -26,7 +34,6 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
         if (result == CommonFormResult.SUCCESS) {
             try {
                 updateForm(form);
-                clearSavedTraceMap();
                 return CommonFormResult.SUCCESS;
             } catch (Exception ex) {
                 logger.error("error occured on step:" + currentStep, ex);
@@ -39,6 +46,11 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
 
     protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
         return ClassicalFormFlowConstant.STEP_COMPLETE.equals(renderTargetStep);
+    }
+
+    @Override
+    protected boolean isCompleteStep(String step) {
+        return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
     }
 
     protected abstract void updateForm(T form);

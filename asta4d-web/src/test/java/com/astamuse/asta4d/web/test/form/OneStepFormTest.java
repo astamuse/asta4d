@@ -21,13 +21,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippet;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.test.WebTestBase;
 
-public class MultiStepFormTest extends WebTestBase {
+public class OneStepFormTest extends WebTestBase {
 
     private static final String FAKE_TRACE_MAP_ID = "FAKE_TRACE_MAP_ID";
 
@@ -35,12 +36,12 @@ public class MultiStepFormTest extends WebTestBase {
 
     private static TestForm savedForm = null;
 
-    public static class TestHandler extends MultiStepFormFlowHandler<TestForm> {
+    public static class TestHandler extends OneStepFormHandler<TestForm> {
 
         private List<FormValidationMessage> msgList = new LinkedList<>();
 
         public TestHandler() {
-            super(TestForm.class, "/testform/");
+            super(TestForm.class);
         }
 
         @Override
@@ -109,7 +110,7 @@ public class MultiStepFormTest extends WebTestBase {
         }
     }
 
-    public static class TestSnippet extends MultiStepFormFlowSnippet {
+    public static class TestSnippet extends OneStepFormSnippet {
         // do nothing
     }
 
@@ -159,36 +160,11 @@ public class MultiStepFormTest extends WebTestBase {
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), "/testform/input.html");
-
+        Assert.assertNull(handler.handle());
         Assert.assertNull(savedForm);
 
-        new FormRenderCase("MultiStepForm_initInput.html");
+        new FormRenderCase("OneStepForm_initInput.html");
 
-    }
-
-    private Map<String, String[]> requestParameters_inputWithoutTraceMap = new HashMap<String, String[]>() {
-        {
-            put("id", new String[] { "1" });
-            put("data", new String[] { "data-content" });
-            put("step-current", new String[] { "input" });
-            put("step-failed", new String[] { "input" });
-            put("step-success", new String[] { "confirm" });
-        }
-    };
-
-    @Test(dependsOnMethods = "testInitStep")
-    public void testInputWithoutTraceMap() throws Exception {
-
-        initParams(requestParameters_inputWithoutTraceMap);
-
-        TestHandler handler = new TestHandler();
-
-        Assert.assertEquals(handler.handle(), "/testform/input.html");
-
-        Assert.assertNull(savedForm);
-
-        new FormRenderCase("MultiStepForm_inputWithoutTraceMap.html");
     }
 
     private Map<String, String[]> requestParameters_inputWithTypeUnMatchError = new HashMap<String, String[]>() {
@@ -201,22 +177,21 @@ public class MultiStepFormTest extends WebTestBase {
             put("subArrayLength2", new String[] { "0" });
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
-            put("step-success", new String[] { "confirm" });
+            put("step-success", new String[] { "complete" });
             put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
     private static final String IntegerTypeUnMatch = ".+ is expecting Integer but value\\[.+\\] found\\.";
 
-    @Test(dependsOnMethods = "testInputWithoutTraceMap")
+    @Test(dependsOnMethods = "testInitStep")
     public void testInputWithTypeUnMatchError() throws Exception {
 
         initParams(requestParameters_inputWithTypeUnMatchError);
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), "/testform/input.html");
-
+        Assert.assertEquals(handler.handle(), CommonFormResult.FAILED);
         Assert.assertNull(savedForm);
 
         handler.assertMessageSize(3);
@@ -224,7 +199,7 @@ public class MultiStepFormTest extends WebTestBase {
         handler.assertMessage("subData", IntegerTypeUnMatch);
         handler.assertMessage("year-0", IntegerTypeUnMatch);
 
-        new FormRenderCase("MultiStepForm_inputWithTypeUnMatchError.html");
+        new FormRenderCase("OneStepForm_inputWithTypeUnMatchError.html");
     }
 
     private Map<String, String[]> requestParameters_inputWithValueValidationError = new HashMap<String, String[]>() {
@@ -256,8 +231,7 @@ public class MultiStepFormTest extends WebTestBase {
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), "/testform/input.html");
-
+        Assert.assertEquals(handler.handle(), CommonFormResult.FAILED);
         Assert.assertNull(savedForm);
 
         handler.assertMessageSize(6);
@@ -268,42 +242,7 @@ public class MultiStepFormTest extends WebTestBase {
         handler.assertMessage("year-1", MsgMax);
         handler.assertMessage("subArray2", MsgNotEmpty);
 
-        new FormRenderCase("MultiStepForm_inputWithValueValidationError.html");
-    }
-
-    private Map<String, String[]> requestParameters_goToConfirm = new HashMap<String, String[]>() {
-        {
-            put("id", new String[] { "22" });
-            put("data", new String[] { "data-content" });
-            put("subData", new String[] { "123" });
-            put("year-0", new String[] { "1998" });
-            put("year-1", new String[] { "1999" });
-            put("subArrayLength", new String[] { "2" });
-            put("age-0", new String[] { "88" });
-            put("subArrayLength2", new String[] { "1" });
-            put("step-current", new String[] { "input" });
-            put("step-failed", new String[] { "input" });
-            put("step-success", new String[] { "confirm" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
-        }
-    };
-
-    @Test(dependsOnMethods = "testInputWithValueValidationError")
-    public void testGoToConfirm() throws Exception {
-
-        initParams(requestParameters_goToConfirm);
-
-        TestHandler handler = new TestHandler();
-
-        Assert.assertEquals(handler.handle(), "/testform/confirm.html");
-
-        Assert.assertNull(savedForm);
-
-        handler.assertMessageSize(0);
-
-        new FormRenderCase("MultiStepForm_goToConfirm.html");
-
-        new FormRenderCase("MultiStepForm_goToConfirm_withDisplay.html");
+        new FormRenderCase("OneStepForm_inputWithValueValidationError.html");
     }
 
     private Map<String, String[]> requestParameters_exit = new HashMap<String, String[]>() {
@@ -312,7 +251,7 @@ public class MultiStepFormTest extends WebTestBase {
         }
     };
 
-    @Test(dependsOnMethods = "testGoToConfirm")
+    @Test(dependsOnMethods = "testInputWithValueValidationError")
     public void testExit() throws Exception {
 
         initParams(requestParameters_exit);
@@ -330,61 +269,35 @@ public class MultiStepFormTest extends WebTestBase {
         testInitStep();
     }
 
-    @Test(dependsOnMethods = "testInitAgain")
-    public void testGoConfirmAgain() throws Exception {
-        testGoToConfirm();
-    }
-
-    private Map<String, String[]> requestParameters_goBack = new HashMap<String, String[]>() {
-        {
-            put("step-current", new String[] { "confirm" });
-            put("step-failed", new String[] { "input" });
-            put("step-back", new String[] { "input" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
-        }
-    };
-
-    @Test(dependsOnMethods = "testGoConfirmAgain")
-    public void testGoBack() throws Exception {
-        initParams(requestParameters_goBack);
-
-        TestHandler handler = new TestHandler();
-
-        Assert.assertEquals(handler.handle(), "/testform/input.html");
-
-        Assert.assertNull(savedForm);
-
-        handler.assertMessageSize(0);
-
-        new FormRenderCase("MultiStepForm_goBack.html");
-    }
-
-    @Test(dependsOnMethods = "testGoBack")
-    public void testGoConfirmAgainAgain() throws Exception {
-        testGoToConfirm();
-    }
-
     private Map<String, String[]> requestParameters_complete = new HashMap<String, String[]>() {
         {
-            put("step-current", new String[] { "confirm" });
+            put("id", new String[] { "22" });
+            put("data", new String[] { "data-content" });
+            put("subData", new String[] { "123" });
+            put("year-0", new String[] { "1998" });
+            put("year-1", new String[] { "1999" });
+            put("subArrayLength", new String[] { "2" });
+            put("age-0", new String[] { "88" });
+            put("subArrayLength2", new String[] { "1" });
+            put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "complete" });
             put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
-    @Test(dependsOnMethods = "testGoConfirmAgainAgain")
+    @Test(dependsOnMethods = "testInitAgain")
     public void testComplete() throws Exception {
 
         initParams(requestParameters_complete);
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), "/testform/complete.html");
-
-        Assert.assertNull(savedTraceMap);
+        Assert.assertEquals(handler.handle(), CommonFormResult.SUCCESS);
 
         handler.assertMessageSize(0);
+
+        Assert.assertNull(savedTraceMap);
 
         Assert.assertEquals(savedForm.id.intValue(), 22);
         Assert.assertEquals(savedForm.data, "data-content");
@@ -394,10 +307,6 @@ public class MultiStepFormTest extends WebTestBase {
         Assert.assertEquals(savedForm.subArray[1].year.intValue(), 1999);
         Assert.assertEquals(savedForm.subArray2.length, 1);
         Assert.assertEquals(savedForm.subArray2[0].age.intValue(), 88);
-
-        // should be same as confirm
-        new FormRenderCase("MultiStepForm_goToConfirm.html");
-
-        new FormRenderCase("MultiStepForm_goToConfirm_withDisplay.html");
     }
+
 }
