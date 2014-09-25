@@ -219,29 +219,26 @@ public abstract class AbstractFormFlowHandler<T> {
         T form = (T) traceMap.get(currentStep);
         WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
 
-        if (passDataToSnippetByFlash(currentStep, renderTargetStep, form, result)) {
+        boolean byFlash = passDataToSnippetByFlash(currentStep, renderTargetStep, form, result);
 
+        String traceData = saveTraceMap(traceMap);
+
+        passData(context, byFlash, FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
+        passData(context, byFlash, FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
+        passData(context, byFlash, FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
+
+        if (byFlash) {
             RedirectTargetProvider.addFlashScopeData(AbstractFormFlowSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
-
-            RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
-
-            String traceData = saveTraceMap(traceMap);
-
             // used by clearSavedTraceMap
             context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
+        }
+    }
 
-            RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
-
-            RedirectTargetProvider.addFlashScopeData(FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
+    private void passData(WebApplicationContext context, boolean byFlash, String key, Object data) {
+        if (byFlash) {
+            RedirectTargetProvider.addFlashScopeData(key, data);
         } else {
-
-            context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
-
-            String traceData = saveTraceMap(traceMap);
-
-            context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
-
-            context.setData(FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
+            context.setData(key, data);
         }
     }
 
