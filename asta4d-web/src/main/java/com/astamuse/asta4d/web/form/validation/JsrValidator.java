@@ -90,7 +90,7 @@ public class JsrValidator implements FormValidator {
                             // regular fields or simple cascading
                             return field.getName();
                         } else {
-                            return CascadeFormUtil.rewriteFieldName(field.getName(), node.getIndex());
+                            return CascadeFormUtil.rewriteArrayIndexPlaceHolder(field.getName(), node.getIndex());
                         }
                     }
                 }

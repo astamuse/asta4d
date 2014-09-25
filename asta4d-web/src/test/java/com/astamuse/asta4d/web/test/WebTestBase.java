@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.web.test.render.base;
+package com.astamuse.asta4d.web.test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +11,9 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.snippet.resolve.DefaultSnippetResolver;
 import com.astamuse.asta4d.template.ClasspathTemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
+import com.astamuse.asta4d.web.WebApplicationContext;
 
-public class WebRenderTestBase {
+public class WebTestBase {
     private final static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
             ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
@@ -39,7 +40,7 @@ public class WebRenderTestBase {
         Configuration.setConfiguration(configuration);
         Context context = Context.getCurrentThreadContext();
         if (context == null) {
-            context = new Context();
+            context = new WebApplicationContext();
             Context.setCurrentThreadContext(context);
 
         }

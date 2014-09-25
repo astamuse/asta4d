@@ -23,6 +23,7 @@ import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
@@ -218,15 +219,18 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
             public void set(Element elem) {
                 String id = elem.id();
                 String name = elem.attr("name");
-                String rep = String.valueOf(cascadeFormArrayIndex);
                 if (StringUtils.isNotEmpty(id)) {
-                    elem.attr("id", StringUtils.replace(id, "@", rep));
+                    elem.attr("id", rewriteArrayIndexPlaceHolder(id, cascadeFormArrayIndex));
                 }
                 if (StringUtils.isNotEmpty(name)) {
-                    elem.attr("name", StringUtils.replace(name, "@", rep));
+                    elem.attr("name", rewriteArrayIndexPlaceHolder(name, cascadeFormArrayIndex));
                 }
             }
         });
+    }
+
+    protected String rewriteArrayIndexPlaceHolder(String s, int seq) {
+        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, seq);
     }
 
     /**

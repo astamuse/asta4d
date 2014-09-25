@@ -2,21 +2,16 @@ package com.astamuse.asta4d.web.form.flow.base;
 
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextDataHolder;
-import com.astamuse.asta4d.web.WebApplicationContext;
 
-public class DelatedContext extends Context {
+abstract class DelatedContext extends Context {
     private Context context;
 
-    private String arraySeq;
-
-    public DelatedContext(Context context, int arraySeq) {
+    public DelatedContext(Context context) {
         this.context = context;
-        this.arraySeq = String.valueOf(arraySeq);
     }
 
     public int hashCode() {
@@ -39,20 +34,14 @@ public class DelatedContext extends Context {
         context.setData(scope, key, data);
     }
 
-    private String convertArrayKey(String scope, String key) {
-        if (scope.equals(WebApplicationContext.SCOPE_QUERYPARAM)) {
-            return StringUtils.replace(key, "@", arraySeq);
-        } else {
-            return key;
-        }
-    }
+    protected abstract String convertKey(String scope, String key);
 
     public <T> T getData(String key) {
         return context.getData(key);
     }
 
     public <T> T getData(String scope, String key) {
-        return context.getData(scope, convertArrayKey(scope, key));
+        return context.getData(scope, convertKey(scope, key));
     }
 
     public <T> ContextDataHolder<T> getDataHolder(String key) {
@@ -60,7 +49,7 @@ public class DelatedContext extends Context {
     }
 
     public <T> ContextDataHolder<T> getDataHolder(String scope, String key) {
-        return context.getDataHolder(scope, convertArrayKey(scope, key));
+        return context.getDataHolder(scope, convertKey(scope, key));
     }
 
     public boolean equals(Object obj) {

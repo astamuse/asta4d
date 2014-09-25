@@ -83,7 +83,7 @@ public class TypeUnMatchValidator implements FormValidator {
     protected String retrieveFieldName(AnnotatedPropertyInfo field, int arrayIndex) {
         String name = field.getName();
         if (arrayIndex >= 0) {
-            name = CascadeFormUtil.rewriteFieldName(name, arrayIndex);
+            name = CascadeFormUtil.rewriteArrayIndexPlaceHolder(name, arrayIndex);
         }
         return name;
     }

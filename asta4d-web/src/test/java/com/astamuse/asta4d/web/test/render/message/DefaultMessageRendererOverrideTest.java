@@ -6,13 +6,13 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
+import com.astamuse.asta4d.web.test.WebTestBase;
 import com.astamuse.asta4d.web.test.render.base.WebRenderCase;
-import com.astamuse.asta4d.web.test.render.base.WebRenderTestBase;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper.MessageRenderingSelector;
 import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
 
-public class DefaultMessageRendererOverrideTest extends WebRenderTestBase {
+public class DefaultMessageRendererOverrideTest extends WebTestBase {
 
     private static final String OriginalMessageRendererKey = DefaultMessageRendererOverrideTest.class + "#OriginalMessageRendererKey";
 

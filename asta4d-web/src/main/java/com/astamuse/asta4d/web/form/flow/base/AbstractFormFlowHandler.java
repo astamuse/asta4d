@@ -15,6 +15,7 @@ import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
+import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.form.validation.FormValidator;
@@ -156,36 +157,27 @@ public abstract class AbstractFormFlowHandler<T> {
                     final Object[] array = (Object[]) Array.newInstance(field.getType().getComponentType(), len);
                     for (int i = 0; i < len; i++) {
                         final int seq = i;
-                        Context.with(new DelatedContext(currentContext, seq), new Runnable() {
+                        Context.with(new DelatedContext(currentContext) {
+                            protected String convertKey(String scope, String key) {
+                                if (scope.equals(WebApplicationContext.SCOPE_QUERYPARAM)) {
+                                    return rewriteArrayIndexPlaceHolder(key, seq);
+                                } else {
+                                    return key;
+                                }
+                            }
+                        }, new Runnable() {
                             @Override
                             public void run() {
                                 try {
                                     Object subform = field.getType().getComponentType().newInstance();
                                     InjectUtil.injectToInstance(subform);
                                     Array.set(array, seq, subform);
-                                    // TODO retrieve typeunmatch errors and add array index information
-                                    /*
-                                    List<AnnotatedPropertyInfo> subPropList = AnnotatedPropertyUtil.retrieveProperties(subform.getClass());
-                                    for (AnnotatedPropertyInfo subProp : subPropList) {
-                                        ContextDataHolder valueHolder;
-                                        if (subProp.getField() != null) {
-                                            valueHolder = InjectTrace.getInstanceInjectionTraceInfo(subform, subProp.getField());
-                                        } else {
-                                            valueHolder = InjectTrace.getInstanceInjectionTraceInfo(subform, subProp.getSetter());
-                                        }
-                                        if (valueHolder != null) {
-                                            String rewriteName = CascadeFormUtil.rewriteFieldName(subProp.getName(), seq);
-                                            InjectTrace.saveInstanceInjectionTraceInfo(array, rewriteName, valueHolder);
-                                        }
-                                    }
-                                    */
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
                             }
-                        });
-
-                    }
+                        });// end runnable and context.with
+                    }// end for loop
 
                     field.assginValue(form, array);
                 }
@@ -194,6 +186,10 @@ public abstract class AbstractFormFlowHandler<T> {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected String rewriteArrayIndexPlaceHolder(String s, int seq) {
+        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, seq);
     }
 
     protected String saveTraceMap(Map<String, Object> traceMap) {
@@ -278,11 +274,14 @@ public abstract class AbstractFormFlowHandler<T> {
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;
         } else {
-            for (FormValidationMessage formValidationMessage : validationMesssages) {
-                DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + formValidationMessage.getName() + "-err-msg",
-                        formValidationMessage.getMessage());
+            for (FormValidationMessage msg : validationMesssages) {
+                outputValidationMessage(msg);
             }
             return CommonFormResult.FAILED;
         }
+    }
+
+    protected void outputValidationMessage(FormValidationMessage msg) {
+        DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + msg.getName() + "-err-msg", msg.getMessage());
     }
 }

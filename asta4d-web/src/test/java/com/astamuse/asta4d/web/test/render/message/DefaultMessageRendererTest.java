@@ -2,11 +2,11 @@ package com.astamuse.asta4d.web.test.render.message;
 
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.web.test.WebTestBase;
 import com.astamuse.asta4d.web.test.render.base.WebRenderCase;
-import com.astamuse.asta4d.web.test.render.base.WebRenderTestBase;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
-public class DefaultMessageRendererTest extends WebRenderTestBase {
+public class DefaultMessageRendererTest extends WebTestBase {
 
     @Test
     public void existingMsgSelector() {

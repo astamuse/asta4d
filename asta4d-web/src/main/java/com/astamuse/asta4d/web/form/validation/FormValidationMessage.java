@@ -18,4 +18,9 @@ public class FormValidationMessage {
         return message;
     }
 
+    @Override
+    public String toString() {
+        return "FormValidationMessage:name=[" + name + "], message=[" + message + "]";
+    }
+
 }
