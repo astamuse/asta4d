@@ -377,6 +377,31 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         testGoToConfirm();
     }
 
+    private Map<String, String[]> requestParameters_goBack = new HashMap<String, String[]>() {
+        {
+            put("step-current", new String[] { "confirm" });
+            put("step-failed", new String[] { "input" });
+            put("step-back", new String[] { "input" });
+            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
+        }
+    };
+
+    @Test(dependsOnMethods = "testGoConfirmAgain")
+    public void testGoBack() throws Exception {
+        initParams(requestParameters_goBack);
+
+        TestFormHandler handler = new TestFormHandler();
+
+        Assert.assertEquals(handler.handle(), "/testform/input.html");
+
+        handler.assertMessageSize(0);
+    }
+
+    @Test(dependsOnMethods = "testGoBack")
+    public void testGoConfirmAgainAgain() throws Exception {
+        testGoToConfirm();
+    }
+
     private Map<String, String[]> requestParameters_complete = new HashMap<String, String[]>() {
         {
             put("step-current", new String[] { "confirm" });
@@ -386,7 +411,7 @@ public class MultiStepFormHandlerTest extends WebTestBase {
         }
     };
 
-    @Test(dependsOnMethods = "testGoConfirmAgain")
+    @Test(dependsOnMethods = "testGoConfirmAgainAgain")
     public void testComplete() throws Exception {
 
         initParams(requestParameters_complete);
