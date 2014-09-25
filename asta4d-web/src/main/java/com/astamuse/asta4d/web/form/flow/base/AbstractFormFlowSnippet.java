@@ -18,18 +18,15 @@ import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.snippet.InitializableSnippet;
-import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
-import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
-public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
+public abstract class AbstractFormFlowSnippet {
 
     private static class FieldRenderingInfo {
         String editSelector;
@@ -48,8 +45,6 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
     private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
 
-    public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#IntelligentFormSnippetBase";
-
     @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP)
     protected Map<String, Object> formTraceMap;
 
@@ -58,12 +53,6 @@ public abstract class AbstractFormFlowSnippet implements InitializableSnippet {
 
     protected boolean renderForEdit(String step, String fieldName) {
         return true;
-    }
-
-    @Override
-    public void init() throws SnippetInvokeException {
-        List list = (List) Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_FLASH, PRE_INJECTION_TRACE_INFO);
-        InjectTrace.restoreTraceList(list);
     }
 
     private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int cascadeFormArrayIndex) {

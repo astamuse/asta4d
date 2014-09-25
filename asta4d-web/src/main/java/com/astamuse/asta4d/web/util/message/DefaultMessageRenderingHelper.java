@@ -30,7 +30,8 @@ import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
+import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
+import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 
 public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
@@ -111,21 +112,6 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
             return true;
         }
 
-    }
-
-    static {
-        // register a before redirect task
-        RedirectTargetProvider.registerBeforeRedirectTask(new Runnable() {
-            DefaultMessageRenderingHelper helper = new DefaultMessageRenderingHelper();
-
-            @Override
-            public void run() {
-                List<MessageHolder> list = new ArrayList<>(helper.messageList.get());
-                if (!list.isEmpty()) {
-                    RedirectTargetProvider.addFlashScopeData(FLASH_MSG_LIST_KEY, list);
-                }
-            }
-        });
     }
 
     private String messageGlobalContainerParentSelector = "body";
@@ -242,11 +228,6 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
      */
     protected Renderer renderMesssages() {
         List<MessageHolder> allMsgList = new LinkedList<>();
-
-        List<MessageHolder> flashedList = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_FLASH, FLASH_MSG_LIST_KEY);
-        if (flashedList != null) {
-            allMsgList.addAll(flashedList);
-        }
 
         allMsgList.addAll(messageList.get());
 
@@ -396,6 +377,24 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
 
     public void outputMessage(final MessageRenderingSelector selector, final MessageRenderingSelector alternativeSelector, final String msg) {
         messageList.get().add(new MessageHolder(selector, alternativeSelector, msg));
+        RedirectUtil.registerRedirectInterceptor(this.getClass().getName() + "#outputMessage", new RedirectInterceptor() {
+            @Override
+            public void beforeRedirect() {
+                List<MessageHolder> list = new ArrayList<>(messageList.get());
+                if (!list.isEmpty()) {
+                    RedirectUtil.addFlashScopeData(FLASH_MSG_LIST_KEY, list);
+                }
+            }
+
+            @Override
+            public void afterRedirectDataRestore() {
+                List<MessageHolder> flashedList = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_FLASH,
+                        FLASH_MSG_LIST_KEY);
+                if (flashedList != null) {
+                    messageList.get().addAll(flashedList);
+                }
+            }
+        });
     }
 
     public void info(String msg) {

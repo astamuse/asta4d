@@ -17,8 +17,6 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
-import static com.astamuse.asta4d.web.WebApplicationContext.SCOPE_FLASH;
-
 import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +35,6 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
-import com.astamuse.asta4d.web.util.RedirectUtil;
 
 public class RequestDispatcher {
 
@@ -87,7 +84,7 @@ public class RequestDispatcher {
         UrlMappingRule rule = result.getRule();
         context.setCurrentRule(rule);
         writePathVarToContext(context, rule.getExtraVarMap());
-        restoreFlashScopeData(context, request);
+        RedirectUtil.restoreFlashScopeData(request);
 
         List<ContentProvider> requestResult = handleRequest(rule);
         for (ContentProvider cp : requestResult) {
@@ -120,15 +117,6 @@ public class RequestDispatcher {
         while (it.hasNext()) {
             entry = it.next();
             context.setData(WebApplicationContext.SCOPE_PATHVAR, entry.getKey(), entry.getValue());
-        }
-    }
-
-    private void restoreFlashScopeData(WebApplicationContext context, HttpServletRequest request) {
-        Map<String, Object> flashScopeData = RedirectUtil.retrieveFlashScopeData(request);
-        if (flashScopeData != null) {
-            for (Entry<String, Object> entry : flashScopeData.entrySet()) {
-                context.setData(SCOPE_FLASH, entry.getKey(), entry.getValue());
-            }
         }
     }
 

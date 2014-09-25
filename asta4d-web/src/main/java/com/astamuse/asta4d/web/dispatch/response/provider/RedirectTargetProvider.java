@@ -18,47 +18,15 @@
 package com.astamuse.asta4d.web.dispatch.response.provider;
 
 import java.net.HttpURLConnection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.util.RedirectUtil;
 
 public class RedirectTargetProvider implements ContentProvider {
-
-    private static final List<Runnable> beforeRedirectTaskList = new CopyOnWriteArrayList<Runnable>();
-
-    private static final String FlashScopeDataListKey = RedirectTargetProvider.class.getName() + "##FlashScopeDataListKey";
-
-    public static void registerBeforeRedirectTask(Runnable runnable) {
-        beforeRedirectTaskList.add(runnable);
-    }
-
-    public static void addFlashScopeData(Map<String, Object> flashScopeData) {
-        if (flashScopeData == null || flashScopeData.isEmpty()) {
-            return;
-        }
-        WebApplicationContext context = Context.getCurrentThreadContext();
-        List<Map<String, Object>> dataList = context.getData(FlashScopeDataListKey);
-        if (dataList == null) {
-            dataList = new LinkedList<>();
-            context.setData(FlashScopeDataListKey, dataList);
-        }
-        dataList.add(flashScopeData);
-    }
-
-    public static void addFlashScopeData(String name, Object data) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put(name, data);
-        addFlashScopeData(map);
-    }
 
     private int status;
     private String targetPath;
@@ -87,11 +55,7 @@ public class RedirectTargetProvider implements ContentProvider {
     }
 
     public void setStatus(int status) {
-        if (status == HttpURLConnection.HTTP_MOVED_PERM || status == HttpURLConnection.HTTP_MOVED_TEMP) {
-            this.status = status;
-        } else {
-            this.status = HttpURLConnection.HTTP_MOVED_TEMP;
-        }
+        this.status = status;
     }
 
     public String getTargetPath() {
@@ -117,37 +81,18 @@ public class RedirectTargetProvider implements ContentProvider {
 
     @Override
     public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
-        String url = targetPath;
-        if (url == null) {
-            addFlashScopeData(flashScopeData);
-        } else {
+        RedirectUtil.addFlashScopeData(flashScopeData);
 
-            for (Runnable runnable : beforeRedirectTaskList) {
-                runnable.run();
-            }
-
-            Map<String, Object> dataMap = new HashMap<String, Object>();
-            WebApplicationContext context = Context.getCurrentThreadContext();
-            List<Map<String, Object>> dataList = context.getData(FlashScopeDataListKey);
-            if (dataList != null) {
-                for (Map<String, Object> map : dataList) {
-                    dataMap.putAll(map);
-                }
-            }
-            if (flashScopeData != null) {
-                dataMap.putAll(flashScopeData);
-            }
-            if (url.startsWith("/")) {
-                url = context.getRequest().getContextPath() + url;
-            }
-            url = RedirectUtil.setFlashScopeData(url, dataMap);
-
-            if (url.indexOf('\n') >= 0 || url.indexOf('\r') >= 0) {
-                throw new RuntimeException("illegal redirct url:" + url);
-            }
-
-            response.setStatus(status);
-            response.addHeader("Location", url);
+        if (targetPath == null) {
+            return;
         }
+
+        String url = targetPath;
+        if (url.startsWith("/")) {
+            WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
+            url = context.getRequest().getContextPath() + url;
+        }
+
+        RedirectUtil.redirectToUrlWithSavedFlashScopeData(response, status, url);
     }
 }

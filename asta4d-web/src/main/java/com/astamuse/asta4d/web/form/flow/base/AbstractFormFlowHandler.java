@@ -14,7 +14,8 @@ import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
+import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
+import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
@@ -28,9 +29,11 @@ import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerUtil;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractFormFlowHandler<T> {
 
-    private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#IntelligentFormHandler";
+    private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#" + AbstractFormFlowHandler.class.getName();
 
-    private static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#IntelligentFormHandler";
+    private static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#" + AbstractFormFlowHandler.class.getName();
+
+    public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#" + AbstractFormFlowHandler.class.getName();
 
     private Class<? extends FormProcessData> formProcessDataCls;
     private Class formCls;
@@ -228,7 +231,22 @@ public abstract class AbstractFormFlowHandler<T> {
         passData(context, byFlash, FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
 
         if (byFlash) {
-            RedirectTargetProvider.addFlashScopeData(AbstractFormFlowSnippet.PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
+
+            RedirectUtil.registerRedirectInterceptor(this.getClass().getName() + "#passDataToSnippet", new RedirectInterceptor() {
+                @Override
+                public void beforeRedirect() {
+                    RedirectUtil.addFlashScopeData(PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
+                }
+
+                @Override
+                public void afterRedirectDataRestore() {
+                    List list = (List) Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_FLASH,
+                            PRE_INJECTION_TRACE_INFO);
+                    InjectTrace.restoreTraceList(list);
+
+                }
+            });
+
             // used by clearSavedTraceMap
             context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
         }
@@ -236,7 +254,7 @@ public abstract class AbstractFormFlowHandler<T> {
 
     private void passData(WebApplicationContext context, boolean byFlash, String key, Object data) {
         if (byFlash) {
-            RedirectTargetProvider.addFlashScopeData(key, data);
+            RedirectUtil.addFlashScopeData(key, data);
         } else {
             context.setData(key, data);
         }
