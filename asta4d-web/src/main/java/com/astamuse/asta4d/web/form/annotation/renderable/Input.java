@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
 import com.astamuse.asta4d.web.form.annotation.renderable.convert.CommonInputAnnotationConvertor;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
-import com.astamuse.asta4d.web.form.field.impl.DefaultInputRenderer;
+import com.astamuse.asta4d.web.form.field.impl.InputDefaultRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -20,5 +20,5 @@ public @interface Input {
 
     String displaySelector() default "";
 
-    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default DefaultInputRenderer.class;
+    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default InputDefaultRenderer.class;
 }

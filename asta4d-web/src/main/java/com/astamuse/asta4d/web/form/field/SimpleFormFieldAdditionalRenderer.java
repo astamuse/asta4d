@@ -8,6 +8,12 @@ public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldData
 
     private AnnotatedPropertyInfo field;
 
+    /**
+     * for test purpose
+     */
+    @SuppressWarnings("unused")
+    private String givenFieldName;
+
     public SimpleFormFieldAdditionalRenderer(AnnotatedPropertyInfo field) {
         this.field = field;
     }
@@ -15,6 +21,26 @@ public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldData
     @SuppressWarnings("rawtypes")
     public SimpleFormFieldAdditionalRenderer(Class cls, String fieldName) {
         this(AnnotatedPropertyUtil.retrievePropertyByName(cls, fieldName));
+    }
+
+    /**
+     * this constructor is for test purpose, DO NOT USE IT!!!
+     * 
+     * @param fieldName
+     */
+    @Deprecated
+    public SimpleFormFieldAdditionalRenderer(String fieldName) {
+        givenFieldName = fieldName;
+    }
+
+    /**
+     * this method is for test purpose, DO NOT USE IT!!!
+     * 
+     * @return
+     */
+    @Deprecated
+    public String getGivenFieldName() {
+        return givenFieldName;
     }
 
     @Override
