@@ -18,6 +18,7 @@ import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.form.CascadeFormUtil;
@@ -66,14 +67,14 @@ public abstract class AbstractFormFlowSnippet {
 
             String editSelector = ffAnno.editSelector();
             if (StringUtils.isEmpty(editSelector)) {
-                editSelector = "[name=" + fieldName + "]";
+                editSelector = defaultEditElementSelectorForField(fieldName);
             }
 
             info.editSelector = editSelector;
 
             String displaySelector = ffAnno.displaySelector();
             if (StringUtils.isEmpty(displaySelector)) {
-                displaySelector = displayElementSelectorForField(fieldName);
+                displaySelector = defaultDisplayElementSelectorForField(fieldName);
             }
 
             info.displaySelector = displaySelector;
@@ -197,8 +198,12 @@ public abstract class AbstractFormFlowSnippet {
         return render;
     }
 
-    protected String displayElementSelectorForField(String fieldName) {
-        return "#" + fieldName + "-display";
+    protected String defaultDisplayElementSelectorForField(String fieldName) {
+        return SelectorUtil.id(fieldName + "-display");
+    }
+
+    protected String defaultEditElementSelectorForField(String fieldName) {
+        return SelectorUtil.attr("name", fieldName);
     }
 
     protected Renderer rewriteCascadeFormArrayFieldsRef(final String renderTargetStep, final Object form, final int cascadeFormArrayIndex) {
