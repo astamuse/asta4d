@@ -21,6 +21,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
@@ -111,7 +112,37 @@ public class OneStepFormTest extends WebTestBase {
     }
 
     public static class TestSnippet extends OneStepFormSnippet {
-        // do nothing
+
+        private static Map<String, Integer> formCounterMap = new HashMap<>();
+
+        public TestSnippet() {
+            formCounterMap.clear();
+        }
+
+        public static void assertFormCounterSize(int expectedSize) {
+            Assert.assertEquals(formCounterMap.size(), expectedSize);
+        }
+
+        public static void assertFormCounter(Class formCls, Integer expectedCount) {
+            try {
+                Assert.assertEquals(formCounterMap.get(formCls.getName()), expectedCount);
+            } catch (AssertionError e) {
+                throw new AssertionError(formCls.getName() + ":" + e.getMessage(), e);
+            }
+        }
+
+        @Override
+        protected List<FormFieldDataPrepareRenderer> retrieveFieldDataPrepareRenderer(String renderTargetStep, Object form) {
+            Integer count = formCounterMap.get(form.getClass().getName());
+            if (count == null) {
+                count = 1;
+            } else {
+                count = count + 1;
+            }
+            formCounterMap.put(form.getClass().getName(), count);
+            return super.retrieveFieldDataPrepareRenderer(renderTargetStep, form);
+        }
+
     }
 
     private Enumeration<String> requestParametersEnum(Map<String, String[]> map) {
@@ -165,6 +196,9 @@ public class OneStepFormTest extends WebTestBase {
 
         new FormRenderCase("OneStepForm_initInput.html");
 
+        TestSnippet.assertFormCounterSize(2);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
     }
 
     private Map<String, String[]> requestParameters_inputWithTypeUnMatchError = new HashMap<String, String[]>() {
@@ -200,6 +234,11 @@ public class OneStepFormTest extends WebTestBase {
         handler.assertMessage("year-0", IntegerTypeUnMatch);
 
         new FormRenderCase("OneStepForm_inputWithTypeUnMatchError.html");
+
+        TestSnippet.assertFormCounterSize(3);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 1);
     }
 
     private Map<String, String[]> requestParameters_inputWithValueValidationError = new HashMap<String, String[]>() {
@@ -243,6 +282,11 @@ public class OneStepFormTest extends WebTestBase {
         handler.assertMessage("subArray2", MsgNotEmpty);
 
         new FormRenderCase("OneStepForm_inputWithValueValidationError.html");
+
+        TestSnippet.assertFormCounterSize(3);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 2);
     }
 
     private Map<String, String[]> requestParameters_exit = new HashMap<String, String[]>() {

@@ -21,6 +21,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
@@ -110,7 +111,35 @@ public class MultiStepFormTest extends WebTestBase {
     }
 
     public static class TestSnippet extends MultiStepFormFlowSnippet {
-        // do nothing
+        private static Map<String, Integer> formCounterMap = new HashMap<>();
+
+        public TestSnippet() {
+            formCounterMap.clear();
+        }
+
+        public static void assertFormCounterSize(int expectedSize) {
+            Assert.assertEquals(formCounterMap.size(), expectedSize);
+        }
+
+        public static void assertFormCounter(Class formCls, Integer expectedCount) {
+            try {
+                Assert.assertEquals(formCounterMap.get(formCls.getName()), expectedCount);
+            } catch (AssertionError e) {
+                throw new AssertionError(formCls.getName() + ":" + e.getMessage(), e);
+            }
+        }
+
+        @Override
+        protected List<FormFieldDataPrepareRenderer> retrieveFieldDataPrepareRenderer(String renderTargetStep, Object form) {
+            Integer count = formCounterMap.get(form.getClass().getName());
+            if (count == null) {
+                count = 1;
+            } else {
+                count = count + 1;
+            }
+            formCounterMap.put(form.getClass().getName(), count);
+            return super.retrieveFieldDataPrepareRenderer(renderTargetStep, form);
+        }
     }
 
     private Enumeration<String> requestParametersEnum(Map<String, String[]> map) {
@@ -165,6 +194,10 @@ public class MultiStepFormTest extends WebTestBase {
 
         new FormRenderCase("MultiStepForm_initInput.html");
 
+        TestSnippet.assertFormCounterSize(2);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+
     }
 
     private Map<String, String[]> requestParameters_inputWithoutTraceMap = new HashMap<String, String[]>() {
@@ -189,6 +222,10 @@ public class MultiStepFormTest extends WebTestBase {
         Assert.assertNull(savedForm);
 
         new FormRenderCase("MultiStepForm_inputWithoutTraceMap.html");
+
+        TestSnippet.assertFormCounterSize(2);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
     }
 
     private Map<String, String[]> requestParameters_inputWithTypeUnMatchError = new HashMap<String, String[]>() {
@@ -225,6 +262,11 @@ public class MultiStepFormTest extends WebTestBase {
         handler.assertMessage("year-0", IntegerTypeUnMatch);
 
         new FormRenderCase("MultiStepForm_inputWithTypeUnMatchError.html");
+
+        TestSnippet.assertFormCounterSize(3);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 1);
     }
 
     private Map<String, String[]> requestParameters_inputWithValueValidationError = new HashMap<String, String[]>() {
@@ -269,6 +311,11 @@ public class MultiStepFormTest extends WebTestBase {
         handler.assertMessage("subArray2", MsgNotEmpty);
 
         new FormRenderCase("MultiStepForm_inputWithValueValidationError.html");
+
+        TestSnippet.assertFormCounterSize(3);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 2);
     }
 
     private Map<String, String[]> requestParameters_goToConfirm = new HashMap<String, String[]>() {
@@ -303,7 +350,21 @@ public class MultiStepFormTest extends WebTestBase {
 
         new FormRenderCase("MultiStepForm_goToConfirm.html");
 
+        TestSnippet.assertFormCounterSize(4);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 2);
+        TestSnippet.assertFormCounter(SubArray2.class, 1);
+
+        TestSnippet.formCounterMap.clear();
+
         new FormRenderCase("MultiStepForm_goToConfirm_withDisplay.html");
+
+        TestSnippet.assertFormCounterSize(4);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 2);
+        TestSnippet.assertFormCounter(SubArray2.class, 1);
     }
 
     private Map<String, String[]> requestParameters_exit = new HashMap<String, String[]>() {
@@ -357,6 +418,12 @@ public class MultiStepFormTest extends WebTestBase {
         handler.assertMessageSize(0);
 
         new FormRenderCase("MultiStepForm_goBack.html");
+
+        TestSnippet.assertFormCounterSize(4);
+        TestSnippet.assertFormCounter(TestForm.class, 1);
+        TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 2);
+        TestSnippet.assertFormCounter(SubArray2.class, 1);
     }
 
     @Test(dependsOnMethods = "testGoBack")
