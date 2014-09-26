@@ -97,7 +97,7 @@ public abstract class AbstractFormFlowSnippet {
     }
 
     public Renderer render(@ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
-        Renderer renderer = Renderer.create("form", new ElementSetter() {
+        Renderer renderer = Renderer.create(":root", new ElementSetter() {
             @Override
             public void set(Element elem) {
                 Element hide = new Element(Tag.valueOf("input"), "");

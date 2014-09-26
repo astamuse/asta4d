@@ -14,8 +14,8 @@
 	<section>
 		<article>
 			<p>Are you sure you have the correct?</p>
-			<form method="post" afd:render="form.MultiStepFormSnippet">
-				<afd:embed target="/templates/form/formContent.html" static></afd:embed>
+			<form method="post">
+				<afd:embed target="/templates/form/multistep/formContent.html"></afd:embed>
 				<input type="hidden" name="step-current" value="confirm">
 				<input type="hidden" name="step-failed" value="input">
 				<button type="submit" name="step-success" value="complete">send</button>

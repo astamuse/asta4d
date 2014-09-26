@@ -43,6 +43,9 @@ public class TemplateUtil {
     private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
     public final static void regulateElement(Document doc) throws TemplateException, TemplateNotFoundException {
+        // disabled. see {@link #loadStaticEmebed}
+        // load static embed at first
+        // loadStaticEmebed(doc);
         regulateSnippets(doc);
         regulateEmbed(doc);
     }
@@ -133,8 +136,6 @@ public class TemplateUtil {
     }
 
     private final static void regulateEmbed(Document doc) throws TemplateException, TemplateNotFoundException {
-        // load static embed at first
-        loadStaticEmebed(doc);
         // check nodes without block attr for blocking parent snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.EMBED_NODE_ATTR_BLOCK);
         selector = SelectorUtil.not(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR, selector);
@@ -142,6 +143,22 @@ public class TemplateUtil {
         setBlockingParentSnippetId(embedElemes);
     }
 
+    /**
+     * Disabled static embed at 2014.09.26.
+     * 
+     * Developers would like to use different snippets to render a same static embed file as following: <code>
+     *   <afd:snippet render="SomeSnippet">
+     *      <afd:embed target="/someEmbed.html"/>
+     *   </afd:snippet>
+     * </code>
+     * 
+     * Which confuses rendering logic and makes bad source smell, thus we decide to disable this feature.
+     * 
+     * @param doc
+     * @throws TemplateException
+     * @throws TemplateNotFoundException
+     */
+    @Deprecated
     private final static void loadStaticEmebed(Document doc) throws TemplateException, TemplateNotFoundException {
 
         String selector = SelectorUtil.attr(SelectorUtil.tag(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR),

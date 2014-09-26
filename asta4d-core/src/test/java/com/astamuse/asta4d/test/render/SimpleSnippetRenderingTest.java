@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.test.render;
 
+import org.testng.annotations.Test;
+
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.Renderer;
@@ -80,6 +82,7 @@ public class SimpleSnippetRenderingTest extends BaseTest {
         new SimpleCase("SimpleSnippet_TagEmbed.html");
     }
 
+    @Test(enabled = false)
     public void testStaticEmbed() {
         new SimpleCase("SimpleSnippet_StaticEmbed.html");
     }
