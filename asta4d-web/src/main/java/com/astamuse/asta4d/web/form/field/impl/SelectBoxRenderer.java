@@ -18,12 +18,19 @@ import com.astamuse.asta4d.web.form.field.SimpleFormFieldWithOptionValueRenderer
 public class SelectBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
     @Override
-    public Renderer renderForEdit(String nonNullString) {
+    public Renderer renderForEdit(final String nonNullString) {
         Renderer renderer = Renderer.create("option", "selected", Clear);
-        if (!nonNullString.isEmpty()) {
-            String selector = "option[value=" + nonNullString + "]";
-            renderer.add(selector, "selected", "");
-        }
+        String selector = "option";
+        // we have to iterate the elements because the attr selector would not work for blank values.
+        renderer.add(selector, new ElementSetter() {
+            @Override
+            public void set(Element elem) {
+                String val = elem.attr("value");
+                if (nonNullString.equals(val)) {
+                    elem.attr("selected", "");
+                }
+            }
+        });
         return renderer;
     }
 

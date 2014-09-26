@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.AdditionalDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
@@ -30,8 +31,22 @@ public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRende
 
     private OptionValueMap optionMap;
 
+    public SelectBoxDataPrepareRenderer(AnnotatedPropertyInfo field) {
+        super(field);
+    }
+
     public SelectBoxDataPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
+    }
+
+    /**
+     * for test purpose, DO NOT USE IT!!!
+     * 
+     * @param fieldName
+     */
+    @Deprecated
+    public SelectBoxDataPrepareRenderer(String fieldName) {
+        super(fieldName);
     }
 
     public SelectBoxDataPrepareRenderer setOptionData(OptionValueMap optionMap) {
@@ -43,10 +58,10 @@ public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRende
     }
 
     public SelectBoxDataPrepareRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
-        if (optionMap != null) {
+        if (this.optionMap != null) {
             throw new RuntimeException("Option list group is not allowed because there are existing option list without group");
         }
-        optGroupList.add(new OptGroup(groupName, optionMap));
+        this.optGroupList.add(new OptGroup(groupName, optionMap));
         return this;
     }
 
