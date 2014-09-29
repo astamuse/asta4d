@@ -45,12 +45,14 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
      */
     protected Renderer renderForDisplay(final String editTargetSelector, final String displayTargetSelector, final String nonNullString) {
         // hide the edit element
-        Renderer render = Renderer.create(editTargetSelector, new Renderable() {
+        Renderer render = Renderer.create(":root", new Renderable() {
             @Override
             public Renderer render() {
                 return hideTarget(editTargetSelector);
             }
         });
+
+        render.disableMissingSelectorWarning();
 
         // render.addDebugger("before " + displayTargetSelector);
 
@@ -71,13 +73,16 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
                 return addAlternativeDom(editTargetSelector, nonNullString);
             }
         });
+
+        render.enableMissingSelectorWarning();
         return render;
     }
 
-    protected Renderer hideTarget(String targetSelector) {
+    protected Renderer hideTarget(final String targetSelector) {
         return Renderer.create(targetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
+                String selector = targetSelector;
                 String style = elem.attr("style");
                 if (style != null) {
                     style = style.trim();

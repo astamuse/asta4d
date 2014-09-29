@@ -71,8 +71,6 @@ public class CheckBoxRenderer extends RadioBoxRenderer {
             }
         });
 
-        // render.addDebugger("before " + displayTargetSelector);
-
         final List<String> valueList = convertValueToList(value);
 
         // render the shown value to target element by displayTargetSelector
@@ -83,7 +81,7 @@ public class CheckBoxRenderer extends RadioBoxRenderer {
                 List<String> displayString = ListConvertUtil.transform(valueList, new RowConvertor<String, String>() {
                     @Override
                     public String convert(int rowIndex, String v) {
-                        return retrieveDisplayString(editTargetSelector, v);
+                        return retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, v);
                     }
 
                 });
@@ -147,7 +145,6 @@ public class CheckBoxRenderer extends RadioBoxRenderer {
 
     protected Renderer addDefaultAlternativeDom(final String editTargetSelector, final List<String> valueList) {
         Renderer renderer = Renderer.create();
-        renderer.addDebugger("before alternative display for " + editTargetSelector);
         renderer.add(new Renderer(editTargetSelector, new ElementTransformer(null) {
             @Override
             public Element invoke(Element elem) {
@@ -157,7 +154,7 @@ public class CheckBoxRenderer extends RadioBoxRenderer {
                 group.appendChild(editClone);
 
                 for (String v : valueList) {
-                    String nonNullString = retrieveDisplayString(editTargetSelector, v);
+                    String nonNullString = retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, v);
                     Element newElem = new Element(Tag.valueOf("span"), "");
                     newElem.text(nonNullString);
                     group.appendChild(newElem);
@@ -166,7 +163,6 @@ public class CheckBoxRenderer extends RadioBoxRenderer {
             }
 
         }));
-        renderer.addDebugger("after alternative display for " + editTargetSelector);
         return renderer;
     }
 }
