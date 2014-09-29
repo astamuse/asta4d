@@ -31,6 +31,9 @@ public class RenderableTransformer extends Transformer<Renderable> {
     @Override
     protected Element transform(Element elem, Renderable content) {
         Renderer render = content.render();
+        if (render == null) {
+            throw new NullPointerException();
+        }
         RendererTransformer delegatedTransformer = new RendererTransformer(render);
         return delegatedTransformer.invoke(elem);
     }
