@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
@@ -21,8 +22,8 @@ import com.astamuse.asta4d.web.form.field.SimpleFormFieldWithOptionValueRenderer
 
 public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
-    private static final String ToBeHiddenDuplicateContainerFlagAttr = Configuration.getConfiguration().getTagNameSpace() + ":" +
-            "ToBeHiddenDuplicateContainerFlagAttr";
+    private static final String ToBeHiddenLaterFlagAttr = Configuration.getConfiguration().getTagNameSpace() + ":" +
+            "ToBeHiddenLaterFlagAttr";
 
     @Override
     public Renderer renderForEdit(final String nonNullString) {
@@ -62,19 +63,24 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
                     for (Pair<String, String> input : inputList) {
                         String id = input.getLeft();
                         final String value = input.getRight();
-                        render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, id),
-                                Renderer.create("label", new ElementSetter() {
-                                    @Override
-                                    public void set(Element elem) {
-                                        optionList.add(new OptionValuePair(value, elem.text()));
-                                    }
-                                }));
+                        render.add(SelectorUtil.attr("for", id), Renderer.create("label", new ElementSetter() {
+                            @Override
+                            public void set(Element elem) {
+                                optionList.add(new OptionValuePair(value, elem.text()));
+                            }
+                        }));
+                        render.add(":root", new Renderable() {
+                            @Override
+                            public Renderer render() {
+                                AdditionalDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector,
+                                        new OptionValueMap(optionList));
+                                return Renderer.create();
+                            }
+                        });
                     }// end for loop
                     return render;
                 }
             });
-
-            AdditionalDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector, new OptionValueMap(optionList));
         }
         return render;
     }
@@ -85,7 +91,9 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
     @Override
     protected Renderer hideTarget(final String targetSelector) {
+        // hide the input element
         final List<String> duplicatorRefList = new LinkedList<>();
+        final List<String> idList = new LinkedList<>();
         Renderer renderer = Renderer.create(targetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
@@ -93,22 +101,24 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
                 if (StringUtils.isNotEmpty(duplicatorRef)) {
                     duplicatorRefList.add(duplicatorRef);
                 }
+                idList.add(elem.id());
             }
         });
         return renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
-                if (duplicatorRefList.isEmpty()) {
-                    return superHideTarget(targetSelector);
-                } else {
-                    Renderer render = Renderer.create();
-                    for (String ref : duplicatorRefList) {
-                        render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref),
-                                ToBeHiddenDuplicateContainerFlagAttr, "");
-                    }
-                    render.add(superHideTarget(targetSelector));
-                    return render;
+                Renderer render = Renderer.create();
+                for (String ref : duplicatorRefList) {
+                    render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref), ToBeHiddenLaterFlagAttr, "");
                 }
+                for (String id : idList) {
+                    render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, id), ToBeHiddenLaterFlagAttr, "");
+                }
+                for (String id : idList) {
+                    render.add(SelectorUtil.attr("label", "for", id), ToBeHiddenLaterFlagAttr, "");
+                }
+                render.add(targetSelector, ToBeHiddenLaterFlagAttr, "");
+                return render;
             }
         });
     }
@@ -123,11 +133,11 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
         render.add(super.renderForDisplay(editTargetSelector, displayTargetSelector, nonNullString));
 
-        // delay to hide all containers if exists
+        // delay to hide all
         render.add(":root", new Renderable() {
             @Override
             public Renderer render() {
-                return superHideTarget(SelectorUtil.attr(ToBeHiddenDuplicateContainerFlagAttr));
+                return superHideTarget(SelectorUtil.attr(ToBeHiddenLaterFlagAttr));
             }
         });
 
@@ -135,7 +145,7 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
         render.add(":root", new Renderable() {
             @Override
             public Renderer render() {
-                return Renderer.create(SelectorUtil.attr(ToBeHiddenDuplicateContainerFlagAttr), ToBeHiddenDuplicateContainerFlagAttr, Clear);
+                return Renderer.create(SelectorUtil.attr(ToBeHiddenLaterFlagAttr), ToBeHiddenLaterFlagAttr, Clear);
             }
         });
         return render;
@@ -174,38 +184,50 @@ public class RadioBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
                 Renderer renderer = Renderer.create();
 
                 // renderer.addDebugger("before hide unmatch");
-
-                for (String inputId : unMatchedIdList) {
-                    renderer.add(hideTarget(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, inputId)));
-                }
-
                 // renderer.addDebugger("before add match");
 
                 if (matchedIdList.isEmpty()) {
-                    renderer.add(addAlternativeDomWhenMatchedLabelNotExists(editTargetSelector,
-                            retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, nonNullString)));
+                    renderer.add(addAlternativeDomWhenMatchedLabelNotExists(editTargetSelector, nonNullString));
                 } else {
                     // do nothing for remaining the existing label element
                     // but we still have to revive the possibly existing duplicate container
-                    for (String inputId : matchedIdList) {
-                        final List<String> duplicatorRefList = new LinkedList<>();
-                        renderer.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, inputId), new ElementSetter() {
+                    for (final String inputId : matchedIdList) {
+                        final List<String> matchedDuplicatorRefList = new LinkedList<>();
+                        final String labelRefSelector = SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, inputId);
+                        final String labelDefaultSelector = SelectorUtil.attr(SelectorUtil.tag("label"), "for", inputId);
+                        renderer.add(labelRefSelector, new ElementSetter() {
                             @Override
                             public void set(Element elem) {
                                 String ref = elem.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ATTR);
                                 if (StringUtils.isNotEmpty(ref)) {
-                                    duplicatorRefList.add(ref);
+                                    matchedDuplicatorRefList.add(ref);
                                 }
                             }
                         });
+                        renderer.add(new ElementNotFoundHandler(labelRefSelector) {
+                            @Override
+                            public Renderer alternativeRenderer() {
+                                return Renderer.create(labelDefaultSelector, new ElementSetter() {
+                                    @Override
+                                    public void set(Element elem) {
+                                        String ref = elem.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ATTR);
+                                        if (StringUtils.isNotEmpty(ref)) {
+                                            matchedDuplicatorRefList.add(ref);
+                                        }
+                                    }// end set
+                                });
+                            }// end alternativeRenderer
+                        });// end ElementNotFoundHandler
                         renderer.add(":root", new Renderable() {
                             @Override
                             public Renderer render() {
                                 Renderer renderer = Renderer.create();
-                                for (String ref : duplicatorRefList) {
+                                for (String ref : matchedDuplicatorRefList) {
                                     renderer.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref),
-                                            ToBeHiddenDuplicateContainerFlagAttr, Clear);
+                                            ToBeHiddenLaterFlagAttr, Clear);
                                 }
+                                renderer.add(labelRefSelector, ToBeHiddenLaterFlagAttr, Clear);
+                                renderer.add(labelDefaultSelector, ToBeHiddenLaterFlagAttr, Clear);
                                 return renderer;
                             }
                         });

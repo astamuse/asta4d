@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.web.form.field.impl;
 
+import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
         List<Element> relocatingLabels = new LinkedList<>();
     }
 
-    private String targetInputElementIdReferenceAttr = null;
+    private String labelWrapperIndicatorAttr = null;
     private boolean inputIdByValue = false;
     private String duplicateSelector = null;
     private OptionValueMap optionMap = null;
@@ -71,16 +73,16 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
 
     /**
      * By default, there must be a label tag which "for" attribute is specified to the against input element, then this prepare renderer
-     * will use a select as "label[for=#id]" to retrieve the label element of the input element. <br>
-     * User can specify a special attribute name to tell this prepare renderer to use selector as "[attrName=#id]" to retrieve the against
+     * will use a select as "label[for=id]" to retrieve the label element of the input element. <br>
+     * User can specify a special attribute name to tell this prepare renderer to use selector as "[attrName=id]" to retrieve the against
      * label element which may be a label element with some decorating outer parent elements.
      * 
      * 
      * @param attrName
      * @return
      */
-    public RadioBoxDataPrepareRenderer setTargetInputElementIdReferenceAttr(String attrName) {
-        this.targetInputElementIdReferenceAttr = attrName;
+    public RadioBoxDataPrepareRenderer setLabelWrapperIndicatorAttr(String attrName) {
+        this.labelWrapperIndicatorAttr = attrName;
         return this;
     }
 
@@ -113,12 +115,17 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
     @Override
     public Renderer preRender(final String editSelector, final String displaySelector) {
 
+        if (duplicateSelector != null && labelWrapperIndicatorAttr != null) {
+            String msg = "duplicateSelector (%s) and labelWrapperIndicatorAttr (%s) cannot be specified at same time.";
+            throw new IllegalArgumentException(String.format(msg, duplicateSelector, labelWrapperIndicatorAttr));
+        }
+
         Renderer renderer = super.preRender(editSelector, displaySelector);
 
         // create wrapper for input element
         final WrapperIdHolder wrapperIdHolder = new WrapperIdHolder();
 
-        if (duplicateSelector == null) {
+        if (duplicateSelector == null && optionMap != null) {
 
             renderer.add(new Renderer(editSelector, new ElementTransformer(null) {
                 @Override
@@ -126,12 +133,14 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
 
                     if (wrapperIdHolder.wrapperId != null) {
                         throw new RuntimeException("The target of selector[" + editSelector +
-                                "] must be unique but over than 1 target was found.");
+                                "] must be unique but over than 1 target was found." +
+                                "Perhaps you have specified an option value map on a group of elements " +
+                                "which is intented to be treated as predefined static options by html directly.");
                     }
 
                     String id = elem.id();
                     if (StringUtils.isEmpty(id)) {
-                        throw new RuntimeException("A radio box input element must have id value being configured:" + elem.html());
+                        throw new RuntimeException("A radio input element must have id value being configured:" + elem.outerHtml());
                     }
 
                     GroupNode wrapper = new GroupNode();
@@ -149,10 +158,10 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
                     wrapperIdHolder.wrapperId = wrapperId;
 
                     // record the selector for against label
-                    if (targetInputElementIdReferenceAttr == null) {
+                    if (labelWrapperIndicatorAttr == null) {
                         wrapperIdHolder.labelSelector = SelectorUtil.attr("label", "for", wrapperIdHolder.inputId);
                     } else {
-                        wrapperIdHolder.labelSelector = SelectorUtil.attr(targetInputElementIdReferenceAttr, wrapperIdHolder.inputId);
+                        wrapperIdHolder.labelSelector = SelectorUtil.attr(labelWrapperIndicatorAttr, wrapperIdHolder.inputId);
                     }
 
                     return wrapper;
@@ -216,28 +225,28 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
             });
 
         } else {
-            // if duplicateSelector is specified, we just only need to store the input element id
-            renderer.add(editSelector, new ElementSetter() {
-                @Override
-                public void set(Element elem) {
-                    if (wrapperIdHolder.wrapperId != null) {
-                        throw new RuntimeException("The target of selector[" + editSelector +
-                                "] must be unique but over than 1 target was found.");
-                    }
-                    String id = elem.id();
-                    if (StringUtils.isEmpty(id)) {
-                        throw new RuntimeException("A radio box input element must have id value being configured:" + elem.html());
-                    }
-                    wrapperIdHolder.inputId = id;
+            if (duplicateSelector != null && optionMap != null) {
+                // if duplicateSelector is specified, we just only need to store the input element id
+                renderer.add(editSelector, new ElementSetter() {
+                    @Override
+                    public void set(Element elem) {
+                        if (wrapperIdHolder.inputId != null) {
+                            String msg = "The target of selector[%s] (inside duplicator:%s) must be unique but over than 1 target was found.";
+                            throw new RuntimeException(String.format(msg, editSelector, duplicateSelector));
+                        }
+                        String id = elem.id();
+                        if (StringUtils.isEmpty(id)) {
+                            String msg = "A radio input element (inside duplicator:%s) must have id value being configured:%s";
+                            throw new RuntimeException(String.format(msg, duplicateSelector, elem.outerHtml()));
+                        }
+                        wrapperIdHolder.inputId = id;
 
-                    // record the selector for against label
-                    if (targetInputElementIdReferenceAttr == null) {
+                        // record the selector for against label
+                        // labelWrapperIndicatorAttr would not be null since we checked it at the entry of this method.
                         wrapperIdHolder.labelSelector = SelectorUtil.attr("label", "for", wrapperIdHolder.inputId);
-                    } else {
-                        wrapperIdHolder.labelSelector = SelectorUtil.attr(targetInputElementIdReferenceAttr, wrapperIdHolder.inputId);
                     }
-                }
-            });
+                });
+            }
         }
 
         // here we finished restructure the input element and its related label element and then we begin to manufacture all the input/label
@@ -246,48 +255,96 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
         renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
-                if (wrapperIdHolder.wrapperId == null && duplicateSelector == null) {
-                    // for display mode?
-                    return Renderer.create();
-                }
-                String selector = duplicateSelector == null ? SelectorUtil.id(wrapperIdHolder.wrapperId) : duplicateSelector;
-                return Renderer.create(selector, optionMap.getOptionList(), new RowRenderer<OptionValuePair>() {
-                    @Override
-                    public Renderer convert(int rowIndex, OptionValuePair row) {
-                        String inputSelector = SelectorUtil.id("input", wrapperIdHolder.inputId);
-                        Renderer renderer = Renderer.create(inputSelector, "value", row.getValue());
 
-                        // we have to generate a new uuid for the input element to make sure its id is unique even we duplicated it.
-                        String newInputId = inputIdByValue ? row.getValue() : IdGenerator.createId();
+                if (optionMap == null) {
+                    // for static options
+                    Renderer renderer = Renderer.create();
+                    final List<String> inputIdList = new LinkedList<>();
+                    renderer.add(editSelector, new ElementSetter() {
+                        @Override
+                        public void set(Element elem) {
+                            inputIdList.add(elem.id());
+                        }
+                    });
+                    renderer.add(":root", new Renderable() {
+                        @Override
+                        public Renderer render() {
+                            Renderer render = Renderer.create();
+                            for (String id : inputIdList) {
+                                render.add(SelectorUtil.attr(labelWrapperIndicatorAttr, id), LABEL_REF_ATTR, id);
+                                render.add(SelectorUtil.attr("label", "for", id), LABEL_REF_ATTR, id);
+                            }
+                            return render;
+                        }
+                    });
 
-                        // make the generated id more understandable by prefixing with original id
-                        newInputId = wrapperIdHolder.inputId + "-" + newInputId;
+                    if (duplicateSelector != null) {
+                        renderer.add(duplicateSelector, new Renderable() {
+                            @Override
+                            public Renderer render() {
+                                String duplicatorRef = IdGenerator.createId();
+                                Renderer render = Renderer.create(":root", DUPLICATOR_REF_ID_ATTR, duplicatorRef);
+                                render.add("input", DUPLICATOR_REF_ATTR, duplicatorRef);
+                                String labelSelector;
+                                if (labelWrapperIndicatorAttr == null) {
+                                    labelSelector = SelectorUtil.tag("label");
+                                } else {
+                                    labelSelector = SelectorUtil.attr(labelWrapperIndicatorAttr);
+                                }
+                                render.add(labelSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
+                                return render;
+                            }
+                        });
+                    }
+                    return renderer;
+                } else {
+                    if (wrapperIdHolder.wrapperId == null && duplicateSelector == null) {
+                        // for display mode?
+                        return Renderer.create();
+                    }
+                    if (wrapperIdHolder.inputId == null) {
+                        // target input element not found
+                        return Renderer.create();
+                    }
+                    String selector = duplicateSelector == null ? SelectorUtil.id(wrapperIdHolder.wrapperId) : duplicateSelector;
+                    return Renderer.create(selector, optionMap.getOptionList(), new RowRenderer<OptionValuePair>() {
+                        @Override
+                        public Renderer convert(int rowIndex, OptionValuePair row) {
+                            String inputSelector = SelectorUtil.id("input", wrapperIdHolder.inputId);
+                            Renderer renderer = Renderer.create(inputSelector, "value", row.getValue());
 
-                        String duplicatorRef = null;
+                            // we have to generate a new uuid for the input element to make sure its id is unique even we duplicated it.
+                            String newInputId = inputIdByValue ? row.getValue() : IdGenerator.createId();
 
-                        if (duplicateSelector != null) {
-                            if (inputIdByValue) {
-                                duplicatorRef = "duplicator-ref-" + newInputId;
-                            } else {
+                            // make the generated id more understandable by prefixing with original id
+                            newInputId = wrapperIdHolder.inputId + "-" + newInputId;
+
+                            String duplicatorRef = null;
+
+                            if (duplicateSelector != null) {
                                 duplicatorRef = IdGenerator.createId();
                             }
+
+                            renderer.add(":root", DUPLICATOR_REF_ID_ATTR, duplicatorRef);
+
+                            renderer.add(inputSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
+                            renderer.add(inputSelector, "id", newInputId);
+
+                            String sss = wrapperIdHolder.labelSelector;
+
+                            // may be a wrapper container of label
+                            renderer.add(wrapperIdHolder.labelSelector, LABEL_REF_ATTR, newInputId);
+                            if (labelWrapperIndicatorAttr != null) {
+                                renderer.add(wrapperIdHolder.labelSelector, labelWrapperIndicatorAttr, newInputId);
+                            }
+                            renderer.add(wrapperIdHolder.labelSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
+
+                            renderer.add("label", "for", newInputId);
+                            renderer.add("label", row.getDisplayText());
+                            return renderer;
                         }
-
-                        renderer.add(":root", DUPLICATOR_REF_ID_ATTR, duplicatorRef);
-
-                        renderer.add(inputSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
-                        renderer.add(inputSelector, "id", newInputId);
-
-                        // may be a wrapper container of label
-                        renderer.add(wrapperIdHolder.labelSelector, LABEL_REF_ATTR, newInputId);
-
-                        renderer.add(wrapperIdHolder.labelSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
-
-                        renderer.add("label", "for", newInputId);
-                        renderer.add("label", row.getDisplayText());
-                        return renderer;
-                    }
-                });
+                    });
+                }
             }
         });
 
@@ -313,4 +370,17 @@ public class RadioBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRender
 
         return renderer;
     }
+
+    @Override
+    public Renderer postRender(String editSelector, String displaySelector) {
+
+        Renderer render = Renderer.create();
+
+        String[] clearAttrs = { LABEL_REF_ATTR, DUPLICATOR_REF_ATTR, DUPLICATOR_REF_ID_ATTR };
+        for (String attr : clearAttrs) {
+            render.add(SelectorUtil.attr(attr), attr, Clear);
+        }
+        return render.add(super.postRender(editSelector, displaySelector));
+    }
+
 }

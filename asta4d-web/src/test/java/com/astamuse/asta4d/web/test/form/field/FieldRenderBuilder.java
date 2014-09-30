@@ -68,6 +68,11 @@ public class FieldRenderBuilder {
             throw new RuntimeException(e);
         }
 
+        for (FormFieldDataPrepareRenderer prepare : prepareList) {
+            String fieldName = ((SimpleFormFieldAdditionalRenderer) prepare).getGivenFieldName();
+            renderer.add(prepare.postRender(editSelector(fieldName), displaySelector(fieldName)));
+        }
+
         return renderer;
     }
 }

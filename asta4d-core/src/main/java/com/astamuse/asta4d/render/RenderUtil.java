@@ -158,7 +158,7 @@ public class RenderUtil {
                     throw e;
                 } catch (Exception e) {
                     SnippetInvokeException se = new SnippetInvokeException("Error occured when executing rendering on [" +
-                            renderDeclaration + "]", e);
+                            renderDeclaration + "]:" + e.getMessage(), e);
                     throw se;
                 }
                 context.setCurrentRenderingElement(null);

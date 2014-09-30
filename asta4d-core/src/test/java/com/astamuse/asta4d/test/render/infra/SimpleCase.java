@@ -45,7 +45,7 @@ public class SimpleCase {
         } catch (Throwable t) {
             output(templateFileName + ":rendering result", ostr);
             output(confirmFileName + ":expected result", cstr);
-            throw new RuntimeException("verify failed", t);
+            throw new RuntimeException("verify failed:" + t.getMessage(), t);
         }
     }
 
