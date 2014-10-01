@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.web.form.field.AdditionalDataUtil;
+import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldWithOptionValueRenderer;
@@ -40,7 +40,7 @@ public class SelectBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
         Renderer render = Renderer.create();
 
         // retrieve and create a value map here
-        if (AdditionalDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
+        if (PrepareRenderingDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
 
             render.add(editTargetSelector, new ElementSetter() {
                 @Override
@@ -53,7 +53,7 @@ public class SelectBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
                         displayText = opt.text();
                         optionList.add(new OptionValuePair(value, displayText));
                     }
-                    AdditionalDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector, new OptionValueMap(
+                    PrepareRenderingDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector, new OptionValueMap(
                             optionList));
                 }
             });

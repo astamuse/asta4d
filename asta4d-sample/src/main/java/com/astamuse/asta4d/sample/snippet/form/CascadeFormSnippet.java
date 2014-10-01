@@ -24,20 +24,20 @@ import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
 import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
-import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.CheckBoxDataPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.RadioBoxDataPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.SelectBoxDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.impl.CheckBoxPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.impl.RadioBoxPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.impl.SelectBoxPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
 
 public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
     @Override
-    protected List<FormFieldDataPrepareRenderer> retrieveFieldDataPrepareRenderer(String renderTargetStep, Object form) {
-        List<FormFieldDataPrepareRenderer> list = new LinkedList<>();
+    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+        List<FormFieldPrepareRenderer> list = new LinkedList<>();
         if (form instanceof PersonForm) {
-            list.add(new SelectBoxDataPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
-            list.add(new RadioBoxDataPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
-            list.add(new CheckBoxDataPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
+            list.add(new SelectBoxPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
+            list.add(new RadioBoxPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
+            list.add(new CheckBoxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
         } else if (form instanceof JobForm) {
             // ...
         }

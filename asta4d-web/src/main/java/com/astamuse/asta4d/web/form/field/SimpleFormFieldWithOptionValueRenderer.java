@@ -5,7 +5,7 @@ import com.astamuse.asta4d.render.Renderer;
 public abstract class SimpleFormFieldWithOptionValueRenderer extends SimpleFormFieldValueRenderer {
 
     protected String retrieveDisplayStringFromStoredOptionValueMap(String selector, String nonNullString) {
-        OptionValueMap storedOptionMap = AdditionalDataUtil.retrieveStoredDataFromContextBySelector(selector);
+        OptionValueMap storedOptionMap = PrepareRenderingDataUtil.retrieveStoredDataFromContextBySelector(selector);
         if (storedOptionMap == null) {
             return nonNullString;
         }

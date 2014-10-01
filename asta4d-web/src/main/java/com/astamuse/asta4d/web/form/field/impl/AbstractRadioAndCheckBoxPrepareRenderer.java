@@ -21,14 +21,14 @@ import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.collection.RowRenderer;
-import com.astamuse.asta4d.web.form.field.AdditionalDataUtil;
+import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
-import com.astamuse.asta4d.web.form.field.SimpleFormFieldAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractRadioAndCheckBoxDataPrepareRenderer<T extends AbstractRadioAndCheckBoxDataPrepareRenderer> extends
-        SimpleFormFieldAdditionalRenderer {
+public abstract class AbstractRadioAndCheckBoxPrepareRenderer<T extends AbstractRadioAndCheckBoxPrepareRenderer> extends
+        SimpleFormFieldPrepareRenderer {
 
     public static final String LABEL_REF_ATTR = Configuration.getConfiguration().getTagNameSpace() + ":" + "label-ref-for-inputbox-id";
 
@@ -56,15 +56,15 @@ public abstract class AbstractRadioAndCheckBoxDataPrepareRenderer<T extends Abst
      * @param fieldName
      */
     @Deprecated
-    public AbstractRadioAndCheckBoxDataPrepareRenderer(String fieldName) {
+    public AbstractRadioAndCheckBoxPrepareRenderer(String fieldName) {
         super(fieldName);
     }
 
-    public AbstractRadioAndCheckBoxDataPrepareRenderer(AnnotatedPropertyInfo field) {
+    public AbstractRadioAndCheckBoxPrepareRenderer(AnnotatedPropertyInfo field) {
         super(field);
     }
 
-    public AbstractRadioAndCheckBoxDataPrepareRenderer(Class cls, String fieldName) {
+    public AbstractRadioAndCheckBoxPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
@@ -378,7 +378,7 @@ public abstract class AbstractRadioAndCheckBoxDataPrepareRenderer<T extends Abst
             }
         });
 
-        AdditionalDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
+        PrepareRenderingDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
 
         return renderer;
     }

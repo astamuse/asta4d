@@ -24,7 +24,7 @@ import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
-import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
 public abstract class AbstractFormFlowSnippet {
@@ -121,16 +121,16 @@ public abstract class AbstractFormFlowSnippet {
 
         render.disableMissingSelectorWarning();
 
-        List<FormFieldDataPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldDataPrepareRenderer(renderTargetStep, form);
+        List<FormFieldPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldPrepareRenderers(renderTargetStep, form);
 
-        for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
+        for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
             FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), cascadeFormArrayIndex);
             render.add(formFieldDataPrepareRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
         render.add(renderValues(renderTargetStep, form, cascadeFormArrayIndex));
 
-        for (FormFieldDataPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
+        for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
             FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), cascadeFormArrayIndex);
             render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
@@ -232,7 +232,7 @@ public abstract class AbstractFormFlowSnippet {
      * @return
      * @throws Exception
      */
-    protected List<FormFieldDataPrepareRenderer> retrieveFieldDataPrepareRenderer(String renderTargetStep, Object form) {
+    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         return new LinkedList<>();
     }
 

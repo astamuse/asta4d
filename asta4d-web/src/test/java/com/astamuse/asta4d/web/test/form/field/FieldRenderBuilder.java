@@ -7,9 +7,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.SelectorUtil;
-import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
-import com.astamuse.asta4d.web.form.field.SimpleFormFieldAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
 public class FieldRenderBuilder {
 
@@ -17,7 +17,7 @@ public class FieldRenderBuilder {
 
     private List<Pair<String, Object>> valueList = new LinkedList<>();
 
-    private List<FormFieldDataPrepareRenderer> prepareList = new LinkedList<>();
+    private List<FormFieldPrepareRenderer> prepareList = new LinkedList<>();
 
     private FieldRenderBuilder() {
 
@@ -29,7 +29,7 @@ public class FieldRenderBuilder {
         return builder;
     }
 
-    public FieldRenderBuilder addPrepare(FormFieldDataPrepareRenderer prepare) {
+    public FieldRenderBuilder addPrepare(FormFieldPrepareRenderer prepare) {
         prepareList.add(prepare);
         return this;
     }
@@ -50,8 +50,8 @@ public class FieldRenderBuilder {
     public Renderer toRenderer(boolean forEdit) {
         Renderer renderer = Renderer.create();
 
-        for (FormFieldDataPrepareRenderer prepare : prepareList) {
-            String fieldName = ((SimpleFormFieldAdditionalRenderer) prepare).getGivenFieldName();
+        for (FormFieldPrepareRenderer prepare : prepareList) {
+            String fieldName = ((SimpleFormFieldPrepareRenderer) prepare).getGivenFieldName();
             renderer.add(prepare.preRender(editSelector(fieldName), displaySelector(fieldName)));
         }
 
@@ -68,8 +68,8 @@ public class FieldRenderBuilder {
             throw new RuntimeException(e);
         }
 
-        for (FormFieldDataPrepareRenderer prepare : prepareList) {
-            String fieldName = ((SimpleFormFieldAdditionalRenderer) prepare).getGivenFieldName();
+        for (FormFieldPrepareRenderer prepare : prepareList) {
+            String fieldName = ((SimpleFormFieldPrepareRenderer) prepare).getGivenFieldName();
             renderer.add(prepare.postRender(editSelector(fieldName), displaySelector(fieldName)));
         }
 

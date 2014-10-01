@@ -6,7 +6,7 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
-import com.astamuse.asta4d.web.form.field.impl.RadioBoxDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.impl.RadioBoxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioBoxRenderer;
 import com.astamuse.asta4d.web.test.WebTestBase;
 import com.astamuse.asta4d.web.test.form.FormRenderCase;
@@ -29,48 +29,48 @@ public class RadioBoxTest extends WebTestBase {
         public Renderer normalEditValue() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioBoxRenderer.class);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
             builder.addValue("nullvalue", null);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("nullvalue-2").setOptionData(createMap("x", "y", "z", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("nullvalue-2").setOptionData(createMap("x", "y", "z", ""))
                     .setInputIdByValue(true));
             builder.addValue("nullvalue-2", null);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("emptyvalue").setOptionData(createMap("x", "y", "z"))
+            builder.addPrepare(new RadioBoxPrepareRenderer("emptyvalue").setOptionData(createMap("x", "y", "z"))
                     .setInputIdByValue(true));
             builder.addValue("emptyvalue", "");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("emptyvalue-2").setOptionData(createMap("x", "y", "z", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("emptyvalue-2").setOptionData(createMap("x", "y", "z", ""))
                     .setInputIdByValue(true));
             builder.addValue("emptyvalue-2", "");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue").setOptionData(createMap("s", "t"))
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue").setOptionData(createMap("s", "t"))
                     .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
             builder.addValue("rvalue", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue-2").setOptionData(createMap("r", "s", "t", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue-2").setOptionData(createMap("r", "s", "t", ""))
                     .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
             builder.addValue("rvalue-2", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("uvalue").setOptionData(createMap("v", "w")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("uvalue").setOptionData(createMap("v", "w")).setInputIdByValue(true));
             builder.addValue("uvalue", "u");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("uvalue-2").setOptionData(createMap("u", "v", "w", "")).setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("uvalue-2").setOptionData(createMap("u", "v", "w", "")).setInputIdByValue(
                     true));
             builder.addValue("uvalue-2", "u");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue").setOptionData(createMap("y", "z")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue").setOptionData(createMap("y", "z")).setInputIdByValue(true));
             builder.addValue("xvalue", "x");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue-2").setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue-2").setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(
                     true));
             builder.addValue("xvalue-2", "x");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper")
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper")
                     .setOptionData(createMap("x", "z", "")).setInputIdByValue(true));
             builder.addValue("yvalue", "y");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper")
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper")
                     .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
             builder.addValue("yvalue-2", "y");
 
@@ -80,71 +80,71 @@ public class RadioBoxTest extends WebTestBase {
         public Renderer normalDisplayValue() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioBoxRenderer.class);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
             builder.addValue("nullvalue", null);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("nullvalue-2").setOptionData(createMap("x", "y", "z", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("nullvalue-2").setOptionData(createMap("x", "y", "z", ""))
                     .setInputIdByValue(true));
             builder.addValue("nullvalue-2", null);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("emptyvalue").setOptionData(createMap("x", "y", "z"))
+            builder.addPrepare(new RadioBoxPrepareRenderer("emptyvalue").setOptionData(createMap("x", "y", "z"))
                     .setInputIdByValue(true));
             builder.addValue("emptyvalue", "");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("emptyvalue-2").setOptionData(createMap("x", "y", "z", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("emptyvalue-2").setOptionData(createMap("x", "y", "z", ""))
                     .setInputIdByValue(true));
             builder.addValue("emptyvalue-2", "");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue").setOptionData(createMap("s", "t"))
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue").setOptionData(createMap("s", "t"))
                     .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
             builder.addValue("rvalue", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue-2").setOptionData(createMap("r", "s", "t", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue-2").setOptionData(createMap("r", "s", "t", ""))
                     .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
             builder.addValue("rvalue-2", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("svalue").setOptionData(createMap("r", "t"))
+            builder.addPrepare(new RadioBoxPrepareRenderer("svalue").setOptionData(createMap("r", "t"))
                     .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
             builder.addValue("svalue", "s");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("svalue-2").setOptionData(createMap("r", "s", "t", ""))
+            builder.addPrepare(new RadioBoxPrepareRenderer("svalue-2").setOptionData(createMap("r", "s", "t", ""))
                     .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
             builder.addValue("svalue-2", "s");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("uvalue").setOptionData(createMap("v", "w")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("uvalue").setOptionData(createMap("v", "w")).setInputIdByValue(true));
             builder.addValue("uvalue", "u");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("uvalue-2").setOptionData(createMap("u", "v", "w", "")).setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("uvalue-2").setOptionData(createMap("u", "v", "w", "")).setInputIdByValue(
                     true));
             builder.addValue("uvalue-2", "u");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("wvalue").setOptionData(createMap("x", "y")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("wvalue").setOptionData(createMap("x", "y")).setInputIdByValue(true));
             builder.addValue("wvalue", "w");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("wvalue-2").setOptionData(createMap("w", "x", "y", "z")).setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("wvalue-2").setOptionData(createMap("w", "x", "y", "z")).setInputIdByValue(
                     true));
             builder.addValue("wvalue-2", "w");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue").setOptionData(createMap("y", "z")).setInputIdByValue(true));
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue").setOptionData(createMap("y", "z")).setInputIdByValue(true));
             builder.addValue("xvalue", "x");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue-2").setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue-2").setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(
                     true));
             builder.addValue("xvalue-2", "x");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper")
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper")
                     .setOptionData(createMap("x", "z", "")).setInputIdByValue(true));
             builder.addValue("yvalue", "y");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper")
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper")
                     .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
             builder.addValue("yvalue-2", "y");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("zvalue").setDuplicateSelector(".zvalue-wrapper")
+            builder.addPrepare(new RadioBoxPrepareRenderer("zvalue").setDuplicateSelector(".zvalue-wrapper")
                     .setOptionData(createMap("x", "y", "")).setInputIdByValue(true));
             builder.addValue("zvalue", "z");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("zvalue-2").setDuplicateSelector(".zvalue-2-wrapper")
+            builder.addPrepare(new RadioBoxPrepareRenderer("zvalue-2").setDuplicateSelector(".zvalue-2-wrapper")
                     .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
             builder.addValue("zvalue-2", "z");
 
@@ -162,11 +162,11 @@ public class RadioBoxTest extends WebTestBase {
 
             builder.addValue("emptyvalue-2", "");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
                     true));
             builder.addValue("rvalue", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
                     .setInputIdByValue(true));
             builder.addValue("rvalue-2", "r");
 
@@ -174,10 +174,10 @@ public class RadioBoxTest extends WebTestBase {
 
             builder.addValue("xvalue-2", "x");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper"));
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper"));
             builder.addValue("yvalue", "y");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
             builder.addValue("yvalue-2", "y");
 
             return builder.toRenderer(true);
@@ -194,19 +194,19 @@ public class RadioBoxTest extends WebTestBase {
 
             builder.addValue("emptyvalue-2", "");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
                     true));
             builder.addValue("rvalue", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("rvalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
+            builder.addPrepare(new RadioBoxPrepareRenderer("rvalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
                     .setInputIdByValue(true));
             builder.addValue("rvalue-2", "r");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("svalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
+            builder.addPrepare(new RadioBoxPrepareRenderer("svalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
                     true));
             builder.addValue("svalue", "s");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("svalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
+            builder.addPrepare(new RadioBoxPrepareRenderer("svalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
                     .setInputIdByValue(true));
             builder.addValue("svalue-2", "s");
 
@@ -218,10 +218,10 @@ public class RadioBoxTest extends WebTestBase {
 
             builder.addValue("xvalue-2", "x");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper"));
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper"));
             builder.addValue("yvalue", "y");
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
+            builder.addPrepare(new RadioBoxPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
             builder.addValue("yvalue-2", "y");
 
             return builder.toRenderer(false);
@@ -230,7 +230,7 @@ public class RadioBoxTest extends WebTestBase {
         public Renderer duplicatedElement() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioBoxRenderer.class);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue").setOptionData(createMap("x", "y")));
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue").setOptionData(createMap("x", "y")));
             builder.addValue("xvalue", "x");
 
             return builder.toRenderer(true);
@@ -239,7 +239,7 @@ public class RadioBoxTest extends WebTestBase {
         public Renderer emptyIdElement() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioBoxRenderer.class);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue").setOptionData(createMap("x", "y")));
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue").setOptionData(createMap("x", "y")));
             builder.addValue("xvalue", "x");
 
             return builder.toRenderer(true);
@@ -248,7 +248,7 @@ public class RadioBoxTest extends WebTestBase {
         public Renderer duplicatedElementInDuplicator() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioBoxRenderer.class);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue").setOptionData(createMap("x", "y")).setDuplicateSelector(
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue").setOptionData(createMap("x", "y")).setDuplicateSelector(
                     ".radio-wrapper"));
             builder.addValue("xvalue", "x");
 
@@ -258,7 +258,7 @@ public class RadioBoxTest extends WebTestBase {
         public Renderer emptyIdElementInDuplicator() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioBoxRenderer.class);
 
-            builder.addPrepare(new RadioBoxDataPrepareRenderer("xvalue").setOptionData(createMap("x", "y")).setDuplicateSelector(
+            builder.addPrepare(new RadioBoxPrepareRenderer("xvalue").setOptionData(createMap("x", "y")).setDuplicateSelector(
                     ".radio-wrapper"));
             builder.addValue("xvalue", "x");
 
@@ -268,7 +268,7 @@ public class RadioBoxTest extends WebTestBase {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "duplicateSelector .+ and labelWrapperIndicatorAttr .+ cannot be specified at same time\\.")
     public void testDuplicatorAndLabelWrapperConflict() {
-        new RadioBoxDataPrepareRenderer("yvalue").setDuplicateSelector("xx").setLabelWrapperIndicatorAttr("xx").preRender("ewrwe", "sdfa");
+        new RadioBoxPrepareRenderer("yvalue").setDuplicateSelector("xx").setLabelWrapperIndicatorAttr("xx").preRender("ewrwe", "sdfa");
     }
 
     public void testNormalEdit() {

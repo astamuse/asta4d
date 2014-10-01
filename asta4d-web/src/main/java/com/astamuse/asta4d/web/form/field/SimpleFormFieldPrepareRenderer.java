@@ -4,7 +4,7 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 
-public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldDataPrepareRenderer {
+public abstract class SimpleFormFieldPrepareRenderer implements FormFieldPrepareRenderer {
 
     private AnnotatedPropertyInfo field;
 
@@ -14,12 +14,12 @@ public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldData
     @SuppressWarnings("unused")
     private String givenFieldName;
 
-    public SimpleFormFieldAdditionalRenderer(AnnotatedPropertyInfo field) {
+    public SimpleFormFieldPrepareRenderer(AnnotatedPropertyInfo field) {
         this.field = field;
     }
 
     @SuppressWarnings("rawtypes")
-    public SimpleFormFieldAdditionalRenderer(Class cls, String fieldName) {
+    public SimpleFormFieldPrepareRenderer(Class cls, String fieldName) {
         this(AnnotatedPropertyUtil.retrievePropertyByName(cls, fieldName));
     }
 
@@ -29,7 +29,7 @@ public abstract class SimpleFormFieldAdditionalRenderer implements FormFieldData
      * @param fieldName
      */
     @Deprecated
-    public SimpleFormFieldAdditionalRenderer(String fieldName) {
+    public SimpleFormFieldPrepareRenderer(String fieldName) {
         givenFieldName = fieldName;
     }
 

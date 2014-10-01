@@ -22,9 +22,9 @@ import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.field.AdditionalDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
+import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldWithOptionValueRenderer;
 
 public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
@@ -81,7 +81,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
 
     protected Renderer retrieveAndCreateValueMap(final String editTargetSelector, final String displayTargetSelector) {
         Renderer render = Renderer.create();
-        if (AdditionalDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
+        if (PrepareRenderingDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
 
             final List<Pair<String, String>> inputList = new LinkedList<>();
 
@@ -110,7 +110,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
                         render.add(":root", new Renderable() {
                             @Override
                             public Renderer render() {
-                                AdditionalDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector,
+                                PrepareRenderingDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector,
                                         new OptionValueMap(optionList));
                                 return Renderer.create();
                             }
@@ -130,7 +130,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
         Renderer renderer = Renderer.create(targetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
-                String duplicatorRef = elem.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ATTR);
+                String duplicatorRef = elem.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ATTR);
                 if (StringUtils.isNotEmpty(duplicatorRef)) {
                     duplicatorRefList.add(duplicatorRef);
                 }
@@ -142,10 +142,10 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
             public Renderer render() {
                 Renderer render = Renderer.create();
                 for (String ref : duplicatorRefList) {
-                    render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref), ToBeHiddenLaterFlagAttr, "");
+                    render.add(SelectorUtil.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref), ToBeHiddenLaterFlagAttr, "");
                 }
                 for (String id : idList) {
-                    render.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, id), ToBeHiddenLaterFlagAttr, "");
+                    render.add(SelectorUtil.attr(RadioBoxPrepareRenderer.LABEL_REF_ATTR, id), ToBeHiddenLaterFlagAttr, "");
                 }
                 for (String id : idList) {
                     render.add(SelectorUtil.attr("label", "for", id), ToBeHiddenLaterFlagAttr, "");
@@ -239,11 +239,6 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
         renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
-
-                System.err.println("editTargetSelector:" + editTargetSelector);
-                System.err.println("matchedIdList" + matchedIdList);
-                System.err.println("unMatchedIdList" + unMatchedIdList);
-
                 Renderer renderer = Renderer.create();
 
                 // renderer.addDebugger("before hide unmatch");
@@ -256,12 +251,12 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
                     // but we still have to revive the possibly existing duplicate container
                     for (final String inputId : matchedIdList) {
                         final List<String> matchedDuplicatorRefList = new LinkedList<>();
-                        final String labelRefSelector = SelectorUtil.attr(RadioBoxDataPrepareRenderer.LABEL_REF_ATTR, inputId);
+                        final String labelRefSelector = SelectorUtil.attr(RadioBoxPrepareRenderer.LABEL_REF_ATTR, inputId);
                         final String labelDefaultSelector = SelectorUtil.attr(SelectorUtil.tag("label"), "for", inputId);
                         renderer.add(labelRefSelector, new ElementSetter() {
                             @Override
                             public void set(Element elem) {
-                                String ref = elem.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ATTR);
+                                String ref = elem.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ATTR);
                                 if (StringUtils.isNotEmpty(ref)) {
                                     matchedDuplicatorRefList.add(ref);
                                 }
@@ -273,7 +268,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
                                 return Renderer.create(labelDefaultSelector, new ElementSetter() {
                                     @Override
                                     public void set(Element elem) {
-                                        String ref = elem.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ATTR);
+                                        String ref = elem.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ATTR);
                                         if (StringUtils.isNotEmpty(ref)) {
                                             matchedDuplicatorRefList.add(ref);
                                         }
@@ -286,7 +281,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
                             public Renderer render() {
                                 Renderer renderer = Renderer.create();
                                 for (String ref : matchedDuplicatorRefList) {
-                                    renderer.add(SelectorUtil.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref),
+                                    renderer.add(SelectorUtil.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ID_ATTR, ref),
                                             ToBeHiddenLaterFlagAttr, Clear);
                                 }
                                 renderer.add(labelRefSelector, ToBeHiddenLaterFlagAttr, Clear);
@@ -310,7 +305,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
         Renderer renderer = Renderer.create(editTargetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
-                String duplicatorRef = elem.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ATTR);
+                String duplicatorRef = elem.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ATTR);
                 if (StringUtils.isNotEmpty(duplicatorRef)) {
                     duplicatorRefList.add(duplicatorRef);
                 }
@@ -322,7 +317,7 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
             public Renderer render() {
                 String attachTargetSelector;
                 if (duplicatorRefList.size() > 0) {
-                    attachTargetSelector = SelectorUtil.attr(RadioBoxDataPrepareRenderer.DUPLICATOR_REF_ID_ATTR,
+                    attachTargetSelector = SelectorUtil.attr(RadioBoxPrepareRenderer.DUPLICATOR_REF_ID_ATTR,
                             duplicatorRefList.get(duplicatorRefList.size() - 1));
                 } else {
                     attachTargetSelector = SelectorUtil.id(idList.get(idList.size() - 1));

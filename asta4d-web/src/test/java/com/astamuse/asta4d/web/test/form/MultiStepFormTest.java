@@ -21,7 +21,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.form.field.FormFieldDataPrepareRenderer;
+import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
@@ -130,7 +130,7 @@ public class MultiStepFormTest extends WebTestBase {
         }
 
         @Override
-        protected List<FormFieldDataPrepareRenderer> retrieveFieldDataPrepareRenderer(String renderTargetStep, Object form) {
+        protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
             Integer count = formCounterMap.get(form.getClass().getName());
             if (count == null) {
                 count = 1;
@@ -138,7 +138,7 @@ public class MultiStepFormTest extends WebTestBase {
                 count = count + 1;
             }
             formCounterMap.put(form.getClass().getName(), count);
-            return super.retrieveFieldDataPrepareRenderer(renderTargetStep, form);
+            return super.retrieveFieldPrepareRenderers(renderTargetStep, form);
         }
     }
 

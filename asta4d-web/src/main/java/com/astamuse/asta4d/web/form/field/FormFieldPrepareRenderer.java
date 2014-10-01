@@ -3,7 +3,7 @@ package com.astamuse.asta4d.web.form.field;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 
-public interface FormFieldDataPrepareRenderer {
+public interface FormFieldPrepareRenderer {
 
     public AnnotatedPropertyInfo targetField();
 

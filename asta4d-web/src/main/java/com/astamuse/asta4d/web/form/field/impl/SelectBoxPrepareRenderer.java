@@ -8,12 +8,12 @@ import org.apache.commons.collections.CollectionUtils;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.collection.RowRenderer;
-import com.astamuse.asta4d.web.form.field.AdditionalDataUtil;
+import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
-import com.astamuse.asta4d.web.form.field.SimpleFormFieldAdditionalRenderer;
+import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
-public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRenderer {
+public class SelectBoxPrepareRenderer extends SimpleFormFieldPrepareRenderer {
 
     private static class OptGroup {
 
@@ -31,11 +31,11 @@ public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRende
 
     private OptionValueMap optionMap;
 
-    public SelectBoxDataPrepareRenderer(AnnotatedPropertyInfo field) {
+    public SelectBoxPrepareRenderer(AnnotatedPropertyInfo field) {
         super(field);
     }
 
-    public SelectBoxDataPrepareRenderer(Class cls, String fieldName) {
+    public SelectBoxPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
@@ -45,11 +45,11 @@ public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRende
      * @param fieldName
      */
     @Deprecated
-    public SelectBoxDataPrepareRenderer(String fieldName) {
+    public SelectBoxPrepareRenderer(String fieldName) {
         super(fieldName);
     }
 
-    public SelectBoxDataPrepareRenderer setOptionData(OptionValueMap optionMap) {
+    public SelectBoxPrepareRenderer setOptionData(OptionValueMap optionMap) {
         if (CollectionUtils.isNotEmpty(optGroupList)) {
             throw new RuntimeException("Option list without group is not allowed because there are existing option groups");
         }
@@ -57,7 +57,7 @@ public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRende
         return this;
     }
 
-    public SelectBoxDataPrepareRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
+    public SelectBoxPrepareRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
         if (this.optionMap != null) {
             throw new RuntimeException("Option list group is not allowed because there are existing option list without group");
         }
@@ -75,10 +75,10 @@ public class SelectBoxDataPrepareRenderer extends SimpleFormFieldAdditionalRende
                 allList.addAll(optGrp.optionMap.getOptionList());
             }
             OptionValueMap allMap = new OptionValueMap(allList);
-            AdditionalDataUtil.storeDataToContextBySelector(editSelector, displaySelector, allMap);
+            PrepareRenderingDataUtil.storeDataToContextBySelector(editSelector, displaySelector, allMap);
         } else if (optionMap != null) {
             renderer.add(renderOptionList(editSelector, optionMap));
-            AdditionalDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
+            PrepareRenderingDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
         }
 
         return renderer;

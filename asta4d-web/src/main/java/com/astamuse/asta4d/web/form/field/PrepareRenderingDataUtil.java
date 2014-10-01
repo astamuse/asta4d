@@ -2,10 +2,10 @@ package com.astamuse.asta4d.web.form.field;
 
 import com.astamuse.asta4d.Context;
 
-public class AdditionalDataUtil {
+public class PrepareRenderingDataUtil {
 
     private static final String dataStoreKey(String selector) {
-        return selector + "#" + AdditionalDataUtil.class.getName();
+        return selector + "#" + PrepareRenderingDataUtil.class.getName();
     }
 
     public static final void storeDataToContextBySelector(String editTargetSelector, String displayTargetSelector, Object data) {

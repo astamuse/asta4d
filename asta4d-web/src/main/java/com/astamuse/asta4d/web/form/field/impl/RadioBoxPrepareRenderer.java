@@ -2,14 +2,14 @@ package com.astamuse.asta4d.web.form.field.impl;
 
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 
-public class RadioBoxDataPrepareRenderer extends AbstractRadioAndCheckBoxDataPrepareRenderer<RadioBoxDataPrepareRenderer> {
+public class RadioBoxPrepareRenderer extends AbstractRadioAndCheckBoxPrepareRenderer<RadioBoxPrepareRenderer> {
 
-    public RadioBoxDataPrepareRenderer(AnnotatedPropertyInfo field) {
+    public RadioBoxPrepareRenderer(AnnotatedPropertyInfo field) {
         super(field);
     }
 
     @SuppressWarnings("rawtypes")
-    public RadioBoxDataPrepareRenderer(Class cls, String fieldName) {
+    public RadioBoxPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
@@ -19,7 +19,7 @@ public class RadioBoxDataPrepareRenderer extends AbstractRadioAndCheckBoxDataPre
      * @param fieldName
      */
     @Deprecated
-    public RadioBoxDataPrepareRenderer(String fieldName) {
+    public RadioBoxPrepareRenderer(String fieldName) {
         super(fieldName);
     }
 
