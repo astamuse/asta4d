@@ -15,7 +15,7 @@ import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldWithOptionValueRenderer;
 
-public class SelectBoxRenderer extends SimpleFormFieldWithOptionValueRenderer {
+public class SelectRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
     @Override
     public Renderer renderForEdit(final String nonNullString) {

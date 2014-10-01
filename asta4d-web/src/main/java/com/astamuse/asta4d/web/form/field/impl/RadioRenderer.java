@@ -2,7 +2,7 @@ package com.astamuse.asta4d.web.form.field.impl;
 
 import com.astamuse.asta4d.render.Renderer;
 
-public class RadioBoxRenderer extends AbstractRadioAndCheckBoxRenderer {
+public class RadioRenderer extends AbstractRadioAndCheckboxRenderer {
 
     @Override
     public Renderer renderForEdit(String editTargetSelector, Object value) {

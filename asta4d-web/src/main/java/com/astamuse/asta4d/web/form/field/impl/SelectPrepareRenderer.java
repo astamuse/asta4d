@@ -13,7 +13,7 @@ import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
-public class SelectBoxPrepareRenderer extends SimpleFormFieldPrepareRenderer {
+public class SelectPrepareRenderer extends SimpleFormFieldPrepareRenderer {
 
     private static class OptGroup {
 
@@ -31,11 +31,11 @@ public class SelectBoxPrepareRenderer extends SimpleFormFieldPrepareRenderer {
 
     private OptionValueMap optionMap;
 
-    public SelectBoxPrepareRenderer(AnnotatedPropertyInfo field) {
+    public SelectPrepareRenderer(AnnotatedPropertyInfo field) {
         super(field);
     }
 
-    public SelectBoxPrepareRenderer(Class cls, String fieldName) {
+    public SelectPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
@@ -45,11 +45,11 @@ public class SelectBoxPrepareRenderer extends SimpleFormFieldPrepareRenderer {
      * @param fieldName
      */
     @Deprecated
-    public SelectBoxPrepareRenderer(String fieldName) {
+    public SelectPrepareRenderer(String fieldName) {
         super(fieldName);
     }
 
-    public SelectBoxPrepareRenderer setOptionData(OptionValueMap optionMap) {
+    public SelectPrepareRenderer setOptionData(OptionValueMap optionMap) {
         if (CollectionUtils.isNotEmpty(optGroupList)) {
             throw new RuntimeException("Option list without group is not allowed because there are existing option groups");
         }
@@ -57,7 +57,7 @@ public class SelectBoxPrepareRenderer extends SimpleFormFieldPrepareRenderer {
         return this;
     }
 
-    public SelectBoxPrepareRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
+    public SelectPrepareRenderer addOptionGroup(String groupName, OptionValueMap optionMap) {
         if (this.optionMap != null) {
             throw new RuntimeException("Option list group is not allowed because there are existing option list without group");
         }

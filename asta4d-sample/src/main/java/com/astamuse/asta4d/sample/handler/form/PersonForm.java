@@ -6,11 +6,11 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
-import com.astamuse.asta4d.web.form.annotation.renderable.CheckBox;
+import com.astamuse.asta4d.web.form.annotation.renderable.Checkbox;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
-import com.astamuse.asta4d.web.form.annotation.renderable.RadioBox;
-import com.astamuse.asta4d.web.form.annotation.renderable.SelectBox;
+import com.astamuse.asta4d.web.form.annotation.renderable.Radio;
+import com.astamuse.asta4d.web.form.annotation.renderable.Select;
 import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
 
 @Form
@@ -52,19 +52,19 @@ public class PersonForm extends Person {
     }
 
     @Override
-    @SelectBox(name = "bloodtype")
+    @Select(name = "bloodtype")
     public BloodType getBloodType() {
         return super.getBloodType();
     }
 
     @Override
-    @RadioBox
+    @Radio
     public SEX getSex() {
         return super.getSex();
     }
 
     @Override
-    @CheckBox
+    @Checkbox
     public Language[] getLanguage() {
         return super.getLanguage();
     }

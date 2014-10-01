@@ -27,7 +27,7 @@ import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractRadioAndCheckBoxPrepareRenderer<T extends AbstractRadioAndCheckBoxPrepareRenderer> extends
+public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends AbstractRadioAndCheckboxPrepareRenderer> extends
         SimpleFormFieldPrepareRenderer {
 
     public static final String LABEL_REF_ATTR = Configuration.getConfiguration().getTagNameSpace() + ":" + "label-ref-for-inputbox-id";
@@ -56,15 +56,15 @@ public abstract class AbstractRadioAndCheckBoxPrepareRenderer<T extends Abstract
      * @param fieldName
      */
     @Deprecated
-    public AbstractRadioAndCheckBoxPrepareRenderer(String fieldName) {
+    public AbstractRadioAndCheckboxPrepareRenderer(String fieldName) {
         super(fieldName);
     }
 
-    public AbstractRadioAndCheckBoxPrepareRenderer(AnnotatedPropertyInfo field) {
+    public AbstractRadioAndCheckboxPrepareRenderer(AnnotatedPropertyInfo field) {
         super(field);
     }
 
-    public AbstractRadioAndCheckBoxPrepareRenderer(Class cls, String fieldName) {
+    public AbstractRadioAndCheckboxPrepareRenderer(Class cls, String fieldName) {
         super(cls, fieldName);
     }
 

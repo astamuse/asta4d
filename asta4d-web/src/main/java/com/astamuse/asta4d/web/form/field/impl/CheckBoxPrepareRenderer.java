@@ -2,13 +2,13 @@ package com.astamuse.asta4d.web.form.field.impl;
 
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 
-public class CheckBoxPrepareRenderer extends AbstractRadioAndCheckBoxPrepareRenderer<CheckBoxPrepareRenderer> {
+public class CheckboxPrepareRenderer extends AbstractRadioAndCheckboxPrepareRenderer<CheckboxPrepareRenderer> {
 
-    public CheckBoxPrepareRenderer(@SuppressWarnings("rawtypes") Class cls, String fieldName) {
+    public CheckboxPrepareRenderer(@SuppressWarnings("rawtypes") Class cls, String fieldName) {
         super(cls, fieldName);
     }
 
-    public CheckBoxPrepareRenderer(AnnotatedPropertyInfo field) {
+    public CheckboxPrepareRenderer(AnnotatedPropertyInfo field) {
         super(field);
     }
 
@@ -18,7 +18,7 @@ public class CheckBoxPrepareRenderer extends AbstractRadioAndCheckBoxPrepareRend
      * @param fieldName
      */
     @Deprecated
-    public CheckBoxPrepareRenderer(String fieldName) {
+    public CheckboxPrepareRenderer(String fieldName) {
         super(fieldName);
     }
 
