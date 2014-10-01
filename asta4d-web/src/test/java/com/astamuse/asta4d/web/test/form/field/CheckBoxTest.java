@@ -77,6 +77,58 @@ public class CheckBoxTest extends WebTestBase {
             return builder.toRenderer(true);
         }
 
+        @SuppressWarnings("deprecation")
+        public Renderer normalEditMultiValue() {
+            FieldRenderBuilder builder = FieldRenderBuilder.of(CheckBoxRenderer.class);
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
+            builder.addValue("nullvalue", new Object[] { "a", null });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("nullvalue-2").setOptionData(createMap("x", "y", "z", ""))
+                    .setInputIdByValue(true));
+            builder.addValue("nullvalue-2", new Object[] { "a", null });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("emptyvalue").setOptionData(createMap("x", "y", "z"))
+                    .setInputIdByValue(true));
+            builder.addValue("emptyvalue", new Object[] { "a", "" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("emptyvalue-2").setOptionData(createMap("x", "y", "z", ""))
+                    .setInputIdByValue(true));
+            builder.addValue("emptyvalue-2", new Object[] { "a", "" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue").setOptionData(createMap("s", "t"))
+                    .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
+            builder.addValue("rvalue", new Object[] { "r", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue-2").setOptionData(createMap("r", "s", "t", ""))
+                    .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
+            builder.addValue("rvalue-2", new Object[] { "r", "t" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("uvalue").setOptionData(createMap("v", "w")).setInputIdByValue(true));
+            builder.addValue("uvalue", new Object[] { "u", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("uvalue-2").setOptionData(createMap("u", "v", "w", "")).setInputIdByValue(
+                    true));
+            builder.addValue("uvalue-2", new Object[] { "u", "w" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("xvalue").setOptionData(createMap("y", "z")).setInputIdByValue(true));
+            builder.addValue("xvalue", new Object[] { "x", "t" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("xvalue-2").setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(
+                    true));
+            builder.addValue("xvalue-2", new Object[] { "x", "z" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper")
+                    .setOptionData(createMap("x", "z", "")).setInputIdByValue(true));
+            builder.addValue("yvalue", new Object[] { "y", "t" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper")
+                    .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
+            builder.addValue("yvalue-2", new Object[] { "x", "y" });
+
+            return builder.toRenderer(true);
+        }
+
         public Renderer normalDisplayValue() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(CheckBoxRenderer.class);
 
@@ -147,6 +199,80 @@ public class CheckBoxTest extends WebTestBase {
             builder.addPrepare(new CheckBoxDataPrepareRenderer("zvalue-2").setDuplicateSelector(".zvalue-2-wrapper")
                     .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
             builder.addValue("zvalue-2", "z");
+
+            return builder.toRenderer(false);
+        }
+
+        public Renderer normalDisplayMultiValue() {
+            FieldRenderBuilder builder = FieldRenderBuilder.of(CheckBoxRenderer.class);
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
+            builder.addValue("nullvalue", new Object[] { "a", null });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("nullvalue-2").setOptionData(createMap("x", "y", "z", ""))
+                    .setInputIdByValue(true));
+            builder.addValue("nullvalue-2", new Object[] { "a", null });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("emptyvalue").setOptionData(createMap("x", "y", "z"))
+                    .setInputIdByValue(true));
+            builder.addValue("emptyvalue", new Object[] { "a", "" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("emptyvalue-2").setOptionData(createMap("x", "y", "z", ""))
+                    .setInputIdByValue(true));
+            builder.addValue("emptyvalue-2", new Object[] { "a", "" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue").setOptionData(createMap("s", "t"))
+                    .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
+            builder.addValue("rvalue", new Object[] { "r", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue-2").setOptionData(createMap("r", "s", "t", ""))
+                    .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
+            builder.addValue("rvalue-2", new Object[] { "r", "t" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("svalue").setOptionData(createMap("r", "t"))
+                    .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
+            builder.addValue("svalue", new Object[] { "s", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("svalue-2").setOptionData(createMap("r", "s", "t", ""))
+                    .setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(true));
+            builder.addValue("svalue-2", new Object[] { "s", "t", "b" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("uvalue").setOptionData(createMap("v", "w")).setInputIdByValue(true));
+            builder.addValue("uvalue", new Object[] { "u", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("uvalue-2").setOptionData(createMap("u", "v", "w", "")).setInputIdByValue(
+                    true));
+            builder.addValue("uvalue-2", new Object[] { "u", "w" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("wvalue").setOptionData(createMap("x", "y")).setInputIdByValue(true));
+            builder.addValue("wvalue", new Object[] { "w", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("wvalue-2").setOptionData(createMap("w", "x", "y", "z")).setInputIdByValue(
+                    true));
+            builder.addValue("wvalue-2", new Object[] { "w", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("xvalue").setOptionData(createMap("y", "z")).setInputIdByValue(true));
+            builder.addValue("xvalue", new Object[] { "x", "y" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("xvalue-2").setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(
+                    true));
+            builder.addValue("xvalue-2", new Object[] { "x", "z" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper")
+                    .setOptionData(createMap("x", "z", "")).setInputIdByValue(true));
+            builder.addValue("yvalue", new Object[] { "y", "a" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper")
+                    .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
+            builder.addValue("yvalue-2", new Object[] { "y", "z" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("zvalue").setDuplicateSelector(".zvalue-wrapper")
+                    .setOptionData(createMap("x", "y", "")).setInputIdByValue(true));
+            builder.addValue("zvalue", new Object[] { "s", "x" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("zvalue-2").setDuplicateSelector(".zvalue-2-wrapper")
+                    .setOptionData(createMap("x", "y", "z", "")).setInputIdByValue(true));
+            builder.addValue("zvalue-2", new Object[] { "z", null });
 
             return builder.toRenderer(false);
         }
@@ -275,8 +401,16 @@ public class CheckBoxTest extends WebTestBase {
         new FormRenderCase("/CheckBox_normalEdit.html");
     }
 
+    public void testNormalEditMultiValue() {
+        new FormRenderCase("/CheckBox_normalEditMultiValue.html");
+    }
+
     public void testNormalDisplay() {
         new FormRenderCase("/CheckBox_normalDisplay.html");
+    }
+
+    public void testNormalDisplayMultiValue() {
+        new FormRenderCase("/CheckBox_normalDisplayMultiValue.html");
     }
 
     public void testStaticOptionEdit() {

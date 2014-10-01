@@ -57,19 +57,26 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
     }
 
     @Override
-    public Renderer renderForEdit(final String nonNullString) {
+    public Renderer renderForEdit(String editTargetSelector, Object value) {
+        final List<String> valueList = convertValueToList(value);
         Renderer renderer = Renderer.create("input", "checked", Clear);
         // we have to iterate the elements because the attr selector would not work for blank values.
         renderer.add("input", new ElementSetter() {
             @Override
             public void set(Element elem) {
                 String val = elem.attr("value");
-                if (nonNullString.equals(val)) {
+                if (valueList.contains(val)) {
                     elem.attr("checked", "");
                 }
             }
         });
-        return renderer;
+        return Renderer.create(editTargetSelector, renderer);
+    }
+
+    @Override
+    protected Renderer renderForEdit(String nonNullString) {
+        // TODO perhasp we do not need to extend from the simple render
+        throw new UnsupportedOperationException();
     }
 
     protected Renderer retrieveAndCreateValueMap(final String editTargetSelector, final String displayTargetSelector) {
@@ -342,4 +349,5 @@ public class AbstractRadioAndCheckBoxRenderer extends SimpleFormFieldWithOptionV
 
         return renderer;
     }
+
 }

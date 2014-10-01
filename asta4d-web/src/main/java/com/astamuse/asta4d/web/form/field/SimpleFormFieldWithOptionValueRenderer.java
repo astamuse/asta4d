@@ -15,11 +15,13 @@ public abstract class SimpleFormFieldWithOptionValueRenderer extends SimpleFormF
 
     @Override
     protected Renderer renderToDisplayTarget(String displayTargetSelector, String nonNullString) {
-        return super.renderToDisplayTarget(displayTargetSelector, retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, nonNullString));
+        return super.renderToDisplayTarget(displayTargetSelector,
+                retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, nonNullString));
     }
 
     @Override
     protected Renderer addAlternativeDom(String editTargetSelector, String nonNullString) {
-        return super.addAlternativeDom(editTargetSelector, retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, nonNullString));
+        return super
+                .addAlternativeDom(editTargetSelector, retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, nonNullString));
     }
 }
