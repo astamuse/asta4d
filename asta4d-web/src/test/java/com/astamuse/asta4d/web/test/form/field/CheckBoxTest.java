@@ -309,6 +309,38 @@ public class CheckBoxTest extends WebTestBase {
             return builder.toRenderer(true);
         }
 
+        public Renderer staticOptionEditMultiValue() {
+            FieldRenderBuilder builder = FieldRenderBuilder.of(CheckBoxRenderer.class);
+
+            builder.addValue("nullvalue", new Object[] { "a", null });
+
+            builder.addValue("nullvalue-2", new Object[] { "a", null });
+
+            builder.addValue("emptyvalue", new Object[] { "a", "" });
+
+            builder.addValue("emptyvalue-2", new Object[] { "a", "" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
+                    true));
+            builder.addValue("rvalue", new Object[] { "r", "s" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
+                    .setInputIdByValue(true));
+            builder.addValue("rvalue-2", new Object[] { "r", "s" });
+
+            builder.addValue("xvalue", new Object[] { "x", "b" });
+
+            builder.addValue("xvalue-2", new Object[] { "x", "z", "b" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper"));
+            builder.addValue("yvalue", new Object[] { "y", "s" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
+            builder.addValue("yvalue-2", new Object[] { "y", "z" });
+
+            return builder.toRenderer(true);
+        }
+
         public Renderer staticOptionDisplayValue() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(CheckBoxRenderer.class);
 
@@ -349,6 +381,50 @@ public class CheckBoxTest extends WebTestBase {
 
             builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
             builder.addValue("yvalue-2", "y");
+
+            return builder.toRenderer(false);
+        }
+
+        public Renderer staticOptionDisplayMultiValue() {
+            FieldRenderBuilder builder = FieldRenderBuilder.of(CheckBoxRenderer.class);
+
+            builder.addValue("nullvalue", new Object[] { "a", null });
+
+            builder.addValue("nullvalue-2", new Object[] { "a", null });
+
+            builder.addValue("emptyvalue", new Object[] { "a", "" });
+
+            builder.addValue("emptyvalue-2", new Object[] { "a", "" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
+                    true));
+            builder.addValue("rvalue", new Object[] { "a", "r" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("rvalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
+                    .setInputIdByValue(true));
+            builder.addValue("rvalue-2", new Object[] { "r", "t" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("svalue").setLabelWrapperIndicatorAttr("radio-label-for").setInputIdByValue(
+                    true));
+            builder.addValue("svalue", new Object[] { "s", "a" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("svalue-2").setLabelWrapperIndicatorAttr("radio-label-for")
+                    .setInputIdByValue(true));
+            builder.addValue("svalue-2", new Object[] { "s", "t" });
+
+            builder.addValue("wvalue", new Object[] { "w", "a" });
+
+            builder.addValue("wvalue-2", new Object[] { "w", "z", "a" });
+
+            builder.addValue("xvalue", new Object[] { "x", "y" });
+
+            builder.addValue("xvalue-2", new Object[] { "x", "y" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue").setDuplicateSelector(".yvalue-wrapper"));
+            builder.addValue("yvalue", new Object[] { "y", "z" });
+
+            builder.addPrepare(new CheckBoxDataPrepareRenderer("yvalue-2").setDuplicateSelector(".yvalue-2-wrapper"));
+            builder.addValue("yvalue-2", new Object[] { "y", "z" });
 
             return builder.toRenderer(false);
         }
@@ -417,8 +493,16 @@ public class CheckBoxTest extends WebTestBase {
         new FormRenderCase("/CheckBox_staticOptionEdit.html");
     }
 
+    public void testStaticOptionEditMultiValue() {
+        new FormRenderCase("/CheckBox_staticOptionEditMultiValue.html");
+    }
+
     public void testStaticOptionDisplay() {
         new FormRenderCase("/CheckBox_staticOptionDisplay.html");
+    }
+
+    public void testStaticOptionDisplayMultiValue() {
+        new FormRenderCase("/CheckBox_staticOptionDisplayMultiValue.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target of selector\\[\\[.+\\]\\] must be unique.+")
@@ -426,7 +510,7 @@ public class CheckBoxTest extends WebTestBase {
         new FormRenderCase("/CheckBox_duplicatedElement.html");
     }
 
-    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A radio input element must have id value being configured:.+")
+    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A checkbox input element must have id value being configured:.+")
     public void testEmptyIdElement() {
         new FormRenderCase("/CheckBox_emptyIdElement.html");
     }
@@ -436,7 +520,7 @@ public class CheckBoxTest extends WebTestBase {
         new FormRenderCase("/CheckBox_duplicatedElementInDuplicator.html");
     }
 
-    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A radio input element \\(inside duplicator:.+\\) must have id value being configured:.+")
+    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A checkbox input element \\(inside duplicator:.+\\) must have id value being configured:.+")
     public void testEmptyIdElementInDuplicator() {
         new FormRenderCase("/CheckBox_emptyIdElementInDuplicator.html");
     }

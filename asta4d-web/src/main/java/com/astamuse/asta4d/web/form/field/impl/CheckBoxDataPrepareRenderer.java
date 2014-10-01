@@ -2,7 +2,7 @@ package com.astamuse.asta4d.web.form.field.impl;
 
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 
-public class CheckBoxDataPrepareRenderer extends RadioBoxDataPrepareRenderer {
+public class CheckBoxDataPrepareRenderer extends AbstractRadioAndCheckBoxDataPrepareRenderer<CheckBoxDataPrepareRenderer> {
 
     public CheckBoxDataPrepareRenderer(@SuppressWarnings("rawtypes") Class cls, String fieldName) {
         super(cls, fieldName);
@@ -17,10 +17,14 @@ public class CheckBoxDataPrepareRenderer extends RadioBoxDataPrepareRenderer {
      * 
      * @param fieldName
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     public CheckBoxDataPrepareRenderer(String fieldName) {
         super(fieldName);
+    }
+
+    @Override
+    protected String getTypeString() {
+        return "checkbox";
     }
 
 }
