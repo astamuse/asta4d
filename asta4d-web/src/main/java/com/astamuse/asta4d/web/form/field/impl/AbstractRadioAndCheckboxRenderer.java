@@ -2,14 +2,12 @@ package com.astamuse.asta4d.web.form.field.impl;
 
 import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Tag;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.extnode.GroupNode;
@@ -20,8 +18,7 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
-import com.astamuse.asta4d.util.collection.ListConvertUtil;
-import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
@@ -31,30 +28,6 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
 
     private static final String ToBeHiddenLaterFlagAttr = Configuration.getConfiguration().getTagNameSpace() + ":" +
             "ToBeHiddenLaterFlagAttr";
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private List<String> convertValueToList(Object value) {
-        if (value == null) {
-            return new LinkedList<>();
-        } else if (value.getClass().isArray()) {
-            List<Object> list = Arrays.asList((Object[]) value);
-            return ListConvertUtil.transform(list, new RowConvertor<Object, String>() {
-                @Override
-                public String convert(int rowIndex, Object obj) {
-                    return getNonNullString(obj);
-                }
-            });
-        } else if (value instanceof Iterable) {
-            return ListConvertUtil.transform((Iterable) value, new RowConvertor<Object, String>() {
-                @Override
-                public String convert(int rowIndex, Object obj) {
-                    return getNonNullString(obj);
-                }
-            });
-        } else {
-            return Arrays.asList(getNonNullString(value));
-        }
-    }
 
     @Override
     public Renderer renderForEdit(String editTargetSelector, Object value) {
@@ -71,12 +44,6 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
             }
         });
         return Renderer.create(editTargetSelector, renderer);
-    }
-
-    @Override
-    protected Renderer renderForEdit(String nonNullString) {
-        // TODO perhasp we do not need to extend from the simple render
-        throw new UnsupportedOperationException();
     }
 
     protected Renderer retrieveAndCreateValueMap(final String editTargetSelector, final String displayTargetSelector) {
@@ -177,14 +144,13 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
 
             @Override
             public Renderer render() {
-                List<String> displayString = ListConvertUtil.transform(valueList, new RowConvertor<String, String>() {
+                return Renderer.create(displayTargetSelector, valueList, new RowRenderer<String>() {
                     @Override
-                    public String convert(int rowIndex, String v) {
-                        return retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, v);
+                    public Renderer convert(int rowIndex, String v) {
+                        return renderToDisplayTarget(displayTargetSelector,
+                                retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, v));
                     }
-
                 });
-                return Renderer.create(displayTargetSelector, displayString);
             }
         });
 
@@ -332,9 +298,7 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
 
                         for (String v : valueList) {
                             String nonNullString = retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, v);
-                            Element newElem = new Element(Tag.valueOf("span"), "");
-                            newElem.text(nonNullString);
-                            group.appendChild(newElem);
+                            group.appendChild(createAlternativeDisplayElement(nonNullString));
                         }
                         return group;
                     }// invoke

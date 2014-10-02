@@ -7,11 +7,11 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.SelectRenderer;
+import com.astamuse.asta4d.web.form.field.impl.SelectSingleRenderer;
 import com.astamuse.asta4d.web.test.WebTestBase;
 import com.astamuse.asta4d.web.test.form.FormRenderCase;
 
-public class SelectTest extends WebTestBase {
+public class SelectSingleTest extends WebTestBase {
 
     private static OptionValueMap createMap(String... values) {
         OptionValueMap map = OptionValueMap.build(values, new RowConvertor<String, OptionValuePair>() {
@@ -27,7 +27,7 @@ public class SelectTest extends WebTestBase {
 
         @SuppressWarnings("deprecation")
         public Renderer normalEditValue() {
-            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectRenderer.class);
+            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectSingleRenderer.class);
 
             builder.addPrepare(new SelectPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")));
             builder.addValue("nullvalue", null);
@@ -65,7 +65,7 @@ public class SelectTest extends WebTestBase {
         }
 
         public Renderer normalDisplayValue() {
-            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectRenderer.class);
+            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectSingleRenderer.class);
 
             builder.addPrepare(new SelectPrepareRenderer("nullvalue").setOptionData(createMap("x", "y", "z")));
             builder.addValue("nullvalue", null);
@@ -111,7 +111,7 @@ public class SelectTest extends WebTestBase {
         }
 
         public Renderer staticOptionEditValue() {
-            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectRenderer.class);
+            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectSingleRenderer.class);
 
             builder.addValue("nullvalue", null);
 
@@ -137,7 +137,7 @@ public class SelectTest extends WebTestBase {
         }
 
         public Renderer staticOptionDisplayValue() {
-            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectRenderer.class);
+            FieldRenderBuilder builder = FieldRenderBuilder.of(SelectSingleRenderer.class);
 
             builder.addValue("nullvalue", null);
 
@@ -176,18 +176,18 @@ public class SelectTest extends WebTestBase {
     }
 
     public void testNormalEdit() {
-        new FormRenderCase("/Select_normalEdit.html");
+        new FormRenderCase("/SelectSingle_normalEdit.html");
     }
 
     public void testNormalDisplay() {
-        new FormRenderCase("/Select_normalDisplay.html");
+        new FormRenderCase("/SelectSingle_normalDisplay.html");
     }
 
     public void testStaticOptionEdit() {
-        new FormRenderCase("/Select_staticOptionEdit.html");
+        new FormRenderCase("/SelectSingle_staticOptionEdit.html");
     }
 
     public void testStaticOptionDisplay() {
-        new FormRenderCase("/Select_staticOptionDisplay.html");
+        new FormRenderCase("/SelectSingle_staticOptionDisplay.html");
     }
 }

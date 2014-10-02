@@ -118,9 +118,7 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
                 Element editClone = ElementUtil.safeClone(elem);
                 group.appendChild(editClone);
 
-                Element newElem = new Element(Tag.valueOf("span"), "");
-                newElem.text(nonNullString);
-                group.appendChild(newElem);
+                group.appendChild(createAlternativeDisplayElement(nonNullString));
 
                 return group;
             }
@@ -128,6 +126,12 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
         }));
         // renderer.addDebugger("after alternative display for " + editTargetSelector);
         return renderer;
+    }
+
+    protected Element createAlternativeDisplayElement(String nonNullString) {
+        Element span = new Element(Tag.valueOf("span"), "");
+        span.text(nonNullString);
+        return span;
     }
 
 }
