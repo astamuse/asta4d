@@ -8,17 +8,17 @@ import java.lang.annotation.Target;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
 import com.astamuse.asta4d.web.form.annotation.renderable.convert.CommonInputAnnotationConvertor;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
-import com.astamuse.asta4d.web.form.field.impl.SelectMultipeRenderer;
+import com.astamuse.asta4d.web.form.field.impl.SelectMultipleRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @ConvertableAnnotation(CommonInputAnnotationConvertor.class)
-public @interface SelectMultipe {
+public @interface SelectMultiple {
     String name() default "";
 
     String editSelector() default "";
 
     String displaySelector() default "";
 
-    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default SelectMultipeRenderer.class;
+    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default SelectMultipleRenderer.class;
 }
