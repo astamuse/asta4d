@@ -8,12 +8,12 @@ import java.lang.annotation.Target;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
 import com.astamuse.asta4d.web.form.annotation.renderable.convert.CommonInputAnnotationConvertor;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
-import com.astamuse.asta4d.web.form.field.impl.InputHiddenRenderer;
+import com.astamuse.asta4d.web.form.field.impl.HiddenRenderer;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @ConvertableAnnotation(CommonInputAnnotationConvertor.class)
-public @interface InputHidden {
+public @interface Hidden {
 
     String name() default "";
 
@@ -21,5 +21,5 @@ public @interface InputHidden {
 
     String displaySelector() default "";
 
-    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default InputHiddenRenderer.class;
+    Class<? extends FormFieldValueRenderer> fieldValueRenderer() default HiddenRenderer.class;
 }

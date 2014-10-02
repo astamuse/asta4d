@@ -6,7 +6,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
-import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
+import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 
 public class JobForm extends JobExperence {
     public static JobForm buildFromJob(JobExperence job) {
@@ -20,13 +20,13 @@ public class JobForm extends JobExperence {
     }
 
     @Override
-    @InputHidden(name = "job-id-@")
+    @Hidden(name = "job-id-@")
     public Integer getId() {
         return super.getId();
     }
 
     @Override
-    @InputHidden(name = "job-person-id-@")
+    @Hidden(name = "job-person-id-@")
     public Integer getPersonId() {
         return super.getPersonId();
     }

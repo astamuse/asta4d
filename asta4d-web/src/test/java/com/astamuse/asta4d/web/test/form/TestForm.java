@@ -10,12 +10,12 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
-import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
+import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 
 @Form
 public class TestForm {
 
-    @InputHidden
+    @Hidden
     @Max(30) Integer id;
 
     @Input
@@ -28,13 +28,13 @@ public class TestForm {
     @NotEmpty
     @Valid SubArray[] subArray;
 
-    @InputHidden
+    @Hidden
     @NotNull Integer subArrayLength;
 
     @CascadeFormField(containerSelector = "#subArray2-container", arrayLengthField = "subArrayLength2")
     @NotEmpty
     @Valid SubArray2[] subArray2;
 
-    @InputHidden
+    @Hidden
     @NotNull Integer subArrayLength2;
 }

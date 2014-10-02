@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
-import com.astamuse.asta4d.web.form.annotation.renderable.InputHidden;
+import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 
 @Form
 public class CascadeForm {
@@ -15,7 +15,7 @@ public class CascadeForm {
     @Valid
     private PersonForm personForm;
 
-    @InputHidden(name = "job-length")
+    @Hidden(name = "job-length")
     private Integer jobLength;
 
     @CascadeFormField(name = "job", arrayLengthField = "job-length", containerSelector = "#job-experence-row")
