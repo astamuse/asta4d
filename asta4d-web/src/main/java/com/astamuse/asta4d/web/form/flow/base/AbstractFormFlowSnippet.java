@@ -51,6 +51,9 @@ public abstract class AbstractFormFlowSnippet {
     @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR, scope = Context.SCOPE_DEFAULT)
     protected String formTraceMapStr;
 
+    @ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET)
+    protected String renderTargetStep;
+
     protected boolean renderForEdit(String step, String fieldName) {
         return true;
     }
@@ -96,7 +99,7 @@ public abstract class AbstractFormFlowSnippet {
         }
     }
 
-    public Renderer render(@ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET) String renderTargetStep) throws Exception {
+    public Renderer render() throws Exception {
         Renderer renderer = Renderer.create(":root", new ElementSetter() {
             @Override
             public void set(Element elem) {
