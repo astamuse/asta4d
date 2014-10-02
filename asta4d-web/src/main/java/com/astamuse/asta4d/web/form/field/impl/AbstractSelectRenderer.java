@@ -44,7 +44,7 @@ public abstract class AbstractSelectRenderer extends SimpleFormFieldWithOptionVa
     @Override
     public Renderer renderForDisplay(final String editTargetSelector, final String displayTargetSelector, final Object value) {
 
-        Renderer render = Renderer.create();
+        Renderer render = Renderer.create().disableMissingSelectorWarning();
 
         // retrieve and create a value map here
         if (PrepareRenderingDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
@@ -95,7 +95,7 @@ public abstract class AbstractSelectRenderer extends SimpleFormFieldWithOptionVa
             }
         });
 
-        return render;
+        return render.enableMissingSelectorWarning();
     }
 
     protected Renderer addAlternativeDom(final String editTargetSelector, final List<String> valueList) {

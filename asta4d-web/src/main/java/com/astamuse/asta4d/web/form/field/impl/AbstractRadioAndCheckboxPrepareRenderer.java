@@ -21,9 +21,9 @@ import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.collection.RowRenderer;
-import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
+import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
 @SuppressWarnings("rawtypes")
@@ -135,6 +135,8 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
 
         Renderer renderer = super.preRender(editSelector, displaySelector);
 
+        renderer.disableMissingSelectorWarning();
+
         // create wrapper for input element
         final WrapperIdHolder wrapperIdHolder = new WrapperIdHolder();
 
@@ -195,16 +197,17 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                     // and label pair by given option value map, we have to make sure that the input and label elements are in same parent
                     // node
                     // which can be duplicated)
-                    Renderer renderer = new Renderer(wrapperIdHolder.labelSelector, new ElementTransformer(null) {
+                    Renderer renderer = Renderer.create().disableMissingSelectorWarning();
+                    renderer.add(new Renderer(wrapperIdHolder.labelSelector, new ElementTransformer(null) {
                         @Override
                         public Element invoke(Element elem) {
                             wrapperIdHolder.relocatingLabels.add(ElementUtil.safeClone(elem));
                             return new GroupNode();
                         }
 
-                    });
+                    }));
 
-                    return renderer;
+                    return renderer.enableMissingSelectorWarning();
                 }
             });
 
@@ -283,12 +286,12 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                     renderer.add(":root", new Renderable() {
                         @Override
                         public Renderer render() {
-                            Renderer render = Renderer.create();
+                            Renderer render = Renderer.create().disableMissingSelectorWarning();
                             for (String id : inputIdList) {
                                 render.add(SelectorUtil.attr(labelWrapperIndicatorAttr, id), LABEL_REF_ATTR, id);
                                 render.add(SelectorUtil.attr("label", "for", id), LABEL_REF_ATTR, id);
                             }
-                            return render;
+                            return render.enableMissingSelectorWarning();
                         }
                     });
 
@@ -324,8 +327,11 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                     return Renderer.create(selector, optionMap.getOptionList(), new RowRenderer<OptionValuePair>() {
                         @Override
                         public Renderer convert(int rowIndex, OptionValuePair row) {
+
+                            Renderer renderer = Renderer.create().disableMissingSelectorWarning();
+
                             String inputSelector = SelectorUtil.id("input", wrapperIdHolder.inputId);
-                            Renderer renderer = Renderer.create(inputSelector, "value", row.getValue());
+                            renderer.add(inputSelector, "value", row.getValue());
 
                             // we have to generate a new uuid for the input element to make sure its id is unique even we duplicated it.
                             String newInputId = inputIdByValue ? row.getValue() : IdGenerator.createId();
@@ -353,7 +359,8 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
 
                             renderer.add("label", "for", newInputId);
                             renderer.add("label", row.getDisplayText());
-                            return renderer;
+
+                            return renderer.enableMissingSelectorWarning();
                         }
                     });
                 }
@@ -380,19 +387,21 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
 
         PrepareRenderingDataUtil.storeDataToContextBySelector(editSelector, displaySelector, optionMap);
 
-        return renderer;
+        return renderer.enableMissingSelectorWarning();
     }
 
     @Override
     public Renderer postRender(String editSelector, String displaySelector) {
 
-        Renderer render = Renderer.create();
+        Renderer render = Renderer.create().disableMissingSelectorWarning();
 
         String[] clearAttrs = { LABEL_REF_ATTR, DUPLICATOR_REF_ATTR, DUPLICATOR_REF_ID_ATTR };
         for (String attr : clearAttrs) {
             render.add(SelectorUtil.attr(attr), attr, Clear);
         }
-        return render.add(super.postRender(editSelector, displaySelector));
+        render.add(super.postRender(editSelector, displaySelector));
+
+        return render.enableMissingSelectorWarning();
     }
 
 }

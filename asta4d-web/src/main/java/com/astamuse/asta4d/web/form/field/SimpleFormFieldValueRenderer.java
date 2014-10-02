@@ -79,10 +79,10 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
     }
 
     protected Renderer hideTarget(final String targetSelector) {
-        return Renderer.create(targetSelector, new ElementSetter() {
+        Renderer render = Renderer.create().disableMissingSelectorWarning();
+        return render.add(targetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
-                String selector = targetSelector;
                 String style = elem.attr("style");
                 if (style != null) {
                     style = style.trim();
@@ -100,7 +100,7 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
 
                 elem.attr("style", style);
             }
-        });
+        }).enableMissingSelectorWarning();
     }
 
     protected Renderer renderToDisplayTarget(String displayTargetSelector, String nonNullString) {

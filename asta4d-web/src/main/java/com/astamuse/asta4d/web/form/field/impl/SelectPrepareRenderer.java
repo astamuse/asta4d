@@ -8,9 +8,9 @@ import org.apache.commons.collections.CollectionUtils;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.collection.RowRenderer;
-import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
+import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
 public class SelectPrepareRenderer extends SimpleFormFieldPrepareRenderer {
@@ -85,12 +85,13 @@ public class SelectPrepareRenderer extends SimpleFormFieldPrepareRenderer {
     }
 
     private Renderer renderOptionGroup(String editSelector, List<OptGroup> groupList) {
-        return Renderer.create(editSelector, Renderer.create("optGroup:eq(0)", groupList, new RowRenderer<OptGroup>() {
+        Renderer render = Renderer.create().disableMissingSelectorWarning();
+        return render.add(editSelector, Renderer.create("optGroup:eq(0)", groupList, new RowRenderer<OptGroup>() {
             @Override
             public Renderer convert(int rowIndex, OptGroup row) {
                 return Renderer.create("optGroup", "label", row.groupName).add(renderOptionList("optGroup", row.optionMap));
             }
-        }));
+        })).enableMissingSelectorWarning();
     }
 
     private Renderer renderOptionList(String editSelector, final OptionValueMap valueMap) {
