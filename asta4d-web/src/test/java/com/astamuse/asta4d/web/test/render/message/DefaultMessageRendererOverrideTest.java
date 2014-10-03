@@ -41,7 +41,7 @@ public class DefaultMessageRendererOverrideTest extends WebTestBase {
     }
 
     @Test()
-    public void duplicatorOverride() throws Exception {
+    public void duplicatorOverride() throws Throwable {
         DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
 
         msgHelper.info("iinnffoo1"); // in global

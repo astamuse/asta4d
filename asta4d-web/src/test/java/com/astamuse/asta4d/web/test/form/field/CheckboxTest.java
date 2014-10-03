@@ -459,55 +459,55 @@ public class CheckboxTest extends WebTestBase {
         new CheckboxPrepareRenderer("yvalue").setDuplicateSelector("xx").setLabelWrapperIndicatorAttr("xx").preRender("ewrwe", "sdfa");
     }
 
-    public void testNormalEdit() {
+    public void testNormalEdit() throws Throwable {
         new FormRenderCase("/Checkbox_normalEdit.html");
     }
 
-    public void testNormalEditMultiValue() {
+    public void testNormalEditMultiValue() throws Throwable {
         new FormRenderCase("/Checkbox_normalEditMultiValue.html");
     }
 
-    public void testNormalDisplay() {
+    public void testNormalDisplay() throws Throwable {
         new FormRenderCase("/Checkbox_normalDisplay.html");
     }
 
-    public void testNormalDisplayMultiValue() {
+    public void testNormalDisplayMultiValue() throws Throwable {
         new FormRenderCase("/Checkbox_normalDisplayMultiValue.html");
     }
 
-    public void testStaticOptionEdit() {
+    public void testStaticOptionEdit() throws Throwable {
         new FormRenderCase("/Checkbox_staticOptionEdit.html");
     }
 
-    public void testStaticOptionEditMultiValue() {
+    public void testStaticOptionEditMultiValue() throws Throwable {
         new FormRenderCase("/Checkbox_staticOptionEditMultiValue.html");
     }
 
-    public void testStaticOptionDisplay() {
+    public void testStaticOptionDisplay() throws Throwable {
         new FormRenderCase("/Checkbox_staticOptionDisplay.html");
     }
 
-    public void testStaticOptionDisplayMultiValue() {
+    public void testStaticOptionDisplayMultiValue() throws Throwable {
         new FormRenderCase("/Checkbox_staticOptionDisplayMultiValue.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target of selector\\[\\[.+\\]\\] must be unique.+")
-    public void testDuplicatedElement() {
+    public void testDuplicatedElement() throws Throwable {
         new FormRenderCase("/Checkbox_duplicatedElement.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A checkbox input element must have id value being configured:.+")
-    public void testEmptyIdElement() {
+    public void testEmptyIdElement() throws Throwable {
         new FormRenderCase("/Checkbox_emptyIdElement.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target of selector\\[\\[.+\\]\\] \\(inside duplicator:.+\\) must be unique.+")
-    public void testDuplicatedElementInDuplicator() {
+    public void testDuplicatedElementInDuplicator() throws Throwable {
         new FormRenderCase("/Checkbox_duplicatedElementInDuplicator.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A checkbox input element \\(inside duplicator:.+\\) must have id value being configured:.+")
-    public void testEmptyIdElementInDuplicator() {
+    public void testEmptyIdElementInDuplicator() throws Throwable {
         new FormRenderCase("/Checkbox_emptyIdElementInDuplicator.html");
     }
 

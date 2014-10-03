@@ -58,49 +58,49 @@ public class ExternalizeMessageTest extends BaseTest {
     }
 
     @Test
-    public void externalizeMessage_DefaultMsg() {
+    public void externalizeMessage_DefaultMsg() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
         setUpResourceBundleManager("symbol_placeholder_messages", new NamedPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_DefaultMsg.html", "ExternalizeMessage_DefaultMsg.html");
     }
 
     @Test
-    public void externalizeMessage_SymbolPlaceholder_us() {
+    public void externalizeMessage_SymbolPlaceholder_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
         setUpResourceBundleManager("symbol_placeholder_messages", new SymbolPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
-    public void externalizeMessage_SymbolPlaceholder_ja() {
+    public void externalizeMessage_SymbolPlaceholder_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
         setUpResourceBundleManager("symbol_placeholder_messages", new SymbolPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");
     }
 
     @Test
-    public void externalizeMessage_NumberPlaceholder_us() {
+    public void externalizeMessage_NumberPlaceholder_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
         setUpResourceBundleManager("number_placeholder_messages", new NumberPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
-    public void externalizeMessage_NumberPlaceholder_ja() {
+    public void externalizeMessage_NumberPlaceholder_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
         setUpResourceBundleManager("number_placeholder_messages", new NumberPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");
     }
 
     @Test
-    public void externalizeMessage_NamedPlaceholder_us() {
+    public void externalizeMessage_NamedPlaceholder_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
         setUpResourceBundleManager("named_placeholder_messages", new NamedPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_NamedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
-    public void externalizeMessage_NamedPlaceholder_ja() {
+    public void externalizeMessage_NamedPlaceholder_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
         setUpResourceBundleManager("named_placeholder_messages", new NamedPlaceholderFormatter());
         new SimpleCase("ExternalizeMessage_NamedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");

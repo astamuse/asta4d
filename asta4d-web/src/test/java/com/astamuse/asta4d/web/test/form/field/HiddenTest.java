@@ -27,7 +27,7 @@ public class HiddenTest extends WebTestBase {
     }
 
     @Test
-    public void test() {
+    public void test() throws Throwable {
         new FormRenderCase("/Hidden.html");
     }
 }

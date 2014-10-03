@@ -98,27 +98,27 @@ public class AdvancedSnippetTest extends BaseTest {
     public AdvancedSnippetTest() {
     }
 
-    public void testDeletedNestedSnippet() {
+    public void testDeletedNestedSnippet() throws Throwable {
         new SimpleCase("AdvancedSnippet_deletedNestedSnippet.html");
     }
 
-    public void testNestedSnippet() {
+    public void testNestedSnippet() throws Throwable {
         new SimpleCase("AdvancedSnippet_nestedSnippet.html");
     }
 
-    public void testNestedEmbed() {
+    public void testNestedEmbed() throws Throwable {
         new SimpleCase("AdvancedSnippet_nestedEmbed.html");
     }
 
-    public void testDynamicSnippet() {
+    public void testDynamicSnippet() throws Throwable {
         new SimpleCase("AdvancedSnippet_dynamicSnippet.html");
     }
 
-    public void testDynamicEmbed() {
+    public void testDynamicEmbed() throws Throwable {
         new SimpleCase("AdvancedSnippet_dynamicEmbed.html");
     }
 
-    public void testOverrideRenderMethod() {
+    public void testOverrideRenderMethod() throws Throwable {
         new SimpleCase("AdvancedSnippet_overrideRenderMethod.html");
     }
 

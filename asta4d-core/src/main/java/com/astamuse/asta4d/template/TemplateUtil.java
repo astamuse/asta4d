@@ -229,7 +229,7 @@ public class TemplateUtil {
         }
     }
 
-    public final static Element getEmbedNodeContent(Element elem) throws TemplateException, TemplateNotFoundException {
+    public final static Element getEmbedNodeContent(Element elem) throws TemplateException {
         String target;
         Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
@@ -238,7 +238,12 @@ public class TemplateUtil {
             String message = "Target not defined[" + elem.toString() + "]";
             throw new TemplateException(message);
         }
-        Template embedTarget = templateResolver.findTemplate(target);
+        Template embedTarget;
+        try {
+            embedTarget = templateResolver.findTemplate(target);
+        } catch (TemplateNotFoundException e) {
+            throw new TemplateException(e);
+        }
 
         // TODO all of the following process should be merged into template
         // analyze process and be cached.

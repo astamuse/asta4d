@@ -27,11 +27,11 @@ import com.astamuse.asta4d.Page;
 
 public class SimpleCase {
 
-    public SimpleCase(String templateFileName) {
+    public SimpleCase(String templateFileName) throws Throwable {
         this(templateFileName, templateFileName);
     }
 
-    public SimpleCase(String templateFileName, String confirmFileName) {
+    public SimpleCase(String templateFileName, String confirmFileName) throws Throwable {
         String ostr = null;
         String cstr = null;
         try {
@@ -45,7 +45,7 @@ public class SimpleCase {
         } catch (Throwable t) {
             output(templateFileName + ":rendering result", ostr);
             output(confirmFileName + ":expected result", cstr);
-            throw new RuntimeException("verify failed:" + t.getMessage(), t);
+            throw t;
         }
     }
 

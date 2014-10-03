@@ -175,19 +175,19 @@ public class SelectSingleTest extends WebTestBase {
         new SelectPrepareRenderer("zvalue-2").setOptionData(createMap("xx", "yy", "zz")).addOptionGroup("A", createMap("x", "y", "z"));
     }
 
-    public void testNormalEdit() {
+    public void testNormalEdit() throws Throwable {
         new FormRenderCase("/SelectSingle_normalEdit.html");
     }
 
-    public void testNormalDisplay() {
+    public void testNormalDisplay() throws Throwable {
         new FormRenderCase("/SelectSingle_normalDisplay.html");
     }
 
-    public void testStaticOptionEdit() {
+    public void testStaticOptionEdit() throws Throwable {
         new FormRenderCase("/SelectSingle_staticOptionEdit.html");
     }
 
-    public void testStaticOptionDisplay() {
+    public void testStaticOptionDisplay() throws Throwable {
         new FormRenderCase("/SelectSingle_staticOptionDisplay.html");
     }
 }

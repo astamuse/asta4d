@@ -182,7 +182,7 @@ public class MultiStepFormTest extends WebTestBase {
     private Map<String, String[]> requestParameters_init = new HashMap<String, String[]>();
 
     @Test
-    public void testInitStep() throws Exception {
+    public void testInitStep() throws Throwable {
 
         initParams(requestParameters_init);
 
@@ -211,7 +211,7 @@ public class MultiStepFormTest extends WebTestBase {
     };
 
     @Test(dependsOnMethods = "testInitStep")
-    public void testInputWithoutTraceMap() throws Exception {
+    public void testInputWithoutTraceMap() throws Throwable {
 
         initParams(requestParameters_inputWithoutTraceMap);
 
@@ -246,7 +246,7 @@ public class MultiStepFormTest extends WebTestBase {
     private static final String IntegerTypeUnMatch = ".+ is expecting Integer but value\\[.+\\] found\\.";
 
     @Test(dependsOnMethods = "testInputWithoutTraceMap")
-    public void testInputWithTypeUnMatchError() throws Exception {
+    public void testInputWithTypeUnMatchError() throws Throwable {
 
         initParams(requestParameters_inputWithTypeUnMatchError);
 
@@ -292,7 +292,7 @@ public class MultiStepFormTest extends WebTestBase {
     private static final String MsgMax = ".+ must be less than or equal to [0-9]+";
 
     @Test(dependsOnMethods = "testInputWithTypeUnMatchError")
-    public void testInputWithValueValidationError() throws Exception {
+    public void testInputWithValueValidationError() throws Throwable {
 
         initParams(requestParameters_inputWithValueValidationError);
 
@@ -336,7 +336,7 @@ public class MultiStepFormTest extends WebTestBase {
     };
 
     @Test(dependsOnMethods = "testInputWithValueValidationError")
-    public void testGoToConfirm() throws Exception {
+    public void testGoToConfirm() throws Throwable {
 
         initParams(requestParameters_goToConfirm);
 
@@ -374,7 +374,7 @@ public class MultiStepFormTest extends WebTestBase {
     };
 
     @Test(dependsOnMethods = "testGoToConfirm")
-    public void testExit() throws Exception {
+    public void testExit() throws Throwable {
 
         initParams(requestParameters_exit);
 
@@ -387,12 +387,12 @@ public class MultiStepFormTest extends WebTestBase {
     }
 
     @Test(dependsOnMethods = "testExit")
-    public void testInitAgain() throws Exception {
+    public void testInitAgain() throws Throwable {
         testInitStep();
     }
 
     @Test(dependsOnMethods = "testInitAgain")
-    public void testGoConfirmAgain() throws Exception {
+    public void testGoConfirmAgain() throws Throwable {
         testGoToConfirm();
     }
 
@@ -406,7 +406,7 @@ public class MultiStepFormTest extends WebTestBase {
     };
 
     @Test(dependsOnMethods = "testGoConfirmAgain")
-    public void testGoBack() throws Exception {
+    public void testGoBack() throws Throwable {
         initParams(requestParameters_goBack);
 
         TestHandler handler = new TestHandler();
@@ -427,7 +427,7 @@ public class MultiStepFormTest extends WebTestBase {
     }
 
     @Test(dependsOnMethods = "testGoBack")
-    public void testGoConfirmAgainAgain() throws Exception {
+    public void testGoConfirmAgainAgain() throws Throwable {
         testGoToConfirm();
     }
 
@@ -441,7 +441,7 @@ public class MultiStepFormTest extends WebTestBase {
     };
 
     @Test(dependsOnMethods = "testGoConfirmAgainAgain")
-    public void testComplete() throws Exception {
+    public void testComplete() throws Throwable {
 
         initParams(requestParameters_complete);
 

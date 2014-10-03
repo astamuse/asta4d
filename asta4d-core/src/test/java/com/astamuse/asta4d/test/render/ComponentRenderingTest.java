@@ -43,7 +43,7 @@ public class ComponentRenderingTest extends BaseTest {
         }
     }
 
-    public void testComponent() {
+    public void testComponent() throws Throwable {
         new SimpleCase("ComponentRenderingTest.html");
     }
 

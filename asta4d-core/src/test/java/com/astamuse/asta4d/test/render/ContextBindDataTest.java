@@ -53,14 +53,13 @@ public class ContextBindDataTest extends BaseTest {
         // TODO Auto-generated constructor stub
     }
 
-    public void testNonParallel() {
+    public void testNonParallel() throws Throwable {
         new SimpleCase("ContextBindData_nonParallel.html");
     }
 
-    public void testParallel() {
+    public void testParallel() throws Throwable {
         for (int i = 0; i < 20; i++) {
             new SimpleCase("ContextBindData_parallel.html");
         }
     }
-
 }

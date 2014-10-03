@@ -310,35 +310,35 @@ public class SelectMultipleTest extends WebTestBase {
         new SelectPrepareRenderer("zvalue-2").setOptionData(createMap("xx", "yy", "zz")).addOptionGroup("A", createMap("x", "y", "z"));
     }
 
-    public void testNormalEdit() {
+    public void testNormalEdit() throws Throwable {
         new FormRenderCase("/SelectMultiple_normalEdit.html");
     }
 
-    public void testNormalEditMultiValue() {
+    public void testNormalEditMultiValue() throws Throwable {
         new FormRenderCase("/SelectMultiple_normalEditMultiValue.html");
     }
 
-    public void testNormalDisplay() {
+    public void testNormalDisplay() throws Throwable {
         new FormRenderCase("/SelectMultiple_normalDisplay.html");
     }
 
-    public void testNormalDisplayMultiValue() {
+    public void testNormalDisplayMultiValue() throws Throwable {
         new FormRenderCase("/SelectMultiple_normalDisplayMultiValue.html");
     }
 
-    public void testStaticOptionEdit() {
+    public void testStaticOptionEdit() throws Throwable {
         new FormRenderCase("/SelectMultiple_staticOptionEdit.html");
     }
 
-    public void testStaticOptionEditMultiValue() {
+    public void testStaticOptionEditMultiValue() throws Throwable {
         new FormRenderCase("/SelectMultiple_staticOptionEditMultiValue.html");
     }
 
-    public void testStaticOptionDisplay() {
+    public void testStaticOptionDisplay() throws Throwable {
         new FormRenderCase("/SelectMultiple_staticOptionDisplay.html");
     }
 
-    public void testStaticOptionDisplayMultiValue() {
+    public void testStaticOptionDisplayMultiValue() throws Throwable {
         new FormRenderCase("/SelectMultiple_staticOptionDisplayMultiValue.html");
     }
 }

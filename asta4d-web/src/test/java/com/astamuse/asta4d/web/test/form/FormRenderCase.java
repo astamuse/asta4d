@@ -4,11 +4,11 @@ import com.astamuse.asta4d.test.render.infra.SimpleCase;
 
 public class FormRenderCase extends SimpleCase {
 
-    public FormRenderCase(String templateFileName, String confirmFileName) {
+    public FormRenderCase(String templateFileName, String confirmFileName) throws Throwable {
         super(templateFileName, confirmFileName);
     }
 
-    public FormRenderCase(String templateFileName) {
+    public FormRenderCase(String templateFileName) throws Throwable {
         super(templateFileName);
     }
 

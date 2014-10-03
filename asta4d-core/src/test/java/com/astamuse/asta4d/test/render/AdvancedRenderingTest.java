@@ -108,17 +108,17 @@ public class AdvancedRenderingTest extends BaseTest {
     }
 
     @Test
-    public void testPseudoRootRenderingOnFackedGroup() {
+    public void testPseudoRootRenderingOnFackedGroup() throws Throwable {
         new SimpleCase("AdvancedRendering_pseudoRootRendering.html");
     }
 
     @Test
-    public void testContinualSelectAll() {
+    public void testContinualSelectAll() throws Throwable {
         new SimpleCase("AdvancedRendering_continualSelectAll.html");
     }
 
     @Test
-    public void testDataRef() {
+    public void testDataRef() throws Throwable {
         new SimpleCase("AdvancedRendering_dataRef.html");
     }
 }

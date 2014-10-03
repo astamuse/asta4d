@@ -185,7 +185,7 @@ public class OneStepFormTest extends WebTestBase {
     private Map<String, String[]> requestParameters_init = new HashMap<String, String[]>();
 
     @Test
-    public void testInitStep() throws Exception {
+    public void testInitStep() throws Throwable {
 
         initParams(requestParameters_init);
 
@@ -219,7 +219,7 @@ public class OneStepFormTest extends WebTestBase {
     private static final String IntegerTypeUnMatch = ".+ is expecting Integer but value\\[.+\\] found\\.";
 
     @Test(dependsOnMethods = "testInitStep")
-    public void testInputWithTypeUnMatchError() throws Exception {
+    public void testInputWithTypeUnMatchError() throws Throwable {
 
         initParams(requestParameters_inputWithTypeUnMatchError);
 
@@ -264,7 +264,7 @@ public class OneStepFormTest extends WebTestBase {
     private static final String MsgMax = ".+ must be less than or equal to [0-9]+";
 
     @Test(dependsOnMethods = "testInputWithTypeUnMatchError")
-    public void testInputWithValueValidationError() throws Exception {
+    public void testInputWithValueValidationError() throws Throwable {
 
         initParams(requestParameters_inputWithValueValidationError);
 
@@ -309,7 +309,7 @@ public class OneStepFormTest extends WebTestBase {
     }
 
     @Test(dependsOnMethods = "testExit")
-    public void testInitAgain() throws Exception {
+    public void testInitAgain() throws Throwable {
         testInitStep();
     }
 

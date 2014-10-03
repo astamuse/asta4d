@@ -29,7 +29,7 @@ public class InputDefaultTest extends WebTestBase {
     }
 
     @Test
-    public void test() {
+    public void test() throws Throwable {
         new FormRenderCase("/InputDefault.html");
     }
 }

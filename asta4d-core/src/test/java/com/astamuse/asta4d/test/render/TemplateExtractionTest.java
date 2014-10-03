@@ -20,13 +20,14 @@ package com.astamuse.asta4d.test.render;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 
 public class TemplateExtractionTest extends BaseTest {
 
     @Test
-    public void loadTempateWithExtension() {
+    public void loadTempateWithExtension() throws Throwable {
         new SimpleCase("TemplateWithExtension.html");
     }
 
@@ -37,12 +38,12 @@ public class TemplateExtractionTest extends BaseTest {
     }
 
     @Test
-    public void loadTempateWithClear() {
+    public void loadTempateWithClear() throws Throwable {
         new SimpleCase("TemplateWithClear.html");
     }
 
     @Test
-    public void loadTempateWithComment() {
+    public void loadTempateWithComment() throws Throwable {
         new SimpleCase("TemplateWithComment.html");
     }
 
@@ -53,27 +54,32 @@ public class TemplateExtractionTest extends BaseTest {
     }
 
     @Test
-    public void loadTempateWithSpecialHeadTags() {
+    public void loadTempateWithSpecialHeadTags() throws Throwable {
         new SimpleCase("TemplateWithSpecialHeadTags.html");
     }
 
     @Test
-    public void loadTempateWithEmbed() {
+    public void loadTempateWithEmbed() throws Throwable {
         new SimpleCase("TemplateWithEmbed.html");
     }
 
+    @Test(expectedExceptions = TemplateException.class, expectedExceptionsMessageRegExp = ".+does not exist\\.")
+    public void loadTempateWithEmbedNotFound() throws Throwable {
+        new SimpleCase("TemplateWithEmbedNotFound.html");
+    }
+
     @Test
-    public void loadTempateWithEmbedBaseFolder() {
+    public void loadTempateWithEmbedBaseFolder() throws Throwable {
         new SimpleCase("TemplateWithEmbedBaseFolder.html");
     }
 
     @Test
-    public void loadTempateWithExtensionAndEmbedMerge() {
+    public void loadTempateWithExtensionAndEmbedMerge() throws Throwable {
         new SimpleCase("TemplateWithExtensionAndEmbedMerge.html");
     }
 
     @Test
-    public void loadTemplateWithThreeLevelExtension() {
+    public void loadTemplateWithThreeLevelExtension() throws Throwable {
         new SimpleCase("ThreeLevelExtension_Child.html");
     }
 }

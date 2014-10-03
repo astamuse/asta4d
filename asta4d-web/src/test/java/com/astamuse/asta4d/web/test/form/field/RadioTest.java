@@ -252,39 +252,39 @@ public class RadioTest extends WebTestBase {
         new RadioPrepareRenderer("yvalue").setDuplicateSelector("xx").setLabelWrapperIndicatorAttr("xx").preRender("ewrwe", "sdfa");
     }
 
-    public void testNormalEdit() {
+    public void testNormalEdit() throws Throwable {
         new FormRenderCase("/Radio_normalEdit.html");
     }
 
-    public void testNormalDisplay() {
+    public void testNormalDisplay() throws Throwable {
         new FormRenderCase("/Radio_normalDisplay.html");
     }
 
-    public void testStaticOptionEdit() {
+    public void testStaticOptionEdit() throws Throwable {
         new FormRenderCase("/Radio_staticOptionEdit.html");
     }
 
-    public void testStaticOptionDisplay() {
+    public void testStaticOptionDisplay() throws Throwable {
         new FormRenderCase("/Radio_staticOptionDisplay.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target of selector\\[\\[.+\\]\\] must be unique.+")
-    public void testDuplicatedElement() {
+    public void testDuplicatedElement() throws Throwable {
         new FormRenderCase("/Radio_duplicatedElement.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A radio input element must have id value being configured:.+")
-    public void testEmptyIdElement() {
+    public void testEmptyIdElement() throws Throwable {
         new FormRenderCase("/Radio_emptyIdElement.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target of selector\\[\\[.+\\]\\] \\(inside duplicator:.+\\) must be unique.+")
-    public void testDuplicatedElementInDuplicator() {
+    public void testDuplicatedElementInDuplicator() throws Throwable {
         new FormRenderCase("/Radio_duplicatedElementInDuplicator.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*A radio input element \\(inside duplicator:.+\\) must have id value being configured:.+")
-    public void testEmptyIdElementInDuplicator() {
+    public void testEmptyIdElementInDuplicator() throws Throwable {
         new FormRenderCase("/Radio_emptyIdElementInDuplicator.html");
     }
 

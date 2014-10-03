@@ -9,7 +9,7 @@ import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 public class DefaultMessageRendererTest extends WebTestBase {
 
     @Test
-    public void existingMsgSelector() {
+    public void existingMsgSelector() throws Throwable {
         DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
         msgHelper.info("#msg-info", "iinnffoo1");
         msgHelper.info("#msg-info", "iinnffoo2");
@@ -21,7 +21,7 @@ public class DefaultMessageRendererTest extends WebTestBase {
     }
 
     @Test
-    public void notExistingMsgSelector() {
+    public void notExistingMsgSelector() throws Throwable {
         DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
         msgHelper.info("#msg-info-ne", "iinnffoo1");
         msgHelper.info("#msg-info-ne", "iinnffoo2");
@@ -33,7 +33,7 @@ public class DefaultMessageRendererTest extends WebTestBase {
     }
 
     @Test
-    public void someExistingMsgSelector() {
+    public void someExistingMsgSelector() throws Throwable {
         DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
         msgHelper.info("#msg-info-ne", "iinnffoo1");// in global
         msgHelper.info("#msg-info", "iinnffoo2");// in place
@@ -45,7 +45,7 @@ public class DefaultMessageRendererTest extends WebTestBase {
     }
 
     @Test
-    public void someExistingMsgSelector2() {
+    public void someExistingMsgSelector2() throws Throwable {
         DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
         msgHelper.info("#msg-info-ne", "iinnffoo1");// in global
         msgHelper.info("#msg-info", "iinnffoo2");// in place
