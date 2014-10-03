@@ -20,6 +20,7 @@ package com.astamuse.asta4d.test.render;
 import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
 import org.jsoup.nodes.Element;
+import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.extnode.EmbedNode;
 import com.astamuse.asta4d.extnode.SnippetNode;
@@ -29,6 +30,7 @@ import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
 
+@Test
 public class AdvancedSnippetTest extends BaseTest {
 
     public static class TestSnippet {
@@ -68,6 +70,22 @@ public class AdvancedSnippetTest extends BaseTest {
         }
     }
 
+    public static class ParentSnippet {
+        public Renderer render() {
+            return Renderer.create("p", "parent");
+        }
+    }
+
+    public static class MiddleSnippet extends ParentSnippet {
+
+    }
+
+    public static class ChildSnippet extends MiddleSnippet {
+        public Renderer render() {
+            return Renderer.create("p", "child");
+        }
+    }
+
     public AdvancedSnippetTest() {
     }
 
@@ -89,6 +107,10 @@ public class AdvancedSnippetTest extends BaseTest {
 
     public void testDynamicEmbed() {
         new SimpleCase("AdvancedSnippet_dynamicEmbed.html");
+    }
+
+    public void testOverrideRenderMethod() {
+        new SimpleCase("AdvancedSnippet_overrideRenderMethod.html");
     }
 
 }
