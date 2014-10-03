@@ -22,6 +22,7 @@ import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 import org.jsoup.nodes.Element;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.extnode.EmbedNode;
 import com.astamuse.asta4d.extnode.SnippetNode;
 import com.astamuse.asta4d.render.ChildReplacer;
@@ -74,6 +75,10 @@ public class AdvancedSnippetTest extends BaseTest {
         public Renderer render() {
             return Renderer.create("p", "parent");
         }
+
+        public Renderer rx(String x) {
+            return Renderer.create("p", "parent");
+        }
     }
 
     public static class MiddleSnippet extends ParentSnippet {
@@ -82,6 +87,10 @@ public class AdvancedSnippetTest extends BaseTest {
 
     public static class ChildSnippet extends MiddleSnippet {
         public Renderer render() {
+            return Renderer.create("p", "child");
+        }
+
+        public Renderer rx(@ContextData(name = "xxx") String x) {
             return Renderer.create("p", "child");
         }
     }
