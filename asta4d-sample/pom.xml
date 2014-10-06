@@ -4,12 +4,12 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>1.0-b1-SNAPSHOT</version>
+      <version>1.0-b1</version>
   </parent>
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-sample</artifactId>
-  <version>1.0-b1-SNAPSHOT</version>
+  <version>1.0-b1</version>
   <packaging>war</packaging>
 
   <name>com.astamuse.asta4d-sample</name>
