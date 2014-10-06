@@ -15,6 +15,22 @@ productivity. But unfortunately, we are still suffering from the following situa
 
 Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse.com](http://astamuse.com)
 
+## What does "Asta4D" mean
+
+The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:
+
+1. For designers
+    
+    Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
+
+1. For developers
+    
+    We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup of coffee.
+
+1. 4 dimension
+    
+    We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just like we are going through the 4 dimensional space.
+
 ## How Asta4D helps us
 
 Asta4D is our solution to combat those issues. Thanks to lift, from where we learn a lot. We designed Asta4D complying with the following points:
@@ -135,22 +151,9 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
 	By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.
 
-## What does "Asta4D" means
+1. Built-in form flow mechanism(experimental)
 
-The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:
-
-1. For Designer
-    
-    Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
-
-1. For developer
-    
-    We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup of coffee.
-
-1. 4 Dimension
-    
-    We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just like we are going through the 4 dimensional space.
-
+    Asta4D treat all the form processes as flow and afford a well defined architecture for various form processes. Asta4D's give developers the possibility of concentrating on their real business logics rather than technic issues. 
 
 ## Quick start
 
@@ -166,7 +169,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.606              \
+        -DarchetypeVersion=1.0-b1              \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -174,7 +177,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 or simply follow the wizard by filtered list:
 
     ```
-    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=0.14.606
+    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b1
     ```
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
@@ -203,13 +206,27 @@ There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/
 
     We also use request hanlders to prepare the "target data" for the target page. A significant point is that preparing "target data" does not mean MVC architecture, we just query a simple entity or build a pojo to **represent the normalized condition** of the target page. 
 
-## Todo
+## Roadmap
 
-Immediate tasks: 
+1.0
 
--   Rendering helper for validation
-    
-    Not implementing validaiton which should use third-party implementations such as [JSR 303/349](http://beanvalidation.org/), just help rendering validation result easier.
+-	make form flow stable
+-	refactor the sample project to supply more understable example
+-	complete the user guide
+
+1.1
+
+-	better i18n support
+
+	- more flexible message file management
+	- StaticResourceHandler should support search target files with locale awareness
+	- site category mechanism, By which, we can choose the target template file by per-request category implicitly.
+
+-	upgrade to newest jsoup version(currently a modified 1.6.3 is used)
+
+1.2
+
+-	java 8 support(lambda, etc.)
 
 Want to do: 
 
@@ -223,6 +240,14 @@ Want to do:
 
     
 ## Release Notes
+
+-	1.0-b1 (2014.10.06)
+
+	ADD
+	- form flow support
+	
+	FIX
+	- many many many fix...
 
 -   0.14.606
 
