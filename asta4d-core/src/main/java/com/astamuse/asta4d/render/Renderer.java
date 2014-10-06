@@ -120,14 +120,21 @@ public class Renderer {
             StackTraceElement callSite = null;
             boolean myClsStarted = false;
             for (StackTraceElement stackTraceElement : Stacks) {
-                if (stackTraceElement.getClassName().equals(Renderer.class.getName())) {
-                    myClsStarted = true;
+                Class cls;
+                try {
+                    cls = Class.forName(stackTraceElement.getClassName());
+                    if (cls.getPackage().getName().startsWith("com.astamuse.asta4d.render")) {
+                        myClsStarted = true;
+                        continue;
+                    } else if (myClsStarted) {
+                        callSite = stackTraceElement;
+                        break;
+                    }
+                } catch (ClassNotFoundException e) {
                     continue;
-                } else if (myClsStarted) {
-                    callSite = stackTraceElement;
-                    break;
                 }
             }
+
             if (callSite != null) {
                 creationSiteInfo = callSite.toString();
             }

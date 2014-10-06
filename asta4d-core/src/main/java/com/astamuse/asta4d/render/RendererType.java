@@ -32,7 +32,7 @@ enum RendererType {
     /**
      * a debug renderer will output the target element to log
      */
-    DEBUG,
+    // DEBUG,
 
     /**
      * a do nothing renderer

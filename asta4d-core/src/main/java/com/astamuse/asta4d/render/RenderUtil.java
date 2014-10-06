@@ -305,10 +305,12 @@ public class RenderUtil {
         case GO_THROUGH:
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
-        case DEBUG:
+            /*
+            case DEBUG:
             currentRenderer.getTransformerList().get(0).invoke(target);
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
+            */
         case RENDER_ACTION:
             ((RenderActionRenderer) currentRenderer).getStyle().apply(renderAction);
             apply(target, rendererList, renderAction, startIndex + 1, count);
