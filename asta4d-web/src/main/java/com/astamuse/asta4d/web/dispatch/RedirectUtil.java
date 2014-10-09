@@ -33,7 +33,6 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.util.SecureIdGenerator;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerUtil;
 
 public class RedirectUtil {
 
@@ -141,7 +140,8 @@ public class RedirectUtil {
         // save flash data map
         if (!dataMap.isEmpty()) {
             String flashScopeId = SecureIdGenerator.createEncryptedURLSafeId();
-            TimeoutDataManagerUtil.getManager().put(flashScopeId, dataMap, DATA_EXPIRE_TIME_MILLI_SECONDS);
+            WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
+                    .put(flashScopeId, dataMap, DATA_EXPIRE_TIME_MILLI_SECONDS);
 
             // create target url
             if (url.contains("?")) {
@@ -161,7 +161,8 @@ public class RedirectUtil {
         if (StringUtils.isEmpty(flashScopeId)) {
             return;
         } else {
-            Map<String, Object> savedMap = TimeoutDataManagerUtil.getManager().get(flashScopeId);
+            Map<String, Object> savedMap = WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
+                    .get(flashScopeId);
             if (savedMap == null) {
                 return;
             } else {

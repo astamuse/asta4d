@@ -39,9 +39,6 @@ import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
-import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareTimeoutDataManager;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManager;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerUtil;
 
 /**
  * Here we are going to implement a view first mechanism of view resolving. We need a url mapping algorithm too.
@@ -70,6 +67,7 @@ public class Asta4dServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
+        WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().start();
         ruleList = createRuleList();
     }
 
@@ -139,10 +137,8 @@ public class Asta4dServlet extends HttpServlet {
     public void destroy() {
         ListExecutorServiceUtil.getExecutorService().shutdownNow();
         SnippetExecutorServiceUtil.getExecutorService().shutdownNow();
-        TimeoutDataManager tdManager = TimeoutDataManagerUtil.getManager();
-        if (tdManager instanceof DefaultSessionAwareTimeoutDataManager) {
-            ((DefaultSessionAwareTimeoutDataManager) tdManager).shutdown();
-        }
+        WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().stop();
+        WebApplicationConfiguration.setConfiguration(null);// gc
         super.destroy();
     }
 
