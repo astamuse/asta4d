@@ -22,6 +22,9 @@ public class BinaryDataUtil {
             }
         } else if (path.startsWith("classpath:")) {
             String cls = path.substring("classpath:".length());
+            if (cls.startsWith("/")) {
+                cls = cls.substring(1);
+            }
             return classLoader.getResourceAsStream(cls);
         } else {
             return servletContext.getResourceAsStream(path);
@@ -33,8 +36,7 @@ public class BinaryDataUtil {
      * @param servletContext
      * @param classLoader
      * @param path
-     * @return 0 when something is wrong or the actual last modified time of the
-     *         resource for given path
+     * @return 0 when something is wrong or the actual last modified time of the resource for given path
      */
     public final static long retrieveLastModifiedByPath(ServletContext servletContext, ClassLoader classLoader, String path) {
         if (path.startsWith("file:")) {
@@ -45,7 +47,10 @@ public class BinaryDataUtil {
                 throw new RuntimeException(e);
             }
         } else if (path.startsWith("classpath:")) {
-            String cls = path.substring("classpath".length());
+            String cls = path.substring("classpath:".length());
+            if (cls.startsWith("/")) {
+                cls = cls.substring(1);
+            }
             return retriveLastModifiedFromURL(classLoader.getResource(cls));
         } else {
             try {

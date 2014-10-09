@@ -1,0 +1,1 @@
+StaticResourceHandlerTestFile_ja

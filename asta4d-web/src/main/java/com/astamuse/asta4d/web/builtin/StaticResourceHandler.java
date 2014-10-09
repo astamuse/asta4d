@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -21,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
+import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
@@ -29,8 +33,7 @@ import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 import com.astamuse.asta4d.web.util.data.BinaryDataUtil;
 
 /**
- * A static resouce handler for service static resources such as js, css or
- * static html files.
+ * A static resouce handler for service static resources such as js, css or static html files.
  * 
  * The following path vars can be configured for specializing response headers:
  * 
@@ -119,11 +122,14 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
         boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
 
-        StaticFileInfoHolder info = cacheEnable ? StaticFileInfoMap.get(path) : null;
+        Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
+        String staticFileInfoKey = LocalizeUtil.createLocalizedKey(path, locale);
+
+        StaticFileInfoHolder info = cacheEnable ? StaticFileInfoMap.get(staticFileInfoKey) : null;
 
         if (info == null) {
-            info = createInfo(servletContext, path);
-            StaticFileInfoMap.put(path, info);
+            info = createInfo(servletContext, locale, path);
+            StaticFileInfoMap.put(staticFileInfoKey, info);
         }
 
         if (info == NoContent) {
@@ -162,7 +168,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
             byte[] data = null;
             data = info.content.get();
             if (data == null) {
-                InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
+                InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), info.path);
                 data = retrieveBytesFromInputStream(input, info.cacheLimit);
                 info.content = new SoftReference<byte[]>(data);
             }
@@ -180,17 +186,30 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         }
     }
 
-    private StaticFileInfoHolder createInfo(ServletContext servletContext, String path) throws FileNotFoundException, IOException {
+    private StaticFileInfoHolder createInfo(final ServletContext servletContext, Locale locale, String path) throws FileNotFoundException,
+            IOException {
 
-        InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
+        MultiSearchPathResourceLoader<Pair<String, InputStream>> loader = new MultiSearchPathResourceLoader<Pair<String, InputStream>>() {
+            @Override
+            protected Pair<String, InputStream> loadResource(String name) {
+                InputStream is = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), name);
+                if (is != null) {
+                    return Pair.of(name, is);
+                } else {
+                    return null;
+                }
+            }
+        };
 
-        if (input == null) {
+        Pair<String, InputStream> foundResource = loader.searchResource("/", LocalizeUtil.getCandidatePaths(path, locale));
+
+        if (foundResource == null) {
             return NoContent;
         }
 
         StaticFileInfoHolder info = new StaticFileInfoHolder();
         info.contentType = judgContentType(path);
-        info.path = path;
+        info.path = foundResource.getLeft();
         info.lastModified = getLastModifiedTime(path);
 
         // cut the milliseconds
@@ -200,13 +219,13 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
         if (info.cacheLimit == 0) {// don't cache
             info.content = null;
-            info.firstTimeInput = input;
+            info.firstTimeInput = foundResource.getRight();
         } else {
-            byte[] contentData = retrieveBytesFromInputStream(input, info.cacheLimit);
+            byte[] contentData = retrieveBytesFromInputStream(foundResource.getRight(), info.cacheLimit);
             try {
                 info.content = new SoftReference<byte[]>(contentData);
             } finally {
-                input.close();
+                foundResource.getRight().close();
             }
             info.firstTimeInput = null;
         }
@@ -214,15 +233,11 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     }
 
     private byte[] retrieveBytesFromInputStream(InputStream input, int cacheSize) throws IOException {
-        int bufferSize = cacheSize + 1;
-        byte[] b = new byte[bufferSize];
-        int len = input.read(b);
-        if (len > cacheSize) {// over the limit of cache size
+        byte[] b = new byte[cacheSize];
+        if (input.read() >= 0) {// over the limit of cache size
             return null;
         } else {
-            byte[] rtn = new byte[len];
-            System.arraycopy(b, 0, rtn, 0, len);
-            return rtn;
+            return b;
         }
     }
 
@@ -237,8 +252,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
      * The header value of Content-Type
      * 
      * @param path
-     * @return a guess of the content type by file name extension,
-     *         "application/octet-stream" when not matched
+     * @return a guess of the content type by file name extension, "application/octet-stream" when not matched
      */
     protected String judgContentType(String path) {
 
@@ -288,8 +302,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
      * override this method to supply the specialized last modified time
      * 
      * @param path
-     * @return the time of last modified time in millisecond unit(In http
-     *         protocol, the time unit should be second, but we will cope with
+     * @return the time of last modified time in millisecond unit(In http protocol, the time unit should be second, but we will cope with
      *         this matter)
      */
     protected long getLastModifiedTime(String path) {
@@ -309,14 +322,11 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     }
 
     /**
-     * Retrieve the max cachable size limit for a certain path in byte unit.Be
-     * care of that the path var is set by kilobyte unit for convenience but
-     * this method will return in byte unit. <br>
-     * This is a default implementation which does not see the path and will
-     * return 0 for not caching when path var is not set.
+     * Retrieve the max cachable size limit for a certain path in byte unit.Be care of that the path var is set by kilobyte unit for
+     * convenience but this method will return in byte unit. <br>
+     * This is a default implementation which does not see the path and will return 0 for not caching when path var is not set.
      * <p>
-     * Note: we do not cache it by default because the resources in war should
-     * have been cached by the servlet container.
+     * Note: we do not cache it by default because the resources in war should have been cached by the servlet container.
      * 
      * 
      * @param path
