@@ -13,6 +13,8 @@ public abstract class AbstractGenericPathHandler {
 
     private final static ConcurrentHashMap<String, String> genericMapResult = new ConcurrentHashMap<>();
 
+    private final static String NullHolder = AbstractGenericPathHandler.class.getName() + "#NULL";
+
     private String _basePath = null;
 
     public AbstractGenericPathHandler() {
@@ -28,7 +30,11 @@ public abstract class AbstractGenericPathHandler {
 
         String targetPath = genericMapResult.get(uri);
         if (targetPath != null) {
-            return targetPath;
+            if (targetPath.equals(NullHolder)) {
+                return null;
+            } else {
+                return targetPath;
+            }
         } else {
             String basePath = context.getData(WebApplicationContext.SCOPE_PATHVAR, VAR_BASEPATH);
             if (basePath == null) {
@@ -65,6 +71,7 @@ public abstract class AbstractGenericPathHandler {
                 genericMapResult.put(uri, targetPath);
                 return targetPath;
             } else {
+                genericMapResult.put(uri, NullHolder);
                 return null;
             }
         }
