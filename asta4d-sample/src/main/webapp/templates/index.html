@@ -1,49 +1,52 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../css/common.css" rel="stylesheet" type="text/css" />
-<title>Asta4D Sample Project</title>
-</head>
 <body>
-	<h1>Asta4D Sample Project - Index</h1>
-
-	<section>
-		<article>
-			<h2>Simple usages</h2>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Asta4D Sample Project - Index
+	</afd:block>
+	<afd:block override="content-detail">
+	
+	<div class="panel panel-info panel-usage panel-usage-simple">
+		<div class="panel-heading"><h2>Simple usages</h2></div>
+		<div class="panel-body">
 			<ul>
-				<li><a href="snippet">Use Snippet for rendering dynamic page.</a></li>
-				<li>Inject values of the variable.(/app/{name}/{age})
-					<ul>
-						<li><a href="foo/25">name=foo, age=25</a></li>
-						<li><a href="bar/20">name=bar, age=20</a></li>
-					</ul>
-				</li>
-				<li><a href="attributevalues">Manipulate attribute values.</a></li>
-				<li>Extend other template.
-					<ul>
-						<li><a href="extend/appendchild">append</a></li>
-						<li><a href="extend/insertchild">insert</a></li>
-						<li><a href="extend/overridechild">override</a></li>
-					</ul>
-				</li>
-				<li><a href="embed/main">Embed other template.</a></li>
-				<li><a href="handler">Use Request Handler for side effects.</a></li>
+					<li><a href="/snippet">Use Snippet for rendering dynamic page.</a></li>
+					<li>Inject values of the variable.(/{name}/{age})
+						<ul>
+							<li><a href="/foo/25">name=foo, age=25</a></li>
+							<li><a href="/bar/20">name=bar, age=20</a></li>
+						</ul>
+					</li>
+					<li><a href="/attributevalues">Manipulate attribute values.</a></li>
+					<li>Extend other template.
+						<ul>
+							<li><a href="/extendendchild">append</a></li>
+							<li><a href="/extend/insertchild">insert</a></li>
+							<li><a href="/extend/overridechild">override</a></li>
+						</ul>
+					</li>
+					<li><a href="/embed/main">Embed other template.</a></li>
+					<li><a href="/handler">Use Request Handler for side effects.</a></li>
 			</ul>
-		</article>
-
-		<article>
-			<h2>Complicated usages</h2>
+		</div>
+	</div>
+	
+	<div class="panel panel-warning panel-usage panel-usage-complicated">
+		<div class="panel-heading"><h2>Complicated usages</h2></div>
+		<div class="panel-body">
 			<ul>
-				<li><a href="form">form</a></li>
-				<li><a href="renderertypes">Experience some type of Renderers.</a></li>
-				<li><a href="passvariables">Pass variables from outer Snippet to inner Snippet.</a></li>
-				<li><a href="dynamicsnippet">Use dynamic Snippet and dynamic embed.</a></li>
-				<li><a href="contextdata">Use ContextData annotation.</a></li>
-				<li><a href="localize">Localize Messages.</a></li>
+					<li><a href="/form">form</a></li>
+					<li><a href="/renderertypes">Experience some type of Renderers.</a></li>
+					<li><a href="/passvariables">Pass variables from outer Snippet to inner Snippet.</a></li>
+					<li><a href="/dynamicsnippet">Use dynamic Snippet and dynamic embed.</a></li>
+					<li><a href="/contextdata">Use ContextData annotation.</a></li>
+					<li><a href="/localize">Localize Messages.</a></li>
 			</ul>
-		</article>
-	</section>
-
+		</div>
+	</div>
+	</afd:block>
+</afd:extension>
 </body>
 </html>

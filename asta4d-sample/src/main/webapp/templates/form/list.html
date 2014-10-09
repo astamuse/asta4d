@@ -1,72 +1,77 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../../css/common.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
-<script type="text/javascript" src="../../js/prettify.js"></script>
-<title>Asta4D Sample Project</title>
-<script>
-function saveId(v){
-	document.getElementById("checkedRowId").setAttribute("value", v);
-}
-function getId(){
-	return document.getElementById("checkedRowId").getAttribute("value");
-}
-function onestepadd(){
-	location.href="form/onestep/edit?action=add";
-}
-function onestepmod(){
-	location.href="form/onestep/edit?action=edit&id="+getId();
-}
-
-function mstepadd(){
-	location.href="form/multistep?action=add";
-}
-
-function mstepmod(){
-	location.href="form/multistep?action=edit&id="+getId();	
-}
-
-function casadd(){
-	location.href="form/cascade?action=add";
-}
-
-function casmod(){
-	location.href="form/cascade?action=edit&id="+getId();	
-}
-
-</script>
 </head>
-<body onload="prettyPrint()">
-	<h1>list</h1>
-
-	<table border=1 afd:render="form.ListSnippet">
-	<tr>
-		<th>&nbsp;</th>
-		<th>name</th>
-		<th>age</th>
-		<th>sex</th>
-		<th>blood</th>
-		<th>language</th>
-	</tr>
-	<tr class="x-row">
-		<td class="x-check"><input name="_id" type=radio value="" onclick="saveId(this.value)"></td>
-		<td class="x-name">name</td>
-		<td class="x-age">age</td>
-		<td class="x-sex">sex</td>
-		<td class="x-blood">blood</td>
-		<td class="x-language"><span>lang1</span><span afd:clear>lang2</span></td>
-	</tr>
-	</table>
-	<input type=hidden id="checkedRowId">
-	<ul>
-	<li>one step: <input type=button value="add" onclick="onestepadd()"> <input type=button value="modify" onclick="onestepmod()">
-	<li>with confirm and complete<input type=button value="add" onclick="mstepadd()"> <input type=button value="modify" onclick="mstepmod()">
-	<li>cascade form(with array child form)<input type=button value="add" onclick="casadd()"> <input type=button value="modify" onclick="casmod()">
-	<li>splitted input<input type=button value="add(not implemented)" disabled> <input type=button value="modify(not implemented)" disabled>
-	</ul>
-	<input type=button value="delete(not implemented)" disabled>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block append="header-resource">
+		<script>
+		
+		function saveId(v){
+			document.getElementById("checkedRowId").setAttribute("value", v);
+		}
+		function getId(){
+			return document.getElementById("checkedRowId").getAttribute("value");
+		}
+		function onestepadd(){
+			location.href="form/onestep/edit?action=add";
+		}
+		function onestepmod(){
+			location.href="form/onestep/edit?action=edit&id="+getId();
+		}
+		
+		function mstepadd(){
+			location.href="form/multistep?action=add";
+		}
+		
+		function mstepmod(){
+			location.href="form/multistep?action=edit&id="+getId();	
+		}
+		
+		function casadd(){
+			location.href="form/cascade?action=add";
+		}
+		
+		function casmod(){
+			location.href="form/cascade?action=edit&id="+getId();	
+		}
+		
+		</script>
 	
+	</afd:block>
+	<afd:block override="content-title">
+		Form flow samples
+	</afd:block>
+	<afd:block override="content-detail">
+
+		<table class="table" afd:render="form.ListSnippet">
+		<tr>
+			<th>&nbsp;</th>
+			<th>name</th>
+			<th>age</th>
+			<th>sex</th>
+			<th>blood</th>
+			<th>language</th>
+		</tr>
+		<tr class="x-row">
+			<td class="x-check"><input name="_id" type=radio value="" onclick="saveId(this.value)"></td>
+			<td class="x-name">name</td>
+			<td class="x-age">age</td>
+			<td class="x-sex">sex</td>
+			<td class="x-blood">blood</td>
+			<td class="x-language"><span>lang1</span><span afd:clear>lang2</span></td>
+		</tr>
+		</table>
+		<input type=hidden id="checkedRowId">
+		<div class="form-list-btn-bar">
+		<ul>
+		<li>one step: <button type=button class="btn btn-sm btn-default" onclick="onestepadd()">add</button> <button type=button class="btn btn-sm btn-default" onclick="onestepmod()">modify</button>
+		<li>with confirm and complete: <button class="btn btn-sm btn-default" type=button onclick="mstepadd()">add</button> <button type=button class="btn btn-sm btn-default" onclick="mstepmod()">modify</button>
+		<li>cascade form(with array child form): <button type=button class="btn btn-sm btn-default" onclick="casadd()">add</button> <button type=button class="btn btn-sm btn-default" onclick="casmod()">modify</button>
+		<li>splitted input: <button type=button class="btn btn-sm btn-default" disabled>add(not implemented)</button> <button type=button class="btn btn-sm btn-default" disabled>modify(not implemented)</button>
+		</ul>
+		<button type=button class="btn btn-sm btn-default" disabled>delete(not implemented)</button>
+		</div>
+	</afd:block>
 </body>
 </html>

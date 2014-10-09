@@ -1,39 +1,44 @@
 body {
-	background: #F0F8FF;
-	font-family: Georgia, 'Hiragino Mincho Pro', Meiryo, serif;
-	color: #000000;
-	margin: 20px auto;
-	line-height: 1.5em;
+	font-szie: 18;
+	margin: 10px auto;
+	line-height: 2em;
 	width: 90%;
 }
 
-section {
-	width: 70%;
-	margin-bottom: 10px;
+.panel-usage {
+	width:48%;
 }
 
-section article {
-	border-radius: 4px;
-	font-size: 1em;
-	background-color: #ffffff;
-	color: #000000;
-	padding: 5px;
-	margin: 10px -10px;
+.panel-usage-simple {
+	float: left;
 }
 
-.italic {
-	font-style: italic;
+.panel-usage-complicated {
+	float: right;
 }
 
-.bold {
-	font-weight: bold;
+.form-input-table td{
+	padding-top: 5px;
+	padding-bottom: 5px;
 }
 
-.red {
-	color: red;
+.form-input-table label{
+	margin-left: 2px;
+	margin-right: 5px;
+	font-weight: normal;
 }
 
-.source {
-	font-size:14;
-    width:100%;
+.form-btn-bar {
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.form-btn-bar button{
+	margin-top: 5px;
+	margin-right: 5px;
+}
+
+.form-list-btn-bar {
+	font-size: 18;
+	line-height: 3em;
 }

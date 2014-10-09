@@ -32,14 +32,14 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
-import com.astamuse.asta4d.web.util.timeout.DefaultTimeoutDataManagerFactory;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerFactory;
+import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareTimeoutDataManager;
+import com.astamuse.asta4d.web.util.timeout.TimeoutDataManager;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
 
-    private TimeoutDataManagerFactory timeoutDataManagerFactory = new DefaultTimeoutDataManagerFactory();
+    private TimeoutDataManager timeoutDataManager = new DefaultSessionAwareTimeoutDataManager();
 
     private MessageRenderingHelper messageRenderingHelper = new DefaultMessageRenderingHelper();
 
@@ -100,12 +100,12 @@ public class WebApplicationConfiguration extends Configuration {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
     }
 
-    public TimeoutDataManagerFactory getTimeoutDataManagerFactory() {
-        return timeoutDataManagerFactory;
+    public TimeoutDataManager getTimeoutDataManager() {
+        return timeoutDataManager;
     }
 
-    public void setTimeoutDataManagerFactory(TimeoutDataManagerFactory timeoutDataManagerFactory) {
-        this.timeoutDataManagerFactory = timeoutDataManagerFactory;
+    public void setTimeoutDataManager(TimeoutDataManager timeoutDataManager) {
+        this.timeoutDataManager = timeoutDataManager;
     }
 
     public MessageRenderingHelper getMessageRenderingHelper() {

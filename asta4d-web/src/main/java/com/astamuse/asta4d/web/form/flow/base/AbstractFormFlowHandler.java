@@ -13,6 +13,7 @@ import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
@@ -24,7 +25,6 @@ import com.astamuse.asta4d.web.form.validation.JsrValidator;
 import com.astamuse.asta4d.web.form.validation.TypeUnMatchValidator;
 import com.astamuse.asta4d.web.util.SecureIdGenerator;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManagerUtil;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public abstract class AbstractFormFlowHandler<T> {
@@ -226,17 +226,18 @@ public abstract class AbstractFormFlowHandler<T> {
 
     protected String saveTraceMap(Map<String, Object> traceMap) {
         String id = SecureIdGenerator.createEncryptedURLSafeId();
-        TimeoutDataManagerUtil.getManager().put(id, traceMap, cachedTraceMapLivingTimeInMilliSeconds());
+        WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
+                .put(id, traceMap, cachedTraceMapLivingTimeInMilliSeconds());
         return id;
     }
 
     protected Map<String, Object> restoreTraceMap(String data) {
-        return TimeoutDataManagerUtil.getManager().get(data);
+        return WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().get(data);
     }
 
     protected void clearSavedTraceMap(String traceData) {
         if (StringUtils.isNotEmpty(traceData)) {
-            TimeoutDataManagerUtil.getManager().get(traceData);
+            WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().get(traceData);
         }
     }
 

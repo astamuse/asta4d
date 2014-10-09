@@ -40,11 +40,10 @@ public class UrlRules implements UrlMappingRuleInitializer {
     @Override
     public void initUrlMappingRules(UrlMappingRuleHelper rules) {
         //@formatter:off
-        rules.add(GET, "/")
-             .redirect("/app/index");
+        rules.add("/", "/templates/index.html");
+        rules.add("/index", "/templates/index.html");
         
-        rules.add(GET, "/redirect-to-index")
-        .redirect("p:/app/index");
+        rules.add(GET, "/redirect-to-index").redirect("p:/index");
         
         initSampleRules(rules);
         //@formatter:on
@@ -55,31 +54,28 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add("/js/**/*").handler(new StaticResourceHandler());
         
-        rules.add("/app/", "/templates/index.html");
-        rules.add("/app/index", "/templates/index.html");
-
-        rules.add("/app/snippet", "/templates/snippet.html");
+        rules.add("/snippet", "/templates/snippet.html");
         
         // @ShowCode:showVariableinjectionStart
-        rules.add("/app/{name}/{age}", "/templates/variableinjection.html").priority(1);
+        rules.add("/{name}/{age}", "/templates/variableinjection.html").priority(1);
         // @ShowCode:showVariableinjectionEnd
         
-        rules.add("/app/attributevalues", "/templates/attributevalues.html");
+        rules.add("/attributevalues", "/templates/attributevalues.html");
 
-        rules.add("/app/extend/appendchild", "/templates/extend/appendchild.html");
-        rules.add("/app/extend/insertchild", "/templates/extend/insertchild.html");
-        rules.add("/app/extend/overridechild", "/templates/extend/overridechild.html");
+        rules.add("/extendendchild", "/templates/extendendchild.html");
+        rules.add("/extend/insertchild", "/templates/extend/insertchild.html");
+        rules.add("/extend/overridechild", "/templates/extend/overridechild.html");
 
-        rules.add("/app/embed/main", "/templates/embed/main.html");
+        rules.add("/embed/main", "/templates/embed/main.html");
 
-        rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
+        rules.add("/ajax/getUserList").handler(GetUserListHandler.class).json();
         
-        rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
+        rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).rest();
         
-        rules.add("/app/", "/templates/index.html");
+        rules.add("/", "/templates/index.html");
 
         // @ShowCode:showSuccessStart
-        rules.add("/app/handler")
+        rules.add("/handler")
              .handler(LoginHandler.class)
              .handler(EchoHandler.class)
              .forward(LoginFailure.class, "/templates/error.html")
@@ -87,34 +83,34 @@ public class UrlRules implements UrlMappingRuleInitializer {
         // @ShowCode:showSuccessEnd
         
 
-        rules.add("/app/renderertypes", "/templates/renderertypes.html");
-        rules.add("/app/passvariables", "/templates/passvariables.html");
-        rules.add("/app/dynamicsnippet", "/templates/dynamicsnippet.html");
+        rules.add("/renderertypes", "/templates/renderertypes.html");
+        rules.add("/passvariables", "/templates/passvariables.html");
+        rules.add("/dynamicsnippet", "/templates/dynamicsnippet.html");
 
-        rules.add("/app/contextdata", "/templates/contextdata.html");
+        rules.add("/contextdata", "/templates/contextdata.html");
 
         
-        rules.add("/app/form", "/templates/form/list.html");
+        rules.add("/form", "/templates/form/list.html");
         
-        rules.add(GET, "/app/form/onestep/edit")
+        rules.add(GET, "/form/onestep/edit")
              .handler(OneStepEditHandler.class)
              .forward("/templates/form/onestep/edit.html");
              
-        rules.add(POST, "/app/form/onestep/edit")
+        rules.add(POST, "/form/onestep/edit")
              .handler(OneStepEditHandler.class)
              .forward(CommonFormResult.FAILED, "/templates/form/onestep/edit.html")
-             .redirect("/app/form");
+             .redirect("/form");
         
-        rules.add((HttpMethod)null, "/app/form/multistep")
+        rules.add((HttpMethod)null, "/form/multistep")
             .handler(MultiStepEditHandler.class)
-            .redirect("/app/form");
+            .redirect("/form");
         
-        rules.add((HttpMethod)null, "/app/form/cascade")
+        rules.add((HttpMethod)null, "/form/cascade")
             .handler(CascadeEditHandler.class)
-            .redirect("/app/form");
+            .redirect("/form");
         
            
-        rules.add("/app/localize", "/templates/localize.html");
+        rules.add("/localize", "/templates/localize.html");
         
         
         

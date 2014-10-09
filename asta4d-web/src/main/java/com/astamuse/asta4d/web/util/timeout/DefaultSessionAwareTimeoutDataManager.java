@@ -23,7 +23,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,29 +36,91 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
 
     private static final String CheckSessionIdKey = DefaultSessionAwareTimeoutDataManager.class + "#CheckSessionIdKey";
 
-    private final ConcurrentHashMap<String, DataHolder> dataMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, DataHolder> dataMap = null;
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private AtomicInteger dataCounter = null;
 
-    private final int maxDataSize;
+    private ScheduledExecutorService service = null;
 
-    private final boolean sessionAware;
+    // 3 minutes
+    private long expirationCheckPeriodInMilliseconds = 3 * 60 * 1000;
 
-    public DefaultSessionAwareTimeoutDataManager(long expireExcutorPeriodInMinutes, int maxDataSize, boolean sessionAware) {
+    private int maxDataSize = 10_000;
+
+    private boolean sessionAware = true;
+
+    private long spinTimeInMilliseconds = 1000;
+
+    // 5 times spinning
+    private long maxSpinTimeInMilliseconds = 1000 * 5;
+
+    private String checkThreadName = this.getClass().getSimpleName() + "-check-thread";
+
+    public DefaultSessionAwareTimeoutDataManager() {
+
+    }
+
+    public void setExpirationCheckPeriodInMilliseconds(long expirationCheckPeriodInMilliseconds) {
+        this.expirationCheckPeriodInMilliseconds = expirationCheckPeriodInMilliseconds;
+    }
+
+    public void setMaxDataSize(int maxDataSize) {
         this.maxDataSize = maxDataSize;
+    }
+
+    public void setSessionAware(boolean sessionAware) {
         this.sessionAware = sessionAware;
+    }
+
+    public void setSpinTimeInMilliseconds(long spinTimeInMilliseconds) {
+        this.spinTimeInMilliseconds = spinTimeInMilliseconds;
+    }
+
+    public void setMaxSpinTimeInMilliseconds(long maxSpinTimeInMilliseconds) {
+        this.maxSpinTimeInMilliseconds = maxSpinTimeInMilliseconds;
+    }
+
+    @Override
+    public void start() {
+        // init fields
+        dataMap = new ConcurrentHashMap<>();
+        dataCounter = new AtomicInteger();
+        service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, checkThreadName);
+            }
+        });
+
+        // start check thread
         service.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 List<Entry<String, DataHolder>> entries = new ArrayList<>(dataMap.entrySet());
                 long currentTime = System.currentTimeMillis();
+                int removedCounter = 0;
+                Object existing;
                 for (Entry<String, DataHolder> entry : entries) {
                     if (entry.getValue().isExpired(currentTime)) {
-                        dataMap.remove(entry.getKey());
+                        existing = dataMap.remove(entry.getKey());
+                        if (existing != null) {// we removed it successfully
+                            removedCounter++;
+                        }
                     }
                 }
+                if (removedCounter > 0) {
+                    dataCounter.addAndGet(-removedCounter);
+                }
             }
-        }, expireExcutorPeriodInMinutes, expireExcutorPeriodInMinutes, TimeUnit.MINUTES);
+        }, expirationCheckPeriodInMilliseconds, expirationCheckPeriodInMilliseconds, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void stop() {
+        // release all resources
+        service.shutdownNow();
+        dataCounter = null;
+        dataMap = null;
     }
 
     @SuppressWarnings("unchecked")
@@ -64,17 +128,40 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
         DataHolder holder = dataMap.remove(dataId);
         if (holder == null) {
             return null;
-        } else if (holder.isExpired(System.currentTimeMillis())) {
-            return null;
-        } else if (StringUtils.equals(retrieveSessionId(false), holder.sessionId)) {
-            return (T) holder.getData();
         } else {
-            return null;
+            dataCounter.decrementAndGet();
+            if (holder.isExpired(System.currentTimeMillis())) {
+                return null;
+            } else if (StringUtils.equals(retrieveSessionId(false), holder.sessionId)) {
+                return (T) holder.getData();
+            } else {
+                return null;
+            }
         }
     }
 
     public void put(String dataId, Object data, long expireMilliSeconds) {
-        dataMap.putIfAbsent(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
+        if (dataCounter.get() >= maxDataSize) {
+            try {
+                long spinTimeTotal = 0;
+                while (dataCounter.get() >= maxDataSize) {
+                    if (spinTimeTotal >= maxSpinTimeInMilliseconds) {
+                        String msg = "There are too many data in %s and we could not get empty space after waiting for %d milliseconds."
+                                + " The configured max size is %d and perhaps you should increase the value.";
+                        msg = String.format(msg, this.getClass().getName(), spinTimeTotal, maxDataSize);
+                        throw new TooManyDataException(msg);
+                    }
+                    Thread.sleep(spinTimeInMilliseconds);
+                    spinTimeTotal += spinTimeInMilliseconds;
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Object existing = dataMap.putIfAbsent(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
+        if (existing == null) {
+            dataCounter.incrementAndGet();
+        }
     }
 
     protected String retrieveSessionId(boolean create) {
@@ -90,13 +177,9 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
         return sessionId;
     }
 
-    public void shutdown() {
-        service.shutdown();
-    }
-
     @Override
     protected void finalize() throws Throwable {
-        shutdown();
+        stop();
         super.finalize();
     }
 
