@@ -36,7 +36,7 @@ public class Template {
 
     private String path;
 
-    private Document doc;
+    private Document doc = null;
 
     /**
      * 
@@ -48,9 +48,11 @@ public class Template {
     public Template(String path, InputStream input) throws TemplateException, TemplateNotFoundException {
         try {
             this.path = path;
-            this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
-            // this.doc = Jsoup.parse(input, "UTF-8", "");
-            initDocument();
+            if (input != null) {
+                this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
+                // this.doc = Jsoup.parse(input, "UTF-8", "");
+                initDocument();
+            }
         } catch (TemplateNotFoundException e) {
             throw e;
         } catch (Exception e) {

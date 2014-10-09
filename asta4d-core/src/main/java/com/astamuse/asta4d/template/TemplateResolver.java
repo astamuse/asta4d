@@ -17,7 +17,6 @@
 
 package com.astamuse.asta4d.template;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Map;
@@ -63,8 +62,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
 
     private static Template getNotFoundHolder() throws TemplateException, TemplateNotFoundException {
         if (NotFoundHolder == null) {
-            String dummyHolderContent = "##NOT-FOUND-HOLDER##";
-            NotFoundHolder = new Template(dummyHolderContent, new ByteArrayInputStream(dummyHolderContent.getBytes()));
+            NotFoundHolder = new Template("##NOT-FOUND-HOLDER##", null);
         }
         return NotFoundHolder;
     }
