@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +37,13 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
 
     private final ConcurrentHashMap<String, DataHolder> dataMap = new ConcurrentHashMap<>();
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            String threadName = "DefaultSessionAwareTimeoutDataManager-Dispose-Thread";
+            return new Thread(r, threadName);
+        }
+    });
 
     private final int maxDataSize;
 
@@ -91,7 +98,7 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
     }
 
     public void shutdown() {
-        service.shutdown();
+        service.shutdownNow();
     }
 
     @Override
