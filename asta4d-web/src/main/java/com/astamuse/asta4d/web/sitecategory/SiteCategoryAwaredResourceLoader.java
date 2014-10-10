@@ -5,6 +5,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * 
+ * We will cache the existing path only instead of the actual found resource, the cache of resources is assumed to be performed at the
+ * underline load mechanism.
+ * 
+ * @author e-ryu
+ * 
+ * @param <T>
+ */
 public abstract class SiteCategoryAwaredResourceLoader<T> {
 
     private static final String NO_EXISTING_PATH = "##NO_EXISTING_PATH##";
