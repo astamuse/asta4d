@@ -111,9 +111,13 @@ public abstract class AbstractFormFlowSnippet {
             }
         });
 
-        Object form = formTraceMap.get(renderTargetStep);
+        Object form = retrieveRenderTargetForm();
 
         return renderer.add(renderFieldValue(renderTargetStep, form, -1));
+    }
+
+    protected Object retrieveRenderTargetForm() {
+        return formTraceMap.get(renderTargetStep);
     }
 
     protected Renderer renderFieldValue(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
@@ -242,7 +246,8 @@ public abstract class AbstractFormFlowSnippet {
     protected Object convertRawTraceDataToRenderingData(String fieldName, Class fieldDataType, Object rawTraceData) {
         if (fieldDataType.isArray() && rawTraceData.getClass().isArray()) {
             return rawTraceData;
-        } else if (rawTraceData.getClass().isArray()) {// but field data type is not array
+        } else if (rawTraceData.getClass().isArray()) {// but field data type is
+                                                       // not array
             if (Array.getLength(rawTraceData) > 0) {
                 return Array.get(rawTraceData, 0);
             } else {
