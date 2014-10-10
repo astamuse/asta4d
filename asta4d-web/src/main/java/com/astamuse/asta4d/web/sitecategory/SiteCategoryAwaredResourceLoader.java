@@ -56,7 +56,11 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
         if (StringUtils.isEmpty(category)) {
             return path;
         } else {
-            return "/" + category + path;
+            if (path.startsWith("/")) {
+                return "/" + category + path;
+            } else {
+                return "/" + category + "/" + path;
+            }
         }
     }
 

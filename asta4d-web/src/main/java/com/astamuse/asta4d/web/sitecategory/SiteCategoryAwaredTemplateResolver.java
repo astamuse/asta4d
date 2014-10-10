@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.web.sitecategory;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
@@ -24,6 +26,10 @@ public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
 
     }
 
+    public SiteCategoryAwaredTemplateResolver(TemplateResolver underlineTemplateResolver) {
+        this.underlineTemplateResolver = underlineTemplateResolver;
+    }
+
     public TemplateResolver getUnderlineTemplateResolver() {
         return underlineTemplateResolver;
     }
@@ -39,7 +45,7 @@ public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
             String[] categories = SiteCategoryUtil.getCurrentRequestSearchCategories();
             Template template = siteCategoryAwaredResourceLoader.load(categories, path);
             if (template == null) {
-                throw new TemplateNotFoundException(path);
+                throw new TemplateNotFoundException(path, "(in all the categories:" + StringUtils.join(categories, ",") + ")");
             } else {
                 return template;
             }
