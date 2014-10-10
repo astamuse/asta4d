@@ -162,8 +162,12 @@ public abstract class AbstractFormFlowSnippet {
                     List<Renderer> subRendererList = new ArrayList<>(len);
                     for (int i = 0; i < len; i++) {
                         Object subForm = Array.get(v, i);
-                        Renderer subRenderer = rewriteCascadeFormArrayFieldsRef(renderTargetStep, subForm, i);
-                        subRendererList.add(subRenderer.add(renderFieldValue(renderTargetStep, subForm, i)));
+                        Renderer subRenderer = Renderer.create();
+                        subRenderer.add(setCascadeFormContainerArrayRef(i));
+                        subRenderer.add(rewriteCascadeFormFieldArrayRef(renderTargetStep, subForm, i));
+                        subRenderer.add(renderFieldValue(renderTargetStep, subForm, i));
+
+                        subRendererList.add(subRenderer);
                     }
                     render.add(containerSelector, subRendererList);
                 } else {
@@ -213,20 +217,45 @@ public abstract class AbstractFormFlowSnippet {
         return SelectorUtil.attr("name", fieldName);
     }
 
-    protected Renderer rewriteCascadeFormArrayFieldsRef(final String renderTargetStep, final Object form, final int cascadeFormArrayIndex) {
-        return Renderer.create("[id],[name]", new ElementSetter() {
+    protected Renderer setCascadeFormContainerArrayRef(final int cascadeFormArrayIndex) {
+        return Renderer.create(":root", new ElementSetter() {
             @Override
             public void set(Element elem) {
-                String id = elem.id();
-                String name = elem.attr("name");
-                if (StringUtils.isNotEmpty(id)) {
-                    elem.attr("id", rewriteArrayIndexPlaceHolder(id, cascadeFormArrayIndex));
-                }
-                if (StringUtils.isNotEmpty(name)) {
-                    elem.attr("name", rewriteArrayIndexPlaceHolder(name, cascadeFormArrayIndex));
+                elem.attr(cascadeFormContainerArrayRefAttrName(), String.valueOf(cascadeFormArrayIndex));
+            }
+        });
+    }
+
+    protected String cascadeFormContainerArrayRefAttrName() {
+        return "cascade-form-container-array-ref";
+    }
+
+    protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final int cascadeFormArrayIndex) {
+
+        final String[] targetAttrs = rewriteCascadeFormFieldArrayRefTargetAttrs();
+        String[] attrSelectors = new String[targetAttrs.length];
+        for (int i = 0; i < attrSelectors.length; i++) {
+            attrSelectors[i] = SelectorUtil.attr(targetAttrs[i]);
+        }
+
+        return Renderer.create(StringUtils.join(attrSelectors, ","), new ElementSetter() {
+            @Override
+            public void set(Element elem) {
+                String v;
+                for (String attr : targetAttrs) {
+                    v = elem.attr(attr);
+                    if (StringUtils.isNotEmpty(v)) {
+                        elem.attr(attr, rewriteArrayIndexPlaceHolder(v, cascadeFormArrayIndex));
+                    }
                 }
             }
         });
+    }
+
+    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name" };
+
+    protected String[] rewriteCascadeFormFieldArrayRefTargetAttrs() {
+        return _rewriteCascadeFormFieldArrayRefTargetAttrs;
     }
 
     protected String rewriteArrayIndexPlaceHolder(String s, int seq) {
