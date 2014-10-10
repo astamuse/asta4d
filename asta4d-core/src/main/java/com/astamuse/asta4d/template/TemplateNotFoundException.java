@@ -11,4 +11,8 @@ public class TemplateNotFoundException extends Exception {
         super("Template [" + path + "] does not exist.");
     }
 
+    public TemplateNotFoundException(String path, String extraMsg) {
+        super("Template [" + path + "] does not exist." + extraMsg);
+    }
+
 }
