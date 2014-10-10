@@ -19,8 +19,6 @@ package com.astamuse.asta4d.template;
 
 import java.io.InputStream;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,43 +26,36 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.TemplateResolver.TemplateInfo;
+import com.astamuse.asta4d.util.MemorySafeResourceCache;
+import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 
 //TODO internationalization
 public abstract class TemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo> {
 
-    private final static ConcurrentHashMap<String, Template> defaultCachedTemplateMap = new ConcurrentHashMap<String, Template>();
-
-    private static Template NotFoundHolder;
+    private final static MemorySafeResourceCache<String, Template> defaultTemplateCache = new MemorySafeResourceCache<String, Template>();
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, Template> getCachedTemplateMap() {
+    private MemorySafeResourceCache<String, Template> retrieveTemplateCache() {
         Context context = Context.getCurrentThreadContext();
         Configuration conf = Configuration.getConfiguration();
         if (conf.isCacheEnable()) {
-            return defaultCachedTemplateMap;
+            return defaultTemplateCache;
         } else {
             // for debug, if we do not cache it in context, some templates will
             // be probably initialized for hundreds times
             // thus there will be hundreds logs of template initializing in info
             // level.
             String key = TemplateResolver.class.getName() + "##template-cache-map";
-            Map<String, Template> contextCachedMap = context.getData(key);
+            MemorySafeResourceCache<String, Template> contextCachedMap = context.getData(key);
             if (contextCachedMap == null) {
-                contextCachedMap = new ConcurrentHashMap<>();
+                contextCachedMap = new MemorySafeResourceCache<>();
                 context.setData(key, contextCachedMap);
             }
             return contextCachedMap;
         }
-    }
-
-    private static Template getNotFoundHolder() throws TemplateException, TemplateNotFoundException {
-        if (NotFoundHolder == null) {
-            NotFoundHolder = new Template("##NOT-FOUND-HOLDER##", null);
-        }
-        return NotFoundHolder;
     }
 
     /**
@@ -79,31 +70,37 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
     public Template findTemplate(String path) throws TemplateException, TemplateNotFoundException {
         try {
 
-            Map<String, Template> cachedTemplateMap = getCachedTemplateMap();
+            MemorySafeResourceCache<String, Template> templateCache = retrieveTemplateCache();
 
             Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
             String cacheKey = LocalizeUtil.createLocalizedKey(path, locale);
-            Template t = cachedTemplateMap.get(cacheKey);
-            if (t != null) {
-                if (t == NotFoundHolder) {
-                    throw new TemplateNotFoundException(path);
+
+            ResouceHolder<Template> resource = templateCache.get(cacheKey);
+
+            if (resource != null) {
+                if (resource.exists()) {
+                    return resource.get();
                 } else {
-                    return t;
+                    throw new TemplateNotFoundException(path);
                 }
             }
             logger.info("Initializing template " + path);
             TemplateInfo info = searchResource("/", LocalizeUtil.getCandidatePaths(path, locale));
             if (info == null) {
-                cachedTemplateMap.put(cacheKey, getNotFoundHolder());
+                templateCache.put(cacheKey, null);
                 throw new TemplateNotFoundException(path);
             }
             InputStream input = info.getInput();
             if (input == null) {
-                cachedTemplateMap.put(cacheKey, getNotFoundHolder());
+                templateCache.put(cacheKey, null);
                 throw new TemplateNotFoundException(path);
             }
+
             try {
+                Template t;
                 t = new Template(info.getPath(), input);
+                templateCache.put(cacheKey, t);
+                return t;
             } finally {
                 // we have to close the input stream to avoid file lock
                 try {
@@ -112,8 +109,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
                     logger.error("Error occured when close input stream of " + info.getPath(), ex);
                 }
             }
-            cachedTemplateMap.put(cacheKey, t);
-            return t;
+
         } catch (TemplateNotFoundException e) {
             throw e;
         } catch (Exception e) {
