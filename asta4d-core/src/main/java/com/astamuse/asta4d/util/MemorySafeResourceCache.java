@@ -31,14 +31,11 @@ public class MemorySafeResourceCache<K, V> {
         }
     }
 
-    private final ResouceHolder<V> NOT_EXISTING_HOLDER = new ResouceHolder<>(null);
-
     private Map<K, ResouceHolder<V>> existingResourceMap;
 
-    /**
-     * 
-     */
     private SoftReference<Map<K, ResouceHolder<V>>> notExistingResourceMapRef = null;
+
+    private final ResouceHolder<V> notExistingHolder = new ResouceHolder<>(null);
 
     public MemorySafeResourceCache() {
         // a copy on write map would be better
@@ -47,8 +44,9 @@ public class MemorySafeResourceCache<K, V> {
 
     /**
      * 
-     * @param k
-     * @param v
+     * @param key
+     *            throw NullPointerException when key is null
+     * @param resource
      *            null means the resource of the given key is not existing
      */
     public void put(K key, V resource) {
@@ -56,7 +54,7 @@ public class MemorySafeResourceCache<K, V> {
             throw new NullPointerException();
         }
         if (resource == null) {
-            getNotExistingResourceMap().put(key, NOT_EXISTING_HOLDER);
+            getNotExistingResourceMap().put(key, notExistingHolder);
         } else {
             existingResourceMap.put(key, new ResouceHolder<>(resource));
         }

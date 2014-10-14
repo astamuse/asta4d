@@ -1,9 +1,7 @@
 package com.astamuse.asta4d.web.sitecategory;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.lang3.StringUtils;
+import com.astamuse.asta4d.util.MemorySafeResourceCache;
+import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 
 /**
  * 
@@ -16,9 +14,36 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class SiteCategoryAwaredResourceLoader<T> {
 
-    private static final String NO_EXISTING_PATH = "##NO_EXISTING_PATH##";
+    private static class CacheKey {
+        String category;
+        String path;
 
-    private Map<String, Map<String, String>> existingPathMap = new ConcurrentHashMap<>();
+        static CacheKey of(String category, String path) {
+            CacheKey key = new CacheKey();
+            key.category = category;
+            key.path = path;
+            return key;
+        }
+
+        @Override
+        public int hashCode() {
+            return path.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            CacheKey other = (CacheKey) obj;
+            // category and path would not be null
+            return category.equals(other.category) && path.equals(other.path);
+        }
+
+    }
+
+    private MemorySafeResourceCache<CacheKey, String> existingPathCache = new MemorySafeResourceCache<>();
 
     public SiteCategoryAwaredResourceLoader() {
 
@@ -33,28 +58,25 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
     public abstract T load(String path) throws Exception;
 
     public T load(String[] categories, String path) throws Exception {
-        Map<String, String> pathMap = null;
-        String existingPath = null;
+        ResouceHolder<String> existingPath = null;
+        CacheKey key;
         for (String category : categories) {
-            pathMap = retrievePathMap(category);
-            existingPath = pathMap.get(path);
-
-            if (NO_EXISTING_PATH.equals(existingPath)) {
-                continue;
-            } else {
-                if (existingPath == null) {// not check yet
-                    String tryPath = createCategorySpecialPath(category, path);
-                    T res = load(tryPath);
-                    if (res == null) {
-                        pathMap.put(path, NO_EXISTING_PATH);
-                        continue;
-                    } else {
-                        pathMap.put(path, tryPath);
-                        return res;
-                    }
+            key = CacheKey.of(category, path);
+            existingPath = existingPathCache.get(key);
+            if (existingPath == null) {// not check yet
+                String tryPath = createCategorySpecialPath(category, path);
+                T res = load(tryPath);
+                if (res == null) {
+                    existingPathCache.put(key, null);
+                    continue;
                 } else {
-                    return load(existingPath);
+                    existingPathCache.put(key, tryPath);
+                    return res;
                 }
+            } else if (existingPath.exists()) {
+                return load(existingPath.get());
+            } else {
+                continue;
             }
         }
         // it also means not found
@@ -62,7 +84,7 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
     }
 
     protected String createCategorySpecialPath(String category, String path) {
-        if (StringUtils.isEmpty(category)) {
+        if (category.isEmpty()) {// category would not be null
             return path;
         } else {
             if (path.startsWith("/")) {
@@ -71,15 +93,6 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
                 return "/" + category + "/" + path;
             }
         }
-    }
-
-    protected Map<String, String> retrievePathMap(String category) {
-        Map<String, String> pathMap = existingPathMap.get(category);
-        if (pathMap == null) {
-            pathMap = new ConcurrentHashMap<>();
-            existingPathMap.put(category, pathMap);
-        }
-        return pathMap;
     }
 
 }
