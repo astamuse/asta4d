@@ -51,6 +51,9 @@ public class ResultTransformerUtil {
             resultTransformer = transformerList.get(i);
             try {
                 after = resultTransformer.transformToContentProvider(before);
+                if (after instanceof Exception) {
+                    logger.error("Error occured on result transform.", (Exception) after);
+                }
             } catch (Exception ex) {
                 logger.error("Error occured on result transform.", ex);
                 after = ex;
