@@ -27,6 +27,8 @@ public class NamedPlaceholderFormatter implements PlaceholderFormatter {
 
     private String suffix = "}";
 
+    private char escape = '\\';
+
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
@@ -35,9 +37,13 @@ public class NamedPlaceholderFormatter implements PlaceholderFormatter {
         this.suffix = suffix;
     }
 
+    public void setEscape(char escape) {
+        this.escape = escape;
+    }
+
     @Override
     public String format(String pattern, Map<String, Object> paramMap) {
-        StrSubstitutor sub = new StrSubstitutor(paramMap, prefix, suffix);
+        StrSubstitutor sub = new StrSubstitutor(paramMap, prefix, suffix, escape);
         return sub.replace(pattern);
     }
 }
