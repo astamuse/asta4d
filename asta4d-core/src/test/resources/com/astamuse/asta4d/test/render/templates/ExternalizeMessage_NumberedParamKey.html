@@ -5,8 +5,11 @@
 <afd:snippet render="ExternalizeMessageTest$TestSnippet:setWeatherreportInfo_NumberedParamKey">
 <afd:msg key="weatherreport1" p0="date" p1="weather">dummy text</afd:msg><br/>
 </afd:snippet>
-<afd:msg key="weatherreport2" p0="date" p1="weather" externalize="p0,p1">dummy text</afd:msg><br/>
-<afd:msg key="weatherreport3" p0="date" p1="weather" locale="ja_JP" externalize="p0,p1">dummy text</afd:msg><br/>
+<afd:msg key="weatherreport2" #p0="date" #p1="weather">dummy text</afd:msg><br/>
+<afd:msg key="weatherreport3" #p0="date" #p1="weather" locale="ja_JP">dummy text</afd:msg><br/>
+
+<afd:msg key="weatherreport2" @p0="weatherreport2.date" @p1="weatherreport2.weather">dummy text</afd:msg><br/>
+<afd:msg key="weatherreport3" @p0="weatherreport3.date" @p1="weatherreport3.weather" locale="ja_JP">dummy text</afd:msg><br/>
 
 <afd:msg key="textUrl">test<a href="https://www.test.com/">link</a>test</afd:msg><br/>
 <afd:msg key="htmlUrl">test<a href="https://www.test.com/">link</a>test</afd:msg><br/>

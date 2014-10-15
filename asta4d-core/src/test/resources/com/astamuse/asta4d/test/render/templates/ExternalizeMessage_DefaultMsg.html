@@ -4,6 +4,7 @@
 <body>
 <afd:msg key="notexist-key" date="2014-01-29" weather="raining"><div date="{date}">weather is: {weather}</div></afd:msg><br/>
 <afd:msg date="2014-01-30" weather="sunny"><div date="{date}">weather is: {weather}</div></afd:msg><br/>
-<afd:msg date="2014-01-31" weather="cloud" externalize="weather"><div date="{date}">weather is: {weather}</div></afd:msg><br/>
+<afd:msg date="2014-01-31" #weather="cloud"><div date="{date}">weather is: {weather}</div></afd:msg><br/>
+<afd:msg date="2014-01-31" @weather="weatherreport2.weather"><div date="{date}">weather is: {weather}</div></afd:msg><br/>
 </body>
 </html>

@@ -17,9 +17,12 @@
 
 package com.astamuse.asta4d.util.i18n;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -33,17 +36,8 @@ import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 
 public class ResourceBundleUtil {
 
-    private static final ResourceBundle.Control DEFAULT_LOCALE_EXCLUDE_CONTROL = new ResourceBundle.Control() {
-        @Override
-        public Locale getFallbackLocale(String paramString, Locale paramLocale) {
-            // for not use default locale
-            return null;
-        }
-    };
-
     public static String getMessage(ParamOrderDependentFormatter formatter, Locale locale, String key, String defaultMsg, Object... params) {
         List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
-        MissingResourceException ex = null;
         String pattern = null;
         for (String resourceName : resourceNames) {
             try {
@@ -51,7 +45,7 @@ public class ResourceBundleUtil {
                 pattern = resourceBundle.getString(key);
 
             } catch (MissingResourceException e) {
-                // ex = e;
+                //
             }
         }
         if (pattern == null) {
@@ -60,10 +54,6 @@ public class ResourceBundleUtil {
 
         if (StringUtils.isEmpty(pattern)) {
             return "";
-        }
-
-        if (params == null || params.length == 0) {
-            return pattern;
         } else {
             return formatter.format(pattern, params);
         }
@@ -73,14 +63,13 @@ public class ResourceBundleUtil {
     public static String getMessage(PlaceholderFormatter formatter, Locale locale, String key, String defaultMsg,
             Map<String, Object> paramMap) {
         List<String> resourceNames = Configuration.getConfiguration().getResourceNames();
-        MissingResourceException ex = null;
         String pattern = null;
         for (String resourceName : resourceNames) {
             try {
                 ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
                 pattern = resourceBundle.getString(key);
             } catch (MissingResourceException e) {
-                ex = e;
+                //
             }
         }
         if (pattern == null) {
@@ -89,14 +78,30 @@ public class ResourceBundleUtil {
 
         if (StringUtils.isEmpty(pattern)) {
             return "";
-        }
-
-        if (paramMap == null || paramMap.isEmpty()) {
-            return pattern;
         } else {
-            return formatter.format(pattern, paramMap);
-        }
 
+            // rewrite map for the @ convention
+            List<Entry<String, Object>> recursiveKeys = new LinkedList<>();
+
+            HashMap<String, Object> rewriteMap = new HashMap<>();
+
+            for (Entry<String, Object> entry : paramMap.entrySet()) {
+                if (entry.getKey().startsWith("@")) {
+                    recursiveKeys.add(entry);
+                } else {
+                    rewriteMap.put(entry.getKey(), entry.getValue());
+                }
+            }
+
+            String k, v;
+            for (Entry<String, Object> entry : recursiveKeys) {
+                k = entry.getKey().substring(1);
+                v = entry.getValue().toString();
+                rewriteMap.put(k, getMessage(formatter, locale, v, "", rewriteMap));
+            }
+
+            return formatter.format(pattern, rewriteMap);
+        }
     }
 
     private static ResourceBundle getResourceBundle(String resourceName, Locale locale) {

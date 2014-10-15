@@ -58,31 +58,4 @@ public abstract class ResourceBundleHelperBase {
         return this.formatter;
     }
 
-    public ExternalParamValue getExternalParamValue(String key, Object value) {
-        return new ExternalParamValue(getFormatter(), locale, key, value);
-    }
-
-    private class ExternalParamValue {
-        private final PlaceholderFormatter formatter;
-        private final Locale locale;
-        private final String key;
-        private final Object value;
-
-        public ExternalParamValue(PlaceholderFormatter formatter, Locale locale, String key, Object value) {
-            this.value = value;
-            this.formatter = formatter;
-            this.locale = locale;
-            this.key = key;
-        }
-
-        /**
-         * This method will be invoked implicitly from ResourceBundleUtil. When it tries to write this instance as a value to certain
-         * parameter, here we retrieve the message again by ResourceBundleUtil.
-         */
-        @Override
-        public String toString() {
-            String msgKey = key + '.' + value;
-            return ResourceBundleUtil.getMessage(formatter, locale, msgKey, value.toString(), null);
-        }
-    }
 }

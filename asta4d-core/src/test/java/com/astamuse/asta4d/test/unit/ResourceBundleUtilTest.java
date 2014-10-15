@@ -47,9 +47,6 @@ public class ResourceBundleUtilTest extends BaseTest {
         setUp("symbol_placeholder_messages");
         ResourceBundleHelper helper = new ResourceBundleHelper();
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
     }
 
     @BeforeClass
@@ -68,9 +65,6 @@ public class ResourceBundleUtilTest extends BaseTest {
         setUp("symbol_placeholder_messages");
         ResourceBundleHelper helper = new ResourceBundleHelper(new SymbolPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
     }
 
     @Test
@@ -78,9 +72,6 @@ public class ResourceBundleUtilTest extends BaseTest {
         setUp("symbol_placeholder_messages");
         ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new SymbolPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "今日の天気は曇りです。");
     }
 
     @Test
@@ -88,9 +79,6 @@ public class ResourceBundleUtilTest extends BaseTest {
         setUp("number_placeholder_messages");
         ResourceBundleHelper helper = new ResourceBundleHelper(new NumberPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
     }
 
     @Test
@@ -98,9 +86,6 @@ public class ResourceBundleUtilTest extends BaseTest {
         setUp("number_placeholder_messages");
         ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new NumberPlaceholderFormatter());
         assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "今日の天気は曇りです。");
     }
 
     @Test
@@ -113,12 +98,6 @@ public class ResourceBundleUtilTest extends BaseTest {
             params.put("weather", "sunny");
             assertEquals(helper.getMessage("weatherreport1", params), "Tomorrow's weather is sunny.");
         }
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", helper.getExternalParamValue("weatherreport2", "date"));
-            params.put("weather", helper.getExternalParamValue("weatherreport2", "weather"));
-            assertEquals(helper.getMessage("weatherreport2", params), "Today's weather is cloudy.");
-        }
     }
 
     @Test
@@ -130,12 +109,6 @@ public class ResourceBundleUtilTest extends BaseTest {
             params.put("date", "明日");
             params.put("weather", "晴れ");
             assertEquals(helper.getMessage("weatherreport1", params), "明日の天気は晴れです。");
-        }
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", helper.getExternalParamValue("weatherreport2", "date"));
-            params.put("weather", helper.getExternalParamValue("weatherreport2", "weather"));
-            assertEquals(helper.getMessage("weatherreport2", params), "今日の天気は曇りです。");
         }
     }
 

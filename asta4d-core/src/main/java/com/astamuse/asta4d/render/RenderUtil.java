@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
@@ -440,7 +441,7 @@ public class RenderUtil {
         for (Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
-            List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            // List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
             String defaultMsg = ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
 
             // TODO cache localed helper instance
@@ -451,7 +452,7 @@ public class RenderUtil {
                 helper = new ParamMapResourceBundleHelper();
             }
 
-            Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);
+            Map<String, Object> paramMap = getMessageParams(attributes, helper, key);
             String text;
             text = helper.getMessageWithDefault(key, defaultMsg, paramMap);
 
@@ -467,8 +468,7 @@ public class RenderUtil {
         }
     }
 
-    private static Map<String, Object> getMessageParams(Attributes attributes, ParamMapResourceBundleHelper helper, String key,
-            List<String> externalizeParamKeys) {
+    private static Map<String, Object> getMessageParams(Attributes attributes, ParamMapResourceBundleHelper helper, String key) {
         List<String> excludeAttrNameList = EXCLUDE_ATTR_NAME_LIST;
         Map<String, Object> paramMap = new HashMap<>();
         for (Attribute attribute : attributes) {
@@ -477,11 +477,16 @@ public class RenderUtil {
                 continue;
             }
             String value = attribute.getValue();
-            if (externalizeParamKeys.contains(attrKey)) {
-                paramMap.put(attrKey, helper.getExternalParamValue(key, value));
-            } else {
-                paramMap.put(attrKey, value);
+
+            if (attrKey.startsWith("#")) {
+                // we treat the # prefixed attribute value as a sub key of current key
+                if (StringUtils.isNotEmpty(key)) {
+                    value = key + "." + value;
+                }
+                // we also rename the attr name as @ prefixed which will be handled by the formatter
+                attrKey = "@" + attrKey.substring(1);
             }
+            paramMap.put(attrKey, value);
         }
         return paramMap;
     }
