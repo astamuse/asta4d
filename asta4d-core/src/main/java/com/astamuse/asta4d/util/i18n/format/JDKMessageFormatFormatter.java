@@ -19,7 +19,7 @@ package com.astamuse.asta4d.util.i18n.format;
 
 import java.text.MessageFormat;
 
-public class NumberPlaceholderFormatter extends ParamOrderDependentFormatter {
+public class JDKMessageFormatFormatter extends ParamOrderDependentFormatter {
 
     @Override
     public String format(String pattern, Object... params) {

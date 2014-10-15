@@ -29,8 +29,8 @@ import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
+import com.astamuse.asta4d.util.i18n.format.JDKMessageFormatFormatter;
 import com.astamuse.asta4d.util.i18n.format.NamedPlaceholderFormatter;
-import com.astamuse.asta4d.util.i18n.format.NumberPlaceholderFormatter;
 import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
 import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
@@ -79,16 +79,16 @@ public class ExternalizeMessageTest extends BaseTest {
     }
 
     @Test
-    public void externalizeMessage_NumberPlaceholder_us() throws Throwable {
+    public void externalizeMessage_JDKMessageFormat_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
-        setUpResourceBundleManager("number_placeholder_messages", new NumberPlaceholderFormatter());
+        setUpResourceBundleManager("number_placeholder_messages", new JDKMessageFormatFormatter());
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
-    public void externalizeMessage_NumberPlaceholder_ja() throws Throwable {
+    public void externalizeMessage_JDKMessageFormat_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
-        setUpResourceBundleManager("number_placeholder_messages", new NumberPlaceholderFormatter());
+        setUpResourceBundleManager("number_placeholder_messages", new JDKMessageFormatFormatter());
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");
     }
 

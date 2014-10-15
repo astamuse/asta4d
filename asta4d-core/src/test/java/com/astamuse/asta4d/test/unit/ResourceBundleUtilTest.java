@@ -37,7 +37,7 @@ import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
 import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
 import com.astamuse.asta4d.util.i18n.format.NamedPlaceholderFormatter;
-import com.astamuse.asta4d.util.i18n.format.NumberPlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.format.JDKMessageFormatFormatter;
 import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
 
 public class ResourceBundleUtilTest extends BaseTest {
@@ -77,14 +77,14 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNumberFormatter() throws Exception {
         setUp("number_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper(new NumberPlaceholderFormatter());
+        ResourceBundleHelper helper = new ResourceBundleHelper(new JDKMessageFormatFormatter());
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
     }
 
     @Test
     public void useNumberFormatterJaJp() throws Exception {
         setUp("number_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new NumberPlaceholderFormatter());
+        ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new JDKMessageFormatFormatter());
         assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
     }
 

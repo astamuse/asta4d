@@ -21,5 +21,5 @@ import java.util.Map;
 
 public interface PlaceholderFormatter {
 
-    String format(String pattern, Map<String, Object> paramMap);
+    public String format(String pattern, Map<String, Object> paramMap);
 }
