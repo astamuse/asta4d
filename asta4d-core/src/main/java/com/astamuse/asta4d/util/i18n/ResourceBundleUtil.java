@@ -97,7 +97,7 @@ public class ResourceBundleUtil {
             for (Entry<String, Object> entry : recursiveKeys) {
                 k = entry.getKey().substring(1);
                 v = entry.getValue().toString();
-                rewriteMap.put(k, getMessage(formatter, locale, v, "", rewriteMap));
+                rewriteMap.put(k, getMessage(formatter, locale, v, v, rewriteMap));
             }
 
             return formatter.format(pattern, rewriteMap);
