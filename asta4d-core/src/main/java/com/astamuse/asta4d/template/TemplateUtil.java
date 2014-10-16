@@ -31,14 +31,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.extnode.ExtNode;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.extnode.GroupNode;
-import com.astamuse.asta4d.extnode.SnippetNode;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 public class TemplateUtil {
+
+    private static class SnippetNode extends ExtNode {
+
+        /**
+         * Constructor
+         * 
+         * @param renderClass
+         *            a snippet class
+         */
+        public SnippetNode(Class<?> renderClass) {
+            this(renderClass.getName());
+        }
+
+        /**
+         * 
+         * @param renderer
+         *            a plain text renderer declaration
+         */
+        public SnippetNode(String renderer) {
+            super(ExtNodeConstants.SNIPPET_NODE_TAG);
+            this.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
+            this.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER, renderer);
+        }
+
+    }
 
     private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
