@@ -53,11 +53,7 @@ public class LocalizeUtil {
             return null;
         }
         try {
-            Locale locale = LocaleUtils.toLocale(localeStr);
-            if (LocaleUtils.isAvailableLocale(locale)) {
-                return locale;
-            }
-            return null;
+            return LocaleUtils.toLocale(localeStr);
         } catch (IllegalArgumentException e) {
             return null;
         }

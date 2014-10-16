@@ -15,13 +15,13 @@
  * 
  */
 
-package com.astamuse.asta4d.util.i18n.format;
+package com.astamuse.asta4d.util.i18n.formatter;
 
 import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
-public class NamedPlaceholderFormatter implements PlaceholderFormatter {
+public class ApacheStrSubstitutorFormatter implements MappedValueFormatter {
 
     private String prefix = "{";
 

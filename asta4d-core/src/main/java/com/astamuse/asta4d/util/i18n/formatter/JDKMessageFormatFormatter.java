@@ -15,11 +15,11 @@
  * 
  */
 
-package com.astamuse.asta4d.util.i18n.format;
+package com.astamuse.asta4d.util.i18n.formatter;
 
 import java.text.MessageFormat;
 
-public class JDKMessageFormatFormatter extends ParamOrderDependentFormatter {
+public class JDKMessageFormatFormatter implements OrderedValueFormatter {
 
     @Override
     public String format(String pattern, Object... params) {

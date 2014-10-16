@@ -28,8 +28,7 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.convertor.DataValueConvertor;
 import com.astamuse.asta4d.data.convertor.UnsupportedValueException;
-import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
-import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
+import com.astamuse.asta4d.util.i18n.I18nMessageHelper;
 
 /**
  * A default implementation of {@link ContextDataFinder}. It will search data in a given order (if scope is not specified) and try to apply
@@ -113,10 +112,9 @@ public class DefaultContextDataFinder implements ContextDataFinder {
         if (Context.class.isAssignableFrom(targetType)) {
             return new ContextDataHolder<>(Context.class.getName(), ByTypeScope, context);
         }
-        if (targetType.equals(ResourceBundleHelper.class)) {
-            return new ContextDataHolder<>(ResourceBundleHelper.class.getName(), ByTypeScope, new ResourceBundleHelper());
-        } else if (targetType.equals(ParamMapResourceBundleHelper.class)) {
-            return new ContextDataHolder<>(ParamMapResourceBundleHelper.class.getName(), ByTypeScope, new ParamMapResourceBundleHelper());
+        if (I18nMessageHelper.class.isAssignableFrom(targetType)) {
+            I18nMessageHelper helper = Configuration.getConfiguration().getI18nMessageHelper();
+            return new ContextDataHolder<>(helper.getClass().getName(), ByTypeScope, helper);
         } else {
             return null;
         }

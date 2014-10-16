@@ -15,18 +15,11 @@
  * 
  */
 
-package com.astamuse.asta4d.util.i18n.format;
+package com.astamuse.asta4d.util.i18n.formatter;
 
-import java.util.MissingFormatArgumentException;
+import java.util.Map;
 
-public class SymbolPlaceholderFormatter extends ParamOrderDependentFormatter {
+public interface MappedValueFormatter {
 
-    @Override
-    public String format(String pattern, Object... params) {
-        try {
-            return String.format(pattern, params);
-        } catch (MissingFormatArgumentException e) {
-            return pattern;
-        }
-    }
+    public String format(String pattern, Map<String, Object> paramMap);
 }

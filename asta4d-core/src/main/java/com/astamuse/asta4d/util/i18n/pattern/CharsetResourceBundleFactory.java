@@ -1,4 +1,4 @@
-package com.astamuse.asta4d.util.i18n;
+package com.astamuse.asta4d.util.i18n.pattern;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,14 +15,30 @@ import java.util.ResourceBundle;
 
 public class CharsetResourceBundleFactory implements ResourceBundleFactory {
 
-    private String charset = "UTF-8";
+    private Charset charset;
 
-    public String getCharset() {
+    public CharsetResourceBundleFactory() {
+        this("UTF-8");
+    }
+
+    public CharsetResourceBundleFactory(String charset) {
+        this(Charset.forName(charset));
+    }
+
+    public CharsetResourceBundleFactory(Charset charset) {
+        this.charset = charset;
+    }
+
+    public Charset getCharset() {
         return charset;
     }
 
-    public void setCharset(String charset) {
+    public void setCharset(Charset charset) {
         this.charset = charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = Charset.forName(charset);
     }
 
     protected ResourceBundle.Control createControl() {
@@ -79,7 +95,7 @@ public class CharsetResourceBundleFactory implements ResourceBundleFactory {
                     if (stream != null) {
                         try {
                             // Only this line is changed to make it to read properties files as specified charset.
-                            bundle = new PropertyResourceBundle(new InputStreamReader(stream, Charset.forName(charset)));
+                            bundle = new PropertyResourceBundle(new InputStreamReader(stream, charset));
                         } finally {
                             stream.close();
                         }

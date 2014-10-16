@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -53,8 +54,8 @@ import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
+import com.astamuse.asta4d.util.i18n.I18nMessageHelperTypeAssistant;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
-import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 
 /**
  * 
@@ -435,26 +436,39 @@ public class RenderUtil {
 
     }
 
+    // public final static void
+
     public final static void applyMessages(Element target) {
         String selector = SelectorUtil.tag(ExtNodeConstants.MSG_NODE_TAG);
         List<Element> msgElems = target.select(selector);
-        for (Element msgElem : msgElems) {
+        for (final Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
             // List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
-            String defaultMsg = ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
+            Object defaultMsg = new Object() {
+                @Override
+                public String toString() {
+                    return ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
+                }
+            };
+            Locale locale = LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE));
 
-            // TODO cache localed helper instance
-            ParamMapResourceBundleHelper helper = null;
-            if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)) {
-                helper = new ParamMapResourceBundleHelper(LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)));
-            } else {
-                helper = new ParamMapResourceBundleHelper();
-            }
-
-            Map<String, Object> paramMap = getMessageParams(attributes, helper, key);
+            final Map<String, Object> paramMap = getMessageParams(attributes, locale, key);
             String text;
-            text = helper.getMessageWithDefault(key, defaultMsg, paramMap);
+            switch (I18nMessageHelperTypeAssistant.configuredHelperType()) {
+            case Mapped:
+                text = I18nMessageHelperTypeAssistant.getConfiguredMappedHelper().getMessageWithDefault(locale, key, defaultMsg, paramMap);
+                break;
+            case Ordered:
+            default:
+                // convert map to array
+                List<Object> numberedParamNameList = new ArrayList<>();
+                for (int index = 0; paramMap.containsKey(ExtNodeConstants.MSG_NODE_ATTR_PARAM_PREFIX + index); index++) {
+                    numberedParamNameList.add(paramMap.get(ExtNodeConstants.MSG_NODE_ATTR_PARAM_PREFIX + index));
+                }
+                text = I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper().getMessageWithDefault(locale, key, defaultMsg,
+                        numberedParamNameList.toArray());
+            }
 
             Node node;
             if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {
@@ -468,9 +482,9 @@ public class RenderUtil {
         }
     }
 
-    private static Map<String, Object> getMessageParams(Attributes attributes, ParamMapResourceBundleHelper helper, String key) {
+    private static Map<String, Object> getMessageParams(final Attributes attributes, final Locale locale, final String key) {
         List<String> excludeAttrNameList = EXCLUDE_ATTR_NAME_LIST;
-        Map<String, Object> paramMap = new HashMap<>();
+        final Map<String, Object> paramMap = new HashMap<>();
         for (Attribute attribute : attributes) {
             String attrKey = attribute.getKey();
             if (excludeAttrNameList.contains(attrKey)) {
@@ -478,15 +492,40 @@ public class RenderUtil {
             }
             String value = attribute.getValue();
 
-            if (attrKey.startsWith("#")) {
+            final String recursiveKey;
+
+            if (attrKey.startsWith("@")) {
+                attrKey = attrKey.substring(1);
+                recursiveKey = value;
+            } else if (attrKey.startsWith("#")) {
+                attrKey = attrKey.substring(1);
                 // we treat the # prefixed attribute value as a sub key of current key
-                if (StringUtils.isNotEmpty(key)) {
-                    value = key + "." + value;
+                if (StringUtils.isEmpty(key)) {
+                    recursiveKey = value;
+                } else {
+                    recursiveKey = key + "." + value;
                 }
-                // we also rename the attr name as @ prefixed which will be handled by the formatter
-                attrKey = "@" + attrKey.substring(1);
+            } else {
+                recursiveKey = null;
             }
-            paramMap.put(attrKey, value);
+
+            if (recursiveKey == null) {
+                paramMap.put(attrKey, value);
+            } else {
+                paramMap.put(attrKey, new Object() {
+                    @Override
+                    public String toString() {
+                        switch (I18nMessageHelperTypeAssistant.configuredHelperType()) {
+                        case Mapped:
+                            // for the mapped helper, we can pass the parameter map recursively
+                            return I18nMessageHelperTypeAssistant.getConfiguredMappedHelper().getMessage(locale, recursiveKey, paramMap);
+                        case Ordered:
+                        default:
+                            return I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper().getMessage(locale, recursiveKey);
+                        }
+                    }
+                });
+            }
         }
         return paramMap;
     }
