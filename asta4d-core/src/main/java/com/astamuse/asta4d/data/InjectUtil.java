@@ -285,9 +285,12 @@ public class InjectUtil {
      * 
      * There are only limited scopes can be marked as injectable. See {@link Configuration#setReverseInjectableScopes(List)}.
      * 
+     * NOT SUPPORTED ANY MORE!!!
+     * 
      * @param instance
      * @throws DataOperationException
      */
+    @Deprecated
     public final static void setContextDataFromInstance(Object instance) throws DataOperationException {
         try {
             Context context = Context.getCurrentThreadContext();
