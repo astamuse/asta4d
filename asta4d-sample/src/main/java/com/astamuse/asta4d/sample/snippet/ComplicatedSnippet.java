@@ -31,8 +31,6 @@ import org.jsoup.parser.Tag;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
-import com.astamuse.asta4d.extnode.EmbedNode;
-import com.astamuse.asta4d.extnode.SnippetNode;
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
@@ -89,18 +87,7 @@ public class ComplicatedSnippet {
     }
 
     // @ShowCode:showPassvariablesEnd
-    // @ShowCode:showDynamicsnippetStart
-    public Renderer createDynamicSnippet() {
-        Renderer render = new GoThroughRenderer();
-        Element snippet = new SnippetNode("SimpleSnippet");
-        snippet.attr("name", "Dynamic Snippet");
-        render.add("div#snippet", snippet);
-        Element embed = new EmbedNode("/templates/embed/embedded.html");
-        render.add("div#embed", embed);
-        return render;
-    }
 
-    // @ShowCode:showDynamicsnippetEnd
     // @ShowCode:showContextdataStart
     public Renderer changeName(@ContextData(name = "var") String changedName) {
         return Renderer.create("dd", changedName);
