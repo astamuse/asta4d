@@ -23,8 +23,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.InterceptorUtil;
+import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.snippet.extract.SnippetExtractor;
 import com.astamuse.asta4d.snippet.interceptor.ContextDataAutowireInterceptor;
@@ -52,12 +54,14 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         SnippetExcecutionInfo exeInfo = resolver.resloveSnippet(declaration);
 
         SnippetExecutionHolder execution = new SnippetExecutionHolder(declaration, exeInfo.getInstance(), exeInfo.getMethod(), null, null);
+
         Executor<SnippetExecutionHolder> executor = new Executor<SnippetExecutionHolder>() {
             @Override
             public void execute(SnippetExecutionHolder executionHolder) throws Exception {
                 Object instance = executionHolder.getInstance();
                 Method method = executionHolder.getMethod();
                 Object[] params = executionHolder.getParams();
+
                 if (params == null) {
                     executionHolder.setExecuteResult((Renderer) method.invoke(instance));
                 } else {
@@ -65,7 +69,9 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
                 }
             }
         };
+        Context context = Context.getCurrentThreadContext();
         try {
+            context.setData(RenderUtil.TRACE_VAR_SNIPPET, execution.getInstance());
             InterceptorUtil.executeWithInterceptors(execution, snippetInterceptorList, executor);
             return execution.getExecuteResult();
         } catch (SnippetInvokeException ex) {
@@ -75,6 +81,8 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
 
             String msg = "execute with params:" + (params == null ? null : Arrays.asList(params));
             throw new SnippetInvokeException(declaration, msg, ex);
+        } finally {
+            context.setData(RenderUtil.TRACE_VAR_SNIPPET, null);
         }
 
     }

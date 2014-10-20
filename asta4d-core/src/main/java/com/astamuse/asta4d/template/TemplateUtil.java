@@ -43,16 +43,6 @@ public class TemplateUtil {
     private static class SnippetNode extends ExtNode {
 
         /**
-         * Constructor
-         * 
-         * @param renderClass
-         *            a snippet class
-         */
-        public SnippetNode(Class<?> renderClass) {
-            this(renderClass.getName());
-        }
-
-        /**
          * 
          * @param renderer
          *            a plain text renderer declaration
@@ -67,11 +57,12 @@ public class TemplateUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
-    public final static void regulateElement(Document doc) throws TemplateException, TemplateNotFoundException {
+    public final static void regulateElement(String path, Document doc) throws TemplateException, TemplateNotFoundException {
         // disabled. see {@link #loadStaticEmebed}
         // load static embed at first
         // loadStaticEmebed(doc);
-        regulateSnippets(doc);
+
+        regulateSnippets(path, doc);
         regulateEmbed(doc);
     }
 
@@ -79,7 +70,7 @@ public class TemplateUtil {
         return "sn-" + IdGenerator.createId();
     }
 
-    private final static void regulateSnippets(Document doc) {
+    private final static void regulateSnippets(String path, Document doc) {
 
         // find nodes emebed with snippet attribute
         String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
@@ -118,6 +109,10 @@ public class TemplateUtil {
         List<Element> snippetNodes = doc.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
         String status;
         for (Element sn : snippetNodes) {
+            // record template path
+            if (!sn.hasAttr(ExtNodeConstants.ATTR_TEMPLATE_PATH)) {
+                sn.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH, path);
+            }
             // regulate status
             if (sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS)) {
                 status = sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS);
@@ -183,6 +178,7 @@ public class TemplateUtil {
      * @throws TemplateException
      * @throws TemplateNotFoundException
      */
+    @SuppressWarnings("unused")
     @Deprecated
     private final static void loadStaticEmebed(Document doc) throws TemplateException, TemplateNotFoundException {
 
@@ -281,8 +277,6 @@ public class TemplateUtil {
         // retrieve all the blocks that misincluded into head
         Element head = embedDoc.head();
         Elements headChildren = head.children();
-        List<Node> tempList = new ArrayList<>();
-        String tagName;
         for (Element child : headChildren) {
             if (StringUtil.in(child.tagName(), "script", "link", ExtNodeConstants.BLOCK_NODE_TAG)) {
                 child.remove();

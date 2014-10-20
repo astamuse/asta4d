@@ -31,7 +31,6 @@ import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 
-//TODO internationalization
 public abstract class TemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo> {
 
     private final static MemorySafeResourceCache<String, Template> defaultTemplateCache = new MemorySafeResourceCache<String, Template>();
@@ -98,7 +97,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
 
             try {
                 Template t;
-                t = new Template(info.getPath(), input);
+                t = new Template(info.getActualPath(), input);
                 templateCache.put(cacheKey, t);
                 return t;
             } finally {
@@ -106,7 +105,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
                 try {
                     input.close();
                 } catch (Exception ex) {
-                    logger.error("Error occured when close input stream of " + info.getPath(), ex);
+                    logger.error("Error occured when close input stream of " + info.getActualPath(), ex);
                 }
             }
 
@@ -126,17 +125,17 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
 
     public static class TemplateInfo {
 
-        private final String path;
+        private final String actualPath;
 
         private final InputStream input;
 
         private TemplateInfo(String path, InputStream input) {
-            this.path = path;
+            this.actualPath = path;
             this.input = input;
         }
 
-        private String getPath() {
-            return path;
+        private String getActualPath() {
+            return actualPath;
         }
 
         private InputStream getInput() {

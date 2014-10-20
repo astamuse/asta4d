@@ -223,4 +223,28 @@ public class Context {
         }
     }
 
+    public void with(String varName, Object varValue, Runnable runner) {
+        Object orinialData = null;
+        try {
+            orinialData = this.getData(varName);
+            this.setData(varName, varValue);
+            runner.run();
+        } finally {
+            // revive the scene
+            this.setData(varName, orinialData);
+        }
+    }
+
+    public <T> T with(String varName, Object varValue, Callable<T> caller) throws Exception {
+        Object orinialData = null;
+        try {
+            orinialData = this.getData(varName);
+            this.setData(varName, varValue);
+            return caller.call();
+        } finally {
+            // revive the scene
+            this.setData(varName, orinialData);
+        }
+    }
+
 }

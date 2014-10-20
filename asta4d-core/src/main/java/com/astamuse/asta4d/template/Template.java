@@ -41,7 +41,8 @@ public class Template {
     /**
      * 
      * @param path
-     *            not being used, just for debug purpose
+     *            the actual template path
+     * 
      * @param input
      * @throws IOException
      */
@@ -64,7 +65,7 @@ public class Template {
     private void initDocument() throws TemplateException, TemplateNotFoundException {
         clearCommentNode();
         processExtension();
-        TemplateUtil.regulateElement(doc);
+        TemplateUtil.regulateElement(path, doc);
     }
 
     private void clearCommentNode() throws TemplateException {

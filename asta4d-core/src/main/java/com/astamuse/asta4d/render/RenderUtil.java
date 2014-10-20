@@ -18,7 +18,6 @@
 package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,6 +67,10 @@ public class RenderUtil {
 
     public static final String PSEUDO_ROOT_SELECTOR = ":root";
 
+    public static final String TRACE_VAR_TEMPLATE_PATH = "TRACE_VAR_TEMPLATE_PATH#" + RenderUtil.class;
+
+    public static final String TRACE_VAR_SNIPPET = "TRACE_VAR_SNIPPET#" + RenderUtil.class;
+
     private final static Logger logger = LoggerFactory.getLogger(RenderUtil.class);
 
     private final static List<String> EXCLUDE_ATTR_NAME_LIST = new ArrayList<>();
@@ -75,7 +78,7 @@ public class RenderUtil {
     static {
         EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_KEY);
         EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_LOCALE);
-        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE);
+        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.ATTR_TEMPLATE_PATH);
     }
 
     /**
@@ -121,6 +124,7 @@ public class RenderUtil {
         final SnippetInvoker invoker = conf.getSnippetInvoker();
 
         String refId;
+        String currentTemplatePath;
         Element renderTarget;
         for (Element element : snippetList) {
             if (!conf.isSkipSnippetExecution()) {
@@ -140,6 +144,11 @@ public class RenderUtil {
                 context.setCurrentRenderingElement(renderTarget);
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
                 refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
+                currentTemplatePath = element.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH);
+
+                context.setCurrentRenderingElement(renderTarget);
+                context.setData(TRACE_VAR_TEMPLATE_PATH, currentTemplatePath);
+
                 try {
                     if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL)) {
                         ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
@@ -163,6 +172,8 @@ public class RenderUtil {
                             renderDeclaration + "]:" + e.getMessage(), e);
                     throw se;
                 }
+
+                context.setData(TRACE_VAR_TEMPLATE_PATH, null);
                 context.setCurrentRenderingElement(null);
             } else {// if skip snippet
                 element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
@@ -188,7 +199,7 @@ public class RenderUtil {
         }
 
         if ((readySnippetCount + embedNodeListCount) > 0) {
-            TemplateUtil.regulateElement(doc);
+            TemplateUtil.regulateElement(null, doc);
             applySnippets(doc);
         } else {
             ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
@@ -439,8 +450,8 @@ public class RenderUtil {
     // public final static void
 
     public final static void applyMessages(Element target) {
-        String selector = SelectorUtil.tag(ExtNodeConstants.MSG_NODE_TAG);
-        List<Element> msgElems = target.select(selector);
+        Context context = Context.getCurrentThreadContext();
+        List<Element> msgElems = target.select(ExtNodeConstants.MSG_NODE_TAG_SELECTOR);
         for (final Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
@@ -452,6 +463,9 @@ public class RenderUtil {
                 }
             };
             Locale locale = LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE));
+            String currentTemplatePath = attributes.get(ExtNodeConstants.ATTR_TEMPLATE_PATH);
+
+            context.setData(TRACE_VAR_TEMPLATE_PATH, currentTemplatePath);
 
             final Map<String, Object> paramMap = getMessageParams(attributes, locale, key);
             String text;
@@ -479,6 +493,8 @@ public class RenderUtil {
                 node = ElementUtil.text(text);
             }
             msgElem.replaceWith(node);
+
+            context.setData(TRACE_VAR_TEMPLATE_PATH, null);
         }
     }
 
@@ -530,12 +546,4 @@ public class RenderUtil {
         return paramMap;
     }
 
-    private static List<String> getExternalizeParamKeys(Attributes attributes) {
-        if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE)) {
-            String externalizeParamKeys = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE);
-            return Arrays.asList(externalizeParamKeys.split(","));
-        } else {
-            return Collections.emptyList();
-        }
-    }
 }
