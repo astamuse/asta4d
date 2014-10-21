@@ -18,17 +18,20 @@
 package com.astamuse.asta4d.test.render;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.render.ElementNotFoundHandler;
+import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.collection.RowRenderer;
 
 public class AdvancedRenderingTest extends BaseTest {
 
@@ -78,6 +81,28 @@ public class AdvancedRenderingTest extends BaseTest {
             render.add("#innerList > li", outerList);
             render.add("#inner", "-outerList", (Object) null);
             return render;
+        }
+
+        public Renderer pseudoRootRenderingWithNestedSnippet_outer() {
+            Renderer renderer = Renderer.create("#inner", Arrays.asList(1, 2, 3), new RowRenderer<Integer>() {
+
+                @Override
+                public Renderer convert(int rowIndex, Integer row) {
+                    return Renderer.create(":root", "value", row);
+                }
+            });
+            return renderer;
+        }
+
+        public Renderer pseudoRootRenderingWithNestedSnippet_inner(String value) {
+            Renderer renderer = Renderer.create("#v", value);
+            renderer.add(":root", new ElementSetter() {
+                @Override
+                public void set(Element elem) {
+                    elem.appendText("test-append");
+                }
+            });
+            return renderer;
         }
 
         public Renderer pseudoRootRenderingOnFackedGroup() {
