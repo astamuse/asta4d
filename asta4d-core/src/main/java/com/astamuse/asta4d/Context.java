@@ -30,6 +30,7 @@ import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.snippet.interceptor.SnippetInitializeInterceptor;
 import com.astamuse.asta4d.util.DelegatedContextMap;
 
 public class Context {
@@ -184,6 +185,7 @@ public class Context {
         clear();
         ContextBindData.initConext(this);
         InjectUtil.initContext(this);
+        SnippetInitializeInterceptor.initContext(this);
     }
 
     public void clear() {

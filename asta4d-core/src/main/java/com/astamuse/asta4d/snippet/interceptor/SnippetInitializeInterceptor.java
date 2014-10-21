@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.snippet.InitializableSnippet;
 import com.astamuse.asta4d.snippet.SnippetExecutionHolder;
@@ -35,15 +36,17 @@ public class SnippetInitializeInterceptor implements SnippetInterceptor {
 
     private final static String InstanceListCacheKey = SnippetInitializeInterceptor.class + "##InstanceListCacheKey##";
 
+    public static final void initContext(Context context) {
+        context.setData(InstanceListCacheKey, new InitializedListHolder());
+    }
+
     @Override
     public boolean beforeProcess(SnippetExecutionHolder execution) throws Exception {
 
         Context context = Context.getCurrentThreadContext();
+
+        // the list would not be null
         InitializedListHolder listHolder = context.getData(InstanceListCacheKey);
-        if (listHolder == null) {
-            listHolder = new InitializedListHolder();
-            context.setData(InstanceListCacheKey, listHolder);
-        }
 
         Object target = execution.getInstance();
         boolean inialized = false;
@@ -56,20 +59,36 @@ public class SnippetInitializeInterceptor implements SnippetInterceptor {
                     break;
                 }
             }
+            if (!inialized) {
+                // retrieve write lock
+                listHolder.lock.readLock().unlock();
+                listHolder.lock.writeLock().lock();
+                try {
+                    // check again
+                    for (Object initializedSnippet : listHolder.snippetList) {
+                        if (initializedSnippet == target) {
+                            inialized = true;
+                            break;
+                        }
+                    }
+                    // do the initialization
+                    if (!inialized) {
+                        InjectUtil.injectToInstance(target);
+                        if (target instanceof InitializableSnippet) {
+                            ((InitializableSnippet) target).init();
+                        }
+
+                        listHolder.snippetList.add(target);
+
+                    }
+                    // downgrade to read lock since we have updated the list
+                    listHolder.lock.readLock().lock();
+                } finally {
+                    listHolder.lock.writeLock().unlock();
+                }
+            }
         } finally {
             listHolder.lock.readLock().unlock();
-        }
-
-        if (!inialized) {
-            if (target instanceof InitializableSnippet) {
-                ((InitializableSnippet) target).init();
-            }
-            listHolder.lock.writeLock().lock();
-            try {
-                listHolder.snippetList.add(target);
-            } finally {
-                listHolder.lock.writeLock().unlock();
-            }
         }
 
         return true;
