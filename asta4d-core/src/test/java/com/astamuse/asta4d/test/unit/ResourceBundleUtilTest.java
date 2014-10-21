@@ -87,6 +87,17 @@ public class ResourceBundleUtilTest extends BaseTest {
     }
 
     @Test
+    public void useNamedFormatterWithSplittedMessagePattern() throws Exception {
+
+        MappedValueI18nMessageHelper helper = new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        setUp(helper, "named_placeholder_messages");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("date", "Tomorrow");
+        params.put("weather", "sunny");
+        assertEquals(helper.getMessage("weatherreport-split", params), "Tomorrow's weather is sunny.");
+    }
+
+    @Test
     public void useNamedFormatterJaJp() throws Exception {
 
         MappedValueI18nMessageHelper helper = new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter());

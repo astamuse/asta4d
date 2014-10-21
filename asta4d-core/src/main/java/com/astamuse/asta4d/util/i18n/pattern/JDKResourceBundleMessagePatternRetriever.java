@@ -9,6 +9,13 @@ import java.util.ResourceBundle;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 
+/**
+ * We allow row splitted messages. For a given key, if there is no corresponding message, we will try to search keys as "key#1", "key#2"...
+ * then combine them as a single message.
+ * 
+ * @author e-ryu
+ * 
+ */
 public class JDKResourceBundleMessagePatternRetriever implements MessagePatternRetriever {
 
     private ResourceBundleFactory resourceBundleFactory = new CharsetResourceBundleFactory();
@@ -33,7 +40,7 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
         for (String resourceName : resourceNames) {
             try {
                 ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
-                pattern = resourceBundle.getString(key);
+                pattern = retrieveResourceFromBundle(resourceBundle, key);
             } catch (MissingResourceException e) {
                 //
             }
@@ -55,5 +62,39 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
             }
         }
         return resourceBundleFactory.retrieveResourceBundle(resourceName, locale);
+    }
+
+    /**
+     * In this method, we allow row splitted message. For a given key, if there is no corresponding message, we will try to search keys as
+     * "key#1", "key#2"... then combine them as a single message.
+     * 
+     * @param bundle
+     * @param key
+     * @return
+     */
+    protected String retrieveResourceFromBundle(ResourceBundle bundle, String key) {
+        String res = null;
+        try {
+            return bundle.getString(key);
+        } catch (MissingResourceException e) {
+            // check if there is a splitted message
+            try {
+                res = bundle.getString(key + "#1");
+            } catch (MissingResourceException ex) {
+                //
+                return null;
+            }
+
+            StringBuilder sb = new StringBuilder(res.length() * 3);
+            sb.append(res);
+            try {
+                for (int row = 2;/* loop for ever */; row++) {
+                    sb.append(bundle.getString(key + "#" + row));
+                }
+            } catch (MissingResourceException ex) {
+                return sb.toString();
+            }
+
+        }
     }
 }

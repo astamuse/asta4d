@@ -25,14 +25,14 @@ public class ContextTraceAwaredMessagePatternRetriever extends JDKResourceBundle
         String currentTemplate = context.getData(RenderUtil.TRACE_VAR_TEMPLATE_PATH);
         if (currentTemplate != null) {
             ResourceBundle rb = getResourceBundleForTemplate(convertBaseName(currentTemplate), locale);
-            return rb.getString(key);
+            return retrieveResourceFromBundle(rb, key);
         }
 
         Object handler = context.getData(DefaultRequestHandlerInvoker.TRACE_VAR_CURRENT_HANDLER);
         if (handler != null) {
             if (handler instanceof ClassLocationBindedMessageResource) {
                 ResourceBundle rb = getResourceBundleForClass(handler.getClass().getName(), locale);
-                return rb.getString(key);
+                return retrieveResourceFromBundle(rb, key);
             }
         }
 
