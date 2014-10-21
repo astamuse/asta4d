@@ -42,7 +42,11 @@ public class ContextTraceAwaredMessagePatternRetriever extends JDKResourceBundle
 
     protected String convertBaseName(String path) {
         int dotIdx = path.lastIndexOf('.');
-        return path.substring(0, dotIdx);
+        if (dotIdx >= 0) {
+            return path.substring(0, dotIdx);
+        } else {
+            return path;
+        }
     }
 
     protected ResourceBundle getResourceBundleForTemplate(String baseName, Locale locale) {
