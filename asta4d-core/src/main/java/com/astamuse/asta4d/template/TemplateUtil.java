@@ -223,7 +223,7 @@ public class TemplateUtil {
         }
     }
 
-    private final static void resetSnippetRefs(Element elem) {
+    public final static void resetSnippetRefs(Element elem) {
         String snippetRefSelector = SelectorUtil.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
         List<Element> snippets = new ArrayList<>(elem.select(snippetRefSelector));
         String oldRef, newRef;

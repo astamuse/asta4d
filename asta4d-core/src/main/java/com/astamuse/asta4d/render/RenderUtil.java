@@ -141,8 +141,14 @@ public class RenderUtil {
                 } else {
                     renderTarget = element;
                 }
+
+                // we have to reset the ref of current snippet at every time to make sure the ref is always unique(duplicated snippet ref
+                // could be created by list rendering)
+                TemplateUtil.resetSnippetRefs(element);
+
                 context.setCurrentRenderingElement(renderTarget);
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+
                 refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
                 currentTemplatePath = element.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH);
 
@@ -261,7 +267,7 @@ public class RenderUtil {
         } else {
             String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF,
                     blockingId);
-            Elements parentSnippetSearch = doc.select(parentSelector);
+            Elements parentSnippetSearch = elem.parents().select(parentSelector);
             if (parentSnippetSearch.isEmpty()) {
                 isBlocked = false;
             } else {
