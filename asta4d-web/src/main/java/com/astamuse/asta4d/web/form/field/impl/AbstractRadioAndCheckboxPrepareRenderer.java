@@ -16,7 +16,6 @@ import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
@@ -165,7 +164,7 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                     wrapper.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE, ExtNodeConstants.GROUP_NODE_ATTR_TYPE_USERDEFINE);
 
                     // put the input element under the wrapper node
-                    wrapper.appendChild(ElementUtil.safeClone(elem));
+                    wrapper.appendChild(elem.clone());
 
                     String wrapperId = IdGenerator.createId();
                     wrapper.attr("id", wrapperId);
@@ -201,7 +200,7 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                     renderer.add(new Renderer(wrapperIdHolder.labelSelector, new ElementTransformer(null) {
                         @Override
                         public Element invoke(Element elem) {
-                            wrapperIdHolder.relocatingLabels.add(ElementUtil.safeClone(elem));
+                            wrapperIdHolder.relocatingLabels.add(elem.clone());
                             return new GroupNode();
                         }
 

@@ -26,7 +26,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 
 import com.astamuse.asta4d.Context;
@@ -34,7 +33,6 @@ import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 
 public class ComplicatedSnippet {
@@ -116,11 +114,9 @@ public class ComplicatedSnippet {
     // @ShowCode:showRenderertypesStart
     private Element createElement() {
         Element ul = new Element(Tag.valueOf("ul"), "");
-        List<Node> lis = new ArrayList<>();
-        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(1)"));
-        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(2)"));
-        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(3)"));
-        ElementUtil.appendNodes(ul, lis);
+        ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(1)"));
+        ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(2)"));
+        ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(3)"));
         return ul;
     }
     // @ShowCode:showRenderertypesEnd

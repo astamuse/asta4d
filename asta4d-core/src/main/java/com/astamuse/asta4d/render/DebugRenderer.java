@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.render.transformer.Transformer;
-import com.astamuse.asta4d.util.ElementUtil;
 
 /**
  * When this renderer is applied, the current rendering element (see {@link Context#setCurrentRenderingElement(Element)}) will be output by
@@ -49,7 +48,7 @@ public class DebugRenderer extends Renderer {
             logger.debug(logStr);
 
             // we have to clone a new element, which is how transformer works.
-            Element newElem = ElementUtil.safeClone(elem);
+            Element newElem = elem.clone();
             return newElem;
         }
 

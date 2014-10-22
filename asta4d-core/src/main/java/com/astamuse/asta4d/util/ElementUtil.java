@@ -17,12 +17,10 @@
 
 package com.astamuse.asta4d.util;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -67,61 +65,6 @@ public class ElementUtil {
             groupNode.appendChild(node);
         }
         return groupNode;
-    }
-
-    /**
-     * there is a bug in jsoup, so we implement a safe empty by ourselves. https://github.com/jhy/jsoup/issues/239
-     * 
-     * @param node
-     */
-    public final static void safeEmpty(Node node) {
-        List<Node> children = new ArrayList<>(node.childNodes());
-        for (Node child : children) {
-            child.remove();
-        }
-    }
-
-    /**
-     * there is a bug in jsoup, so we implement a safe empty by ourselves. https://github.com/jhy/jsoup/issues/278
-     * 
-     * @param node
-     */
-    public final static Element safeClone(Element elem) {
-        Element newElem = elem.clone();
-        try {
-            resetClassNames(newElem);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        return newElem;
-    }
-
-    private final static Field FieldClassNames;
-    static {
-        try {
-            FieldClassNames = Element.class.getDeclaredField("classNames");
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private final static void resetClassNames(Element elem) throws IllegalAccessException {
-        if (elem == null) {
-            return;
-        }
-        FieldUtils.writeField(FieldClassNames, elem, null, true);
-
-        // elem.classNames(new ProxiedClassNameSet(elem));
-        Elements children = elem.children();
-        for (Element child : children) {
-            resetClassNames(child);
-        }
-    }
-
-    public final static void appendNodes(Element parent, List<Node> children) {
-        for (Node node : children) {
-            parent.appendChild(node);
-        }
     }
 
     public final static void removeNodesBySelector(Element target, String selector, boolean pullupChildren) {

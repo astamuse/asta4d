@@ -14,7 +14,6 @@ import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
@@ -104,7 +103,7 @@ public abstract class AbstractSelectRenderer extends SimpleFormFieldWithOptionVa
             public Element invoke(Element elem) {
                 GroupNode group = new GroupNode();
 
-                Element editClone = ElementUtil.safeClone(elem);
+                Element editClone = elem.clone();
                 group.appendChild(editClone);
 
                 for (String v : valueList) {

@@ -6,7 +6,6 @@ import org.jsoup.parser.Tag;
 import com.astamuse.asta4d.extnode.GroupNode;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldValueRenderer;
 
 public class TextareaRenderer extends SimpleFormFieldValueRenderer {
@@ -23,7 +22,7 @@ public class TextareaRenderer extends SimpleFormFieldValueRenderer {
             public Element invoke(Element elem) {
                 GroupNode group = new GroupNode();
 
-                Element editClone = ElementUtil.safeClone(elem);
+                Element editClone = elem.clone();
                 group.appendChild(editClone);
 
                 Element newElem = new Element(Tag.valueOf("pre"), "");

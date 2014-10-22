@@ -25,7 +25,6 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
@@ -306,7 +305,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                                     List<Element> elems = new ArrayList<>(retrieveCachedContainerSnippet());
                                     Collections.reverse(elems);
                                     for (Element child : elems) {
-                                        elem.prependChild(ElementUtil.safeClone(child));
+                                        elem.prependChild(child.clone());
                                     }
                                 }
                             });

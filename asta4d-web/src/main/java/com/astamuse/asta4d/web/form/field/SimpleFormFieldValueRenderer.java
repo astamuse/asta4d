@@ -10,7 +10,6 @@ import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
-import com.astamuse.asta4d.util.ElementUtil;
 
 public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRenderer {
 
@@ -115,7 +114,7 @@ public abstract class SimpleFormFieldValueRenderer implements FormFieldValueRend
             public Element invoke(Element elem) {
                 GroupNode group = new GroupNode();
 
-                Element editClone = ElementUtil.safeClone(elem);
+                Element editClone = elem.clone();
                 group.appendChild(editClone);
 
                 group.appendChild(createAlternativeDisplayElement(nonNullString));

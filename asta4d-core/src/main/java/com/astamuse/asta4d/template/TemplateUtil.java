@@ -34,7 +34,6 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.extnode.ExtNode;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.extnode.GroupNode;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 
@@ -286,7 +285,7 @@ public class TemplateUtil {
 
         Element body = embedDoc.body();
         Elements bodyChildren = body.children();
-        ElementUtil.appendNodes(wrappingNode, new ArrayList<Node>(bodyChildren));
+        wrappingNode.insertChildren(-1, bodyChildren);
 
         // copy all the attrs to the wrapping group node
         Iterator<Attribute> attrs = elem.attributes().iterator();
@@ -337,20 +336,16 @@ public class TemplateUtil {
                 continue;
             }
             childNodes = new ArrayList<>(block.childNodes());
-            ElementUtil.safeEmpty(block);
             switch (blockType) {
             case ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE:
                 targetBlock.empty();
-                ElementUtil.appendNodes(targetBlock, childNodes);
+                targetBlock.insertChildren(-1, childNodes);
                 break;
             case ExtNodeConstants.BLOCK_NODE_ATTR_APPEND:
-                ElementUtil.appendNodes(targetBlock, childNodes);
+                targetBlock.insertChildren(-1, childNodes);
                 break;
             case ExtNodeConstants.BLOCK_NODE_ATTR_INSERT:
-                List<Node> originNodes = new ArrayList<>(targetBlock.childNodes());
-                ElementUtil.safeEmpty(targetBlock);
-                ElementUtil.appendNodes(targetBlock, childNodes);
-                ElementUtil.appendNodes(targetBlock, originNodes);
+                targetBlock.insertChildren(0, childNodes);
                 break;
             }
             block.remove();
