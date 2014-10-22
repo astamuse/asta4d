@@ -31,8 +31,8 @@ import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.i18n.I18nMessageHelper;
 import com.astamuse.asta4d.util.i18n.I18nMessageHelperTypeAssistant;
-import com.astamuse.asta4d.util.i18n.MappedValueI18nMessageHelper;
-import com.astamuse.asta4d.util.i18n.OrderedValueI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.MappedParamI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
 import com.astamuse.asta4d.util.i18n.formatter.ApacheStrSubstitutorFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.JDKMessageFormatFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.SymbolPlaceholderFormatter;
@@ -64,49 +64,49 @@ public class ExternalizeMessageTest extends BaseTest {
     @Test
     public void externalizeMessage_DefaultMsg() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
-        setUpResourceBundleManager("symbol_placeholder_messages", new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter()));
+        setUpResourceBundleManager("symbol_placeholder_messages", new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter()));
         new SimpleCase("ExternalizeMessage_DefaultMsg.html", "ExternalizeMessage_DefaultMsg.html");
     }
 
     @Test
     public void externalizeMessage_SymbolPlaceholder_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
-        setUpResourceBundleManager("symbol_placeholder_messages", new OrderedValueI18nMessageHelper((new SymbolPlaceholderFormatter())));
+        setUpResourceBundleManager("symbol_placeholder_messages", new OrderedParamI18nMessageHelper((new SymbolPlaceholderFormatter())));
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
     public void externalizeMessage_SymbolPlaceholder_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
-        setUpResourceBundleManager("symbol_placeholder_messages", new OrderedValueI18nMessageHelper((new SymbolPlaceholderFormatter())));
+        setUpResourceBundleManager("symbol_placeholder_messages", new OrderedParamI18nMessageHelper((new SymbolPlaceholderFormatter())));
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");
     }
 
     @Test
     public void externalizeMessage_JDKMessageFormat_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
-        setUpResourceBundleManager("number_placeholder_messages", new OrderedValueI18nMessageHelper(new JDKMessageFormatFormatter()));
+        setUpResourceBundleManager("number_placeholder_messages", new OrderedParamI18nMessageHelper(new JDKMessageFormatFormatter()));
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
     public void externalizeMessage_JDKMessageFormat_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
-        setUpResourceBundleManager("number_placeholder_messages", new OrderedValueI18nMessageHelper(new JDKMessageFormatFormatter()));
+        setUpResourceBundleManager("number_placeholder_messages", new OrderedParamI18nMessageHelper(new JDKMessageFormatFormatter()));
         new SimpleCase("ExternalizeMessage_NumberedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");
     }
 
     @Test
     public void externalizeMessage_NamedPlaceholder_us() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
-        setUpResourceBundleManager("named_placeholder_messages", new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter()));
+        setUpResourceBundleManager("named_placeholder_messages", new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter()));
         new SimpleCase("ExternalizeMessage_NamedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_us.html");
     }
 
     @Test
     public void externalizeMessage_NamedPlaceholder_ja() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
-        setUpResourceBundleManager("named_placeholder_messages", new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter()));
+        setUpResourceBundleManager("named_placeholder_messages", new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter()));
         new SimpleCase("ExternalizeMessage_NamedParamKey.html", "ExternalizeMessage_SymbolPlaceholder_ja.html");
     }
 

@@ -30,8 +30,8 @@ import org.testng.annotations.Test;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.i18n.I18nMessageHelper;
-import com.astamuse.asta4d.util.i18n.MappedValueI18nMessageHelper;
-import com.astamuse.asta4d.util.i18n.OrderedValueI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.MappedParamI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
 import com.astamuse.asta4d.util.i18n.formatter.ApacheStrSubstitutorFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.JDKMessageFormatFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.SymbolPlaceholderFormatter;
@@ -49,28 +49,28 @@ public class ResourceBundleUtilTest extends BaseTest {
 
     @Test
     public void useSymbolFormatter() throws Exception {
-        OrderedValueI18nMessageHelper helper = new OrderedValueI18nMessageHelper(new SymbolPlaceholderFormatter());
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new SymbolPlaceholderFormatter());
         setUp(helper, "symbol_placeholder_messages");
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
     }
 
     @Test
     public void useSymbolFormatterJaJp() throws Exception {
-        OrderedValueI18nMessageHelper helper = new OrderedValueI18nMessageHelper(new SymbolPlaceholderFormatter());
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new SymbolPlaceholderFormatter());
         setUp(helper, "symbol_placeholder_messages");
         assertEquals(helper.getMessage(Locale.JAPAN, "weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
     }
 
     @Test
     public void useNumberFormatter() throws Exception {
-        OrderedValueI18nMessageHelper helper = new OrderedValueI18nMessageHelper(new JDKMessageFormatFormatter());
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new JDKMessageFormatFormatter());
         setUp(helper, "number_placeholder_messages");
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
     }
 
     @Test
     public void useNumberFormatterJaJp() throws Exception {
-        OrderedValueI18nMessageHelper helper = new OrderedValueI18nMessageHelper(new JDKMessageFormatFormatter());
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new JDKMessageFormatFormatter());
         setUp(helper, "number_placeholder_messages");
         assertEquals(helper.getMessage(Locale.JAPAN, "weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
     }
@@ -78,7 +78,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNamedFormatter() throws Exception {
 
-        MappedValueI18nMessageHelper helper = new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
         setUp(helper, "named_placeholder_messages");
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("date", "Tomorrow");
@@ -89,7 +89,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNamedFormatterWithSplittedMessagePattern() throws Exception {
 
-        MappedValueI18nMessageHelper helper = new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
         setUp(helper, "named_placeholder_messages");
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("date", "Tomorrow");
@@ -100,7 +100,7 @@ public class ResourceBundleUtilTest extends BaseTest {
     @Test
     public void useNamedFormatterJaJp() throws Exception {
 
-        MappedValueI18nMessageHelper helper = new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
         setUp(helper, "named_placeholder_messages");
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("date", "明日");
@@ -110,7 +110,7 @@ public class ResourceBundleUtilTest extends BaseTest {
 
     @Test
     public void utf8MessageFileJaJp() throws Exception {
-        MappedValueI18nMessageHelper helper = new MappedValueI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
         setUp(helper, "utf_8_messages");
         // reset to utf-8
         ((JDKResourceBundleMessagePatternRetriever) helper.getMessagePatternRetriever())

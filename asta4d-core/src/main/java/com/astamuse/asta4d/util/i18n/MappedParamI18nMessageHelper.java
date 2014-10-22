@@ -10,15 +10,15 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.astamuse.asta4d.util.i18n.formatter.ApacheStrSubstitutorFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.MappedValueFormatter;
 
-public class MappedValueI18nMessageHelper extends I18nMessageHelper {
+public class MappedParamI18nMessageHelper extends I18nMessageHelper {
 
     private MappedValueFormatter formatter;
 
-    public MappedValueI18nMessageHelper() {
+    public MappedParamI18nMessageHelper() {
         this(new ApacheStrSubstitutorFormatter());
     }
 
-    public MappedValueI18nMessageHelper(MappedValueFormatter formatter) {
+    public MappedParamI18nMessageHelper(MappedValueFormatter formatter) {
         this.formatter = formatter;
     }
 

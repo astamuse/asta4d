@@ -37,7 +37,7 @@ import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
 import com.astamuse.asta4d.util.i18n.I18nMessageHelper;
-import com.astamuse.asta4d.util.i18n.OrderedValueI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
 
 public class Configuration {
 
@@ -55,7 +55,7 @@ public class Configuration {
 
     private DataTypeTransformer dataTypeTransformer = new DefaultDataTypeTransformer();
 
-    private I18nMessageHelper i18nMessageHelper = new OrderedValueI18nMessageHelper();
+    private I18nMessageHelper i18nMessageHelper = new OrderedParamI18nMessageHelper();
 
     private boolean cacheEnable = true;
 

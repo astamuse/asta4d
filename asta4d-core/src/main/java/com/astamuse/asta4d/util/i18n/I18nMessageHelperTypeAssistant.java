@@ -32,19 +32,19 @@ public class I18nMessageHelperTypeAssistant {
     }
 
     private final Type configuredHelperType;
-    private final MappedValueI18nMessageHelper mappedTypeHelper;
-    private final OrderedValueI18nMessageHelper orderedTypeHelper;
+    private final MappedParamI18nMessageHelper mappedTypeHelper;
+    private final OrderedParamI18nMessageHelper orderedTypeHelper;
 
     private I18nMessageHelperTypeAssistant() {
         I18nMessageHelper helper = Configuration.getConfiguration().getI18nMessageHelper();
-        if (helper instanceof MappedValueI18nMessageHelper) {
+        if (helper instanceof MappedParamI18nMessageHelper) {
             configuredHelperType = Type.Mapped;
-            mappedTypeHelper = (MappedValueI18nMessageHelper) helper;
+            mappedTypeHelper = (MappedParamI18nMessageHelper) helper;
             orderedTypeHelper = null;
-        } else if (helper instanceof OrderedValueI18nMessageHelper) {
+        } else if (helper instanceof OrderedParamI18nMessageHelper) {
             configuredHelperType = Type.Ordered;
             mappedTypeHelper = null;
-            orderedTypeHelper = (OrderedValueI18nMessageHelper) helper;
+            orderedTypeHelper = (OrderedParamI18nMessageHelper) helper;
         } else {
             configuredHelperType = null;
             mappedTypeHelper = null;
@@ -57,11 +57,11 @@ public class I18nMessageHelperTypeAssistant {
         return _instance.configuredHelperType;
     }
 
-    public static final MappedValueI18nMessageHelper getConfiguredMappedHelper() {
+    public static final MappedParamI18nMessageHelper getConfiguredMappedHelper() {
         return _instance.mappedTypeHelper;
     }
 
-    public static final OrderedValueI18nMessageHelper getConfiguredOrderedHelper() {
+    public static final OrderedParamI18nMessageHelper getConfiguredOrderedHelper() {
         return _instance.orderedTypeHelper;
     }
 }

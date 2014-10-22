@@ -7,15 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 import com.astamuse.asta4d.util.i18n.formatter.JDKMessageFormatFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.OrderedValueFormatter;
 
-public class OrderedValueI18nMessageHelper extends I18nMessageHelper {
+public class OrderedParamI18nMessageHelper extends I18nMessageHelper {
 
     private OrderedValueFormatter formatter;
 
-    public OrderedValueI18nMessageHelper() {
+    public OrderedParamI18nMessageHelper() {
         this(new JDKMessageFormatFormatter());
     }
 
-    public OrderedValueI18nMessageHelper(OrderedValueFormatter formatter) {
+    public OrderedParamI18nMessageHelper(OrderedValueFormatter formatter) {
         this.formatter = formatter;
     }
 
