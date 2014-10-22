@@ -23,19 +23,43 @@ public class OrderedValueI18nMessageHelper extends I18nMessageHelper {
         return formatter;
     }
 
+    @Override
+    public String getMessage(String key) {
+        return getMessageInternal(null, key, null, null);
+    }
+
+    @Override
+    public String getMessage(Locale locale, String key) {
+        return getMessageInternal(locale, key, null, null);
+    }
+
     public String getMessage(String key, Object... params) {
-        return getMessageWithDefault(null, key, null, params);
+        return getMessageInternal(null, key, null, params);
     }
 
     public String getMessage(Locale locale, String key, Object... params) {
-        return getMessageWithDefault(locale, key, null, params);
+        return getMessageInternal(locale, key, null, params);
+    }
+
+    @Override
+    public String getMessageWithDefault(String key, Object defaultPattern) {
+        return getMessageInternal(null, key, defaultPattern, null);
+    }
+
+    @Override
+    public String getMessageWithDefault(Locale locale, String key, Object defaultPattern) {
+        return getMessageInternal(locale, key, defaultPattern, null);
     }
 
     public String getMessageWithDefault(String key, Object defaultPattern, Object... params) {
-        return getMessageWithDefault(null, key, defaultPattern, params);
+        return getMessageInternal(null, key, defaultPattern, params);
     }
 
     public String getMessageWithDefault(Locale locale, String key, Object defaultPattern, Object... params) {
+        return getMessageInternal(locale, key, defaultPattern, params);
+    }
+
+    private String getMessageInternal(Locale locale, String key, Object defaultPattern, Object[] params) {
         String pattern = getMessagePatternRetriever().retrieve(locale, key);
 
         if (pattern == null) {
