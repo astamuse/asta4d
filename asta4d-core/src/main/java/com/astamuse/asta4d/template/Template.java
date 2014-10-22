@@ -23,7 +23,7 @@ import java.io.InputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.BlockTagSupportHtmlTreeBuilder;
+import org.jsoup.parser.Asta4DTagSupportHtmlTreeBuilder;
 import org.jsoup.parser.Parser;
 
 import com.astamuse.asta4d.Configuration;
@@ -50,7 +50,7 @@ public class Template {
         try {
             this.path = path;
             if (input != null) {
-                this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
+                this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new Asta4DTagSupportHtmlTreeBuilder()));
                 // this.doc = Jsoup.parse(input, "UTF-8", "");
                 initDocument();
             }

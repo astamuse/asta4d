@@ -12,50 +12,62 @@ import org.jsoup.nodes.Comment;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.FormElement;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
 
+/*
+ * No thing is different from the original version HtmlTreeBuilder of jsoup except use Asta4DTagSupportHtmlTreeBuilderState rather than 
+ * the original HtmlTreeBuilderState
+ */
 /**
  * HTML Tree Builder; creates a DOM from Tokens.
  */
-public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
+public class Asta4DTagSupportHtmlTreeBuilder extends TreeBuilder {
+    // tag searches
+    private static final String[] TagsScriptStyle = new String[] { "script", "style" };
+    public static final String[] TagsSearchInScope = new String[] { "applet", "caption", "html", "table", "td", "th", "marquee", "object" };
+    private static final String[] TagSearchList = new String[] { "ol", "ul" };
+    private static final String[] TagSearchButton = new String[] { "button" };
+    private static final String[] TagSearchTableScope = new String[] { "html", "table" };
+    private static final String[] TagSearchSelectScope = new String[] { "optgroup", "option" };
+    private static final String[] TagSearchEndTags = new String[] { "dd", "dt", "li", "option", "optgroup", "p", "rp", "rt" };
+    private static final String[] TagSearchSpecial = new String[] { "address", "applet", "area", "article", "aside", "base", "basefont",
+            "bgsound", "blockquote", "body", "br", "button", "caption", "center", "col", "colgroup", "command", "dd", "details", "dir",
+            "div", "dl", "dt", "embed", "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4",
+            "h5", "h6", "head", "header", "hgroup", "hr", "html", "iframe", "img", "input", "isindex", "li", "link", "listing", "marquee",
+            "menu", "meta", "nav", "noembed", "noframes", "noscript", "object", "ol", "p", "param", "plaintext", "pre", "script",
+            "section", "select", "style", "summary", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "title", "tr", "ul",
+            "wbr", "xmp" };
 
-    private BlockTagSupportHtmlTreeBuilderState state; // the current state
-    private BlockTagSupportHtmlTreeBuilderState originalState; // original / marked state
+    private Asta4DTagSupportHtmlTreeBuilderState state; // the current state
+    private Asta4DTagSupportHtmlTreeBuilderState originalState; // original / marked state
 
     private boolean baseUriSetFromDoc = false;
     private Element headElement; // the current head element
-    private Element formElement; // the current form element
-    private Element contextElement; // fragment parse context -- could be null
-                                    // even if fragment parsing
-    private DescendableLinkedList<Element> formattingElements = new DescendableLinkedList<Element>(); // active
-                                                                                                      // (open)
-                                                                                                      // formatting
-                                                                                                      // elements
-    private List<Token.Character> pendingTableCharacters = new ArrayList<Token.Character>(); // chars
-                                                                                             // in
-                                                                                             // table
-                                                                                             // to
-                                                                                             // be
-                                                                                             // shifted
-                                                                                             // out
+    private FormElement formElement; // the current form element
+    private Element contextElement; // fragment parse context -- could be null even if fragment parsing
+    private DescendableLinkedList<Element> formattingElements = new DescendableLinkedList<Element>(); // active (open) formatting elements
+    private List<Token.Character> pendingTableCharacters = new ArrayList<Token.Character>(); // chars in table to be shifted out
 
     private boolean framesetOk = true; // if ok to go into frameset
     private boolean fosterInserts = false; // if next inserts should be fostered
     private boolean fragmentParsing = false; // if parsing a fragment of html
 
-    public BlockTagSupportHtmlTreeBuilder() {
+    public Asta4DTagSupportHtmlTreeBuilder() {
     }
 
     @Override
     Document parse(String input, String baseUri, ParseErrorList errors) {
-        state = BlockTagSupportHtmlTreeBuilderState.Initial;
+        state = Asta4DTagSupportHtmlTreeBuilderState.Initial;
+        baseUriSetFromDoc = false;
         return super.parse(input, baseUri, errors);
     }
 
     List<Node> parseFragment(String inputFragment, Element context, String baseUri, ParseErrorList errors) {
         // context may be null
-        state = BlockTagSupportHtmlTreeBuilderState.Initial;
+        state = Asta4DTagSupportHtmlTreeBuilderState.Initial;
         initialiseParse(inputFragment, baseUri, errors);
         contextElement = context;
         fragmentParsing = true;
@@ -74,8 +86,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
             else if (contextTag.equals("script"))
                 tokeniser.transition(TokeniserState.ScriptData);
             else if (contextTag.equals(("noscript")))
-                tokeniser.transition(TokeniserState.Data); // if scripting
-                                                           // enabled, rawtext
+                tokeniser.transition(TokeniserState.Data); // if scripting enabled, rawtext
             else if (contextTag.equals("plaintext"))
                 tokeniser.transition(TokeniserState.Data);
             else
@@ -85,8 +96,17 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
             doc.appendChild(root);
             stack.push(root);
             resetInsertionMode();
-            // todo: setup form element to nearest form on context (up ancestor
-            // chain)
+
+            // setup form element to nearest form on context (up ancestor chain). ensures form controls are associated
+            // with form correctly
+            Elements contextChain = context.parents();
+            contextChain.add(0, context);
+            for (Element parent : contextChain) {
+                if (parent instanceof FormElement) {
+                    formElement = (FormElement) parent;
+                    break;
+                }
+            }
         }
 
         runParser();
@@ -102,16 +122,16 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         return this.state.process(token, this);
     }
 
-    boolean process(Token token, BlockTagSupportHtmlTreeBuilderState state) {
+    boolean process(Token token, Asta4DTagSupportHtmlTreeBuilderState state) {
         currentToken = token;
         return state.process(token, this);
     }
 
-    void transition(BlockTagSupportHtmlTreeBuilderState state) {
+    void transition(Asta4DTagSupportHtmlTreeBuilderState state) {
         this.state = state;
     }
 
-    BlockTagSupportHtmlTreeBuilderState state() {
+    Asta4DTagSupportHtmlTreeBuilderState state() {
         return state;
     }
 
@@ -119,7 +139,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         originalState = state;
     }
 
-    BlockTagSupportHtmlTreeBuilderState originalState() {
+    Asta4DTagSupportHtmlTreeBuilderState originalState() {
         return originalState;
     }
 
@@ -147,9 +167,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         if (href.length() != 0) { // ignore <base target> etc
             baseUri = href;
             baseUriSetFromDoc = true;
-            doc.setBaseUri(href); // set on the doc so doc.createElement(Tag)
-                                  // will get updated base, and to update all
-                                  // descendants
+            doc.setBaseUri(href); // set on the doc so doc.createElement(Tag) will get updated base, and to update all descendants
         }
     }
 
@@ -157,19 +175,19 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         return fragmentParsing;
     }
 
-    void error(BlockTagSupportHtmlTreeBuilderState state) {
+    void error(Asta4DTagSupportHtmlTreeBuilderState state) {
         if (errors.canAddError())
             errors.add(new ParseError(reader.pos(), "Unexpected token [%s] when in state [%s]", currentToken.tokenType(), state));
     }
 
     Element insert(Token.StartTag startTag) {
         // handle empty unknown tags
-        // when the spec expects an empty tag, will directly hit insertEmpty, so
-        // won't generate fake end tag.
-        if (startTag.isSelfClosing() && !Tag.isKnownTag(startTag.name())) {
+        // when the spec expects an empty tag, will directly hit insertEmpty, so won't generate this fake end tag.
+        if (startTag.isSelfClosing()) {
             Element el = insertEmpty(startTag);
-            process(new Token.EndTag(el.tagName())); // ensure we get out of
-                                                     // whatever state we are in
+            stack.add(el);
+            tokeniser.transition(TokeniserState.Data); // handles <script />, otherwise needs breakout steps from script data
+            tokeniser.emit(new Token.EndTag(el.tagName())); // ensure we get out of whatever state we are in. emitted for yielded processing
             return el;
         }
 
@@ -194,11 +212,25 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         Element el = new Element(tag, baseUri, startTag.attributes);
         insertNode(el);
         if (startTag.isSelfClosing()) {
-            tokeniser.acknowledgeSelfClosingFlag();
-            if (!tag.isKnownTag()) // unknown tag, remember this is self closing
-                                   // for output
+            if (tag.isKnownTag()) {
+                if (tag.isSelfClosing())
+                    tokeniser.acknowledgeSelfClosingFlag(); // if not acked, promulagates error
+            } else {
+                // unknown tag, remember this is self closing for output
                 tag.setSelfClosing();
+                tokeniser.acknowledgeSelfClosingFlag(); // not an distinct error
+            }
         }
+        return el;
+    }
+
+    FormElement insertForm(Token.StartTag startTag, boolean onStack) {
+        Tag tag = Tag.valueOf(startTag.name());
+        FormElement el = new FormElement(tag, baseUri, startTag.attributes);
+        setFormElement(el);
+        insertNode(el);
+        if (onStack)
+            stack.add(el);
         return el;
     }
 
@@ -210,24 +242,28 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
     void insert(Token.Character characterToken) {
         Node node;
         // characters in script and style go in as datanodes, not text nodes
-        if (StringUtil.in(currentElement().tagName(), "script", "style"))
+        String tagName = currentElement().tagName();
+        if (tagName.equals("script") || tagName.equals("style"))
             node = new DataNode(characterToken.getData(), baseUri);
         else
             node = new TextNode(characterToken.getData(), baseUri);
-        currentElement().appendChild(node); // doesn't use insertNode, because
-                                            // we don't foster these; and will
-                                            // always have a stack.
+        currentElement().appendChild(node); // doesn't use insertNode, because we don't foster these; and will always have a stack.
     }
 
     private void insertNode(Node node) {
-        // if the stack hasn't been set up yet, elements (doctype, comments) go
-        // into the doc
+        // if the stack hasn't been set up yet, elements (doctype, comments) go into the doc
         if (stack.size() == 0)
             doc.appendChild(node);
         else if (isFosterInserts())
             insertInFosterParent(node);
         else
             currentElement().appendChild(node);
+
+        // connect form controls to their form element
+        if (node instanceof Element && ((Element) node).tag().isFormListed()) {
+            if (formElement != null)
+                formElement.addElement((Element) node);
+        }
     }
 
     Element pop() {
@@ -386,40 +422,40 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
             }
             String name = node.nodeName();
             if ("select".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InSelect);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InSelect);
                 break; // frag
             } else if (("td".equals(name) || "td".equals(name) && !last)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InCell);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InCell);
                 break;
             } else if ("tr".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InRow);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InRow);
                 break;
             } else if ("tbody".equals(name) || "thead".equals(name) || "tfoot".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InTableBody);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InTableBody);
                 break;
             } else if ("caption".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InCaption);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InCaption);
                 break;
             } else if ("colgroup".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InColumnGroup);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InColumnGroup);
                 break; // frag
             } else if ("table".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InTable);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InTable);
                 break;
             } else if ("head".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InBody);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InBody);
                 break; // frag
             } else if ("body".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InBody);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InBody);
                 break;
             } else if ("frameset".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InFrameset);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InFrameset);
                 break; // frag
             } else if ("html".equals(name)) {
-                transition(BlockTagSupportHtmlTreeBuilderState.BeforeHead);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.BeforeHead);
                 break; // frag
             } else if (last) {
-                transition(BlockTagSupportHtmlTreeBuilderState.InBody);
+                transition(Asta4DTagSupportHtmlTreeBuilderState.InBody);
                 break; // frag
             }
         }
@@ -447,7 +483,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
     }
 
     boolean inScope(String[] targetNames) {
-        return inSpecificScope(targetNames, new String[] { "applet", "caption", "html", "table", "td", "th", "marquee", "object" }, null);
+        return inSpecificScope(targetNames, TagsSearchInScope, null);
     }
 
     boolean inScope(String targetName) {
@@ -455,21 +491,21 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
     }
 
     boolean inScope(String targetName, String[] extras) {
-        return inSpecificScope(targetName, new String[] { "applet", "caption", "html", "table", "td", "th", "marquee", "object" }, extras);
+        return inSpecificScope(targetName, TagsSearchInScope, extras);
         // todo: in mathml namespace: mi, mo, mn, ms, mtext annotation-xml
         // todo: in svg namespace: forignOjbect, desc, title
     }
 
     boolean inListItemScope(String targetName) {
-        return inScope(targetName, new String[] { "ol", "ul" });
+        return inScope(targetName, TagSearchList);
     }
 
     boolean inButtonScope(String targetName) {
-        return inScope(targetName, new String[] { "button" });
+        return inScope(targetName, TagSearchButton);
     }
 
     boolean inTableScope(String targetName) {
-        return inSpecificScope(targetName, new String[] { "html", "table" }, null);
+        return inSpecificScope(targetName, TagSearchTableScope, null);
     }
 
     boolean inSelectScope(String targetName) {
@@ -479,8 +515,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
             String elName = el.nodeName();
             if (elName.equals(targetName))
                 return true;
-            if (!StringUtil.in(elName, "optgroup", "option")) // all elements
-                                                              // except
+            if (!StringUtil.in(elName, TagSearchSelectScope)) // all elements except
                 return false;
         }
         Validate.fail("Should not be reachable");
@@ -503,11 +538,11 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         this.fosterInserts = fosterInserts;
     }
 
-    Element getFormElement() {
+    FormElement getFormElement() {
         return formElement;
     }
 
-    void setFormElement(Element formElement) {
+    void setFormElement(FormElement formElement) {
         this.formElement = formElement;
     }
 
@@ -526,20 +561,17 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
     /**
      * 11.2.5.2 Closing elements that have implied end tags
      * <p/>
-     * When the steps below require the UA to generate implied end tags, then,
-     * while the current node is a dd element, a dt element, an li element, an
-     * option element, an optgroup element, a p element, an rp element, or an rt
-     * element, the UA must pop the current node off the stack of open elements.
+     * When the steps below require the UA to generate implied end tags, then, while the current node is a dd element, a dt element, an li
+     * element, an option element, an optgroup element, a p element, an rp element, or an rt element, the UA must pop the current node off
+     * the stack of open elements.
      * 
      * @param excludeTag
-     *            If a step requires the UA to generate implied end tags but
-     *            lists an element to exclude from the process, then the UA must
-     *            perform the above steps as if that element was not in the
-     *            above list.
+     *            If a step requires the UA to generate implied end tags but lists an element to exclude from the process, then the UA must
+     *            perform the above steps as if that element was not in the above list.
      */
     void generateImpliedEndTags(String excludeTag) {
         while ((excludeTag != null && !currentElement().nodeName().equals(excludeTag)) &&
-                StringUtil.in(currentElement().nodeName(), "dd", "dt", "li", "option", "optgroup", "p", "rp", "rt"))
+                StringUtil.in(currentElement().nodeName(), TagSearchEndTags))
             pop();
     }
 
@@ -551,12 +583,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         // todo: mathml's mi, mo, mn
         // todo: svg's foreigObject, desc, title
         String name = el.nodeName();
-        return StringUtil.in(name, "address", "applet", "area", "article", "aside", "base", "basefont", "bgsound", "blockquote", "body",
-                "br", "button", "caption", "center", "col", "colgroup", "command", "dd", "details", "dir", "div", "dl", "dt", "embed",
-                "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5", "h6", "head",
-                "header", "hgroup", "hr", "html", "iframe", "img", "input", "isindex", "li", "link", "listing", "marquee", "menu", "meta",
-                "nav", "noembed", "noframes", "noscript", "object", "ol", "p", "param", "plaintext", "pre", "script", "section", "select",
-                "style", "summary", "table", "tbody", "td", "textarea", "tfoot", "th", "thead", "title", "tr", "ul", "wbr", "xmp");
+        return StringUtil.in(name, TagSearchSpecial);
     }
 
     // active formatting elements
@@ -580,8 +607,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
     }
 
     private boolean isSameFormattingElement(Element a, Element b) {
-        // same if: same namespace, tag, and attributes. Element.equals only
-        // checks tag, might in future check children
+        // same if: same namespace, tag, and attributes. Element.equals only checks tag, might in future check children
         return a.nodeName().equals(b.nodeName()) &&
         // a.namespace().equals(b.namespace()) &&
                 a.attributes().equals(b.attributes());
@@ -601,23 +627,18 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
                 skip = true;
                 break;
             }
-            entry = formattingElements.get(--pos); // step 5. one earlier than
-                                                   // entry
-            if (entry == null || onStack(entry)) // step 6 - neither marker nor
-                                                 // on stack
+            entry = formattingElements.get(--pos); // step 5. one earlier than entry
+            if (entry == null || onStack(entry)) // step 6 - neither marker nor on stack
                 break; // jump to 8, else continue back to 4
         }
         while (true) {
             if (!skip) // step 7: on later than entry
                 entry = formattingElements.get(++pos);
-            Validate.notNull(entry); // should not occur, as we break at last
-                                     // element
+            Validate.notNull(entry); // should not occur, as we break at last element
 
-            // 8. create new element from element, 9 insert into current node,
-            // onto stack
+            // 8. create new element from element, 9 insert into current node, onto stack
             skip = false; // can only skip increment from 4.
-            Element newEl = insert(entry.nodeName()); // todo: avoid fostering
-                                                      // here?
+            Element newEl = insert(entry.nodeName()); // todo: avoid fostering here?
             // newEl.namespace(entry.namespace()); // todo: namespaces
             newEl.attributes().addAll(entry.attributes());
 
@@ -690,8 +711,7 @@ public class BlockTagSupportHtmlTreeBuilder extends TreeBuilder {
         }
 
         if (isLastTableParent) {
-            Validate.notNull(lastTable); // last table cannot be null by this
-                                         // point.
+            Validate.notNull(lastTable); // last table cannot be null by this point.
             lastTable.before(in);
         } else
             fosterParent.appendChild(in);
