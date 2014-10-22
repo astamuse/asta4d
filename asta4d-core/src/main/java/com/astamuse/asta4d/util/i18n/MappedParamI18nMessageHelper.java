@@ -40,8 +40,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(null, key, null, paramMap);
     }
 
-    @SuppressWarnings("unchecked")
-    public String getMessage(String key, Pair<String, Object>... params) {
+    @SuppressWarnings("rawtypes")
+    public String getMessage(String key, Pair... params) {
         return getMessageInternal(null, key, null, pairToMap(params));
     }
 
@@ -49,8 +49,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(locale, key, null, paramMap);
     }
 
-    @SuppressWarnings("unchecked")
-    public String getMessage(Locale locale, String key, Pair<String, Object>... params) {
+    @SuppressWarnings("rawtypes")
+    public String getMessage(Locale locale, String key, Pair... params) {
         return getMessageInternal(locale, key, null, pairToMap(params));
     }
 
@@ -68,8 +68,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(null, key, defaultPattern, paramMap);
     }
 
-    @SuppressWarnings("unchecked")
-    public String getMessageWithDefault(String key, Object defaultPattern, Pair<String, Object>... params) {
+    @SuppressWarnings("rawtypes")
+    public String getMessageWithDefault(String key, Object defaultPattern, Pair... params) {
         return getMessageInternal(null, key, defaultPattern, pairToMap(params));
     }
 
@@ -77,8 +77,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(locale, key, defaultPattern, paramMap);
     }
 
-    @SuppressWarnings("unchecked")
-    public String getMessageWithDefault(Locale locale, String key, Object defaultPattern, Pair<String, Object>... params) {
+    @SuppressWarnings("rawtypes")
+    public String getMessageWithDefault(Locale locale, String key, Object defaultPattern, Pair... params) {
         return getMessageInternal(locale, key, defaultPattern, pairToMap(params));
     }
 
@@ -96,10 +96,11 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         }
     }
 
-    private Map<String, Object> pairToMap(Pair<String, Object>[] params) {
+    @SuppressWarnings("rawtypes")
+    private Map<String, Object> pairToMap(Pair[] params) {
         Map<String, Object> map = new HashMap<>();
-        for (Pair<String, Object> pair : params) {
-            map.put(pair.getKey(), pair.getValue());
+        for (Pair pair : params) {
+            map.put(pair.getKey().toString(), pair.getValue());
         }
         return map;
     }
