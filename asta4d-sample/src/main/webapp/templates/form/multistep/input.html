@@ -5,25 +5,30 @@
 <body>
 <afd:extension parent="/layout/common.html">
 	<afd:block override="content-title">
-		Multiple steps form - input
+		Multiple steps form
 	</afd:block>
 	<afd:block override="content-detail">
+		<div class="panel panel-warning">
+			<div class="panel-heading"><h3>Input</h3></div>
+			<div class="panel-body">
+				<!-- @ShowCode:showInputStart -->
+				<section>
+					<article>
+						<form method="post">
+							<afd:embed target="/templates/form/multistep/formContent.html"/>
+							<afd:embed target="/templates/form/multistep/btns-input.html"/>
+						</form>
+					</article>
+				</section>
+				<!-- @ShowCode:showInputEnd -->
+			</div>
+		</div>
 
-	    <!-- @ShowCode:showInputStart -->
-		<section>
-			<article>
-				<form method="post">
-					<afd:embed target="/templates/form/multistep/formContent.html"></afd:embed>
-					<div class="form-btn-bar">
-					<input type="hidden" name="step-current" value="input">
-					<input type="hidden" name="step-failed" value="input">
-					<button type="submit" name="step-success" class="btn btn-sm btn-default" value="confirm">confirm</button>
-					<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
-					</div>
-				</form>
-			</article>
-		</section>
-	    <!-- @ShowCode:showInputEnd -->
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/input.html" startMark="showInputStart" endMark="showInputEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/formContent.html" startMark="showFormContentStart" endMark="showFormContentEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/btns-input.html" startMark="showBtnsStart" endMark="showBtnsEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/MultiStepEditHandler.java" startMark="showMultiStepEditHandlerStart" endMark="showMultiStepEditHandlerEnd"/>
+
 	</afd:block>
 
 </body>

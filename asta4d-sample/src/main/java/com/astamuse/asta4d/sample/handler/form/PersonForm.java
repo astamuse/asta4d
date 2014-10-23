@@ -7,8 +7,8 @@ import org.apache.commons.beanutils.BeanUtils;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.Checkbox;
-import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
+import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.Radio;
 import com.astamuse.asta4d.web.form.annotation.renderable.Select;
 import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
@@ -34,7 +34,7 @@ public class PersonForm extends Person {
     }
 
     @Override
-    @Hidden(name = "data-id")
+    @Hidden
     public Integer getId() {
         return super.getId();
     }

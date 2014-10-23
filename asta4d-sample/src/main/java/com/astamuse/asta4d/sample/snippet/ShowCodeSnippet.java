@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
@@ -47,6 +48,26 @@ public class ShowCodeSnippet {
     }
 
     private Element makeShowHtml(String file, String title, String contents) {
+
+        // create the panel tag
+        Element panel = new Element(Tag.valueOf("div"), "");
+        panel.addClass("panel");
+        panel.addClass("panel-default");
+
+        Element heading = new Element(Tag.valueOf("div"), "");
+        heading.addClass("panel-heading");
+
+        Element body = new Element(Tag.valueOf("div"), "");
+        body.addClass("panel-body");
+
+        panel.appendChild(heading);
+        panel.appendChild(body);
+
+        // write title and file path
+        String headStr = StringUtils.isEmpty(title) ? "" : title + ":";
+        headStr += file;
+        heading.appendText(headStr);
+
         // create the pre tag
         Element pre = new Element(Tag.valueOf("pre"), "");
         pre.addClass("prettyprint source");
@@ -54,23 +75,8 @@ public class ShowCodeSnippet {
         if (contents != null) {
             pre.appendChild(new Element(Tag.valueOf("span"), "").appendText(contents));
         }
-
-        // create the article tag
-        Element article = new Element(Tag.valueOf("article"), "");
-        if (title == null) {
-            if (file != null) {
-                article.appendChild(new Element(Tag.valueOf("div"), "").appendText(file));
-            }
-        } else {
-            article.appendChild(new Element(Tag.valueOf("div"), "").appendText(title));
-        }
-        article.appendChild(pre);
-
-        // create the section tag
-        Element section = new Element(Tag.valueOf("section"), "");
-        section.appendChild(article);
-
-        return section;
+        body.appendChild(pre);
+        return panel;
     }
 
     private static String readFileByLines(ServletContext servletContext, String fileName, String startMark, String endMark) {

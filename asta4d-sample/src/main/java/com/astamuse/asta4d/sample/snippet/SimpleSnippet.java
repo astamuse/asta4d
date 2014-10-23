@@ -40,7 +40,7 @@ public class SimpleSnippet {
 
     // @ShowCode:showVariableinjectionEnd
     public Renderer setProfile() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("p#name span", "asta4d");
         render.add("p#age span", 20);
         return render;

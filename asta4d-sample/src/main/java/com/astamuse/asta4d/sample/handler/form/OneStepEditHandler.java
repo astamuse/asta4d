@@ -7,6 +7,7 @@ import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
+// @ShowCode:showOneStepEditHandlerStart
 public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
 
     public OneStepEditHandler() {
@@ -14,42 +15,33 @@ public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
     }
 
     @RequestHandler
-    public CommonFormResult handle(ExtraInfo extra) throws Exception {
-        saveExtraDataToContext(extra);
+    public CommonFormResult handle(Integer id) throws Exception {
+        saveExtraDataToContext(id);
         return super.handle();
     }
 
     @Override
     protected PersonForm createInitForm() {
-        ExtraInfo extra = getExtraDataFromContext();
-        switch (extra.action) {
-        case "add":
+        Integer id = getExtraDataFromContext();
+        if (id == null) {// add
             return new PersonForm();
-        case "edit":
-            return PersonForm.buildFromPerson(PersonDbManager.instance().find(extra.id));
+        } else {// update
+            return PersonForm.buildFromPerson(PersonDbManager.instance().find(id));
         }
-        return null;
     }
 
     @Override
     protected void updateForm(PersonForm form) {
-        ExtraInfo extra = getExtraDataFromContext();
-        switch (extra.action) {
-        case "add":
+        // ExtraInfo extra = getExtraDataFromContext();
+        if (form.getId() == null) {// add
             PersonDbManager.instance().add(Person.createByForm(form));
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
-            break;
-        case "edit":
+        } else {// update
             Person p = Person.createByForm(form);
-            Person existingPerson = PersonDbManager.instance().find(extra.id);
-            p.setId(existingPerson.getId());
             PersonDbManager.instance().update(p);
             DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
-            break;
-        default:
-            //
         }
-
     }
 
 }
+// @ShowCode:showOneStepEditHandlerEnd

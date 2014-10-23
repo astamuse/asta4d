@@ -25,7 +25,16 @@ public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
      */
     @RequestHandler
     public CommonFormResult handle() throws Exception {
-        return handleWithCommonFormResult();
+        CommonFormResult result = handleWithCommonFormResult();
+        if (result == null) {
+            return treatExitAs();
+        } else {
+            return result;
+        }
+    }
+
+    protected CommonFormResult treatExitAs() {
+        return CommonFormResult.SUCCESS;
     }
 
     @Override

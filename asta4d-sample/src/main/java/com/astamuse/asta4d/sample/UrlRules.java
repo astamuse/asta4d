@@ -18,7 +18,6 @@
 package com.astamuse.asta4d.sample;
 
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.GET;
-import static com.astamuse.asta4d.web.dispatch.HttpMethod.POST;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.PUT;
 
 import com.astamuse.asta4d.sample.forward.LoginFailure;
@@ -92,15 +91,11 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add("/form", "/templates/form/list.html");
         
-        rules.add(GET, "/form/onestep/edit")
+        rules.add((HttpMethod)null, "/form/onestep")
              .handler(OneStepEditHandler.class)
+             .redirect(CommonFormResult.SUCCESS, "/form")
              .forward("/templates/form/onestep/edit.html");
-             
-        rules.add(POST, "/form/onestep/edit")
-             .handler(OneStepEditHandler.class)
-             .forward(CommonFormResult.FAILED, "/templates/form/onestep/edit.html")
-             .redirect("/form");
-        
+
         rules.add((HttpMethod)null, "/form/multistep")
             .handler(MultiStepEditHandler.class)
             .redirect("/form");

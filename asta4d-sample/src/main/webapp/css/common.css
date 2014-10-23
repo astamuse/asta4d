@@ -5,6 +5,10 @@ body {
 	width: 90%;
 }
 
+pre {
+	margin: -15px;
+}
+
 .panel-usage {
 	width:48%;
 }

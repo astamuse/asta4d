@@ -6,6 +6,7 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
+//@ShowCode:showMultiStepEditHandlerStart
 public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
 
     public MultiStepEditHandler() {
@@ -13,50 +14,39 @@ public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
     }
 
     @RequestHandler
-    public String handle(ExtraInfo extra) throws Exception {
-        saveExtraDataToContext(extra);
+    public String handle(Integer id) throws Exception {
+        saveExtraDataToContext(id);
         return super.handle();
     }
 
     @Override
     protected boolean treatCompleteStepAsExit() {
-        return true;
+        // change to true would cause the form flow exit immediately after the form data is updated
+        // false would show a complete page after updated.
+        return false;
     }
 
     @Override
     protected PersonForm createInitForm() {
-        ExtraInfo extra = getExtraDataFromContext();
-        PersonForm form = null;
-        switch (extra.action) {
-        case "add":
-            form = new PersonForm();
-            break;
-        case "edit":
-            form = PersonForm.buildFromPerson(PersonDbManager.instance().find(extra.id));
-            break;
+        Integer id = getExtraDataFromContext();
+        if (id == null) {
+            return new PersonForm();
+        } else {
+            return PersonForm.buildFromPerson(PersonDbManager.instance().find(id));
         }
-        form.setAction(extra.action);
-        return form;
     }
 
     @Override
     protected void updateForm(PersonForm form) {
-        switch (form.getAction()) {
-        case "add":
+        if (form.getId() == null) {
             PersonDbManager.instance().add(Person.createByForm(form));
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
-            break;
-        case "edit":
+        } else {
             Person p = Person.createByForm(form);
-            Person existingPerson = PersonDbManager.instance().find(form.getId());
-            p.setId(existingPerson.getId());
             PersonDbManager.instance().update(p);
             DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
-            break;
-        default:
-            //
         }
-
     }
 
 }
+// @ShowCode:showMultiStepEditHandlerEnd
