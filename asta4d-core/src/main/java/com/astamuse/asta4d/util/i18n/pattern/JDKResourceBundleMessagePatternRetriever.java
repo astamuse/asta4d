@@ -70,9 +70,11 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
      * 
      * @param bundle
      * @param key
+     * @throws MissingResourceException
+     *             if no object for the given key can be found
      * @return
      */
-    protected String retrieveResourceFromBundle(ResourceBundle bundle, String key) {
+    protected String retrieveResourceFromBundle(ResourceBundle bundle, String key) throws MissingResourceException {
         String res = null;
         try {
             return bundle.getString(key);
@@ -82,7 +84,7 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
                 res = bundle.getString(key + "#1");
             } catch (MissingResourceException ex) {
                 //
-                return null;
+                throw ex;
             }
 
             StringBuilder sb = new StringBuilder(res.length() * 3);
