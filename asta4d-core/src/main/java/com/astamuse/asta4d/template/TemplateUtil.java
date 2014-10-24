@@ -62,11 +62,22 @@ public class TemplateUtil {
         // loadStaticEmebed(doc);
 
         regulateSnippets(path, doc);
+        regulateMsgs(path, doc);
         regulateEmbed(doc);
     }
 
     private final static String createSnippetRef() {
         return "sn-" + IdGenerator.createId();
+    }
+
+    private final static void regulateMsgs(String path, Document doc) {
+        List<Element> msgElems = doc.select(ExtNodeConstants.MSG_NODE_TAG_SELECTOR);
+        for (Element element : msgElems) {
+            // record template path
+            if (!element.hasAttr(ExtNodeConstants.ATTR_TEMPLATE_PATH)) {
+                element.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH, path);
+            }
+        }
     }
 
     private final static void regulateSnippets(String path, Document doc) {

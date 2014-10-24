@@ -470,8 +470,11 @@ public class RenderUtil {
             };
             Locale locale = LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE));
             String currentTemplatePath = attributes.get(ExtNodeConstants.ATTR_TEMPLATE_PATH);
-
-            context.setData(TRACE_VAR_TEMPLATE_PATH, currentTemplatePath);
+            if (StringUtils.isEmpty(currentTemplatePath)) {
+                logger.warn("There is a msg tag which does not hold corresponding template file path:{}", msgElem.outerHtml());
+            } else {
+                context.setData(TRACE_VAR_TEMPLATE_PATH, currentTemplatePath);
+            }
 
             final Map<String, Object> paramMap = getMessageParams(attributes, locale, key);
             String text;
