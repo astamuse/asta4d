@@ -17,6 +17,14 @@ public class SiteCategoryAwaredStaticResourceHandler extends StaticResourceHandl
         }
     };
 
+    public SiteCategoryAwaredStaticResourceHandler() {
+        super();
+    }
+
+    public SiteCategoryAwaredStaticResourceHandler(String basePath) {
+        super(basePath);
+    }
+
     private StaticFileInfo _super_retrieveStaticFileInfo(ServletContext servletContext, String path) throws FileNotFoundException,
             IOException {
         return super.retrieveStaticFileInfo(servletContext, path);
