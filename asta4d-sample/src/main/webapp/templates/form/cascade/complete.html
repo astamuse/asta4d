@@ -4,20 +4,25 @@
 <body>
 <afd:extension parent="/layout/common.html">
 	<afd:block override="content-title">
-		Cascade form - complete
+		Cascade form
 	</afd:block>
 	<afd:block override="content-detail">
-	    <!-- @ShowCode:showCompleteStart -->
-		<section>
-			<article>
-				<p>Input flow completed.</p>
-				<form method="post">
-					<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
-					<button type="submit" name="step-exit" value="exit">return</button>
-				</form>
-			</article>
-		</section>
-	    <!-- @ShowCode:showCompleteEnd -->
+		<div class="panel panel-warning">
+			<div class="panel-heading"><h3>Complete</h3></div>
+			<div class="panel-body">
+				<!-- @ShowCode:showCompleteStart -->
+				<section>
+					<article>
+						<p>Input flow completed.</p>
+						<form method="post">
+							<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
+							<afd:embed target="/templates/form/multistep/btns-complete.html"/>
+						</form>
+					</article>
+				</section>
+				<!-- @ShowCode:showCompleteEnd -->
+			</div>
+		</div>
 	</afd:block>
 </body>
 </html>

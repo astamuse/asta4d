@@ -15,10 +15,10 @@ public class CascadeForm {
     @Valid
     private PersonForm personForm;
 
-    @Hidden(name = "job-length")
-    private Integer jobLength;
+    @Hidden(name = "job-experience-length")
+    private Integer jobExperienceLength;
 
-    @CascadeFormField(name = "job", arrayLengthField = "job-length", containerSelector = "#job-experence-row")
+    @CascadeFormField(name = "job-experience", arrayLengthField = "job-experience-length", containerSelector = "[cascade-ref=job-experience-row-@]")
     @Valid
     @NotEmpty
     private JobForm[] jobForms;
@@ -31,12 +31,12 @@ public class CascadeForm {
         this.personForm = personForm;
     }
 
-    public Integer getJobLength() {
-        return jobLength;
+    public Integer getJobExperienceLength() {
+        return jobExperienceLength;
     }
 
-    public void setJobLength(Integer jobLength) {
-        this.jobLength = jobLength;
+    public void setJobExperienceLength(Integer jobExperienceLength) {
+        this.jobExperienceLength = jobExperienceLength;
     }
 
     public JobForm[] getJobForms() {

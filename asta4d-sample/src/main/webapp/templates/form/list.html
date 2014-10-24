@@ -28,11 +28,11 @@
 		}
 		
 		function casadd(){
-			location.href="form/cascade?action=add";
+			location.href="form/cascade/add";
 		}
 		
 		function casmod(){
-			location.href="form/cascade?action=edit&id="+getId();	
+			location.href="form/cascade/edit?id="+getId();	
 		}
 		
 		</script>
@@ -99,7 +99,7 @@
 					</div>
 				</div>
 				<div class="form-btns" id="cascade-form-btns" style="display:none">
-					There is a cascade form for array input.
+					There is a cascade form for array input. It also shows how to use separated request handler for add and update operation.
 					<div>
 						<button type=button class="btn btn-sm btn-default" onclick="casadd()">add</button>
 						<button type=button class="btn btn-sm btn-default" onclick="casmod()">modify</button>

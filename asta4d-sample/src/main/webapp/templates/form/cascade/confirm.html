@@ -4,25 +4,25 @@
 <body>
 <afd:extension parent="/layout/common.html">
 	<afd:block override="content-title">
-		Cascade form - confirm
+		Cascade form
 	</afd:block>
 	<afd:block override="content-detail">
-
-	    <!-- @ShowCode:showConfirmStart -->
-		<section>
-			<article>
-				<p>Are you sure you have the correct?</p>
-				<form method="post">
-					<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
-					<input type="hidden" name="step-current" value="confirm">
-					<input type="hidden" name="step-failed" value="input">
-					<button type="submit" name="step-success" value="complete">send</button>
-					<button type="submit" name="step-back" value="input">back</button>
-					<button type="submit" name="step-exit" value="exit">cancel</button>
-				</form>
-			</article>
-		</section>
-	    <!-- @ShowCode:showConfirmEnd -->
+		<div class="panel panel-warning">
+			<div class="panel-heading"><h3>confirm</h3></div>
+			<div class="panel-body">
+				<!-- @ShowCode:showConfirmStart -->
+				<section>
+					<article>
+						<p>Are you sure you have the correct?</p>
+						<form method="post">
+							<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
+							<afd:embed target="/templates/form/multistep/btns-confirm.html"/>
+						</form>
+					</article>
+				</section>
+				<!-- @ShowCode:showConfirmEnd -->
+			</div>
+		</div>
 	</afd:block>
 </body>
 </html>

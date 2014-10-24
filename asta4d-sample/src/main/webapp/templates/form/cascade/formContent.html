@@ -5,27 +5,34 @@
 <body>
 <script>
 function addJob(){
-	var personIdElem = document.getElementById("data-id");
-	var personId = personIdElem.getAttribute("value");
-	if(personId == null){
+	var personId = $("[name=id]").val();
+	if(!personId){
 		personId = "-1";
 	}
 	
-	var jobLengthElem = document.getElementById("job-length");
-	var jobLength = parseInt(jobLengthElem.getAttribute("value"));
+	var jobLengthElem = $("[name='job-experience-length']");
+	var jobLength = parseInt(jobLengthElem.val());
 	
-	var container = document.getElementById("job-experence");
-	var newJobInputHtml="<input type=\"hidden\" name=\"job-person-id-"+jobLength+"\" value=\""+personId+"\">";
-	newJobInputHtml+="year:<input type=\"text\" name=\"job-year-"+jobLength+"\">desc:<input type=\"text\" name=\"job-description-"+jobLength+"\">";
-	var newJobWrapper = document.createElement("div");
-	newJobWrapper.id = "job-experence-row";
-	newJobWrapper.innerHTML = newJobInputHtml;
-	container.appendChild(newJobWrapper);
+	var templateElem = $("[cascade-ref='job-experience-row-@']");
+	templateElem = templateElem.clone();
+	templateElem.css("display", "");
+	
+	templateElem.find("[name='job-person-id-@']").val(personId);
+	
+	var templateStr = $("<div>").append(templateElem).html();
+	templateStr = templateStr.replace(/@/g, jobLength);
+
+	$("#job-experience").append(templateStr);
 	
 	jobLength++;
-	jobLengthElem.setAttribute("value", jobLength);
+	jobLengthElem.val(jobLength);
 	
 
+}
+function removeJob(targetBtn){
+	var targetRef = $(targetBtn).attr("cascade-ref-target");
+	$("[cascade-ref='" + targetRef+"']").remove();
+	return false;
 }
 </script>
 <afd:snippet render="form.CascadeFormSnippet">
@@ -44,23 +51,24 @@ function addJob(){
 	<textarea name="memo"></textarea>
 	</td></tr>
 	<tr>
-		<td>job experences:</td>
+		<td>job experiences:</td>
 		<td>
-			<a href="javascript:addJob()">add job experence</a>
-			<div id="job-err-msg" style="color: red"></div>
-			<div id="job-experence">
-				<div id="job-experence-row">
+			<div id="job-experience-err-msg" style="color: red"></div>
+			<div id="job-experience">
+				<div cascade-ref="job-experience-row-@">
 					<input type="hidden" name="job-id-@">
 					<input type="hidden" name="job-person-id-@">
-					year:<input type="text" name="job-year-@">desc:<input type="text" name="job-description-@">
+					year:<input type="text" name="job-year-@">
+					desc:<input type="text" name="job-description-@">
+					<a href="javascript:void(0)" onclick="removeJob(this)" cascade-ref-target="job-experience-row-@" class="glyphicon glyphicon-minus"></a>
 				</div>
 			</div>
+			<a id="job-experience-add-btn" href="javascript:addJob()" class="glyphicon glyphicon-plus"></a>
 		</td>
 	</tr>
 </table>
-<input type="hidden" id="data-id" name="data-id">
-<input type="hidden" name="action">
-<input type="hidden" name="job-length" id="job-length" value="0">
+<input type="hidden" id="id" name="id">
+<input type="hidden" name="job-experience-length" value="0">
 </afd:snippet>
 </body>
 </html>

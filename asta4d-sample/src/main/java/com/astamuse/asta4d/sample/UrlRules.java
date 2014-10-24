@@ -32,6 +32,7 @@ import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -99,10 +100,15 @@ public class UrlRules implements UrlMappingRuleInitializer {
              .handler(new MultiStepEditHandler("/templates/form/multistep/"))
              .redirect("/form");
         
-        rules.add((HttpMethod)null, "/form/cascade")
-             .handler(CascadeEditHandler.class)
+        rules.add((HttpMethod)null, "/form/cascade/add")
+             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
+             .handler(CascadeEditHandler.Add.class)
              .redirect("/form");
-        
+
+        rules.add((HttpMethod)null, "/form/cascade/edit")
+             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
+             .handler(CascadeEditHandler.Edit.class)
+             .redirect("/form");
            
         rules.add("/localize", "/templates/localize.html");
         
