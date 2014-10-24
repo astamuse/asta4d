@@ -144,7 +144,7 @@ public abstract class AbstractFormFlowHandler<T> {
     /**
      * Sub classes can override this method to do some interception around form instance generation, especially some post processes.
      * <p>
-     * <b>NOTE:</b> DO NOT replace this method completely at sub class, if you want to do some cusomized form retrieving, override the
+     * <b>NOTE:</b> DO NOT replace this method completely at sub class, if you want to do some customized form retrieving, override the
      * method {@link #retrieveFormInstance(Map, String)} instead.
      * 
      * @return

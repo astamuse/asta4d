@@ -54,7 +54,7 @@ public abstract class AbstractFormFlowSnippet {
     @ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET)
     protected String renderTargetStep;
 
-    protected boolean renderForEdit(String step, String fieldName) {
+    protected boolean renderForEdit(String step, Object form, String fieldName) {
         return true;
     }
 
@@ -122,8 +122,7 @@ public abstract class AbstractFormFlowSnippet {
 
     /**
      * 
-     * Render the whole given form instance. All the
-     * {@link FormFieldPrepareRenderer}s would be invoked here too.
+     * Render the whole given form instance. All the {@link FormFieldPrepareRenderer}s would be invoked here too.
      * 
      * @param renderTargetStep
      * @param form
@@ -158,8 +157,7 @@ public abstract class AbstractFormFlowSnippet {
 
     /**
      * 
-     * Render the value of all the given form's fields.The rendering of cascade
-     * forms will be done here as well(recursively call the
+     * Render the value of all the given form's fields.The rendering of cascade forms will be done here as well(recursively call the
      * {@link #renderForm(String, Object, int)}).
      * 
      * @param renderTargetStep
@@ -180,20 +178,44 @@ public abstract class AbstractFormFlowSnippet {
             if (cff != null) {
                 String containerSelector = cff.containerSelector();
 
-                if (field.getType().isArray()) {
+                if (field.getType().isArray()) {// a cascade form for array
                     int len = Array.getLength(v);
                     List<Renderer> subRendererList = new ArrayList<>(len);
-                    for (int i = 0; i < len; i++) {
-                        Object subForm = Array.get(v, i);
+                    int loopStart = 0;
+                    if (renderForEdit(renderTargetStep, form, cff.name())) {
+                        // for rendering a template DOM
+                        loopStart = -1;
+                    }
+                    Class<?> subFormType = field.getType().getComponentType();
+                    Object subForm;
+                    for (int i = loopStart; i < len; i++) {
+                        // retrieve the form instance
+                        if (i >= 0) {
+                            subForm = Array.get(v, i);
+                        } else {
+                            // create a template instance
+                            subForm = createFormInstanceForCascadeFormArrayTemplate(subFormType);
+                        }
+
                         Renderer subRenderer = Renderer.create();
-                        subRenderer.add(setCascadeFormContainerArrayRef(i));
-                        subRenderer.add(rewriteCascadeFormFieldArrayRef(renderTargetStep, subForm, i));
+
+                        // only rewrite the refs for normal instances
+                        if (i >= 0) {
+                            // subRenderer.add(setCascadeFormContainerArrayRef(i));
+                            subRenderer.add(rewriteCascadeFormFieldArrayRef(renderTargetStep, subForm, i));
+                        }
+
                         subRenderer.add(renderForm(renderTargetStep, subForm, i));
+
+                        // hide the template DOM
+                        if (i < 0) {
+                            subRenderer.add(":root", hideCascadeFormTemplateDOM(subFormType));
+                        }
 
                         subRendererList.add(subRenderer);
                     }
                     render.add(containerSelector, subRendererList);
-                } else {
+                } else {// a simple cascade form
 
                     if (StringUtils.isNotEmpty(containerSelector)) {
                         render.add(containerSelector, renderForm(renderTargetStep, v, -1));
@@ -223,7 +245,7 @@ public abstract class AbstractFormFlowSnippet {
 
             // render.addDebugger("whole form before: " + field.getName());
 
-            if (renderForEdit(renderTargetStep, field.getName())) {
+            if (renderForEdit(renderTargetStep, form, field.getName())) {
                 render.add(renderingInfo.valueRenderer.renderForEdit(renderingInfo.editSelector, v));
             } else {
                 render.add(renderingInfo.valueRenderer.renderForDisplay(renderingInfo.editSelector, renderingInfo.displaySelector, v));
@@ -240,7 +262,36 @@ public abstract class AbstractFormFlowSnippet {
         return SelectorUtil.attr("name", fieldName);
     }
 
-    protected Renderer setCascadeFormContainerArrayRef(final int cascadeFormArrayIndex) {
+    protected Renderer hideCascadeFormTemplateDOM(Class<?> subFormType) {
+        return Renderer.create(":root", new ElementSetter() {
+            @Override
+            public void set(Element elem) {
+                String style = elem.attr("style");
+                if (StringUtils.isEmpty(style)) {
+                    style = "display:none";
+                } else {
+                    if (!style.endsWith(";")) {
+                        style += ";";
+                    }
+                    style += "display:none";
+                }
+                elem.attr("style", style);
+            }
+        });
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
+        return subFormType.newInstance();
+    }
+
+    /*
+     * It seems that we do not need it?
+     * 
+     * @param cascadeFormArrayIndex
+     * @return
+     */
+    private Renderer setCascadeFormContainerArrayRef(final int cascadeFormArrayIndex) {
         return Renderer.create(":root", new ElementSetter() {
             @Override
             public void set(Element elem) {
@@ -249,7 +300,7 @@ public abstract class AbstractFormFlowSnippet {
         });
     }
 
-    protected String cascadeFormContainerArrayRefAttrName() {
+    private String cascadeFormContainerArrayRefAttrName() {
         return "cascade-form-container-array-ref";
     }
 
@@ -275,7 +326,7 @@ public abstract class AbstractFormFlowSnippet {
         });
     }
 
-    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name" };
+    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name", "cascade-ref", "cascade-ref-target" };
 
     protected String[] rewriteCascadeFormFieldArrayRefTargetAttrs() {
         return _rewriteCascadeFormFieldArrayRefTargetAttrs;

@@ -195,9 +195,11 @@ public class OneStepFormTest extends WebTestBase {
 
         new FormRenderCase("OneStepForm_initInput.html");
 
-        TestSnippet.assertFormCounterSize(2);
+        TestSnippet.assertFormCounterSize(4);
         TestSnippet.assertFormCounter(TestForm.class, 1);
         TestSnippet.assertFormCounter(SubForm.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 1);
+        TestSnippet.assertFormCounter(SubArray2.class, 1);
     }
 
     private Map<String, String[]> requestParameters_inputWithTypeUnMatchError = new HashMap<String, String[]>() {
@@ -234,10 +236,11 @@ public class OneStepFormTest extends WebTestBase {
 
         new FormRenderCase("OneStepForm_inputWithTypeUnMatchError.html");
 
-        TestSnippet.assertFormCounterSize(3);
+        TestSnippet.assertFormCounterSize(4);
         TestSnippet.assertFormCounter(TestForm.class, 1);
         TestSnippet.assertFormCounter(SubForm.class, 1);
-        TestSnippet.assertFormCounter(SubArray.class, 1);
+        TestSnippet.assertFormCounter(SubArray.class, 2);
+        TestSnippet.assertFormCounter(SubArray2.class, 1);
     }
 
     private Map<String, String[]> requestParameters_inputWithValueValidationError = new HashMap<String, String[]>() {
@@ -282,10 +285,11 @@ public class OneStepFormTest extends WebTestBase {
 
         new FormRenderCase("OneStepForm_inputWithValueValidationError.html");
 
-        TestSnippet.assertFormCounterSize(3);
+        TestSnippet.assertFormCounterSize(4);
         TestSnippet.assertFormCounter(TestForm.class, 1);
         TestSnippet.assertFormCounter(SubForm.class, 1);
-        TestSnippet.assertFormCounter(SubArray.class, 2);
+        TestSnippet.assertFormCounter(SubArray.class, 3);
+        TestSnippet.assertFormCounter(SubArray2.class, 1);
     }
 
     private Map<String, String[]> requestParameters_exit = new HashMap<String, String[]>() {

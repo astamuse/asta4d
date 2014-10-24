@@ -16,7 +16,7 @@ public abstract class MultiStepFormFlowSnippet extends AbstractFormFlowSnippet {
     }
 
     @Override
-    protected boolean renderForEdit(String step, String fieldName) {
+    protected boolean renderForEdit(String step, Object form, String fieldName) {
         if (StringUtils.isEmpty(step)) {
             return true;
         } else {
