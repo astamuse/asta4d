@@ -41,6 +41,8 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
             try {
                 ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
                 pattern = retrieveResourceFromBundle(resourceBundle, key);
+                // if the pattern is not found, MissingResourceException will be thrown and the break will be skipped
+                break;
             } catch (MissingResourceException e) {
                 //
             }
@@ -83,8 +85,8 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
             try {
                 res = bundle.getString(key + "#1");
             } catch (MissingResourceException ex) {
-                //
-                throw ex;
+                // we throw the original exception
+                throw e;
             }
 
             StringBuilder sb = new StringBuilder(res.length() * 3);
