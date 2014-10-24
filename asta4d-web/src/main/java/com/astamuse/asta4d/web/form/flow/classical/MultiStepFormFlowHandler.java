@@ -5,6 +5,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
@@ -14,14 +16,25 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
 
     private static final Logger logger = LoggerFactory.getLogger(MultiStepFormFlowHandler.class);
 
-    private String templatePrefix;
+    public static final String VAR_TEMPLATE_BASE_PATH = "TEMPLATE_BASE_PATH#" + MultiStepFormFlowHandler.class;
 
-    public MultiStepFormFlowHandler(Class<T> formCls, String templatePrefix) {
+    private String templateBasePath;
+
+    public MultiStepFormFlowHandler(Class<T> formCls, String templateBasePath) {
         super(formCls);
-        this.templatePrefix = templatePrefix;
+        this.templateBasePath = templateBasePath;
+    }
+
+    public MultiStepFormFlowHandler(Class<T> formCls) {
+        super(formCls);
+        this.templateBasePath = null;
     }
 
     protected abstract void updateForm(T form);
+
+    protected boolean doUpdateOnSuccess(String step) {
+        return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
+    }
 
     protected boolean isConfirmStep(String step) {
         return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
@@ -42,7 +55,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
 
     @RequestHandler
     public String handle() throws Exception {
-        return createTemplateFilePathForStep(handleWithRenderTargetStep());
+        return createTemplateFilePathForStep(super.handle());
     }
 
     protected String createTemplateFilePathForStep(String step) {
@@ -60,13 +73,22 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
             step = firstStepName();
         }
 
-        return templatePrefix + step + ".html";
+        if (templateBasePath == null) {
+            String varPath = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_TEMPLATE_BASE_PATH);
+            return createTemplateFilePath(varPath, step);
+        } else {
+            return createTemplateFilePath(templateBasePath, step);
+        }
+    }
+
+    protected String createTemplateFilePath(String templateBasePath, String step) {
+        return templateBasePath + step + ".html";
     }
 
     @Override
     protected CommonFormResult handle(String currentStep, T form) {
         CommonFormResult result = super.handle(currentStep, form);
-        if (result == CommonFormResult.SUCCESS && isConfirmStep(currentStep)) {
+        if (result == CommonFormResult.SUCCESS && doUpdateOnSuccess(currentStep)) {
             try {
                 updateForm(form);
                 return CommonFormResult.SUCCESS;

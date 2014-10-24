@@ -9,8 +9,8 @@ import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 //@ShowCode:showMultiStepEditHandlerStart
 public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
 
-    public MultiStepEditHandler() {
-        super(PersonForm.class, "/templates/form/multistep/");
+    public MultiStepEditHandler(String templateBasePath) {
+        super(PersonForm.class, templateBasePath);
     }
 
     @RequestHandler

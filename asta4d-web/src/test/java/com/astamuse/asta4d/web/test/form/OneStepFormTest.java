@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippet;
@@ -42,7 +41,7 @@ public class OneStepFormTest extends WebTestBase {
         private List<FormValidationMessage> msgList = new LinkedList<>();
 
         public TestHandler() {
-            super(TestForm.class);
+            super(TestForm.class, "/edit.html");
         }
 
         @Override
@@ -191,7 +190,7 @@ public class OneStepFormTest extends WebTestBase {
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertNull(handler.handle());
+        Assert.assertEquals(handler.handle(), "/edit.html");
         Assert.assertNull(savedForm);
 
         new FormRenderCase("OneStepForm_initInput.html");
@@ -225,7 +224,7 @@ public class OneStepFormTest extends WebTestBase {
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), CommonFormResult.FAILED);
+        Assert.assertEquals(handler.handle(), "/edit.html");
         Assert.assertNull(savedForm);
 
         handler.assertMessageSize(3);
@@ -270,7 +269,7 @@ public class OneStepFormTest extends WebTestBase {
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), CommonFormResult.FAILED);
+        Assert.assertEquals(handler.handle(), "/edit.html");
         Assert.assertNull(savedForm);
 
         handler.assertMessageSize(6);
@@ -337,7 +336,7 @@ public class OneStepFormTest extends WebTestBase {
 
         TestHandler handler = new TestHandler();
 
-        Assert.assertEquals(handler.handle(), CommonFormResult.SUCCESS);
+        Assert.assertNull(handler.handle());
 
         handler.assertMessageSize(0);
 

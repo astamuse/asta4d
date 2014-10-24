@@ -49,14 +49,6 @@ public abstract class AbstractFormFlowHandler<T> {
 
     protected abstract T createInitForm();
 
-    protected String handleWithRenderTargetStep() throws Exception {
-        return (String) handle(true);
-    }
-
-    protected CommonFormResult handleWithCommonFormResult() throws Exception {
-        return (CommonFormResult) handle(false);
-    }
-
     protected <D> void saveExtraDataToContext(D actionInfo) {
         Context.getCurrentThreadContext().setData(FORM_EXTRA_DATA, actionInfo);
     }
@@ -69,7 +61,7 @@ public abstract class AbstractFormFlowHandler<T> {
         Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, form);
     }
 
-    protected Object handle(boolean returnRenderTargetStep) throws Exception {
+    protected String handle() throws Exception {
         FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(formProcessDataCls,
                 "not-exist-IntelligentFormProcessData", "");
 
@@ -113,6 +105,7 @@ public abstract class AbstractFormFlowHandler<T> {
             passDataToSnippet(currentStep, renderTargetStep, traceMap, null);
         } else {
             if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+                formResult = CommonFormResult.INIT;
                 renderTargetStep = FormFlowConstants.FORM_STEP_INIT_STEP;
             } else {
                 formResult = handle(currentStep, form);
@@ -131,11 +124,8 @@ public abstract class AbstractFormFlowHandler<T> {
             clearSavedTraceMap(newTraceData);
         }
 
-        if (returnRenderTargetStep) {
-            return renderTargetStep;
-        } else {
-            return formResult;
-        }
+        return renderTargetStep;
+
     }
 
     /**

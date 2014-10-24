@@ -1,65 +1,31 @@
 package com.astamuse.asta4d.web.form.flow.classical;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> {
 
-import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
+    public static final String VAR_INPUT_TEMPLATE_FILE = VAR_TEMPLATE_BASE_PATH;
 
-public abstract class OneStepFormHandler<T> extends AbstractFormFlowHandler<T> {
-
-    private static final Logger logger = LoggerFactory.getLogger(OneStepFormHandler.class);
+    public OneStepFormHandler(Class<T> formCls, String inputTemplateFile) {
+        super(formCls, inputTemplateFile);
+    }
 
     public OneStepFormHandler(Class<T> formCls) {
         super(formCls);
     }
 
+    protected boolean doUpdateOnSuccess(String step) {
+        return true;
+    }
+
+    @Override
+    protected boolean treatCompleteStepAsExit() {
+        return true;
+    }
+
     /**
-     * 
-     * @return {@link CommonFormResult#SUCCESS}: final step of current form flow succeed and want to exit current form flow<br>
-     *         {@link CommonFormResult#FAILED}: final step of current form flow succeed and want to forward to the first(initial) step of
-     *         current form flow<br>
-     *         <code>null</code>: there is nothing to do and want to go to the first step of current form flow
-     * @throws Exception
+     * for a one step form, we will always return the configured template path
      */
-    @RequestHandler
-    public CommonFormResult handle() throws Exception {
-        CommonFormResult result = handleWithCommonFormResult();
-        if (result == null) {
-            return treatExitAs();
-        } else {
-            return result;
-        }
-    }
-
-    protected CommonFormResult treatExitAs() {
-        return CommonFormResult.SUCCESS;
-    }
-
-    @Override
-    protected CommonFormResult handle(String currentStep, T form) {
-        CommonFormResult result = super.handle(currentStep, form);
-        if (result == CommonFormResult.SUCCESS) {
-            try {
-                updateForm(form);
-                return CommonFormResult.SUCCESS;
-            } catch (Exception ex) {
-                logger.error("error occured on step:" + currentStep, ex);
-                return CommonFormResult.FAILED;
-            }
-        } else {
-            return result;
-        }
-    }
-
-    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
-        return ClassicalFormFlowConstant.STEP_COMPLETE.equals(renderTargetStep);
-    }
-
-    @Override
-    protected boolean isCompleteStep(String step) {
-        return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
+    protected String createTemplateFilePath(String templateBasePath, String step) {
+        return templateBasePath;
     }
 
     protected abstract void updateForm(T form);
