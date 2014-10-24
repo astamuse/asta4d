@@ -5,6 +5,13 @@ import java.util.Locale;
 import com.astamuse.asta4d.util.i18n.pattern.JDKResourceBundleMessagePatternRetriever;
 import com.astamuse.asta4d.util.i18n.pattern.MessagePatternRetriever;
 
+/**
+ * The sub class of this class should not return null in all the getMessage methods. Returns empty string instead.
+ * 
+ * 
+ * @author e-ryu
+ * 
+ */
 public abstract class I18nMessageHelper {
 
     private MessagePatternRetriever messagePatternRetriever;
