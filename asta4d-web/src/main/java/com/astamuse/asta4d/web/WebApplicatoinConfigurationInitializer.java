@@ -3,15 +3,13 @@ package com.astamuse.asta4d.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import com.astamuse.asta4d.web.initialization.Initializer;
+import com.astamuse.asta4d.web.initialization.SimplePropertyFileIntializer;
 import com.astamuse.asta4d.web.util.SystemPropertyUtil;
 import com.astamuse.asta4d.web.util.SystemPropertyUtil.PropertyScope;
 
@@ -57,37 +55,22 @@ public class WebApplicatoinConfigurationInitializer {
 
         if (input != null) {
             try {
-                switch (fileType) {
-                case "properties":
-                    Properties ps = new Properties();
-                    ps.load(input);
-                    // PropertyUtils.setProperty(bean, name, value)
-                    Enumeration<Object> keys = ps.keys();
-                    while (keys.hasMoreElements()) {
-                        String key = keys.nextElement().toString();
-                        String value = ps.getProperty(key);
-                        try {
-                            BeanUtils.setProperty(conf, key, value);
-                        } catch (IllegalArgumentException ex) {
-                            if (ex.getMessage().indexOf("argument type mismatch") >= 0) {
-                                @SuppressWarnings("rawtypes")
-                                Class cls = PropertyUtils.getPropertyType(conf, key);
-                                if (cls.equals(Class.class)) {
-                                    BeanUtils.setProperty(conf, key, Class.forName(value));
-                                } else {
-                                    BeanUtils.setProperty(conf, key, Class.forName(value).newInstance());
-                                }
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    throw new UnsupportedOperationException("File type of " + fileType +
-                            " does not be supported for initialize asta4d Configuration.");
-                }
+                Initializer initializer = retrieveInitializer(fileType);
+                initializer.initliaze(input, conf);
             } finally {
                 input.close();
             }
+        }
+    }
+
+    protected Initializer retrieveInitializer(String fileType) {
+        // at present, we only support properties file, but we will try to support .js or .groovy as well in future.
+        switch (fileType) {
+        case "properties":
+            return new SimplePropertyFileIntializer();
+        default:
+            throw new UnsupportedOperationException("File type of " + fileType +
+                    " does not be supported for initialize asta4d Configuration.");
         }
     }
 

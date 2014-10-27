@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.web.test.unit.sitecategory;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 import org.testng.Assert;
@@ -56,7 +55,7 @@ public class SiteCategoryAwaredTemplateResolverTest {
     public void testResolve(String targetFile, String expectedContent) throws Exception {
         SiteCategoryUtil.setCurrentRequestSearchCategories("category1", "category2", "category3");
         ClasspathTemplateResolver underLineResolver = new ClasspathTemplateResolver();
-        underLineResolver.setSearchPathList(Arrays.asList("/com/astamuse/asta4d/web/test/unit/sitecategory"));
+        underLineResolver.setSearchPathList("/com/astamuse/asta4d/web/test/unit/sitecategory");
         SiteCategoryAwaredTemplateResolver resolver = new SiteCategoryAwaredTemplateResolver(underLineResolver);
 
         Template template = resolver.findTemplate(targetFile);

@@ -17,9 +17,6 @@
 
 package com.astamuse.asta4d.test.render.infra;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,13 +32,11 @@ public class BaseTest {
     private final static Configuration configuration = new Configuration() {
         {
             ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
-            List<String> templateBaseFolders = Arrays.asList("/com/astamuse/asta4d/test/render/templates");
-            templateResolver.setSearchPathList(templateBaseFolders);
+            templateResolver.setSearchPathList("/com/astamuse/asta4d/test/render/templates");
             this.setTemplateResolver(templateResolver);
 
             DefaultSnippetResolver snippetResolver = new DefaultSnippetResolver();
-            List<String> snippetBasePackages = Arrays.asList("com.astamuse.asta4d.test.render");
-            snippetResolver.setSearchPathList(snippetBasePackages);
+            snippetResolver.setSearchPathList("com.astamuse.asta4d.test.render");
             this.setSnippetResolver(snippetResolver);
 
             this.setOutputAsPrettyPrint(true);

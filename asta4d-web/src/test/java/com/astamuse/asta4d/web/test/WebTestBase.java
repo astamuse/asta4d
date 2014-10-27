@@ -1,8 +1,5 @@
 package com.astamuse.asta4d.web.test;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -19,14 +16,12 @@ public class WebTestBase {
     private final static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
             ClasspathTemplateResolver templateResolver = new ClasspathTemplateResolver();
-            List<String> templateBaseFolders = Arrays.asList("/com/astamuse/asta4d/web/test/render/templates",
+            templateResolver.setSearchPathList("/com/astamuse/asta4d/web/test/render/templates",
                     "/com/astamuse/asta4d/web/test/form/templates");
-            templateResolver.setSearchPathList(templateBaseFolders);
             this.setTemplateResolver(templateResolver);
 
             DefaultSnippetResolver snippetResolver = new DefaultSnippetResolver();
-            List<String> snippetBasePackages = Arrays.asList("com.astamuse.asta4d.web.test.render", "com.astamuse.asta4d.web.test.form");
-            snippetResolver.setSearchPathList(snippetBasePackages);
+            snippetResolver.setSearchPathList("com.astamuse.asta4d.web.test.render", "com.astamuse.asta4d.web.test.form");
             this.setSnippetResolver(snippetResolver);
 
             this.setOutputAsPrettyPrint(true);
