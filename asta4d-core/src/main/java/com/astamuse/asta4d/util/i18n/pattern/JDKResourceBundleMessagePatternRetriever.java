@@ -1,7 +1,5 @@
 package com.astamuse.asta4d.util.i18n.pattern;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -20,7 +18,7 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
 
     private ResourceBundleFactory resourceBundleFactory = new CharsetResourceBundleFactory();
 
-    private List<String> resourceNames = new LinkedList<>();
+    private String[] resourceNames = new String[0];
 
     public ResourceBundleFactory getResourceBundleFactory() {
         return resourceBundleFactory;
@@ -30,8 +28,8 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
         this.resourceBundleFactory = resourceBundleFactory;
     }
 
-    public void setResourceNames(List<String> resourceNames) {
-        this.resourceNames = new LinkedList<>(resourceNames);
+    public void setResourceNames(String... resourceNames) {
+        this.resourceNames = resourceNames.clone();
     }
 
     @Override

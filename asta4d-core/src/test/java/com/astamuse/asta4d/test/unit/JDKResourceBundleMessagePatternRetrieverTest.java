@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.test.unit;
 
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import org.testng.Assert;
@@ -24,37 +23,37 @@ public class JDKResourceBundleMessagePatternRetrieverTest extends BaseTest {
 
     public void testSingleResourceFileExistingKey() {
         JDKResourceBundleMessagePatternRetriever retriever = new JDKResourceBundleMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList(EXISTING_FILE));
+        retriever.setResourceNames(EXISTING_FILE);
         Assert.assertEquals(retriever.retrieve(null, "test"), "testxxx");
     }
 
     public void testSingleResourceFileNotExistingKey() {
         JDKResourceBundleMessagePatternRetriever retriever = new JDKResourceBundleMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList(EXISTING_FILE));
+        retriever.setResourceNames(EXISTING_FILE);
         Assert.assertNull(retriever.retrieve(null, "test_not_existing"));
     }
 
     public void testMultiResourceFileExistingKey() {
         JDKResourceBundleMessagePatternRetriever retriever = new JDKResourceBundleMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList(NOT_EXISTING_FILE, EXISTING_FILE));
+        retriever.setResourceNames(NOT_EXISTING_FILE, EXISTING_FILE);
         Assert.assertEquals(retriever.retrieve(null, "test"), "testxxx");
     }
 
     public void testMultiResourceFileNotExistingKey() {
         JDKResourceBundleMessagePatternRetriever retriever = new JDKResourceBundleMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList(NOT_EXISTING_FILE, EXISTING_FILE));
+        retriever.setResourceNames(NOT_EXISTING_FILE, EXISTING_FILE);
         Assert.assertNull(retriever.retrieve(null, "test_not_existing"));
     }
 
     public void testMultiResourceFileExistingKey2() {
         JDKResourceBundleMessagePatternRetriever retriever = new JDKResourceBundleMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList(NOT_EXISTING_FILE, EXISTING_FILE, KEY_NOT_EXISTING_FILE));
+        retriever.setResourceNames(NOT_EXISTING_FILE, EXISTING_FILE, KEY_NOT_EXISTING_FILE);
         Assert.assertEquals(retriever.retrieve(null, "test"), "testxxx");
     }
 
     public void testMultiResourceFileNotExistingKey2() {
         JDKResourceBundleMessagePatternRetriever retriever = new JDKResourceBundleMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList(NOT_EXISTING_FILE, EXISTING_FILE, KEY_NOT_EXISTING_FILE));
+        retriever.setResourceNames(NOT_EXISTING_FILE, EXISTING_FILE, KEY_NOT_EXISTING_FILE);
         Assert.assertNull(retriever.retrieve(null, "test_not_existing"));
     }
 

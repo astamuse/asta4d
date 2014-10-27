@@ -19,7 +19,6 @@ package com.astamuse.asta4d.test.unit;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -126,7 +125,7 @@ public class ResourceBundleUtilTest extends BaseTest {
         Context context = Context.getCurrentThreadContext();
         context.setCurrentLocale(Locale.US);
         JDKResourceBundleMessagePatternRetriever retriever = (JDKResourceBundleMessagePatternRetriever) helper.getMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
+        retriever.setResourceNames("com.astamuse.asta4d.test.render.messages." + fileName);
         retriever.setResourceBundleFactory(new LatinEscapingResourceBundleFactory());
     }
 }

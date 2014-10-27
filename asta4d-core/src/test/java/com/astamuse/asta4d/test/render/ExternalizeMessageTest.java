@@ -17,7 +17,6 @@
 
 package com.astamuse.asta4d.test.render;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 import org.testng.annotations.BeforeClass;
@@ -115,7 +114,7 @@ public class ExternalizeMessageTest extends BaseTest {
         configuration.setI18nMessageHelper(helper);
         JDKResourceBundleMessagePatternRetriever retriever = (JDKResourceBundleMessagePatternRetriever) configuration
                 .getI18nMessageHelper().getMessagePatternRetriever();
-        retriever.setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
+        retriever.setResourceNames("com.astamuse.asta4d.test.render.messages." + fileName);
 
         // re initialize the I18nMessageTypeAssistant
         System.setProperty("I18nMessageHelperTypeAssistant.Test", "xxx");
