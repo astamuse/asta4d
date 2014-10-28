@@ -105,8 +105,6 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
 
     }
 
-    protected boolean addFieldLablePrefixToMessage;
-
     protected Validator validator;
 
     public JsrValidator() {
@@ -114,8 +112,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
     }
 
     public JsrValidator(Validator validator) {
-        super();
-        this.validator = validator;
+        this(validator, true);
     }
 
     public JsrValidator(Validator validator, boolean addFieldLablePrefixToMessage) {

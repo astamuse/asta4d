@@ -18,8 +18,6 @@ import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 
 public class TypeUnMatchValidator extends CommonValidatorBase implements FormValidator {
 
-    protected boolean addFieldLablePrefixToMessage;
-
     public TypeUnMatchValidator() {
         super();
     }
@@ -98,7 +96,7 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
             return String.format(msgTemplate, fieldLabel, fieldTypeName, valueString);
         } else {
             String msgTemplate = "%s is expected but value[%s] found.";
-            return String.format(msgTemplate, fieldLabel, fieldTypeName, valueString);
+            return String.format(msgTemplate, fieldTypeName, valueString);
         }
     }
 

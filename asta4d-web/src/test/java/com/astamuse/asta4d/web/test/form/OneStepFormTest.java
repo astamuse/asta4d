@@ -217,7 +217,7 @@ public class OneStepFormTest extends WebTestBase {
         }
     };
 
-    private static final String IntegerTypeUnMatch = ".+ is expecting Integer but value\\[.+\\] found\\.";
+    private static final String IntegerTypeUnMatch = ".+ Integer is expected but value\\[.+\\] found\\.";
 
     @Test(dependsOnMethods = "testInitStep")
     public void testInputWithTypeUnMatchError() throws Throwable {
