@@ -8,7 +8,6 @@ import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
@@ -65,17 +64,11 @@ public abstract class CascadeEditHandler extends MultiStepFormFlowHandler<Cascad
 
     public static class Edit extends CascadeEditHandler {
 
-        @RequestHandler
-        public String handle(Integer id) throws Exception {
-            saveExtraDataToContext(id);
-            return super.handle();
-        }
-
         @Override
-        protected CascadeForm createInitForm() {
-            Integer id = getExtraDataFromContext();
+        protected CascadeForm createInitForm() throws Exception {
+            CascadeForm superForm = super.createInitForm();
 
-            PersonForm pform = PersonForm.buildFromPerson(PersonDbManager.instance().find(id));
+            PersonForm pform = PersonForm.buildFromPerson(PersonDbManager.instance().find(superForm.getPersonForm().getId()));
             List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pform.getId());
             List<JobForm> jobFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
                 @Override

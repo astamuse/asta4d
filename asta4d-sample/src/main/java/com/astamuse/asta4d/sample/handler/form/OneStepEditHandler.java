@@ -3,7 +3,6 @@ package com.astamuse.asta4d.sample.handler.form;
 import com.astamuse.asta4d.sample.handler.form.common.CommonFormHandler;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
-import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 // @ShowCode:showOneStepEditHandlerStart
@@ -13,25 +12,19 @@ public class OneStepEditHandler extends CommonFormHandler<PersonForm> {
         super(PersonForm.class, inputTemplate);
     }
 
-    @RequestHandler
-    public String handle(Integer id) throws Exception {
-        saveExtraDataToContext(id);
-        return super.handle();
-    }
-
     @Override
-    protected PersonForm createInitForm() {
-        Integer id = getExtraDataFromContext();
-        if (id == null) {// add
-            return new PersonForm();
+    protected PersonForm createInitForm() throws Exception {
+        PersonForm form = super.createInitForm();
+        if (form.getId() == null) {// add
+            return form;
         } else {// update
-            return PersonForm.buildFromPerson(PersonDbManager.instance().find(id));
+            // retrieve the form form db again
+            return PersonForm.buildFromPerson(PersonDbManager.instance().find(form.getId()));
         }
     }
 
     @Override
     protected void updateForm(PersonForm form) {
-        // ExtraInfo extra = getExtraDataFromContext();
         if (form.getId() == null) {// add
             PersonDbManager.instance().add(Person.createByForm(form));
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
