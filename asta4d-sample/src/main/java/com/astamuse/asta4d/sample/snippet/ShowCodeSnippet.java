@@ -106,16 +106,23 @@ public class ShowCodeSnippet {
             reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
             String line = null;
             String contents = "";
-            boolean isMark = false;
+            int markStart = -1;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(endMark)) {
-                    isMark = false;
+                    break;
                 }
-                if (isMark && !line.contains(SHOW_MARK)) {
+                if (markStart >= 0 && !line.contains(SHOW_MARK)) {
+                    if (line.length() <= markStart) {
+                        line = "";
+                    } else {
+                        line = line.substring(markStart);
+                    }
                     contents = contents + line + "\n";
                 }
+
                 if (line.contains(startMark)) {
-                    isMark = true;
+                    String trim = line.trim();
+                    markStart = line.indexOf(trim);
                 }
             }
 

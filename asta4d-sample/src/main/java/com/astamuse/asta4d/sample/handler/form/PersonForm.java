@@ -13,7 +13,10 @@ import com.astamuse.asta4d.web.form.annotation.renderable.Radio;
 import com.astamuse.asta4d.web.form.annotation.renderable.Select;
 import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
 
+//@ShowCode:showPersonFormStart
+//@Form to tell the framework this class can be initialized from context
 @Form
+// extend from the entity POJO to annotate form field definitions on getters.
 public class PersonForm extends Person {
 
     public static PersonForm buildFromPerson(Person p) {
@@ -26,13 +29,6 @@ public class PersonForm extends Person {
         return form;
     }
 
-    private String action;
-
-    @Hidden
-    public String getAction() {
-        return action;
-    }
-
     @Override
     @Hidden
     public Integer getId() {
@@ -40,6 +36,7 @@ public class PersonForm extends Person {
     }
 
     @Override
+    // afford an annotated message to override default generated message
     @Input(message = "validation.field.PersonForm.name")
     public String getName() {
         return super.getName();
@@ -75,8 +72,5 @@ public class PersonForm extends Person {
         return super.getMemo();
     }
 
-    public void setAction(String action) {
-        this.action = action;
-    }
-
 }
+// @ShowCode:showPersonFormEnd

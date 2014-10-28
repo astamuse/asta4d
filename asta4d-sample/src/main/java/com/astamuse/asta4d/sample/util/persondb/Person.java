@@ -64,6 +64,11 @@ public class Person implements IdentifiableEntity, Cloneable {
 
     private String memo;
 
+    // @ShowCode:showValidationAnnotationStart
+    /*
+     * bean validation is annotated on entity POJO
+     */
+
     @NotBlank
     @Size(max = 6)
     public String getName() {
@@ -79,6 +84,8 @@ public class Person implements IdentifiableEntity, Cloneable {
     public Integer getAge() {
         return age;
     }
+
+    // @ShowCode:showValidationAnnotationEnd
 
     public void setAge(Integer age) {
         this.age = age;
