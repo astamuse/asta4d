@@ -1,17 +1,17 @@
 package com.astamuse.asta4d.web.form.validation;
 
 public class FormValidationMessage {
-    private String name;
+    private String fieldName;
     private String message;
 
-    public FormValidationMessage(String name, String message) {
+    public FormValidationMessage(String fieldName, String message) {
         super();
-        this.name = name;
+        this.fieldName = fieldName;
         this.message = message;
     }
 
-    public String getName() {
-        return name;
+    public String getFieldName() {
+        return fieldName;
     }
 
     public String getMessage() {
@@ -20,7 +20,7 @@ public class FormValidationMessage {
 
     @Override
     public String toString() {
-        return "FormValidationMessage:name=[" + name + "], message=[" + message + "]";
+        return "FormValidationMessage:name=[" + fieldName + "], message=[" + message + "]";
     }
 
 }

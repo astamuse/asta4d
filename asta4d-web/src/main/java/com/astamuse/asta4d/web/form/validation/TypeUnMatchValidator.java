@@ -14,10 +14,19 @@ import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 
-public class TypeUnMatchValidator implements FormValidator {
+public class TypeUnMatchValidator extends CommonValidatorBase implements FormValidator {
+
+    protected boolean addFieldLablePrefixToMessage;
+
+    public TypeUnMatchValidator() {
+        super();
+    }
+
+    public TypeUnMatchValidator(boolean addFieldLablePrefixToMessage) {
+        super(addFieldLablePrefixToMessage);
+    }
 
     @Override
     public List<FormValidationMessage> validate(Object form) {
@@ -56,7 +65,7 @@ public class TypeUnMatchValidator implements FormValidator {
                     valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field.getSetter());
                 }
                 if (valueHolder != null) {
-                    msgList.add(createTypeUnMatchMessage(field, valueHolder, arrayIndex));
+                    msgList.add(createTypeUnMatchMessage(form.getClass(), field, valueHolder, arrayIndex));
                 }
             }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -65,36 +74,32 @@ public class TypeUnMatchValidator implements FormValidator {
     }
 
     @SuppressWarnings("rawtypes")
-    protected FormValidationMessage createTypeUnMatchMessage(AnnotatedPropertyInfo field, ContextDataHolder valueHolder, int arrayIndex) {
-        String msgTemplate = retrieveTypeUnMatchMessageTemplate();
+    protected FormValidationMessage createTypeUnMatchMessage(Class formCls, AnnotatedPropertyInfo field, ContextDataHolder valueHolder,
+            int arrayIndex) {
         String fieldName = retrieveFieldName(field, arrayIndex);
-        String fieldDisplayName = retrieveFieldDisplayName(fieldName);
-        String targetTypeName = retrieveTargetTypeName(field.getType());
-        String valueString = generateValueString(valueHolder.getFoundOriginalData(), field.getType());
+        String fieldLabel = retrieveFieldLabel(field, arrayIndex);
+        String annotatedMsg = retrieveFieldAnnotatedMessage(field);
 
-        String msg = String.format(msgTemplate, fieldDisplayName, targetTypeName, valueString);
+        String msg;
+        if (StringUtils.isNotEmpty(annotatedMsg)) {
+            msg = createAnnotatedMessage(formCls, fieldName, fieldLabel, annotatedMsg);
+        } else {
+            String fieldTypeName = retrieveFieldTypeName(field);
+            String valueString = generateValueString(valueHolder.getFoundOriginalData(), field.getType());
+            msg = createMessage(formCls, fieldName, fieldLabel, fieldTypeName, valueString);
+        }
         return new FormValidationMessage(fieldName, msg);
     }
 
-    protected String retrieveTypeUnMatchMessageTemplate() {
-        return "%s is expecting %s but value[%s] found.";
-    }
-
-    protected String retrieveFieldName(AnnotatedPropertyInfo field, int arrayIndex) {
-        String name = field.getName();
-        if (arrayIndex >= 0) {
-            name = CascadeFormUtil.rewriteArrayIndexPlaceHolder(name, arrayIndex);
-        }
-        return name;
-    }
-
-    protected String retrieveFieldDisplayName(String fieldName) {
-        return fieldName;
-    }
-
     @SuppressWarnings("rawtypes")
-    protected String retrieveTargetTypeName(Class targetType) {
-        return targetType.getSimpleName();
+    protected String createMessage(Class formCls, String fieldName, String fieldLabel, String fieldTypeName, String valueString) {
+        if (addFieldLablePrefixToMessage) {
+            String msgTemplate = "%s: %s is expected but value[%s] found.";
+            return String.format(msgTemplate, fieldLabel, fieldTypeName, valueString);
+        } else {
+            String msgTemplate = "%s is expected but value[%s] found.";
+            return String.format(msgTemplate, fieldLabel, fieldTypeName, valueString);
+        }
     }
 
     @SuppressWarnings("rawtypes")

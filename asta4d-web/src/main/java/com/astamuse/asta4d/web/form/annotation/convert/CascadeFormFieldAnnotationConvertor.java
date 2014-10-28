@@ -24,6 +24,14 @@ public class CascadeFormFieldAnnotationConvertor implements AnnotationConvertor<
                 return originalAnnotation.name();
             }
 
+            public String nameLabel() {
+                return originalAnnotation.nameLabel();
+            }
+
+            public String message() {
+                return originalAnnotation.message();
+            }
+
             @Override
             public String editSelector() {
                 return originalAnnotation.containerSelector();

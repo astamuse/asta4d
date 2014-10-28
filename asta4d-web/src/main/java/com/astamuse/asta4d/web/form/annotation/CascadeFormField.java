@@ -15,6 +15,10 @@ public @interface CascadeFormField {
 
     String name() default "";
 
+    String nameLabel() default "";
+
+    String message() default "";
+
     String arrayLengthField() default "";
 
     String containerSelector() default "";

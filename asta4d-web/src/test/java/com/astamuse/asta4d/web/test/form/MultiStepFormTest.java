@@ -91,7 +91,7 @@ public class MultiStepFormTest extends WebTestBase {
 
         public void assertMessage(String name, String msgReg) {
             for (FormValidationMessage msg : msgList) {
-                if (msg.getName().equals(name) && msg.getMessage().matches(msgReg)) {
+                if (msg.getFieldName().equals(name) && msg.getMessage().matches(msgReg)) {
                     return;
                 }
             }
@@ -260,10 +260,11 @@ public class MultiStepFormTest extends WebTestBase {
 
         Assert.assertNull(savedForm);
 
-        handler.assertMessageSize(3);
+        handler.assertMessageSize(4);
         handler.assertMessage("id", IntegerTypeUnMatch);
         handler.assertMessage("subData", IntegerTypeUnMatch);
         handler.assertMessage("year-0", IntegerTypeUnMatch);
+        handler.assertMessage("subArray2", MsgNotEmpty);
 
         new FormRenderCase("MultiStepForm_inputWithTypeUnMatchError.html");
 

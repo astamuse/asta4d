@@ -24,6 +24,14 @@ public class CommonInputAnnotationConvertor implements AnnotationConvertor<Annot
                 return getValue(originalAnnotation, "name");
             }
 
+            public String nameLabel() {
+                return getValue(originalAnnotation, "nameLabel");
+            }
+
+            public String message() {
+                return getValue(originalAnnotation, "message");
+            }
+
             @Override
             public String editSelector() {
                 return getValue(originalAnnotation, "editSelector");

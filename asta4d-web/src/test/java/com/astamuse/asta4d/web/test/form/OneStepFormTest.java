@@ -91,7 +91,7 @@ public class OneStepFormTest extends WebTestBase {
 
         public void assertMessage(String name, String msgReg) {
             for (FormValidationMessage msg : msgList) {
-                if (msg.getName().equals(name) && msg.getMessage().matches(msgReg)) {
+                if (msg.getFieldName().equals(name) && msg.getMessage().matches(msgReg)) {
                     return;
                 }
             }
@@ -229,10 +229,11 @@ public class OneStepFormTest extends WebTestBase {
         Assert.assertEquals(handler.handle(), "/edit.html");
         Assert.assertNull(savedForm);
 
-        handler.assertMessageSize(3);
+        handler.assertMessageSize(4);
         handler.assertMessage("id", IntegerTypeUnMatch);
         handler.assertMessage("subData", IntegerTypeUnMatch);
         handler.assertMessage("year-0", IntegerTypeUnMatch);
+        handler.assertMessage("subArray2", MsgNotEmpty);
 
         new FormRenderCase("OneStepForm_inputWithTypeUnMatchError.html");
 

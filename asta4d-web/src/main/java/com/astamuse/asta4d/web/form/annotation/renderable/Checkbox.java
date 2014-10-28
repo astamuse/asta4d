@@ -16,6 +16,10 @@ import com.astamuse.asta4d.web.form.field.impl.CheckboxRenderer;
 public @interface Checkbox {
     String name() default "";
 
+    String nameLabel() default "";
+
+    String message() default "";
+
     String editSelector() default "";
 
     String displaySelector() default "";

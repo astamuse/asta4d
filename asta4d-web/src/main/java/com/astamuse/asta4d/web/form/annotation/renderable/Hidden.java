@@ -17,6 +17,10 @@ public @interface Hidden {
 
     String name() default "";
 
+    String nameLabel() default "";
+
+    String message() default "";
+
     String editSelector() default "";
 
     String displaySelector() default "";

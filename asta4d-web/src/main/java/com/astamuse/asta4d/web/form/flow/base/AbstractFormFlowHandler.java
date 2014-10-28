@@ -2,9 +2,11 @@ package com.astamuse.asta4d.web.form.flow.base;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -295,12 +297,25 @@ public abstract class AbstractFormFlowHandler<T> {
     protected List<FormValidationMessage> validate(T form) {
         List<FormValidationMessage> validationMessages = new LinkedList<>();
 
-        validationMessages.addAll(getTypeUnMatchValidator().validate(form));
-        if (!validationMessages.isEmpty()) {
-            return validationMessages;
+        Set<String> fieldNameSet = new HashSet<String>();
+
+        List<FormValidationMessage> typeMessages = getTypeUnMatchValidator().validate(form);
+        for (FormValidationMessage message : typeMessages) {
+            validationMessages.add(message);
+            fieldNameSet.add(message.getFieldName());
         }
 
-        validationMessages.addAll(getValueValidator().validate(form));
+        List<FormValidationMessage> valueMessages = getValueValidator().validate(form);
+
+        // there may be a not null/empty value validation error for the fields which has been validated as type unmatch, we simply remove
+        // them.
+
+        for (FormValidationMessage message : valueMessages) {
+            if (!fieldNameSet.contains(message.getFieldName())) {
+                validationMessages.add(message);
+            }
+        }
+
         return validationMessages;
     }
 
@@ -317,6 +332,6 @@ public abstract class AbstractFormFlowHandler<T> {
     }
 
     protected void outputValidationMessage(FormValidationMessage msg) {
-        DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + msg.getName() + "-err-msg", msg.getMessage());
+        DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + msg.getFieldName() + "-err-msg", msg.getMessage());
     }
 }
