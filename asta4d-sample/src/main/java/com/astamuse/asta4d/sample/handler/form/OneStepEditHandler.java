@@ -1,13 +1,13 @@
 package com.astamuse.asta4d.sample.handler.form;
 
+import com.astamuse.asta4d.sample.handler.form.common.CommonFormHandler;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 // @ShowCode:showOneStepEditHandlerStart
-public class OneStepEditHandler extends OneStepFormHandler<PersonForm> {
+public class OneStepEditHandler extends CommonFormHandler<PersonForm> {
 
     public OneStepEditHandler(String inputTemplate) {
         super(PersonForm.class, inputTemplate);

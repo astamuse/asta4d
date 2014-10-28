@@ -40,7 +40,7 @@ public class PersonForm extends Person {
     }
 
     @Override
-    @Input
+    @Input(message = "validation.field.PersonForm.name")
     public String getName() {
         return super.getName();
     }
