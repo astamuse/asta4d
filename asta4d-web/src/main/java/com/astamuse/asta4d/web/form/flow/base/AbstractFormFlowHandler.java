@@ -49,7 +49,9 @@ public abstract class AbstractFormFlowHandler<T> {
         this.formProcessDataCls = formProcessDataCls;
     }
 
-    protected abstract T createInitForm();
+    protected T createInitForm() throws Exception {
+        return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
+    }
 
     protected <D> void saveExtraDataToContext(D actionInfo) {
         Context.getCurrentThreadContext().setData(FORM_EXTRA_DATA, actionInfo);
