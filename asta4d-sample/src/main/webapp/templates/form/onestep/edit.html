@@ -11,6 +11,7 @@
 		<div class="panel panel-warning">
 			<div class="panel-heading"><h3>Input</h3></div>
 			<div class="panel-body">
+				<div class="block-main">
 				<section>
 					<article>
 						<!-- @ShowCode:showInputStart -->
@@ -19,7 +20,8 @@
 							<tr>
 								<td>name *:</td>
 								<td class="name">
-									<input name="name" type="text"/>
+									<input name="name" type="text"/>(length less than 6)
+									<!-- custom error message tag(default id as xxx-err-msg) -->
 									<div><span id="name-err-msg" class="label label-danger"></span></div>
 								</td>
 							</tr>
@@ -27,6 +29,7 @@
 								<td>age *:</td>
 								<td class="age">
 									<input name="age" type="text"/>(<=45)
+									<!-- custom error message tag(default id as xxx-err-msg) -->
 									<div><span id="age-err-msg" class="label label-danger"></span></div>
 								</td>
 							</tr>
@@ -67,12 +70,20 @@
 						<!-- @ShowCode:showInputEnd -->
 					</article>
 				</section>
+				</div>
+				<div class="block-side-comment">
+					<afd:embed target="/templates/form/onestep/comment.html" />
+				</div>
 			</div>
 		</div>
 		
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/onestep/edit.html" startMark="showInputStart" endMark="showInputEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/onestep/btns.html" startMark="showBtnsStart" endMark="showBtnsEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/OneStepEditHandler.java" startMark="showOneStepEditHandlerStart" endMark="showOneStepEditHandlerEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/common/CommonFormHandler.java" startMark="showCommonFormHandlerStart" endMark="showCommonFormHandlerEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/common/SamplePrjTypeUnMatchValidator.java" startMark="showSamplePrjTypeUnMatchValidatorStart" endMark="showSamplePrjTypeUnMatchValidatorEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/common/SamplePrjValueValidator.java" startMark="showSamplePrjValueValidatorStart" endMark="showSamplePrjValueValidatorEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/common/SamplePrjCommonValidatoinMessageLogics.java" startMark="showCreateAnnotatedMessageStart" endMark="showCreateAnnotatedMessageEnd"/>
 	</afd:block>
 </body>
 </html>

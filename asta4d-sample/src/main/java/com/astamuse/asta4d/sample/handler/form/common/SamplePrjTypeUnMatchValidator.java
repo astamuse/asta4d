@@ -4,18 +4,20 @@ import com.astamuse.asta4d.util.i18n.I18nMessageHelperTypeAssistant;
 import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
 import com.astamuse.asta4d.web.form.validation.TypeUnMatchValidator;
 
+//@ShowCode:showSamplePrjTypeUnMatchValidatorStart
 public class SamplePrjTypeUnMatchValidator extends TypeUnMatchValidator {
 
     private OrderedParamI18nMessageHelper messageHelper = I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper();
 
-    private SamplePrjCommonValidatoinMessageLogics messageLogics = new SamplePrjCommonValidatoinMessageLogics(messageHelper);
+    private SamplePrjCommonValidatoinMessageLogics messageLogics;
 
     public SamplePrjTypeUnMatchValidator() {
-        super();
+        this(true);
     }
 
     public SamplePrjTypeUnMatchValidator(boolean addFieldLablePrefixToMessage) {
         super(addFieldLablePrefixToMessage);
+        messageLogics = new SamplePrjCommonValidatoinMessageLogics(messageHelper, addFieldLablePrefixToMessage);
     }
 
     @Override
@@ -44,6 +46,10 @@ public class SamplePrjTypeUnMatchValidator extends TypeUnMatchValidator {
         return clsName.substring("com.astamuse.asta4d.sample.handler.form.".length());
     }
 
+    /**
+     * we override this method to treat the annotated message as a key, and note that the annotated message will be used in priority if
+     * there is one specified by @FormField annotation
+     */
     @SuppressWarnings("rawtypes")
     @Override
     protected String createAnnotatedMessage(Class formCls, String fieldName, String fieldLabel, String annotatedMsg) {
@@ -51,3 +57,4 @@ public class SamplePrjTypeUnMatchValidator extends TypeUnMatchValidator {
     }
 
 }
+// @ShowCode:showSamplePrjTypeUnMatchValidatorEnd

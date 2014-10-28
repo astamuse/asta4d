@@ -12,16 +12,29 @@ import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
  */
 public class SamplePrjCommonValidatoinMessageLogics {
 
-    private OrderedParamI18nMessageHelper messageHelper = I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper();
+    protected OrderedParamI18nMessageHelper messageHelper = I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper();
 
-    public SamplePrjCommonValidatoinMessageLogics(OrderedParamI18nMessageHelper messageHelper) {
+    protected boolean addFieldLablePrefixToMessage;
+
+    public SamplePrjCommonValidatoinMessageLogics(OrderedParamI18nMessageHelper messageHelper, boolean addFieldLablePrefixToMessage) {
         super();
         this.messageHelper = messageHelper;
+        this.addFieldLablePrefixToMessage = addFieldLablePrefixToMessage;
     }
 
+    // @ShowCode:showCreateAnnotatedMessageStart
+    /**
+     * we share the annotated message logic here
+     */
     @SuppressWarnings("rawtypes")
     public String createAnnotatedMessage(Class formCls, String fieldName, String fieldLabel, String annotatedMsg) {
         // treat the annotated message as key
-        return messageHelper.getMessageWithDefault(annotatedMsg, annotatedMsg);
+        String msg = messageHelper.getMessageWithDefault(annotatedMsg, annotatedMsg);
+        if (addFieldLablePrefixToMessage) {
+            return String.format("%s: %s", fieldLabel, msg);
+        } else {
+            return msg;
+        }
     }
+    // @ShowCode:showCreateAnnotatedMessageEnd
 }

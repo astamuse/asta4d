@@ -7,6 +7,7 @@ import com.astamuse.asta4d.util.i18n.I18nMessageHelperTypeAssistant;
 import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
 import com.astamuse.asta4d.web.form.validation.JsrValidator;
 
+// @ShowCode:showSamplePrjValueValidatorStart
 public class SamplePrjValueValidator extends JsrValidator {
 
     // since the validator is thread-safe, we cache it as static
@@ -27,19 +28,25 @@ public class SamplePrjValueValidator extends JsrValidator {
 
     private OrderedParamI18nMessageHelper messageHelper = I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper();
 
-    private SamplePrjCommonValidatoinMessageLogics messageLogics = new SamplePrjCommonValidatoinMessageLogics(messageHelper);
+    private SamplePrjCommonValidatoinMessageLogics messageLogics;
 
     public SamplePrjValueValidator() {
-        super(validator);
+        this(true);
     }
 
     public SamplePrjValueValidator(boolean addFieldLablePrefixToMessage) {
         super(validator, addFieldLablePrefixToMessage);
+        messageLogics = new SamplePrjCommonValidatoinMessageLogics(messageHelper, addFieldLablePrefixToMessage);
     }
 
+    /**
+     * we override this method to treat the annotated message as a key, and note that the annotated message will be used in priority if
+     * there is one specified by @FormField annotation
+     */
     @SuppressWarnings("rawtypes")
     @Override
     protected String createAnnotatedMessage(Class formCls, String fieldName, String fieldLabel, String annotatedMsg) {
         return messageLogics.createAnnotatedMessage(formCls, fieldName, fieldLabel, annotatedMsg);
     }
 }
+// @ShowCode:showSamplePrjValueValidatorEnd
