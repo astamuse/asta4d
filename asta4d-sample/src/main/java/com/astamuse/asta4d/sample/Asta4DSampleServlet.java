@@ -31,6 +31,12 @@ public class Asta4DSampleServlet extends Asta4dServlet {
         DefaultSnippetInvoker snippetInvoker = ((DefaultSnippetInvoker) conf.getSnippetInvoker());
         snippetInvoker.getSnippetInterceptorList().add(new SampleSnippetInterceptor());
 
+        boolean debug = Boolean.getBoolean("asta4d.sample.debug");
+        if (debug) {
+            conf.setCacheEnable(false);
+            conf.setSaveCallstackInfoOnRendererCreation(true);
+        }
+
         return conf;
     }
 

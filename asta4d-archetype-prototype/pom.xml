@@ -15,24 +15,16 @@
     <dependencies>
       <dependency>
         <groupId>com.astamuse</groupId>
-        <artifactId>asta4d-spring</artifactId>
+        <artifactId>asta4d-web</artifactId>
         <!--asta4dversion-->
         <version>${project.version}</version>
         <!--asta4dversion-->
       </dependency>
-      
       <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-context</artifactId>
-       <version>3.1.2.RELEASE</version>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>5.0.2.Final</version>
       </dependency>
-
-      <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-webmvc</artifactId>
-       <version>3.1.2.RELEASE</version>
-      </dependency>
-      
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
@@ -64,8 +56,12 @@
                     </webApp>
                     <systemProperties>
                     <systemProperty>
+                        <name>asta4d.sample.debug</name>
+                        <value>true</value>
+                    </systemProperty>
+                    <systemProperty>
                         <name>asta4d.sample.source_location</name>
-                        <value>src/main/java</value>
+                        <value>${basedir}/src/main/java</value>
                         </systemProperty>
                     </systemProperties>
               </configuration>

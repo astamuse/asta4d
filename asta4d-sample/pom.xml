@@ -27,18 +27,6 @@
         <version>5.0.2.Final</version>
       </dependency>
       <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-context</artifactId>
-       <version>3.1.2.RELEASE</version>
-      </dependency>
-
-      <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-webmvc</artifactId>
-       <version>3.1.2.RELEASE</version>
-      </dependency>
-      
-      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
@@ -106,6 +94,16 @@
               <artifactId>jetty-maven-plugin</artifactId>
               <version>8.1.2.v20120308</version>
               <configuration>
+                    <systemProperties>
+                      <systemProperty>
+                        <name>asta4d.sample.debug</name>
+                        <value>true</value>
+                      </systemProperty>
+                      <systemProperty>
+                        <name>asta4d.sample.source_location</name>
+                        <value>${basedir}/src/main/java</value>
+                      </systemProperty>
+                    </systemProperties>
                     <webApp>
                       <contextPath>/</contextPath>
                     </webApp>
