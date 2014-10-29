@@ -229,16 +229,6 @@ and also you can add your own html template files to /src/main/webapp.
 
 1.1
 
--	better i18n support
-
-	- more flexible message file management
-	- StaticResourceHandler should support search target files with locale awareness
-	- site category mechanism, By which, we can choose the target template file by per-request category implicitly.
-
--	upgrade to newest jsoup version(currently a modified 1.6.3 is used)
-
-1.2
-
 -	java 8 support(lambda, etc.)
 
 Want to do: 
@@ -265,6 +255,7 @@ Want to do:
     ENHANCE
     - refactoring of i18n mechanism to afford easier extendibility
     - form flow mechanism become stable    
+    - well written sample for form flow
     - upgraded to the newest jsoup version 1.8.1
 
 -   1.0-b1 (2014.10.06)
