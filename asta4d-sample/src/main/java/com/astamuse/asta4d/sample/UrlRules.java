@@ -25,7 +25,7 @@ import com.astamuse.asta4d.sample.handler.AddUserHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
-import com.astamuse.asta4d.sample.handler.form.CascadeEditHandler;
+import com.astamuse.asta4d.sample.handler.form.CascadeFormHandler;
 import com.astamuse.asta4d.sample.handler.form.MultiStepFormHandler;
 import com.astamuse.asta4d.sample.handler.form.SingleInputFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
@@ -107,15 +107,21 @@ public class UrlRules implements UrlMappingRuleInitializer {
              .redirect("/form?type=multi-step");
         // @ShowCode:showMultiStepEnd
         
+        // @ShowCode:showCascadeStart
         rules.add((HttpMethod)null, "/form/cascade/add")
+             //specify the base path of target template file by path var
              .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
-             .handler(CascadeEditHandler.Add.class)
-             .redirect("/form");
+             .handler(CascadeFormHandler.Add.class)
+             //specify the exit target
+             .redirect("/form?type=cascade");
 
         rules.add((HttpMethod)null, "/form/cascade/edit")
+             //specify the base path of target template file by path var
              .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
-             .handler(CascadeEditHandler.Edit.class)
-             .redirect("/form");
+             .handler(CascadeFormHandler.Edit.class)
+             //specify the exit target
+             .redirect("/form?type=cascade");
+        // @ShowCode:showCascadeEnd
            
         rules.add("/localize", "/templates/localize.html");
         

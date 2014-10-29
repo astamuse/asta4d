@@ -5,9 +5,11 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.beanutils.BeanUtils;
 
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
-import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
+import com.astamuse.asta4d.web.form.annotation.renderable.Input;
+import com.astamuse.asta4d.web.form.annotation.renderable.Select;
 
+//@ShowCode:showJobFormStart
 public class JobForm extends JobExperence {
     public static JobForm buildFromJob(JobExperence job) {
         JobForm form = new JobForm();
@@ -18,6 +20,8 @@ public class JobForm extends JobExperence {
         }
         return form;
     }
+
+    // for arrayed form, all the field names must contain a "@" mark which will be rewritten to array index by framework.
 
     @Override
     @Hidden(name = "job-id-@")
@@ -32,7 +36,7 @@ public class JobForm extends JobExperence {
     }
 
     @Override
-    @Input(name = "job-year-@")
+    @Select(name = "job-year-@")
     public Integer getYear() {
         return super.getYear();
     }
@@ -44,3 +48,4 @@ public class JobForm extends JobExperence {
     }
 
 }
+// @ShowCode:showJobFormEnd

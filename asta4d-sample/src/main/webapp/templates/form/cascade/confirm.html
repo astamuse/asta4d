@@ -1,28 +1,17 @@
 <html>
 <head>
 <meta charset="utf-8" />
+</head>
 <body>
-<afd:extension parent="/layout/common.html">
-	<afd:block override="content-title">
-		Cascade form
+<!-- @ShowCode:showConfirmStart -->
+<afd:extension parent="/templates/form/cascade/formBase.html">
+	<afd:block override="form-btns">
+		<afd:embed target="/templates/form/multistep/btns-confirm.html"/>
 	</afd:block>
-	<afd:block override="content-detail">
-		<div class="panel panel-warning">
-			<div class="panel-heading"><h3>confirm</h3></div>
-			<div class="panel-body">
-				<!-- @ShowCode:showConfirmStart -->
-				<section>
-					<article>
-						<p>Are you sure you have the correct?</p>
-						<form method="post">
-							<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
-							<afd:embed target="/templates/form/multistep/btns-confirm.html"/>
-						</form>
-					</article>
-				</section>
-				<!-- @ShowCode:showConfirmEnd -->
-			</div>
-		</div>
+<!-- @ShowCode:showConfirmEnd -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/cascade/confirm.html" startMark="showConfirmStart" endMark="showConfirmEnd"/>
 	</afd:block>
+</afd:extension>
 </body>
 </html>

@@ -1,28 +1,17 @@
 <html>
 <head>
 <meta charset="utf-8" />
+</head>
 <body>
-<afd:extension parent="/layout/common.html">
-	<afd:block override="content-title">
-		Cascade form
+<!-- @ShowCode:showCompleteStart -->
+<afd:extension parent="/templates/form/cascade/formBase.html">
+	<afd:block override="form-btns">
+		<afd:embed target="/templates/form/multistep/btns-complete.html"/>
 	</afd:block>
-	<afd:block override="content-detail">
-		<div class="panel panel-warning">
-			<div class="panel-heading"><h3>Complete</h3></div>
-			<div class="panel-body">
-				<!-- @ShowCode:showCompleteStart -->
-				<section>
-					<article>
-						<p>Input flow completed.</p>
-						<form method="post">
-							<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
-							<afd:embed target="/templates/form/multistep/btns-complete.html"/>
-						</form>
-					</article>
-				</section>
-				<!-- @ShowCode:showCompleteEnd -->
-			</div>
-		</div>
+<!-- @ShowCode:showCompleteEnd -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/cascade/complete.html" startMark="showCompleteStart" endMark="showCompleteEnd"/>
 	</afd:block>
+</afd:extension>
 </body>
 </html>

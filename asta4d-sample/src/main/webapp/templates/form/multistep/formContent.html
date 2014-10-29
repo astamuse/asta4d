@@ -8,17 +8,17 @@
 <afd:snippet render="form.MultiStepFormSnippet">
 <table border=0 class="form-input-table">
 	<tr>
-		<td>name *:</td>
+		<td>name *:<br>(length &lt;= 6)</td>
 		<td class="name">
-			<input name="name" type="text"/>(length &lt;= 6)
+			<input name="name" type="text"/>
 			<!-- custom error message tag(default id as xxx-err-msg) -->
 			<div><span id="name-err-msg" class="label label-danger"></span></div>
 		</td>
 	</tr>
 	<tr>
-		<td>age *:</td>
+		<td>age *:<br>(&lt;= 45)</td>
 		<td class="age">
-			<input name="age" type="text"/>(&lt;= 45)
+			<input name="age" type="text"/>
 			<!-- custom error message tag(default id as xxx-err-msg) -->
 			<div><span id="age-err-msg" class="label label-danger"></span></div>
 		</td>

@@ -11,22 +11,26 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
-public abstract class CascadeEditHandler extends MultiStepFormFlowHandler<CascadeForm> {
+//@ShowCode:showCascadeFormHandlerStart
+public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<CascadeForm> {
 
-    public CascadeEditHandler() {
+    public CascadeFormHandler() {
         super(CascadeForm.class);
     }
 
     @Override
     protected boolean treatCompleteStepAsExit() {
+        // exit immediately after update without displaying complete page
         return true;
     }
 
+    // intercept the form date construction to rewrite the form data
     @Override
     protected CascadeForm generateFormInstanceFromContext() {
         CascadeForm form = super.generateFormInstanceFromContext();
         List<JobForm> rewriteList = new LinkedList<>();
         for (JobForm jform : form.getJobForms()) {
+            // we assume all the job forms without person id are removed by client
             if (jform.getPersonId() != null) {
                 rewriteList.add(jform);
             }
@@ -35,7 +39,11 @@ public abstract class CascadeEditHandler extends MultiStepFormFlowHandler<Cascad
         return form;
     }
 
-    public static class Add extends CascadeEditHandler {
+    /**
+     * we do add logic by Add handler
+     * 
+     */
+    public static class Add extends CascadeFormHandler {
         @Override
         protected CascadeForm createInitForm() {
             PersonForm pform = new PersonForm();
@@ -62,7 +70,11 @@ public abstract class CascadeEditHandler extends MultiStepFormFlowHandler<Cascad
         }
     }
 
-    public static class Edit extends CascadeEditHandler {
+    /**
+     * we do update logic by Edit handler
+     * 
+     */
+    public static class Edit extends CascadeFormHandler {
 
         @Override
         protected CascadeForm createInitForm() throws Exception {
@@ -105,3 +117,4 @@ public abstract class CascadeEditHandler extends MultiStepFormFlowHandler<Cascad
     }
 
 }
+// @ShowCode:showCascadeFormHandlerEnd

@@ -11,8 +11,8 @@ public class JobExperence implements IdentifiableEntity, Cloneable {
 
     private Integer personId;
 
-    @Min(1900)
-    @Max(2020)
+    @Min(2000)
+    @Max(2010)
     private Integer year;
 
     private String description;

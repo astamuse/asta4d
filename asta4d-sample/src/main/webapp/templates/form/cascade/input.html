@@ -3,26 +3,26 @@
 <meta charset="utf-8" />
 </head>
 <body>
-<afd:extension parent="/layout/common.html">
-	<afd:block override="content-title">
-		Cascade form
+<!-- @ShowCode:showInputStart -->
+<afd:extension parent="/templates/form/cascade/formBase.html">
+	<afd:block override="form-btns">
+		<afd:embed target="/templates/form/multistep/btns-input.html"/>
 	</afd:block>
-	<afd:block override="content-detail">
-		<div class="panel panel-warning">
-			<div class="panel-heading"><h3>Input</h3></div>
-			<div class="panel-body">
-				<!-- @ShowCode:showInputStart -->
-				<section>
-					<article>
-						<form method="post">
-							<afd:embed target="/templates/form/cascade/formContent.html"></afd:embed>
-							<afd:embed target="/templates/form/multistep/btns-input.html"/>
-						</form>
-					</article>
-				</section>
-				<!-- @ShowCode:showInputEnd -->
-			</div>
-		</div>
+<!-- @ShowCode:showInputEnd -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/UrlRules.java" startMark="showCascadeStart" endMark="showCascadeEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/cascade/formBase.html" startMark="showFormStart" endMark="showFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/cascade/input.html" startMark="showInputStart" endMark="showInputEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/btns-input.html" startMark="showBtnsStart" endMark="showBtnsEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/form/CascadeFormSnippet.java" startMark="showCascadeFormSnippetStart" endMark="showCascadeFormSnippetEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/CascadeFormHandler.java" startMark="showCascadeFormHandlerStart" endMark="showCascadeFormHandlerEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/CascadeForm.java" startMark="showCascadeFormStart" endMark="showCascadeFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/JobForm.java" startMark="showJobFormStart" endMark="showJobFormEnd"/>
+		
+		<h3>The following shows how to customize the global message bar</h3>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/cascade/formBase.html" startMark="showMessageBarStart" endMark="showMessageBarEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/cascade/customGlobalMessageBar.html" startMark="showMessageBarStart" endMark="showMessageBarEnd"/>
 	</afd:block>
+</afd:extension>
 </body>
 </html>

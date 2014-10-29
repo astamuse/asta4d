@@ -34,11 +34,13 @@ public class MultiStepFormHandler extends CommonFormHandler<PersonFormForMultiSt
     protected void updateForm(PersonFormForMultiStep form) {
         if (form.getId() == null) {
             PersonDbManager.instance().add(Person.createByForm(form));
-            DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
+            // output the success message to specified DOM rather than the global message bar
+            DefaultMessageRenderingHelper.getConfiguredInstance().info(".x-success-msg", "data inserted");
         } else {
             Person p = Person.createByForm(form);
             PersonDbManager.instance().update(p);
-            DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
+            // output the success message to specified DOM rather than the global message bar
+            DefaultMessageRenderingHelper.getConfiguredInstance().info(".x-success-msg", "update succeed");
         }
     }
 
