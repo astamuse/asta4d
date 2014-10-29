@@ -67,6 +67,9 @@ public class Person implements IdentifiableEntity, Cloneable {
     // @ShowCode:showValidationAnnotationStart
     /*
      * bean validation is annotated on entity POJO
+     * 
+     * (it can also be done at the form POJO side, but we think the value 
+     * constrains should be considered as a part of the entity POJO's feature)
      */
 
     @NotBlank

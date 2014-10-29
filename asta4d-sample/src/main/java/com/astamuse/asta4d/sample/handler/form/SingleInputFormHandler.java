@@ -1,14 +1,14 @@
 package com.astamuse.asta4d.sample.handler.form;
 
-import com.astamuse.asta4d.sample.handler.form.common.CommonFormHandler;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
-// @ShowCode:showOneStepEditHandlerStart
-public class OneStepEditHandler extends CommonFormHandler<PersonForm> {
+// @ShowCode:showSingleInputFormHandlerStart
+public class SingleInputFormHandler extends OneStepFormHandler<PersonForm> {
 
-    public OneStepEditHandler(String inputTemplate) {
+    public SingleInputFormHandler(String inputTemplate) {
         super(PersonForm.class, inputTemplate);
     }
 
@@ -27,13 +27,15 @@ public class OneStepEditHandler extends CommonFormHandler<PersonForm> {
     protected void updateForm(PersonForm form) {
         if (form.getId() == null) {// add
             PersonDbManager.instance().add(Person.createByForm(form));
+            // the success message will be shown at the default global message bar
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
         } else {// update
             Person p = Person.createByForm(form);
             PersonDbManager.instance().update(p);
+            // the success message will be shown at the default global message bar
             DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
         }
     }
 
 }
-// @ShowCode:showOneStepEditHandlerEnd
+// @ShowCode:showSingleInputFormHandlerEnd

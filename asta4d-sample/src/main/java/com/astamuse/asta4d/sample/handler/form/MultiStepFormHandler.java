@@ -1,15 +1,15 @@
 package com.astamuse.asta4d.sample.handler.form;
 
+import com.astamuse.asta4d.sample.handler.form.common.CommonFormHandler;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
-//@ShowCode:showMultiStepEditHandlerStart
-public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
+//@ShowCode:showMultiStepFormHandlerStart
+public class MultiStepFormHandler extends CommonFormHandler<PersonFormForMultiStep> {
 
-    public MultiStepEditHandler(String templateBasePath) {
-        super(PersonForm.class, templateBasePath);
+    public MultiStepFormHandler(String templateBasePath) {
+        super(PersonFormForMultiStep.class, templateBasePath);
     }
 
     @Override
@@ -20,18 +20,18 @@ public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
     }
 
     @Override
-    protected PersonForm createInitForm() throws Exception {
-        PersonForm form = super.createInitForm();
+    protected PersonFormForMultiStep createInitForm() throws Exception {
+        PersonFormForMultiStep form = super.createInitForm();
         if (form.getId() == null) {// add
             return form;
         } else {// update
             // retrieve the form form db again
-            return PersonForm.buildFromPerson(PersonDbManager.instance().find(form.getId()));
+            return PersonFormForMultiStep.buildFromPerson(PersonDbManager.instance().find(form.getId()));
         }
     }
 
     @Override
-    protected void updateForm(PersonForm form) {
+    protected void updateForm(PersonFormForMultiStep form) {
         if (form.getId() == null) {
             PersonDbManager.instance().add(Person.createByForm(form));
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
@@ -43,4 +43,4 @@ public class MultiStepEditHandler extends MultiStepFormFlowHandler<PersonForm> {
     }
 
 }
-// @ShowCode:showMultiStepEditHandlerEnd
+// @ShowCode:showMultiStepFormHandlerEnd

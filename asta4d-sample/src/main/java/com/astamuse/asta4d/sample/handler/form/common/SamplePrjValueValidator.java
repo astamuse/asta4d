@@ -41,7 +41,7 @@ public class SamplePrjValueValidator extends JsrValidator {
 
     /**
      * we override this method to treat the annotated message as a key, and note that the annotated message will be used in priority if
-     * there is one specified by @FormField annotation
+     * there is one specified by form field annotation
      */
     @SuppressWarnings("rawtypes")
     @Override

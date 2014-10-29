@@ -16,26 +16,12 @@
  */
 package com.astamuse.asta4d.sample.snippet.form;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.astamuse.asta4d.sample.snippet.form.common.CommonFormSnippet;
 
-import com.astamuse.asta4d.sample.handler.form.PersonForm;
-import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
-import com.astamuse.asta4d.sample.util.persondb.Person.Language;
-import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
-import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
+//@ShowCode:showMultiStepFormSnippetStart
+public class MultiStepFormSnippet extends CommonFormSnippet {
 
-public class MultiStepFormSnippet extends MultiStepFormFlowSnippet {
-    @Override
-    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
-        List<FormFieldPrepareRenderer> list = new LinkedList<>();
-        list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
-        list.add(new RadioPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
-        list.add(new CheckboxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
-        return list;
-    }
+    // we do not need to do anything here.
+
 }
+// @ShowCode:showMultiStepFormSnippetEnd

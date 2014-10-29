@@ -15,8 +15,8 @@ import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
 
 //@ShowCode:showPersonFormStart
 //@Form to tell the framework this class can be initialized from context
+//extend from the entity POJO to annotate form field definitions on getters.
 @Form
-// extend from the entity POJO to annotate form field definitions on getters.
 public class PersonForm extends Person {
 
     public static PersonForm buildFromPerson(Person p) {
@@ -37,7 +37,8 @@ public class PersonForm extends Person {
 
     @Override
     // afford an annotated message to override default generated message
-    @Input(message = "validation.field.PersonForm.name")
+    // @Input(message = "validation.field.PersonForm.name")
+    @Input
     public String getName() {
         return super.getName();
     }

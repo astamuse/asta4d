@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
-import com.astamuse.asta4d.sample.snippet.form.common.CommonFormSnippet;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
 import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
@@ -28,9 +27,10 @@ import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippet;
 
-//@ShowCode:showOneStepFormSnippetStart
-public class OneStepFormSnippet extends CommonFormSnippet {
+//@ShowCode:showSingleInputFormSnippetStart
+public class SingleInputFormSnippet extends OneStepFormSnippet {
 
     /**
      * override this method to supply the option data for select, radio and checkbox.
@@ -48,4 +48,4 @@ public class OneStepFormSnippet extends CommonFormSnippet {
         return list;
     }
 }
-// @ShowCode:showOneStepFormSnippetEnd
+// @ShowCode:showSingleInputFormSnippetEnd

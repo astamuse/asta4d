@@ -32,6 +32,10 @@ pre {
 	float: right;
 }
 
+pre.form-field-pre {
+	margin: 10px;
+	background-color: white;
+}
 .form-input-table td{
 	padding-top: 5px;
 	padding-bottom: 5px;

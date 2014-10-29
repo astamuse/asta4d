@@ -12,11 +12,11 @@
 		function getId(){
 			return document.getElementById("checkedRowId").getAttribute("value");
 		}
-		function onestepadd(){
-			location.href="form/onestep";
+		function singleInputAdd(){
+			location.href="form/singleInput";
 		}
-		function onestepmod(){
-			location.href="form/onestep?id="+getId();
+		function singleInputMod(){
+			location.href="form/singleInput?id="+getId();
 		}
 		
 		function mstepadd(){
@@ -37,21 +37,6 @@
 		
 		</script>
 	
-	</afd:block>
-	<afd:block append="footer-resource">
-		<script>
-		
-		$(function(){
-			$("ul#btn-nav li").click(function(e){
-				$("ul#btn-nav li").removeClass("active");
-				$(".form-btns").css("display", "none");
-				
-				$(e.delegateTarget).addClass("active");
-				var targetBtns = $(e.delegateTarget).attr("target-btns");
-				$("#" + targetBtns).css("display", "");
-			});
-		});
-		</script>
 	</afd:block>
 	<afd:block override="content-title">
 		Form flow samples
@@ -78,40 +63,42 @@
 						<td class="x-language"><span>lang1</span><span afd:clear>lang2</span></td>
 					</tr>
 				</table>
+				<afd:snippet render="form.ListSnippet:showTabs">
 				<ul id="btn-nav" class="nav nav-tabs" role="tablist">
-					<li class="active" target-btns="one-step-btns"><a>One Step</a></li>
-					<li target-btns="confirm-complete-btns"><a>Confirm and Complete</a></li>
-					<li target-btns="cascade-form-btns"><a>Cascade</a></li>
-					<li target-btns="splitted-form-btns"><a>Splitted input</a></li>
+					<li id="single-input" class="active" target-btns="single-input-btns"><a href="/form?type=single-input">Single input step</a></li>
+					<li id="multi-step" target-btns="confirm-complete-btns"><a href="/form?type=multi-step">Confirm and Complete</a></li>
+					<li id="cascade" target-btns="cascade-form-btns"><a href="/form?type=cascade">Cascade and array field</a></li>
+					<li id="splitted" target-btns="splitted-form-btns"><a href="/form?type=splitted">Splitted input</a></li>
 				</ul>
-				<div class="form-btns" id="one-step-btns">
-					<afd:embed target="/templates/form/onestep/comment.html" />
+				<div class="form-btns x-remove" id="single-input">
+					<afd:embed target="/templates/form/singleInput/comment.html" />
 					<div>
-						<button type=button class="btn btn-sm btn-default" onclick="onestepadd()">add</button>
-						<button type=button class="btn btn-sm btn-default" onclick="onestepmod()">modify</button>
+						<button type=button class="btn btn-sm btn-default" onclick="singleInputAdd()">add</button>
+						<button type=button class="btn btn-sm btn-default" onclick="singleInputMod()">modify</button>
 					</div>
 				</div>
-				<div class="form-btns" id="confirm-complete-btns" style="display:none">
-					There are three pages as: input, confirm and complete.
+				<div class="form-btns x-remove" id="multi-step">
+					<afd:embed target="/templates/form/multistep/comment.html" />
 					<div>
 						<button class="btn btn-sm btn-default" type=button onclick="mstepadd()">add</button>
 						<button type=button class="btn btn-sm btn-default" onclick="mstepmod()">modify</button>
 					</div>
 				</div>
-				<div class="form-btns" id="cascade-form-btns" style="display:none">
+				<div class="form-btns x-remove" id="cascade">
 					There is a cascade form for array input. It also shows how to use separated request handler for add and update operation.
 					<div>
 						<button type=button class="btn btn-sm btn-default" onclick="casadd()">add</button>
 						<button type=button class="btn btn-sm btn-default" onclick="casmod()">modify</button>
 					</div>
 				</div>
-				<div class="form-btns" id="splitted-form-btns" style="display:none">
+				<div class="form-btns x-remove" id="splitted">
 					There are two splitted input forms for complicated input scenario. (not implemented yet)
 					<div>
 						<button type=button class="btn btn-sm btn-default" disabled>add</button>
 						<button type=button class="btn btn-sm btn-default" disabled>modify</button>
 					</div>
 				</div>
+				</afd:snippet>
 			</div>
 		</div>
 		

@@ -26,8 +26,8 @@ import com.astamuse.asta4d.sample.handler.EchoHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
 import com.astamuse.asta4d.sample.handler.form.CascadeEditHandler;
-import com.astamuse.asta4d.sample.handler.form.MultiStepEditHandler;
-import com.astamuse.asta4d.sample.handler.form.OneStepEditHandler;
+import com.astamuse.asta4d.sample.handler.form.MultiStepFormHandler;
+import com.astamuse.asta4d.sample.handler.form.SingleInputFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
@@ -91,14 +91,21 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add("/form", "/templates/form/list.html");
         
-        rules.add((HttpMethod)null, "/form/onestep")
-             .handler(new OneStepEditHandler("/templates/form/onestep/edit.html"))
-             .redirect("/form");
+        // @ShowCode:showSingleInputStart
+        rules.add((HttpMethod)null, "/form/singleInput")
+             //specify the target template file of input page by constructor
+             .handler(new SingleInputFormHandler("/templates/form/singleInput/edit.html"))
+             //specify the exit target
+             .redirect("/form?type=single-input");
+        // @ShowCode:showSingleInputEnd
              
-
+        // @ShowCode:showMultiStepStart
         rules.add((HttpMethod)null, "/form/multistep")
-             .handler(new MultiStepEditHandler("/templates/form/multistep/"))
-             .redirect("/form");
+             //specify the base path of target template file by constructor
+             .handler(new MultiStepFormHandler("/templates/form/multistep/"))
+             //specify the exit target
+             .redirect("/form?type=multi-step");
+        // @ShowCode:showMultiStepEnd
         
         rules.add((HttpMethod)null, "/form/cascade/add")
              .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")

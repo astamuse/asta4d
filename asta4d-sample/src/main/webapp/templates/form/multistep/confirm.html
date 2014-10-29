@@ -11,6 +11,7 @@
 		<div class="panel panel-warning">
 			<div class="panel-heading"><h3>Confirm</h3></div>
 			<div class="panel-body">
+				<div class="block-main">
 				<!-- @ShowCode:showConfirmStart -->
 				<section>
 					<article>
@@ -22,12 +23,15 @@
 					</article>
 				</section>
 				<!-- @ShowCode:showConfirmEnd -->
+				</div>
+				<div class="block-side-comment">
+					<afd:embed target="/templates/form/multistep/comment.html" />
+				</div>
 			</div>
 		</div>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/confirm.html" startMark="showConfirmStart" endMark="showConfirmEnd"/>
-		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/formContent.html" startMark="showFormContentStart" endMark="showFormContentEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/btns-confirm.html" startMark="showBtnsStart" endMark="showBtnsEnd"/>
-		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/MultiStepEditHandler.java" startMark="showMultiStepEditHandlerStart" endMark="showMultiStepEditHandlerEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/MultiStepFormHandler.java" startMark="showMultiStepFormHandlerStart" endMark="showMultiStepFormHandlerEnd"/>
 
 	</afd:block>
 </body>

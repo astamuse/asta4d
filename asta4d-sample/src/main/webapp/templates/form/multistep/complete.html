@@ -11,28 +11,34 @@
 		<div class="panel panel-warning">
 			<div class="panel-heading"><h3>Complete</h3></div>
 			<div class="panel-body">
+				<div class="block-main">
 				<!-- @ShowCode:showCompleteStart -->
 				<section>
 					<article>
 						<p>Input flow completed.</p>
 						<form method="post">
 							<table border=0 afd:render="form.MultiStepFormSnippet">
+								<!-- form field display tag with id: xxx-display -->
 								<tr><td>name:</td><td class="name"><span id="name-display"></span></td></tr>
 								<tr><td>age:</td><td class="age"><span id="age-display"></span></tr>
 								<tr><td>sex:</td><td class="sex"><span id="sex-display"></span></tr>
 								<tr><td>bloodtype:</td><td class="bloodtype"><span id="bloodtype-display"></span></td></tr>
 								<tr><td>language:</td><td class="language"><span id="language-display"></span></td></tr>
+								<tr><td>memo:</td><td class="memo"><pre id="memo-display" class="form-field-pre"></pre></td></tr>
 							</table>
 							<afd:embed target="/templates/form/multistep/btns-complete.html"/>
 						</form>
 					</article>
 				</section>
 				<!-- @ShowCode:showCompleteEnd -->
+				</div>
+				<div class="block-side-comment">
+					<afd:embed target="/templates/form/multistep/comment.html" />
+				</div>
 			</div>
 		</div>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/complete.html" startMark="showCompleteStart" endMark="showCompleteEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/btns-complete.html" startMark="showBtnsStart" endMark="showBtnsEnd"/>
-		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/MultiStepEditHandler.java" startMark="showMultiStepEditHandlerStart" endMark="showMultiStepEditHandlerEnd"/>
 
 	</afd:block>
 </body>
