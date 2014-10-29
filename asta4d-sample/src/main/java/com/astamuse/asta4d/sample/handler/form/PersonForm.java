@@ -36,8 +36,6 @@ public class PersonForm extends Person {
     }
 
     @Override
-    // afford an annotated message to override default generated message
-    // @Input(message = "validation.field.PersonForm.name")
     @Input
     public String getName() {
         return super.getName();
@@ -55,8 +53,9 @@ public class PersonForm extends Person {
         return super.getBloodType();
     }
 
+    // the field name would be displayed as "gender" rather than the original field name "sex"
     @Override
-    @Radio
+    @Radio(nameLabel = "gender")
     public SEX getSex() {
         return super.getSex();
     }

@@ -22,11 +22,18 @@ public class PersonFormForMultiStep extends PersonForm {
     }
 
     // @ShowCode:showAnnotatedMessageStart
-    @Override
+
     // afford an annotated message to override default generated message
     @Input(message = "validation.field.PersonForm.name")
+    @Override
     public String getName() {
         return super.getName();
     }
+
+    @Override
+    public BloodType getBloodType() {
+        return super.getBloodType();
+    }
+
     // @ShowCode:showAnnotatedMessageEnd
 }
