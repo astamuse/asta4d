@@ -117,6 +117,9 @@ public class InjectUtil {
             throws DataOperationException {
         try {
             ContextDataSet cds = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, cls.getAnnotations());
+            if (cds == null) {
+                throw new NullPointerException("Could not find any ContextDataSet convertable annotation on given class:" + cls.getName());
+            }
             TargetInfo info = new TargetInfo();
             info.contextDataSetFactory = cds.factory().newInstance();
             info.isContextDataSetSingletonInContext = cds.singletonInContext();
