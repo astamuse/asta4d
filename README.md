@@ -151,9 +151,25 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
 	By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.
 
-1. Built-in form flow mechanism(experimental)
+1. Built-in form flow mechanism
 
-    Asta4D treat all the form processes as flow and afford a well defined architecture for various form processes. Asta4D's give developers the possibility of concentrating on their real business logics rather than technic issues. 
+    Asta4D treat all the form processes as flow and afford a well defined architecture for various form processes. Asta4D gives developers the possibility of concentrating on their real business logics rather than technic issues. Basically, developers only need to implement an init method and an update method for a form process.
+
+    ```java
+    public class SingleInputFormHandler extends OneStepFormHandler<PersonForm> {
+    
+        @Override
+        protected PersonForm createInitForm() throws Exception {
+            ...
+        }
+    
+        @Override
+        protected void updateForm(PersonForm form) {
+            ...
+        }
+    
+    }
+    ```
 
 ## Quick start
 
@@ -169,7 +185,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
     mvn archetype:generate                       \
         -DarchetypeGroupId=com.astamuse          \
         -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=1.0-b1              \
+        -DarchetypeVersion=1.0-b2              \
         -DgroupId=<your.groupid>                 \
         -DartifactId=<your-artifactId>
     ```
@@ -177,7 +193,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 or simply follow the wizard by filtered list:
 
     ```
-    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b1
+    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b2
     ```
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
@@ -208,7 +224,6 @@ and also you can add your own html template files to /src/main/webapp.
 
 1.0
 
--	make form flow stable
 -	refactor the sample project to supply more understable example
 -	complete the user guide
 
@@ -239,13 +254,26 @@ Want to do:
     
 ## Release Notes
 
--	1.0-b1 (2014.10.06)
+-   1.0-b2 (2014.10.29)
 
-	ADD
-	- form flow support
+    ADD
+    - site category support
 	
-	FIX
-	- many many many fix...
+    FIX
+    - many many many fix...
+    
+    ENHANCE
+    - refactoring of i18n mechanism to afford easier extendibility
+    - form flow mechanism become stable    
+    - upgraded to the newest jsoup version 1.8.1
+
+-   1.0-b1 (2014.10.06)
+
+    ADD
+    - form flow support
+	
+    FIX
+    - many many many fix...
 
 -   0.14.606
 
