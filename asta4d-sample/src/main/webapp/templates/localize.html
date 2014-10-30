@@ -1,32 +1,82 @@
 <html>
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<link href="../css/common.css" rel="stylesheet" type="text/css" />
-		<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
-		<script type="text/javascript" src="../js/prettify.js"></script>
-		<title>Asta4D Sample Project</title>
-	</head>
-	<body onload="prettyPrint()">
-		<h1>Localize Messages.</h1>
-
-        <!-- @ShowCode:showLocalizeStart -->
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Localize Messages(i18n support)
+	</afd:block>
+	<afd:block override="content-detail">
+		<!-- @ShowCode:showLocalizeStart -->
 		<section>
-			<article afd:render="ComplicatedSnippet:setWeatherreportParam">
-				<afd:msg key="weatherreport1" p0="weather" id="weatherreport1">天気</afd:msg><br/>
-				<afd:msg key="weatherreport2" p0="weather" id="weatherreport2" externalize="p0">天気</afd:msg><br/>
-				<afd:msg key="weatherreport3" p0="weather" id="weatherreport3" externalize="p0" locale="ja_JP">天気</afd:msg><br/>
-				<afd:msg key="textUrl">test<a href="https://www.google.co.jp/">link</a>test</afd:msg><br/>
-				<afd:msg key="htmlUrl">test<a href="https://www.google.co.jp/">link</a>test</afd:msg><br/>
-				<afd:msg key="escapedUrl">test<a href="https://www.google.co.jp/">link</a>test</afd:msg><br/>
+			<article>
+				<div class="panel panel-default"><div class="panel-body">
+					<!-- the inner html will be treated as default message if the key is not found in message bundle -->
+					<afd:msg id="notexistingkey" key="sample.notexistingkey" p0="parameter works as well.">text here to be treated as default message.{0}</afd:msg><br/>
+				</div></div>
+				
+				<div class="panel panel-default"><div class="panel-body">
+					<!-- simply specify parameters on tag -->
+					<afd:msg id="peoplecount" key="sample.peoplecount" p0="4">dummy text</afd:msg><br/>
+					<afd:msg id="peoplecount" key="sample.peoplecount" p0="7" locale="ja_JP">dummy text</afd:msg><br/>
+				</div></div>
+				
+				<div class="panel panel-default"><div class="panel-body">
+					<!-- the parameter can be rendered by snippet too -->
+					<afd:snippet render="ComplicatedSnippet:setMsgParam">
+						<afd:msg id="peoplecount" key="sample.peoplecount" p0="4">dummy text</afd:msg><br/>
+						<afd:msg id="peoplecount" key="sample.peoplecount" p0="7" locale="ja_JP">dummy text</afd:msg><br/>
+					</afd:snippet>
+				</div></div>
+				
+				<div class="panel panel-default"><div class="panel-body">
+					<!-- attribute started with "@" will be treated as a key -->
+					<afd:msg id="weatherreport" key="sample.weatherreport" @p0="sample.weatherreport.sunny">天気</afd:msg><br/>
+					<afd:msg id="weatherreport" key="sample.weatherreport" @p0="sample.weatherreport.sunny" locale="ja_JP">天気</afd:msg><br/>
+				</div></div>
+				
+				<div class="panel panel-default"><div class="panel-body">
+					<!-- attribute started with "#" will be treated as a sub key of current key, thus sample.weatherreport.sunny will be searched -->
+					<afd:msg id="weatherreport" key="sample.weatherreport" #p0="rain">天気</afd:msg><br/>
+					<afd:msg id="weatherreport" key="sample.weatherreport" #p0="rain" locale="ja_JP">天気</afd:msg><br/>
+				</div></div>
+				
+				<div class="panel panel-default"><div class="panel-body">
+					<!-- treat message as text -->
+					<afd:msg key="sample.textUrl"></afd:msg><br/>
+					
+					<!-- treat message as html -->
+					<afd:msg key="sample.htmlUrl"></afd:msg><br/>
+					
+					<!-- treat message as text even it begins with html: -->
+					<afd:msg key="sample.escapedUrl"></afd:msg><br/>
+				</div></div>
 			</article>
 		</section>
-	    <!-- @ShowCode:showLocalizeEnd -->
+		<!-- @ShowCode:showLocalizeEnd -->
+	
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/localize.html" startMark="showLocalizeStart" endMark="showLocalizeEnd"/>
 
-	    <div afd:render="ShowCodeSnippet:showCode" file="/templates/localize.html" startMark="showLocalizeStart" endMark="showLocalizeEnd">
-	    </div>
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showLocalizeStart" endMark="showLocalizeEnd"/>
+		
+		<div class=" panel panel-default">
+			<div class=" panel-heading">/message.properties</div>
+			<div class=" panel-body">
+				<pre>
+sample.peoplecount=There are(is) {0} people in the room.
 
-	    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showLocalizeStart" endMark="showLocalizeEnd">
-	    </div>
-	</body>
+sample.weatherreport=Today''s weather is {0}.
+sample.weatherreport.sunny=good
+sample.weatherreport.cloudy=not good
+sample.weatherreport.rain=bad
+
+sample.textUrl=Click &lt;a href="http://asta4d.sample.com/">here&lt;/a&gt; to contact us.
+sample.htmlUrl=html:Click &lt;a href="http://asta4d.sample.com/">here&lt;/a&gt; to contact us.
+sample.escapedUrl=text:html:Click &lt;a href="http://asta4d.sample.com/"&gt;here&lt;/a&gt; to contact us.
+				</pre>
+			</div>
+		</div>
+	</afd:block>
+</body>
 </html>

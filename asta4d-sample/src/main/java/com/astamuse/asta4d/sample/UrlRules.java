@@ -32,6 +32,7 @@ import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 
 public class UrlRules implements UrlMappingRuleInitializer {
@@ -56,14 +57,18 @@ public class UrlRules implements UrlMappingRuleInitializer {
         rules.add("/snippet", "/templates/snippet.html");
         
         // @ShowCode:showVariableinjectionStart
-        rules.add("/{name}/{age}", "/templates/variableinjection.html").priority(1);
+        rules.add("/var-injection/{name}/{age}", "/templates/variableinjection.html").priority(1);
         // @ShowCode:showVariableinjectionEnd
         
         rules.add("/attributevalues", "/templates/attributevalues.html");
 
-        rules.add("/extendendchild", "/templates/extendendchild.html");
-        rules.add("/extend/insertchild", "/templates/extend/insertchild.html");
-        rules.add("/extend/overridechild", "/templates/extend/overridechild.html");
+        rules.add("/extend/{target}").handler(new Object(){
+            @RequestHandler
+            public String handle(String target){
+                return "/templates/extend/"+target+".html";
+            }
+        });
+        
 
         rules.add("/embed/main", "/templates/embed/main.html");
 

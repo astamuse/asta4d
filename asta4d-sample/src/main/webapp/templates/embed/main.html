@@ -1,6 +1,36 @@
 <html>
 <head>
 <meta charset="utf-8" />
+</head>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Embed other template
+	</afd:block>
+	<afd:block override="content-detail">
+		<!-- @ShowCode:showMainStart -->
+		<section>
+			<article>
+				<ol>
+					<p>This is main template text.</p>
+					<afd:embed target="/templates/embed/embedded.html"/>
+					<afd:embed target="/templates/embed/embedded_withbody.html"/>
+				</ol>
+			</article>
+		</section>
+		<!-- @ShowCode:showMainEnd -->
+	
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/main.html" startMark="showMainStart" endMark="showMainEnd"/>
+
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/embedded.html" startMark="showEmbeddedStart" endMark="showEmbeddedEnd"/>
+		
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/embedded_withbody.html" startMark="showEmbeddedStart" endMark="showEmbeddedEnd"/>
+	</afd:block>
+</body>
+</html>
+<html>
+<head>
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../../css/common.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
@@ -8,26 +38,11 @@
 <title>Asta4D Sample Project</title>
 </head>
 <body onload="prettyPrint()">
-	<h1>Embed other template.</h1>
+	<h1>.</h1>
 
-    <!-- @ShowCode:showMainStart -->
-	<section>
-		<article>
-			<ol>
-				<p>This is main template text.</p>
-				<afd:embed target="/templates/embed/embedded.html">
-					<p>This is dummy text.</p>
-				</afd:embed>
-			</ol>
-		</article>
-	</section>
-	<!-- @ShowCode:showMainEnd -->
+    
 
-    <div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/main.html" startMark="showMainStart" endMark="showMainEnd">
-    </div>
 
-    <div afd:render="ShowCodeSnippet:showCode" file="/templates/embed/embedded.html" startMark="showEmbeddedStart" endMark="showEmbeddedEnd">
-    </div>
 
 </body>
 </html>

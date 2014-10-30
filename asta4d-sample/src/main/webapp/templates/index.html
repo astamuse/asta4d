@@ -15,20 +15,15 @@
 					<li><a href="/snippet">Use Snippet for rendering dynamic page.</a></li>
 					<li>Inject values of the variable.(/{name}/{age})
 						<ul>
-							<li><a href="/foo/25">name=foo, age=25</a></li>
-							<li><a href="/bar/20">name=bar, age=20</a></li>
+							<li><a href="/var-injection/foo/25">name=foo, age=25</a></li>
+							<li><a href="/var-injection/bar/20">name=bar, age=20</a></li>
 						</ul>
 					</li>
 					<li><a href="/attributevalues">Manipulate attribute values.</a></li>
-					<li>Extend other template.
-						<ul>
-							<li><a href="/extendendchild">append</a></li>
-							<li><a href="/extend/insertchild">insert</a></li>
-							<li><a href="/extend/overridechild">override</a></li>
-						</ul>
-					</li>
+					<li><a href="/extend/appendchild">Template extension</a>
 					<li><a href="/embed/main">Embed other template.</a></li>
-					<li><a href="/handler">Use Request Handler for side effects.</a></li>
+					<!-- li><a href="/handler">Use Request Handler for side effects.</a></li-->
+					<li><a href="/localize">Localize Messages(i18n support).</a></li>
 			</ul>
 		</div>
 	</div>
@@ -46,8 +41,8 @@
 					</li>
 					<li><a href="/renderertypes">Experience some type of Renderers.</a></li>
 					<li><a href="/passvariables">Pass variables from outer Snippet to inner Snippet.</a></li>
-					<li><a href="/contextdata">Use ContextData annotation.</a></li>
-					<li><a href="/localize">Localize Messages.</a></li>
+					<li><a href="/contextdata?var=yyy">Use ContextData annotation.</a></li>
+					
 			</ul>
 		</div>
 	</div>

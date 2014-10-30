@@ -1,49 +1,32 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../css/common.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
-<script type="text/javascript" src="../js/prettify.js"></script>
-<title>Asta4D Sample Project</title>
 </head>
-<body onload="prettyPrint()">
-	<h1>Use ContextData annotation.</h1>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Use ContextData annotation
+	</afd:block>
+	<afd:block override="content-detail">
+		<section>
+			<!-- @ShowCode:showContextdataStart -->
+			<article>
+				<dl>
+					<dt>User @ContextData to change variable name.</dt>
+					<dd var="value" afd:render="ComplicatedSnippet:changeName">changeName</dd>
+					<dt>User @ContextData to specific query scope.</dt>
+					<dd var="value" afd:render="ComplicatedSnippet:specificScope">specificScope</dd>
+					<dt>User convenient @QueryParam instead of @ContextData.</dt>
+					<dd var="value" afd:render="ComplicatedSnippet:convenientAnnotation">convenient</dd>
+				</dl>
+			</article>
+			<!-- @ShowCode:showContextdataEnd -->
+		</section>
+		
 
-    <!-- @ShowCode:showContextdataStart -->
-	<section>
-		<article>
-			Default Data Scope Order:
-			<ol>
-				<li>SCOPE_ATTR</li>
-				<li>SCOPE_PATHVAR</li>
-				<li>SCOPE_QUERYPARAM</li>
-				<li>SCOPE_FLASH</li>
-				<li>SCOPE_COOKIE</li>
-				<li>SCOPE_HEADER</li>
-				<li>SCOPE_REQUEST</li>
-				<li>SCOPE_SESSION</li>
-				<li>SCOPE_GLOBAL</li>
-			</ol>
-			This order can be customize to use below method.<br/>
-			com.astamuse.asta4d.data.DefaultContextDataFinder#setDataSearchScopeOrder()<br/>
-		</article>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/contextdata.html" startMark="showContextdataStart" endMark="showContextdataEnd"/>
 
-		<article>
-			<dl>
-				<dt>User @ContextData to change variable name.</dt>
-				<dd var="value" afd:render="ComplicatedSnippet:changeName">changeName</dd>
-				<dt>User @ContextData to specific query scope.</dt>
-				<dd var="value" afd:render="ComplicatedSnippet:specificScope">specificScope</dd>
-			</dl>
-		</article>
-	</section>
-    <!-- @ShowCode:showContextdataEnd -->
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/templates/contextdata.html" startMark="showContextdataStart" endMark="showContextdataEnd">
-    </div>
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showContextdataStart" endMark="showContextdataEnd">
-    </div>
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showContextdataStart" endMark="showContextdataEnd"/>
+	</afd:block>
 </body>
 </html>

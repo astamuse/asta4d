@@ -61,3 +61,16 @@ pre.form-field-pre {
 	font-size: 18;
 	line-height: 3em;
 }
+
+.bold {
+	font-weight: bold;
+	
+}
+
+.italic {
+	font-style: italic;
+}
+
+.red {
+	color: red;
+}

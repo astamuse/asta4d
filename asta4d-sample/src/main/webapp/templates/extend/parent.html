@@ -1,6 +1,39 @@
 <html>
 <head>
 <meta charset="utf-8" />
+</head>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Template extension mechanism
+	</afd:block>
+	<afd:block override="content-detail">
+		<ul class="nav nav-tabs" role="tablist" afd:render="ExtendSnippet:renderTabs">
+			<li id="appendchild" role="presentation"><a href="/extend/appendchild">append</a></li>
+			<li id="insertchild" role="presentation"><a href="/extend/insertchild">insert</a></li>
+			<li id="overridechild" role="presentation"><a href="/extend/overridechild">override</a></li>
+		</ul>
+		<!-- @ShowCode:showParentStart -->
+		<section>
+			<article>
+				<ol>
+					<afd:block id="block">
+						<li>This is parent template text.</li>
+					</afd:block>
+				</ol>
+			</article>
+		</section>
+		<!-- @ShowCode:showParentEnd -->
+	
+		<afd:block id="source">
+	 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/extend/parent.html" startMark="showParentStart" endMark="showParentEnd"/>
+		</afd:block>
+	</afd:block>
+</body>
+</html>
+<html>
+<head>
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../../css/common.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="../../css/prettify.css" type="text/css" media="all">
@@ -10,21 +43,8 @@
 <body onload="prettyPrint()">
 	<h1>Extend other template.</h1>
 
-    <!-- @ShowCode:showParentStart -->
-	<section>
-		<article>
-			<ol>
-				<afd:block id="block">
-					<li>This is parent template text.</li>
-				</afd:block>
-			</ol>
-		</article>
-	</section>
-	<!-- @ShowCode:showParentEnd -->
 
-    <afd:block id="source">
-	    <div afd:render="ShowCodeSnippet:showCode" file="/templates/extend/parent.html" startMark="showParentStart" endMark="showParentEnd">
-	    </div>
-    </afd:block>
+
+
 </body>
 </html>

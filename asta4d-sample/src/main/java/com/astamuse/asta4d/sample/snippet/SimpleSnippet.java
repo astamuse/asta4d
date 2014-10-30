@@ -31,14 +31,23 @@ public class SimpleSnippet {
     // @ShowCode:showSnippetStart
     // @ShowCode:showVariableinjectionStart
     public Renderer render(String name) {
+        // replace the whole title node
         if (StringUtils.isEmpty(name)) {
             name = "Asta4D";
         }
-        Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
-        return Renderer.create("*", element);
+        Element element = ElementUtil.parseAsSingle("<div>Hello " + name + "!</div>");
+        return Renderer.create(":root", element);
+    }
+
+    public Renderer setProfileByVariableInjection(String name, int age) {
+        Renderer render = Renderer.create();
+        render.add("p#name span", name);
+        render.add("p#age span", age);
+        return render;
     }
 
     // @ShowCode:showVariableinjectionEnd
+
     public Renderer setProfile() {
         Renderer render = Renderer.create();
         render.add("p#name span", "asta4d");
@@ -48,15 +57,6 @@ public class SimpleSnippet {
 
     // @ShowCode:showSnippetEnd
 
-    // @ShowCode:showVariableinjectionStart
-    public Renderer setProfileByVariableInjection(String name, int age) {
-        Renderer render = new GoThroughRenderer();
-        render.add("p#name span", name);
-        render.add("p#age span", age);
-        return render;
-    }
-
-    // @ShowCode:showVariableinjectionEnd
     // @ShowCode:showAttributevaluesStart
     public Renderer manipulateAttrValues() {
         Renderer render = new GoThroughRenderer();
