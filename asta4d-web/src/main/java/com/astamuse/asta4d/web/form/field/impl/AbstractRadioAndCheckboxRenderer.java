@@ -45,6 +45,15 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
         return Renderer.create(editTargetSelector, renderer);
     }
 
+    /**
+     * By default, there must be an id for every radio/checkbox item.
+     * 
+     * @return
+     */
+    protected boolean allowNonIdItems() {
+        return false;
+    }
+
     protected Renderer retrieveAndCreateValueMap(final String editTargetSelector, final String displayTargetSelector) {
         Renderer render = Renderer.create();
         if (PrepareRenderingDataUtil.retrieveStoredDataFromContextBySelector(editTargetSelector) == null) {
@@ -67,20 +76,29 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
                     for (Pair<String, String> input : inputList) {
                         String id = input.getLeft();
                         final String value = input.getRight();
-                        render.add(SelectorUtil.attr("for", id), Renderer.create("label", new ElementSetter() {
-                            @Override
-                            public void set(Element elem) {
-                                optionList.add(new OptionValuePair(value, elem.text()));
+                        if (StringUtils.isEmpty(id)) {
+                            if (allowNonIdItems()) {
+                                optionList.add(new OptionValuePair(value, value));
+                            } else {
+                                String msg = "The target item[%s] must have id specified.";
+                                throw new IllegalArgumentException(String.format(msg, editTargetSelector));
                             }
-                        }));
-                        render.add(":root", new Renderable() {
-                            @Override
-                            public Renderer render() {
-                                PrepareRenderingDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector,
-                                        new OptionValueMap(optionList));
-                                return Renderer.create();
-                            }
-                        });
+                        } else {
+                            render.add(SelectorUtil.attr("for", id), Renderer.create("label", new ElementSetter() {
+                                @Override
+                                public void set(Element elem) {
+                                    optionList.add(new OptionValuePair(value, elem.text()));
+                                }
+                            }));
+                            render.add(":root", new Renderable() {
+                                @Override
+                                public Renderer render() {
+                                    PrepareRenderingDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector,
+                                            new OptionValueMap(optionList));
+                                    return Renderer.create();
+                                }
+                            });
+                        }
                     }// end for loop
                     return render;
                 }

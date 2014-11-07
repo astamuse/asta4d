@@ -1,0 +1,21 @@
+<html>
+<head>
+</head>
+<body>
+<form afd:render="field.RadioTest$TestSnippet:staticOptionDisplayValueError">
+<!-- 
+there is a fullwidth space before the id attribution(which means there is no id attr), 
+which will cause error in rendering, but we should throw a exception with friendly 
+information for this issue. 
+-->
+
+<input type="radio"　id="vv-x" name="vv" value="x" checked></input><label for="vv-x">xc</label>
+<input type="radio" id="vv-y" name="vv" value="y"></input><label for="vv-y">yc</label>
+<input type="radio" id="vv-z" name="vv" value="z"></input><label for="vv-z">zc</label>
+
+
+</form>
+
+
+</body>
+</html>

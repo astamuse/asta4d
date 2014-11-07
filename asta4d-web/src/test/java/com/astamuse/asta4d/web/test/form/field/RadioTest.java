@@ -210,6 +210,14 @@ public class RadioTest extends WebTestBase {
             return builder.toRenderer(false);
         }
 
+        public Renderer staticOptionDisplayValueError() {
+            FieldRenderBuilder builder = FieldRenderBuilder.of(RadioRenderer.class);
+
+            builder.addValue("vv", "xc");
+
+            return builder.toRenderer(false);
+        }
+
         public Renderer duplicatedElement() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioRenderer.class);
 
@@ -266,6 +274,11 @@ public class RadioTest extends WebTestBase {
 
     public void testStaticOptionDisplay() throws Throwable {
         new FormRenderCase("/Radio_staticOptionDisplay.html");
+    }
+
+    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target item\\[.+\\] must have id specified\\.")
+    public void testStaticOptionDisplayError() throws Throwable {
+        new FormRenderCase("/Radio_staticOptionDisplay_error.html");
     }
 
     @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*The target of selector\\[\\[.+\\]\\] must be unique.+")
