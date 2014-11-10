@@ -7,6 +7,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
+import com.astamuse.asta4d.web.form.annotation.renderable.Select;
 
 @Form
 public class PersonFormForMultiStep extends PersonForm {
@@ -31,6 +32,7 @@ public class PersonFormForMultiStep extends PersonForm {
     }
 
     @Override
+    @Select(name = "bloodtype")
     public BloodType getBloodType() {
         return super.getBloodType();
     }
