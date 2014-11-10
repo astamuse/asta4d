@@ -100,20 +100,31 @@ public abstract class AbstractFormFlowSnippet {
     }
 
     public Renderer render() throws Exception {
-        Renderer renderer = Renderer.create(":root", new ElementSetter() {
-            @Override
-            public void set(Element elem) {
-                Element hide = new Element(Tag.valueOf("input"), "");
-                hide.attr("name", FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
-                hide.attr("type", "hidden");
-                hide.attr("value", formTraceMapStr);
-                elem.appendChild(hide);
-            }
-        });
-
+        Renderer renderer = renderTraceMapData();
         Object form = retrieveRenderTargetForm();
-
         return renderer.add(renderForm(renderTargetStep, form, -1));
+    }
+
+    /**
+     * We only render the form trace map when it exists
+     * 
+     * @return
+     */
+    protected Renderer renderTraceMapData() {
+        if (StringUtils.isEmpty(formTraceMapStr)) {
+            return Renderer.create();
+        } else {
+            return Renderer.create(":root", new ElementSetter() {
+                @Override
+                public void set(Element elem) {
+                    Element hide = new Element(Tag.valueOf("input"), "");
+                    hide.attr("name", FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
+                    hide.attr("type", "hidden");
+                    hide.attr("value", formTraceMapStr);
+                    elem.appendChild(hide);
+                }
+            });
+        }
     }
 
     protected Object retrieveRenderTargetForm() {

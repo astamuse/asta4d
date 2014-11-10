@@ -36,6 +36,14 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
     }
 
+    protected String firstStepName() {
+        return ClassicalFormFlowConstant.STEP_INPUT;
+    }
+
+    protected boolean isFirstStep(String step) {
+        return ClassicalFormFlowConstant.STEP_INPUT.equalsIgnoreCase(step);
+    }
+
     protected boolean isConfirmStep(String step) {
         return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
     }
@@ -45,8 +53,51 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
     }
 
-    protected String firstStepName() {
-        return ClassicalFormFlowConstant.STEP_INPUT;
+    /**
+     * In the parent class {@link AbstractFormFlowHandler}'s implementation of saveTraceMap, it says that the sub class have the
+     * responsibility to make sure save the trace map well, thus we override it to perform the obligation.
+     * 
+     * The trace map will not be saved when the flowing cases:
+     * <ul>
+     * <li>The form flow starts and the first step is shown as the entry of current flow
+     * <li>The form flow is returned to the first step from the first step (usually validation failed).
+     * <li>The form flow is returned to the first step from other step when the {@link #skipSaveTraceMapWhenBackedFromOtherStep()} returns
+     * true
+     * <li>The form flow has finished and is moving to the finish step.
+     * </ul>
+     * 
+     * @param currentStep
+     * @param renderTargetStep
+     * @param traceMap
+     * @return
+     */
+    @Override
+    protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+        if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+            // when the form flow start
+            return true;
+        } else if (isFirstStep(currentStep) && currentStep.equalsIgnoreCase(renderTargetStep)) {
+            // the form flow is stopped at the first step
+            return true;
+        } else if (isFirstStep(renderTargetStep)) {
+            // the form flow is returned to the first step
+            return skipSaveTraceMapWhenBackedFromOtherStep();
+        } else if (isCompleteStep(renderTargetStep)) {
+            // the form flow finished
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * For most cases, we return true by default to tell the form flow skip saving trace map when we returned to the first step in spite of
+     * any other concerns.
+     * 
+     * @return
+     */
+    protected boolean skipSaveTraceMapWhenBackedFromOtherStep() {
+        return true;
     }
 
     protected boolean treatCompleteStepAsExit() {

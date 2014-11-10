@@ -61,7 +61,7 @@ public class MultiStepFormTest extends WebTestBase {
         }
 
         @Override
-        protected String saveTraceMap(Map<String, Object> traceMap) {
+        protected String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
             savedTraceMap = traceMap;
             return FAKE_TRACE_MAP_ID;
         }

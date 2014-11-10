@@ -21,6 +21,7 @@ import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
+import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.form.validation.FormValidator;
 import com.astamuse.asta4d.web.form.validation.JsrValidator;
@@ -90,7 +91,7 @@ public abstract class AbstractFormFlowHandler<T> {
         }
 
         // the first time access without existing input data or saved tracemap could not be retrieved(usually due to timeout)
-        if (currentStep == null || traceMap.isEmpty()) {
+        if (currentStep == null) {
             currentStep = FormFlowConstants.FORM_STEP_INIT_STEP;
             savePreDefinedForm(createInitForm());
         } else {
@@ -175,9 +176,10 @@ public abstract class AbstractFormFlowHandler<T> {
                         throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] was not found");
                     }
 
-                    final Integer len = (Integer) arrayLengthField.retrieveValue(form);
+                    Integer len = (Integer) arrayLengthField.retrieveValue(form);
                     if (len == null) {
-                        throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] is null");
+                        // throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] is null");
+                        len = 0;
                     }
 
                     final Object[] array = (Object[]) Array.newInstance(field.getType().getComponentType(), len);
@@ -218,11 +220,42 @@ public abstract class AbstractFormFlowHandler<T> {
         return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, seq);
     }
 
-    protected String saveTraceMap(Map<String, Object> traceMap) {
-        String id = SecureIdGenerator.createEncryptedURLSafeId();
-        WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
-                .put(id, traceMap, cachedTraceMapLivingTimeInMilliSeconds());
-        return id;
+    /**
+     * <b>Note</b>: In fact, we should not save the trace map when some steps such as init step to avoid unnecessary memory usage, thus we
+     * call the {@link #skipSaveTraceMap(String, String, Map)} to decide save or not.
+     * 
+     * In other words ,the sub class have the responsibility to tell us save or not by overriding the method
+     * {@link #skipSaveTraceMap(String, String, Map)}.
+     * 
+     * @param currentStep
+     * @param renderTargetStep
+     * @param traceMap
+     * @return
+     */
+    protected String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+        if (skipSaveTraceMap(currentStep, renderTargetStep, traceMap)) {
+            return "";
+        } else {
+            String id = SecureIdGenerator.createEncryptedURLSafeId();
+            WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
+                    .put(id, traceMap, cachedTraceMapLivingTimeInMilliSeconds());
+            return id;
+        }
+    }
+
+    /**
+     * Since we are lacking of necessary step information to judge if we should save or not, we only do the basic judgment for the init
+     * step. The sub class have the responsibility to handle other cases.
+     * 
+     * @see MultiStepFormFlowHandler#skipSaveTraceMap(String, String, Map)
+     * 
+     */
+    protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+        if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     protected Map<String, Object> restoreTraceMap(String data) {
@@ -246,7 +279,7 @@ public abstract class AbstractFormFlowHandler<T> {
 
         boolean byFlash = passDataToSnippetByFlash(currentStep, renderTargetStep, form, result);
 
-        String traceData = saveTraceMap(traceMap);
+        String traceData = saveTraceMap(currentStep, renderTargetStep, traceMap);
 
         passData(context, byFlash, FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
         passData(context, byFlash, FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);

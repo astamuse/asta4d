@@ -1,5 +1,9 @@
 package com.astamuse.asta4d.web.form.flow.classical;
 
+import java.util.Map;
+
+import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
+
 public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> {
 
     public static final String VAR_INPUT_TEMPLATE_FILE = VAR_TEMPLATE_BASE_PATH;
@@ -18,6 +22,21 @@ public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> 
 
     @Override
     protected boolean treatCompleteStepAsExit() {
+        return true;
+    }
+
+    /**
+     * In the parent class {@link AbstractFormFlowHandler}'s implementation of skipSaveTraceMap, it says that the sub class have the
+     * responsibility to make sure save the trace map well, thus we override it to perform the obligation.
+     * 
+     * The trace map will never be saved for a one step form since there is no necessary to keep the trace
+     * 
+     * @param currentStep
+     * @param renderTargetStep
+     * @param traceMap
+     * @return
+     */
+    protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         return true;
     }
 
