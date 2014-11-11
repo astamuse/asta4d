@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.test.unit;
+package com.astamuse.asta4d.test.unit.data;
 
 import java.util.LinkedList;
 import java.util.List;

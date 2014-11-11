@@ -17,8 +17,14 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.data.convertor.DataValueConvertor;
 import com.astamuse.asta4d.data.convertor.DataValueConvertorTargetTypeConvertable;
 import com.astamuse.asta4d.data.convertor.String2Bool;
+import com.astamuse.asta4d.data.convertor.String2Date;
 import com.astamuse.asta4d.data.convertor.String2Enum;
 import com.astamuse.asta4d.data.convertor.String2Int;
+import com.astamuse.asta4d.data.convertor.String2JodaDateTime;
+import com.astamuse.asta4d.data.convertor.String2JodaLocalDate;
+import com.astamuse.asta4d.data.convertor.String2JodaLocalDateTime;
+import com.astamuse.asta4d.data.convertor.String2JodaLocalTime;
+import com.astamuse.asta4d.data.convertor.String2JodaYearMonth;
 import com.astamuse.asta4d.data.convertor.String2Long;
 import com.astamuse.asta4d.data.convertor.UnsupportedValueException;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
@@ -79,6 +85,12 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
         defaultList.add(new String2Int());
         defaultList.add(new String2Bool());
         defaultList.add(new String2Enum());
+        defaultList.add(new String2Date());
+        defaultList.add(new String2JodaDateTime());
+        defaultList.add(new String2JodaLocalDate());
+        defaultList.add(new String2JodaLocalDateTime());
+        defaultList.add(new String2JodaLocalTime());
+        defaultList.add(new String2JodaYearMonth());
         return defaultList;
     }
 
