@@ -8,6 +8,8 @@ import org.jsoup.nodes.Element;
 
 import com.astamuse.asta4d.render.AttributeSetter;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.render.RendererTestHelper;
+import com.astamuse.asta4d.render.RendererType;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
@@ -85,6 +87,20 @@ public class RendererTester {
         }
     }
 
+    public boolean noOp() {
+        return renderer.asUnmodifiableList().size() == 1 && RendererTestHelper.getRendererType(renderer) == RendererType.GO_THROUGH;
+    }
+
+    public boolean noOp(String selector) {
+        List<List<Transformer<?>>> list = retrieveNonAttrTransformer(selector);
+        return list.isEmpty();
+    }
+
+    public boolean noOp(String selector, String attr) {
+        List list = (List) getAttrAsObject(selector, attr, true, true);
+        return list.isEmpty();
+    }
+
     @SuppressWarnings("rawtypes")
     public Object get(String selector) {
         Transformer t = retrieveSingleTransformerOnSelector(selector);
@@ -125,7 +141,7 @@ public class RendererTester {
     }
 
     public Object getAttr(String selector, String attr) {
-        return getAttrAsObject(selector, attr, false);
+        return getAttrAsObject(selector, attr, false, false);
     }
 
     /**
@@ -138,14 +154,14 @@ public class RendererTester {
     @SuppressWarnings("unchecked")
     public List<String> getAttrAsList(String selector, String attr) {
         if (attr.equals("+class") || attr.equals("-class")) {
-            return (List<String>) getAttrAsObject(selector, attr, true);
+            return (List<String>) getAttrAsObject(selector, attr, true, false);
         } else {
             throw new RendererTestException("This method is only for retrieving rendered value of \"+class\" and \"-class\" attr action");
         }
 
     }
 
-    private Object getAttrAsObject(String selector, String attr, boolean allowList) {
+    private Object getAttrAsObject(String selector, String attr, boolean allowList, boolean allowEmpty) {
         List<Renderer> rendererList = renderer.asUnmodifiableList();
         List<Object> valueList = new LinkedList<>();
         for (Renderer r : rendererList) {
@@ -170,7 +186,7 @@ public class RendererTester {
             }
         }
 
-        if (valueList.isEmpty()) {
+        if (!allowEmpty && valueList.isEmpty()) {
             throw new RendererTestException("There is no value to be rendered for attr:[" + attr + "] of selector:[" + selector + "]");
         } else if (valueList.size() > 1) {
             if (allowList) {

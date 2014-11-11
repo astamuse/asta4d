@@ -23,7 +23,7 @@ package com.astamuse.asta4d.render;
  * @author e-ryu
  * 
  */
-enum RendererType {
+public enum RendererType {
     /**
      * common renderer
      */
