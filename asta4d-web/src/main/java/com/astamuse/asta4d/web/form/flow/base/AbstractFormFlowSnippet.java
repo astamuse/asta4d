@@ -54,6 +54,15 @@ public abstract class AbstractFormFlowSnippet {
     @ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET)
     protected String renderTargetStep;
 
+    /**
+     * Sub class should tell us the current rendering mode. Since we have no any information about the concrete cases, we always return true
+     * by default.
+     * 
+     * @param step
+     * @param form
+     * @param fieldName
+     * @return
+     */
     protected boolean renderForEdit(String step, Object form, String fieldName) {
         return true;
     }
@@ -99,6 +108,12 @@ public abstract class AbstractFormFlowSnippet {
         }
     }
 
+    /**
+     * The entry of form rendering. Sub classes could override it in case of necessarily.
+     * 
+     * @return
+     * @throws Exception
+     */
     public Renderer render() throws Exception {
         Renderer renderer = renderTraceMapData();
         Object form = retrieveRenderTargetForm();
@@ -248,7 +263,7 @@ public abstract class AbstractFormFlowSnippet {
                 }
 
                 if (valueHolder != null) {
-                    v = convertRawTraceDataToRenderingData(field.getName(), field.getType(), valueHolder.getFoundOriginalData());
+                    v = convertRawInjectionTraceDataToRenderingData(field.getName(), field.getType(), valueHolder.getFoundOriginalData());
                 }
             }
 
@@ -315,6 +330,14 @@ public abstract class AbstractFormFlowSnippet {
         return "cascade-form-container-array-ref";
     }
 
+    /**
+     * Sub classes could override this method to customize how to rewrite the array index for cascade array forms.
+     * 
+     * @param renderTargetStep
+     * @param form
+     * @param cascadeFormArrayIndex
+     * @return
+     */
     protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final int cascadeFormArrayIndex) {
 
         final String[] targetAttrs = rewriteCascadeFormFieldArrayRefTargetAttrs();
@@ -339,16 +362,31 @@ public abstract class AbstractFormFlowSnippet {
 
     private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name", "cascade-ref", "cascade-ref-target" };
 
+    /**
+     * The attributes returned by this method will be rewritten for array index.
+     * <p>
+     * The default is {"id", "name", "cascade-ref", "cascade-ref-target"}.
+     * 
+     * @return
+     */
     protected String[] rewriteCascadeFormFieldArrayRefTargetAttrs() {
         return _rewriteCascadeFormFieldArrayRefTargetAttrs;
     }
 
+    /**
+     * Sub classes can override this method to supply a customized array index placeholder mechanism.
+     * 
+     * @param s
+     * @param seq
+     * @return
+     * @see AbstractFormFlowHandler#rewriteArrayIndexPlaceHolder(String, int)
+     */
     protected String rewriteArrayIndexPlaceHolder(String s, int seq) {
         return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, seq);
     }
 
     /**
-     * should be overridden
+     * Sub classes should override this method to supply field prepare renderers.
      * 
      * @return
      * @throws Exception
@@ -357,7 +395,15 @@ public abstract class AbstractFormFlowSnippet {
         return new LinkedList<>();
     }
 
-    protected Object convertRawTraceDataToRenderingData(String fieldName, Class fieldDataType, Object rawTraceData) {
+    /**
+     * Sub classes could override this method to customize how to handle the injection trace data for type unmatch errors.
+     * 
+     * @param fieldName
+     * @param fieldDataType
+     * @param rawTraceData
+     * @return
+     */
+    protected Object convertRawInjectionTraceDataToRenderingData(String fieldName, Class fieldDataType, Object rawTraceData) {
         if (fieldDataType.isArray() && rawTraceData.getClass().isArray()) {
             return rawTraceData;
         } else if (rawTraceData.getClass().isArray()) {// but field data type is

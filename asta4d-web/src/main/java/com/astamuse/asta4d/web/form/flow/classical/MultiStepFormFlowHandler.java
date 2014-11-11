@@ -11,6 +11,7 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
+import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 
 public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandler<T> {
 
@@ -30,12 +31,18 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         this.templateBasePath = null;
     }
 
+    /**
+     * Sub classes must override this method to implement update logic.
+     * 
+     * @param form
+     */
     protected abstract void updateForm(T form);
 
-    protected boolean doUpdateOnSuccess(String step) {
-        return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
-    }
-
+    /**
+     * Tell us the name of first step of current form flow.
+     * 
+     * @return
+     */
     protected String firstStepName() {
         return ClassicalFormFlowConstant.STEP_INPUT;
     }
@@ -100,6 +107,13 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return true;
     }
 
+    /**
+     * Sub classes should decide whether they want to show a complete page or simply exit current flow.
+     * <p>
+     * The default is false, which means the complete page will be shown always.
+     * 
+     * @return
+     */
     protected boolean treatCompleteStepAsExit() {
         return false;
     }
@@ -109,6 +123,12 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return createTemplateFilePathForStep(super.handle());
     }
 
+    /**
+     * Sub classes can override this method to customize how to translate a step to a target template file path.
+     * 
+     * @param step
+     * @return
+     */
     protected String createTemplateFilePathForStep(String step) {
         if (step == null) {// exit flow
             return null;
@@ -136,15 +156,26 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         return templateBasePath + step + ".html";
     }
 
+    /**
+     * Whether we should call {@link #updateForm(Object)} when the {@link #processValidation(Object)} returns SUCCESS.
+     * 
+     * @param processData
+     * @return
+     */
+    protected boolean doUpdateOnValidationSuccess(FormProcessData processData) {
+        return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(processData.getStepCurrent()) &&
+                ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(processData.getStepSuccess());
+    }
+
     @Override
-    protected CommonFormResult handle(String currentStep, T form) {
-        CommonFormResult result = super.handle(currentStep, form);
-        if (result == CommonFormResult.SUCCESS && doUpdateOnSuccess(currentStep)) {
+    protected CommonFormResult process(FormProcessData processData, T form) {
+        CommonFormResult result = super.processValidation(form);
+        if (result == CommonFormResult.SUCCESS && doUpdateOnValidationSuccess(processData)) {
             try {
                 updateForm(form);
                 return CommonFormResult.SUCCESS;
             } catch (Exception ex) {
-                logger.error("error occured on step:" + currentStep, ex);
+                logger.error("error occured on step:" + processData.getStepCurrent(), ex);
                 return CommonFormResult.FAILED;
             }
         } else {
@@ -162,6 +193,13 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
         }
     }
 
+    /**
+     * When the form flow finished, if the complete page rendering is skipped({@link #treatCompleteStepAsExit()} returns true), we have to
+     * pass data to snippet via flash scope since we have to exit the current flow and the current request will be redirect by a 302
+     * response.
+     * 
+     * @return true when step is complete and {@link #treatCompleteStepAsExit()} returns true
+     */
     protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
         return ClassicalFormFlowConstant.STEP_COMPLETE.equals(renderTargetStep) && treatCompleteStepAsExit();
     }

@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippet;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
@@ -58,22 +57,6 @@ public class OneStepFormTest extends WebTestBase {
             form.subArrayLength = 0;
             form.subArrayLength2 = 0;
             return form;
-        }
-
-        @Override
-        protected String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-            savedTraceMap = traceMap;
-            return FAKE_TRACE_MAP_ID;
-        }
-
-        @Override
-        protected Map<String, Object> restoreTraceMap(String data) {
-            return savedTraceMap;
-        }
-
-        @Override
-        protected void clearSavedTraceMap(String traceData) {
-            savedTraceMap = null;
         }
 
         @Override
@@ -213,7 +196,6 @@ public class OneStepFormTest extends WebTestBase {
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "complete" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -256,7 +238,6 @@ public class OneStepFormTest extends WebTestBase {
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "confirm" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -330,7 +311,6 @@ public class OneStepFormTest extends WebTestBase {
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "complete" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 

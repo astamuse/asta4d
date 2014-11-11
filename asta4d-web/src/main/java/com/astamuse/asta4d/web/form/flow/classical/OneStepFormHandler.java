@@ -3,6 +3,7 @@ package com.astamuse.asta4d.web.form.flow.classical;
 import java.util.Map;
 
 import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 
 public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> {
 
@@ -16,10 +17,17 @@ public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> 
         super(formCls);
     }
 
-    protected boolean doUpdateOnSuccess(String step) {
+    /**
+     * for a one step form, we will always do update after validation succeed.
+     */
+    @Override
+    protected boolean doUpdateOnValidationSuccess(FormProcessData processData) {
         return true;
     }
 
+    /**
+     * for a one step form, we will always treat the complete step as exit
+     */
     @Override
     protected boolean treatCompleteStepAsExit() {
         return true;
