@@ -35,6 +35,7 @@ public class DebugRenderer extends Renderer {
 
     private static final class DebugTransformer extends Transformer<Object> {
 
+        Logger logger = null;
         String logMessage = null;
         String creationSiteInfo = null;
 
@@ -54,13 +55,14 @@ public class DebugRenderer extends Renderer {
 
     }
 
-    final static Logger logger = LoggerFactory.getLogger(DebugRenderer.class);
+    final static Logger DefaultLogger = LoggerFactory.getLogger(DebugRenderer.class);
 
-    public DebugRenderer(final String logMessage) {
+    public DebugRenderer(Logger logger, String logMessage) {
         super(":root", new DebugTransformer());
         DebugTransformer dts = (DebugTransformer) getTransformerList().get(0);
         dts.logMessage = logMessage;
         dts.creationSiteInfo = getCreationSiteInfo();
+        dts.logger = logger;
     }
 
     /*

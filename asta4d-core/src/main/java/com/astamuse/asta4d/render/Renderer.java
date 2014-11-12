@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
+import org.slf4j.Logger;
 
 import com.astamuse.asta4d.Component;
 import com.astamuse.asta4d.Configuration;
@@ -451,24 +452,66 @@ public class Renderer {
 
     /**
      * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the target element specified by the given
-     * selector will be output by logger.
+     * selector will be output by given logger.
      * 
+     * @param logger
+     *            the logger used to output target element
+     * @param logMessage
+     *            a mark message will be output before the target element
      * @param selector
-     *            a css selector
+     *            a css selector to specify the log target
+     * 
      * @return the created renderer or the current renderer for chain calling
      */
-    public Renderer addDebugger(String logMessage, String selector) {
-        return DebugRenderer.logger.isDebugEnabled() ? add(create(selector, new DebugRenderer(logMessage))) : this;
+    public Renderer addDebugger(Logger logger, String logMessage, String selector) {
+        return logger.isDebugEnabled() ? add(create(selector, new DebugRenderer(logger, logMessage))) : this;
     }
 
     /**
-     * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the current rendering element (see
-     * {@link Context#setCurrentRenderingElement(Element)}) will be output by logger.
+     * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the current rendering element (commonly the
+     * entry element of the current rendering method, see {@link Context#setCurrentRenderingElement(Element)}) will be output by given
+     * logger.
+     * 
+     * * @param logger the logger used to output target element
+     * 
+     * @param logMessage
+     *            a mark message will be output before the target element
      * 
      * @return the created renderer or the current renderer for chain calling
      */
+    public Renderer addDebugger(Logger logger, String logMessage) {
+        return logger.isDebugEnabled() ? add(new DebugRenderer(logger, logMessage)) : this;
+    }
+
+    /**
+     * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the target element specified by the given
+     * selector will be output by default inner logger.
+     * 
+     * @param logMessage
+     *            a mark message will be output before the target element
+     * @param selector
+     *            a css selector to specify the log target
+     * 
+     * @return the created renderer or the current renderer for chain calling
+     * @see #addDebugger(Logger, String, String)
+     */
+    public Renderer addDebugger(String logMessage, String selector) {
+        return addDebugger(DebugRenderer.DefaultLogger, logMessage, selector);
+    }
+
+    /**
+     * add a {@link DebugRenderer} to the current Renderer and when this renderer is applied, the current rendering element (commonly the
+     * entry element of the current rendering method, see {@link Context#setCurrentRenderingElement(Element)}) will be output by default
+     * inner logger.
+     * 
+     * @param logMessage
+     *            a mark message will be output before the target element
+     * 
+     * @return the created renderer or the current renderer for chain calling
+     * @see #addDebugger(Logger, String)
+     */
     public Renderer addDebugger(String logMessage) {
-        return DebugRenderer.logger.isDebugEnabled() ? add(new DebugRenderer(logMessage)) : this;
+        return addDebugger(DebugRenderer.DefaultLogger, logMessage);
     }
 
     /**
