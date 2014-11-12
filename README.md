@@ -8,26 +8,26 @@
 
 There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
 
-    ```
-    mvn archetype:generate                       \
-        -DarchetypeGroupId=com.astamuse          \
-        -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=1.0-b2              \
-        -DgroupId=<your.groupid>                 \
-        -DartifactId=<your-artifactId>
-    ```
+```batch
+mvn archetype:generate                       \
+    -DarchetypeGroupId=com.astamuse          \
+    -DarchetypeArtifactId=asta4d-archetype   \
+    -DarchetypeVersion=1.0-b2                \
+    -DgroupId=<your.groupid>                 \
+    -DartifactId=<your-artifactId>
+```
 
 or simply follow the wizard by filtered list:
 
-    ```
-    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b2
-    ```
+```batch
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b2
+```
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
 
-    ```
-    mvn jetty:run
-    ```
+```batch
+mvn jetty:run
+```
  
 Then you can access the sample project by http://localhost:8080, there are source samples shown, it is a good start from reading the samples.
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
