@@ -87,32 +87,71 @@ public class RendererTester {
         }
     }
 
+    /**
+     * 
+     * @return true - the current Renderer will do nothing
+     */
     public boolean noOp() {
         return renderer.asUnmodifiableList().size() == 1 && RendererTestHelper.getRendererType(renderer) == RendererType.GO_THROUGH;
     }
 
+    /**
+     * 
+     * 
+     * @param selector
+     * @return true - there is no actual rendering operation on the given selector
+     */
     public boolean noOp(String selector) {
         List<List<Transformer<?>>> list = retrieveNonAttrTransformer(selector);
         return list.isEmpty();
     }
 
+    /**
+     * 
+     * 
+     * @param selector
+     * @param attr
+     * @return true - there is no actual rendering operation on the given selector and attribute
+     */
     public boolean noOp(String selector, String attr) {
         List list = (List) getAttrAsObject(selector, attr, true, true);
         return list.isEmpty();
     }
 
+    /**
+     * 
+     * @param selector
+     * @return the rendered operation on given selector
+     * @throws RendererTestException
+     *             if there is no operation or more than one operation on given selector, RendererTestException will be thrown
+     */
     @SuppressWarnings("rawtypes")
-    public Object get(String selector) {
+    public Object get(String selector) throws RendererTestException {
         Transformer t = retrieveSingleTransformerOnSelector(selector);
         Object content = retrieveTestContentFromTransformer(t);
         return content;
     }
 
-    public List<Object> getAsList(String selector) {
+    /**
+     * 
+     * @param selector
+     * @return the rendered operation list on given selector
+     * @throws RendererTestException
+     *             if there is no operation on given selector, RendererTestException will be thrown
+     */
+    public List<Object> getAsList(String selector) throws RendererTestException {
         return getAsList(selector, Object.class);
     }
 
-    public <T> List<T> getAsList(String selector, final Class<T> targetCls) {
+    /**
+     * 
+     * @param selector
+     * @param targetCls
+     * @return the rendered operation list on given selector
+     * @throws RendererTestException
+     *             if there is no operation on given selector, RendererTestException will be thrown
+     */
+    public <T> List<T> getAsList(String selector, final Class<T> targetCls) throws RendererTestException {
         List<Transformer<?>> list = retrieveSingleTransformerListOnSelector(selector);
         return ListConvertUtil.transform(list, new RowConvertor<Transformer<?>, T>() {
             @SuppressWarnings("unchecked")
@@ -140,7 +179,15 @@ public class RendererTester {
         return content;
     }
 
-    public Object getAttr(String selector, String attr) {
+    /**
+     * 
+     * @param selector
+     * @param attr
+     * @return
+     * @throws RendererTestException
+     *             if there is no operation or more than one operation on given selector and attr, RendererTestException will be thrown
+     */
+    public Object getAttr(String selector, String attr) throws RendererTestException {
         return getAttrAsObject(selector, attr, false, false);
     }
 
@@ -150,9 +197,11 @@ public class RendererTester {
      * @param selector
      * @param attr
      * @return
+     * @throws RendererTestException
+     *             if there is no operation on given selector and attr, RendererTestException will be thrown
      */
     @SuppressWarnings("unchecked")
-    public List<String> getAttrAsList(String selector, String attr) {
+    public List<String> getAttrAsList(String selector, String attr) throws RendererTestException {
         if (attr.equals("+class") || attr.equals("-class")) {
             return (List<String>) getAttrAsObject(selector, attr, true, false);
         } else {
