@@ -136,7 +136,6 @@ public abstract class AbstractFormFlowHandler<T> {
 
         if (processData.getStepBack() != null) {
             renderTargetStep = processData.getStepBack();
-            traceMap.remove(currentStep);
             passDataToSnippet(currentStep, renderTargetStep, traceMap);
         } else {
             if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
