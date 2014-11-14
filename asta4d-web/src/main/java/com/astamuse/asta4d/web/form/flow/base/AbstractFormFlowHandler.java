@@ -444,7 +444,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * @param form
      * @return
      */
-    protected CommonFormResult processValidation(FormProcessData processData, T form) {
+    protected CommonFormResult processValidation(FormProcessData processData, Object form) {
         List<FormValidationMessage> validationMesssages = validate(form);
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;
