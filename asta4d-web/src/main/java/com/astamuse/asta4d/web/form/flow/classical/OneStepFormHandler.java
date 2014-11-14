@@ -17,6 +17,10 @@ public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> 
         super(formCls);
     }
 
+    protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
+        return super.generateFormInstanceFromContext();
+    }
+
     /**
      * for a one step form, we will always do update after validation succeed.
      */

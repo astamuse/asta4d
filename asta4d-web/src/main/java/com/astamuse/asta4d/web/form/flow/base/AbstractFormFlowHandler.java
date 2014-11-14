@@ -51,12 +51,20 @@ public abstract class AbstractFormFlowHandler<T> {
     }
 
     /**
-     * Sub classes must tell us whether the given step should be treated as the last step(to complete) of current form flow.
+     * Sub classes must tell us the name of first step
      * 
      * @param step
      * @return
      */
-    protected abstract boolean isCompleteStep(String step);
+    protected abstract String firstStepName();
+
+    /**
+     * Sub classes must tell us whether the name of complete step which means to finish current flow
+     * 
+     * @param step
+     * @return
+     */
+    protected abstract String completeStepName();
 
     /**
      * Sub classes could override this method to create the initial form data(eg. query from db)
@@ -123,7 +131,7 @@ public abstract class AbstractFormFlowHandler<T> {
         String currentStep = processData.getStepCurrent();
         // the first time access without existing input data or saved tracemap could not be retrieved(usually due to timeout)
         if (currentStep == null) {
-            currentStep = FormFlowConstants.FORM_STEP_INIT_STEP;
+            currentStep = FormFlowConstants.FORM_STEP_BEFORE_FIRST;
             savePreDefinedForm(createInitForm());
         }
 
@@ -136,11 +144,13 @@ public abstract class AbstractFormFlowHandler<T> {
 
         if (processData.getStepBack() != null) {
             renderTargetStep = processData.getStepBack();
+            if (removeCurrentStepDataFromTraceMapWhenStepBack(currentStep, renderTargetStep)) {
+                traceMap.remove(currentStep);
+            }
             passDataToSnippet(currentStep, renderTargetStep, traceMap);
         } else {
-            if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
-                formResult = CommonFormResult.INIT;
-                renderTargetStep = FormFlowConstants.FORM_STEP_INIT_STEP;
+            if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
+                renderTargetStep = firstStepName();
             } else {
                 // since the init step will not enter this branch, so the sub classes which override the process method could retrieve
                 // current step without any concern about null pointer exception.
@@ -154,7 +164,7 @@ public abstract class AbstractFormFlowHandler<T> {
             passDataToSnippet(currentStep, renderTargetStep, traceMap);
         }
 
-        if (isCompleteStep(renderTargetStep)) {
+        if (completeStepName().equalsIgnoreCase(renderTargetStep)) {
             WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
             String newTraceData = context.getData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
             clearSavedTraceMap(newTraceData);
@@ -283,6 +293,18 @@ public abstract class AbstractFormFlowHandler<T> {
     }
 
     /**
+     * The sub classes could tell us whether we should remove the current step data from trace map when we back to the previous step. By
+     * default, it returns true always.
+     * 
+     * @param currentStep
+     * @param renderTargetStep
+     * @return
+     */
+    protected boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
+        return true;
+    }
+
+    /**
      * Since we are lacking of necessary step information to judge if we should save or not, we only do the basic judgment for the init
      * step. The sub class have the responsibility to handle other cases.
      * 
@@ -290,7 +312,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * 
      */
     protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+        if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
             return true;
         } else {
             return false;
@@ -349,6 +371,7 @@ public abstract class AbstractFormFlowHandler<T> {
         T form = (T) traceMap.get(renderTargetStep);
         if (form == null) {
             form = (T) traceMap.get(currentStep);
+            traceMap.put(renderTargetStep, form);
         }
         WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
 

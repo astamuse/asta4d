@@ -38,26 +38,24 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      */
     protected abstract void updateForm(T form);
 
-    /**
-     * Tell us the name of first step of current form flow.
-     * 
-     * @return
-     */
+    @Override
     protected String firstStepName() {
         return ClassicalFormFlowConstant.STEP_INPUT;
     }
 
-    protected boolean isFirstStep(String step) {
-        return ClassicalFormFlowConstant.STEP_INPUT.equalsIgnoreCase(step);
+    @Override
+    protected String completeStepName() {
+        return ClassicalFormFlowConstant.STEP_COMPLETE;
     }
 
-    protected boolean isConfirmStep(String step) {
-        return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(step);
+    protected String confirmStepName() {
+        return ClassicalFormFlowConstant.STEP_CONFIRM;
     }
 
     @Override
-    protected boolean isCompleteStep(String step) {
-        return ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(step);
+    protected boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
+        // remove saved confirm step data when back from confirm step
+        return confirmStepName().equalsIgnoreCase(currentStep);
     }
 
     /**
@@ -80,16 +78,16 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      */
     @Override
     protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
+        if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
             // when the form flow start
             return true;
-        } else if (isFirstStep(currentStep) && currentStep.equalsIgnoreCase(renderTargetStep)) {
+        } else if (firstStepName().equalsIgnoreCase(currentStep) && currentStep.equalsIgnoreCase(renderTargetStep)) {
             // the form flow is stopped at the first step
             return true;
-        } else if (isFirstStep(renderTargetStep)) {
+        } else if (firstStepName().equalsIgnoreCase(renderTargetStep)) {
             // the form flow is returned to the first step
             return skipSaveTraceMapWhenBackedFromOtherStep();
-        } else if (isCompleteStep(renderTargetStep)) {
+        } else if (completeStepName().equalsIgnoreCase(renderTargetStep)) {
             // the form flow finished
             return true;
         } else {
@@ -134,14 +132,8 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
             return null;
         }
 
-        if (isCompleteStep(step)) {
-            if (treatCompleteStepAsExit()) {
-                return null;
-            }
-        }
-
-        if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(step)) {
-            step = firstStepName();
+        if (completeStepName().equalsIgnoreCase(step) && treatCompleteStepAsExit()) {
+            return null;
         }
 
         if (templateBasePath == null) {
@@ -163,8 +155,8 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * @return
      */
     protected boolean doUpdateOnValidationSuccess(FormProcessData processData) {
-        return ClassicalFormFlowConstant.STEP_CONFIRM.equalsIgnoreCase(processData.getStepCurrent()) &&
-                ClassicalFormFlowConstant.STEP_COMPLETE.equalsIgnoreCase(processData.getStepSuccess());
+        return confirmStepName().equalsIgnoreCase(processData.getStepCurrent()) &&
+                completeStepName().equalsIgnoreCase(processData.getStepSuccess());
     }
 
     @Override
@@ -187,7 +179,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
     @Override
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         // for confirm and complete step, the form saved at last step would be used.
-        if (isConfirmStep(currentStep) || isCompleteStep(currentStep)) {
+        if (confirmStepName().equalsIgnoreCase(currentStep) || completeStepName().equalsIgnoreCase(currentStep)) {
             return (T) traceMap.get(currentStep);
         } else {
             return super.retrieveFormInstance(traceMap, currentStep);
@@ -203,25 +195,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      */
     @Override
     protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
-        return ClassicalFormFlowConstant.STEP_COMPLETE.equals(renderTargetStep) && treatCompleteStepAsExit();
-    }
-
-    @Override
-    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        // to confirm page
-        if (isConfirmStep(renderTargetStep)) {
-            Object form = traceMap.get(renderTargetStep);
-            if (form == null) {
-                traceMap.put(renderTargetStep, traceMap.get(currentStep));
-            }
-        }
-
-        // from confirm to complete, which means the complete process has successfully completed.
-        if (isConfirmStep(currentStep) && isCompleteStep(renderTargetStep)) {
-            traceMap.put(renderTargetStep, traceMap.get(currentStep));
-        }
-
-        super.passDataToSnippet(currentStep, renderTargetStep, traceMap);
+        return completeStepName().equals(renderTargetStep) && treatCompleteStepAsExit();
     }
 
 }
