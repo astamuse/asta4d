@@ -37,6 +37,8 @@ public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> 
      * In the parent class {@link AbstractFormFlowHandler}'s implementation of skipSaveTraceMap, it says that the sub class have the
      * responsibility to make sure save the trace map well, thus we override it to perform the obligation.
      * 
+     * <p>
+     * 
      * The trace map will never be saved for a one step form since there is no necessary to keep the trace
      * 
      * @param currentStep
@@ -54,7 +56,5 @@ public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> 
     protected String createTemplateFilePath(String templateBasePath, String step) {
         return templateBasePath;
     }
-
-    protected abstract void updateForm(T form);
 
 }

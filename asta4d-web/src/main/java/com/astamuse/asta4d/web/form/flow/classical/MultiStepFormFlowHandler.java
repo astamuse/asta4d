@@ -169,7 +169,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
 
     @Override
     protected CommonFormResult process(FormProcessData processData, T form) {
-        CommonFormResult result = super.processValidation(form);
+        CommonFormResult result = super.processValidation(processData, form);
         if (result == CommonFormResult.SUCCESS && doUpdateOnValidationSuccess(processData)) {
             try {
                 updateForm(form);
@@ -186,7 +186,8 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
     @SuppressWarnings("unchecked")
     @Override
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
-        if (isConfirmStep(currentStep)) {
+        // for confirm and complete step, the form saved at last step would be used.
+        if (isConfirmStep(currentStep) || isCompleteStep(currentStep)) {
             return (T) traceMap.get(currentStep);
         } else {
             return super.retrieveFormInstance(traceMap, currentStep);
@@ -200,12 +201,13 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * 
      * @return true when step is complete and {@link #treatCompleteStepAsExit()} returns true
      */
-    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
+    @Override
+    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
         return ClassicalFormFlowConstant.STEP_COMPLETE.equals(renderTargetStep) && treatCompleteStepAsExit();
     }
 
     @Override
-    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap, CommonFormResult result) {
+    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         // to confirm page
         if (isConfirmStep(renderTargetStep)) {
             Object form = traceMap.get(renderTargetStep);
@@ -219,7 +221,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
             traceMap.put(renderTargetStep, traceMap.get(currentStep));
         }
 
-        super.passDataToSnippet(currentStep, renderTargetStep, traceMap, result);
+        super.passDataToSnippet(currentStep, renderTargetStep, traceMap);
     }
 
 }

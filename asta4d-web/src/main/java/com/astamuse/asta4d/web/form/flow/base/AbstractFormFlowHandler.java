@@ -137,7 +137,7 @@ public abstract class AbstractFormFlowHandler<T> {
         if (processData.getStepBack() != null) {
             renderTargetStep = processData.getStepBack();
             traceMap.remove(currentStep);
-            passDataToSnippet(currentStep, renderTargetStep, traceMap, null);
+            passDataToSnippet(currentStep, renderTargetStep, traceMap);
         } else {
             if (FormFlowConstants.FORM_STEP_INIT_STEP.equals(currentStep)) {
                 formResult = CommonFormResult.INIT;
@@ -152,7 +152,7 @@ public abstract class AbstractFormFlowHandler<T> {
                     renderTargetStep = processData.getStepFailed();
                 }
             }
-            passDataToSnippet(currentStep, renderTargetStep, traceMap, formResult);
+            passDataToSnippet(currentStep, renderTargetStep, traceMap);
         }
 
         if (isCompleteStep(renderTargetStep)) {
@@ -337,17 +337,23 @@ public abstract class AbstractFormFlowHandler<T> {
 
     /**
      * Sub classes can override this method to customize how to pass data to snippet.
+     * <p>
+     * This method will retrieve the form of render target from trace map and if it does not exists, the form of current step will be used.
+     * By default, the render target form is not set so the current step form will be used always. The sub classes could override this
+     * method to store the render target form to trace map before calling super.
      * 
      * @param currentStep
      * @param renderTargetStep
      * @param traceMap
-     * @param result
      */
-    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap, CommonFormResult result) {
-        T form = (T) traceMap.get(currentStep);
+    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+        T form = (T) traceMap.get(renderTargetStep);
+        if (form == null) {
+            form = (T) traceMap.get(currentStep);
+        }
         WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
 
-        boolean byFlash = passDataToSnippetByFlash(currentStep, renderTargetStep, form, result);
+        boolean byFlash = passDataToSnippetByFlash(currentStep, renderTargetStep, form);
 
         String traceData = saveTraceMap(currentStep, renderTargetStep, traceMap);
 
@@ -394,7 +400,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * @param result
      * @return
      */
-    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form, CommonFormResult result) {
+    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
         return false;
     }
 
@@ -407,7 +413,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * @return
      */
     protected CommonFormResult process(FormProcessData processData, T form) {
-        return processValidation(form);
+        return processValidation(processData, form);
     }
 
     /**
@@ -416,7 +422,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * @param form
      * @return
      */
-    protected CommonFormResult processValidation(T form) {
+    protected CommonFormResult processValidation(FormProcessData processData, T form) {
         List<FormValidationMessage> validationMesssages = validate(form);
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;
