@@ -176,11 +176,13 @@ public class TemplateUtil {
     /**
      * Disabled static embed at 2014.09.26.
      * 
-     * Developers would like to use different snippets to render a same static embed file as following: <code>
-     *   <afd:snippet render="SomeSnippet">
-     *      <afd:embed target="/someEmbed.html"/>
-     *   </afd:snippet>
-     * </code>
+     * Developers would like to use different snippets to render a same static embed file as following:
+     * 
+     * <pre>
+     *   &lt;afd:snippet render="SomeSnippet"&gt;
+     *      &lt;afd:embed target="/someEmbed.html" static/&gt;
+     *   &lt;/afd:snippet&gt;
+     * </pre>
      * 
      * Which confuses rendering logic and makes bad source smell, thus we decide to disable this feature.
      * 
