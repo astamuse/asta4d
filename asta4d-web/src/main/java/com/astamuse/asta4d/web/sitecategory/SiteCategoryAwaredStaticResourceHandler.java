@@ -12,7 +12,7 @@ public class SiteCategoryAwaredStaticResourceHandler extends StaticResourceHandl
 
     private SiteCategoryAwaredResourceLoader<StaticFileInfo> resourceLoader = new SiteCategoryAwaredResourceLoader<StaticFileInfo>() {
         @Override
-        public StaticFileInfo load(String path) throws Exception {
+        public StaticFileInfo load(String path, Object extraInfomation) throws Exception {
             return _super_retrieveStaticFileInfo(WebApplicationContext.getCurrentThreadWebApplicationContext().getServletContext(), path);
         }
     };

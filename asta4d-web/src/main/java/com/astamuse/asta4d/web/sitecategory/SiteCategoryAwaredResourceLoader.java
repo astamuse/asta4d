@@ -55,9 +55,13 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
      * @return null means the target resource is not found
      * @throws Exception
      */
-    public abstract T load(String path) throws Exception;
+    public abstract T load(String path, Object extraInfomation) throws Exception;
 
     public T load(String[] categories, String path) throws Exception {
+        return load(categories, path, null);
+    }
+
+    public T load(String[] categories, String path, Object extraInfomation) throws Exception {
         ResouceHolder<String> existingPath = null;
         CacheKey key;
         for (String category : categories) {
@@ -65,7 +69,7 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
             existingPath = existingPathCache.get(key);
             if (existingPath == null) {// not check yet
                 String tryPath = createCategorySpecialPath(category, path);
-                T res = load(tryPath);
+                T res = load(tryPath, extraInfomation);
                 if (res == null) {
                     existingPathCache.put(key, null);
                     continue;
@@ -74,7 +78,7 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
                     return res;
                 }
             } else if (existingPath.exists()) {
-                return load(existingPath.get());
+                return load(existingPath.get(), extraInfomation);
             } else {
                 continue;
             }

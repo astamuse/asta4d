@@ -12,6 +12,7 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.template.ClasspathTemplateResolver;
 import com.astamuse.asta4d.template.Template;
+import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.sitecategory.SiteCategoryAwaredTemplateResolver;
@@ -54,9 +55,15 @@ public class SiteCategoryAwaredTemplateResolverTest {
     @Test(dataProvider = "data")
     public void testResolve(String targetFile, String expectedContent) throws Exception {
         SiteCategoryUtil.setCurrentRequestSearchCategories("category1", "category2", "category3");
-        ClasspathTemplateResolver underLineResolver = new ClasspathTemplateResolver();
-        underLineResolver.setSearchPathList("/com/astamuse/asta4d/web/test/unit/sitecategory");
-        SiteCategoryAwaredTemplateResolver resolver = new SiteCategoryAwaredTemplateResolver(underLineResolver);
+
+        SiteCategoryAwaredTemplateResolver resolver = new SiteCategoryAwaredTemplateResolver() {
+            @Override
+            protected TemplateResolver createUnderlineTemplateResolverInstance(Class<? extends TemplateResolver> cls) throws Exception {
+                ClasspathTemplateResolver underLineResolver = new ClasspathTemplateResolver();
+                underLineResolver.setSearchPathList("/com/astamuse/asta4d/web/test/unit/sitecategory");
+                return underLineResolver;
+            }
+        };
 
         Template template = resolver.findTemplate(targetFile);
         Assert.assertEquals(template.getDocumentClone().body().text(), expectedContent);
