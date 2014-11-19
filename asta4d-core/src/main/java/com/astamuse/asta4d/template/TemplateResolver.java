@@ -71,7 +71,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
 
             MemorySafeResourceCache<String, Template> templateCache = retrieveTemplateCache();
 
-            Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
+            Locale locale = LocalizeUtil.defaultWhenNull(null);
             String cacheKey = LocalizeUtil.createLocalizedKey(path, locale);
 
             ResouceHolder<Template> resource = templateCache.get(cacheKey);

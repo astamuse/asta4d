@@ -21,6 +21,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 
+/**
+ * A message formatter using Apache common lang3's StrSubstitutor. The variable
+ * name should be wrapped with a pair of braces.
+ * <p>
+ * <i> The quick brown {fox} jumps over the lazy {dog} </i>
+ * <p>
+ * In above statement, the fox and dog will be treated as variable names. The
+ * default escape character is '\'.
+ * 
+ * @author e-ryu
+ *
+ */
 public class ApacheStrSubstitutorFormatter implements MappedValueFormatter {
 
     private String prefix = "{";

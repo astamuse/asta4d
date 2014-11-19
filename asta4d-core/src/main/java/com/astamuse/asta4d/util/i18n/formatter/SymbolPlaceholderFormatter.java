@@ -19,6 +19,12 @@ package com.astamuse.asta4d.util.i18n.formatter;
 
 import java.util.MissingFormatArgumentException;
 
+/**
+ * Use {@link String#format(String, Object...)} to format message.
+ * 
+ * @author e-ryu
+ *
+ */
 public class SymbolPlaceholderFormatter implements OrderedValueFormatter {
 
     @Override

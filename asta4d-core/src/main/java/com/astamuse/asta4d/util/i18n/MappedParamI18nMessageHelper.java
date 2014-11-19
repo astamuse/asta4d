@@ -10,6 +10,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.astamuse.asta4d.util.i18n.formatter.ApacheStrSubstitutorFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.MappedValueFormatter;
 
+/**
+ * Allow format message by a given parameter map, A {@link MappedValueFormatter}
+ * is required to supply concrete formatting style and the default is
+ * {@link ApacheStrSubstitutorFormatter} which uses StrSubstitutor from Apache
+ * Common lang3.
+ * <p>
+ * 
+ * If message is not found for given key(and locale), the key will be treated as
+ * default message if the default message is not specified.
+ * 
+ * @author e-ryu
+ * @see ApacheStrSubstitutorFormatter
+ */
 public class MappedParamI18nMessageHelper extends I18nMessageHelper {
 
     private MappedValueFormatter formatter;
@@ -36,19 +49,51 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(locale, key, null, null);
     }
 
+    /**
+     * Retrieve message by given key and format it by given parameter map.
+     * 
+     * @param key
+     * @param paramMap
+     * @return
+     */
     public String getMessage(String key, Map<String, Object> paramMap) {
         return getMessageInternal(null, key, null, paramMap);
     }
 
+    /**
+     * Retrieve message by given key and format it by given parameter pairs.
+     * 
+     * @param key
+     * @param params
+     * @return
+     */
     @SuppressWarnings("rawtypes")
     public String getMessage(String key, Pair... params) {
         return getMessageInternal(null, key, null, pairToMap(params));
     }
 
+    /**
+     * Retrieve message by given locale and key and format it by given parameter
+     * map.
+     * 
+     * @param locale
+     * @param key
+     * @param paramMap
+     * @return
+     */
     public String getMessage(Locale locale, String key, Map<String, Object> paramMap) {
         return getMessageInternal(locale, key, null, paramMap);
     }
 
+    /**
+     * Retrieve message by given locale and key and format it by given parameter
+     * pairs.
+     * 
+     * @param locale
+     * @param key
+     * @param params
+     * @return
+     */
     @SuppressWarnings("rawtypes")
     public String getMessage(Locale locale, String key, Pair... params) {
         return getMessageInternal(locale, key, null, pairToMap(params));
@@ -64,19 +109,61 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(locale, key, defaultPattern, null);
     }
 
+    /**
+     * Retrieve message by given key and format it by given parameter map. If
+     * message is not found, defaultPattern#toString will be used to generate a
+     * default message pattern to be formatted.
+     * 
+     * @param key
+     * @param defaultPattern
+     * @param paramMap
+     * @return
+     */
     public String getMessageWithDefault(String key, Object defaultPattern, Map<String, Object> paramMap) {
         return getMessageInternal(null, key, defaultPattern, paramMap);
     }
 
+    /**
+     * Retrieve message by given key and format it by given parameter pairs. If
+     * message is not found, defaultPattern#toString will be used to generate a
+     * default message pattern to be formatted.
+     * 
+     * @param key
+     * @param defaultPattern
+     * @param params
+     * @return
+     */
     @SuppressWarnings("rawtypes")
     public String getMessageWithDefault(String key, Object defaultPattern, Pair... params) {
         return getMessageInternal(null, key, defaultPattern, pairToMap(params));
     }
 
+    /**
+     * Retrieve message by given locale and key and format it by given parameter
+     * map. If message is not found, defaultPattern#toString will be used to
+     * generate a default message pattern to be formatted.
+     * 
+     * @param locale
+     * @param key
+     * @param defaultPattern
+     * @param paramMap
+     * @return
+     */
     public String getMessageWithDefault(Locale locale, String key, Object defaultPattern, Map<String, Object> paramMap) {
         return getMessageInternal(locale, key, defaultPattern, paramMap);
     }
 
+    /**
+     * Retrieve message by given locale and key and format it by given parameter
+     * pairs. If message is not found, defaultPattern#toString will be used to
+     * generate a default message pattern to be formatted.
+     * 
+     * @param locale
+     * @param key
+     * @param defaultPattern
+     * @param params
+     * @return
+     */
     @SuppressWarnings("rawtypes")
     public String getMessageWithDefault(Locale locale, String key, Object defaultPattern, Pair... params) {
         return getMessageInternal(locale, key, defaultPattern, pairToMap(params));

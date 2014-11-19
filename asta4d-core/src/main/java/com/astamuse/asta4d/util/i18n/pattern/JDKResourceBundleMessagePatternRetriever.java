@@ -5,11 +5,12 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 
 /**
- * We allow row splitted messages. For a given key, if there is no corresponding message, we will try to search keys as "key#1", "key#2"...
- * then combine them as a single message.
+ * We allow row splitted messages. For a given key, if there is no corresponding
+ * message, we will try to search keys as "key#1", "key#2"... then combine them
+ * as a single message.
  * 
  * @author e-ryu
  * 
@@ -39,7 +40,8 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
             try {
                 ResourceBundle resourceBundle = getResourceBundle(resourceName, locale);
                 pattern = retrieveResourceFromBundle(resourceBundle, key);
-                // if the pattern is not found, MissingResourceException will be thrown and the break will be skipped
+                // if the pattern is not found, MissingResourceException will be
+                // thrown and the break will be skipped
                 break;
             } catch (MissingResourceException e) {
                 //
@@ -55,18 +57,13 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
             ResourceBundle.clearCache();
         }
 
-        if (locale == null) {
-            locale = Context.getCurrentThreadContext().getCurrentLocale();
-            if (locale == null) {
-                locale = Locale.getDefault();
-            }
-        }
-        return resourceBundleFactory.retrieveResourceBundle(resourceName, locale);
+        return resourceBundleFactory.retrieveResourceBundle(resourceName, LocalizeUtil.defaultWhenNull(locale));
     }
 
     /**
-     * In this method, we allow row splitted message. For a given key, if there is no corresponding message, we will try to search keys as
-     * "key#1", "key#2"... then combine them as a single message.
+     * In this method, we allow row splitted message. For a given key, if there
+     * is no corresponding message, we will try to search keys as "key#1",
+     * "key#2"... then combine them as a single message.
      * 
      * @param bundle
      * @param key

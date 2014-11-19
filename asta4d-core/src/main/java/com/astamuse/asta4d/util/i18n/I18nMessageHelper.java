@@ -6,7 +6,8 @@ import com.astamuse.asta4d.util.i18n.pattern.JDKResourceBundleMessagePatternRetr
 import com.astamuse.asta4d.util.i18n.pattern.MessagePatternRetriever;
 
 /**
- * The sub class of this class should not return null in all the getMessage methods. Returns empty string instead.
+ * The sub class of this class should not return null in all the getMessage
+ * methods. Returns empty string or key instead.
  * 
  * 
  * @author e-ryu
@@ -32,11 +33,43 @@ public abstract class I18nMessageHelper {
         this.messagePatternRetriever = messagePatternRetriever;
     }
 
+    /**
+     * retrieve message by given key
+     * 
+     * @param key
+     * @return retrieved message, empty string or the given key if message not
+     *         found(cannot be null)
+     */
     public abstract String getMessage(String key);
 
+    /**
+     * retrieve message by given locale and key
+     * 
+     * @param locale
+     * @param key
+     * @return retrieved message, empty string or the given key if message not
+     *         found(cannot be null)
+     */
     public abstract String getMessage(Locale locale, String key);
 
+    /**
+     * retrieve message by given key
+     * 
+     * @param key
+     * @param defaultPattern
+     * @return retrieved message, return defaultPattern#toString() if message
+     *         not found
+     */
     public abstract String getMessageWithDefault(String key, Object defaultPattern);
 
+    /**
+     * retrieve message by given locale and key
+     * 
+     * @param locale
+     * @param key
+     * @param defaultPattern
+     * @return retrieved message, return defaultPattern#toString() if message
+     *         not found
+     */
     public abstract String getMessageWithDefault(Locale locale, String key, Object defaultPattern);
 }

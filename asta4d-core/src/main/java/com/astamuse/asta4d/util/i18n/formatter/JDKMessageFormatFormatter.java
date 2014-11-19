@@ -19,6 +19,12 @@ package com.astamuse.asta4d.util.i18n.formatter;
 
 import java.text.MessageFormat;
 
+/**
+ * Use {@link MessageFormat#format(String, Object...)} to format message
+ * 
+ * @author e-ryu
+ *
+ */
 public class JDKMessageFormatFormatter implements OrderedValueFormatter {
 
     @Override
