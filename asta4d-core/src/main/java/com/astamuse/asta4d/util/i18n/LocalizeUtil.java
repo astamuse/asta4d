@@ -24,6 +24,8 @@ import java.util.Locale;
 import org.apache.commons.lang3.LocaleUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.astamuse.asta4d.Context;
+
 public class LocalizeUtil {
 
     public static String[] getCandidatePaths(String path, Locale locale) {
@@ -31,8 +33,11 @@ public class LocalizeUtil {
         String name = dotIndex > 0 ? path.substring(0, dotIndex) : path;
         String extension = dotIndex > 0 ? path.substring(dotIndex) : StringUtils.EMPTY;
         List<String> candidatePathList = new ArrayList<>();
+        if (!StringUtils.isEmpty(locale.getVariant())) {
+            candidatePathList.add(name + '_' + locale.getLanguage() + "_" + locale.getCountry() + "_" + locale.getVariant() + extension);
+        }
         if (!StringUtils.isEmpty(locale.getCountry())) {
-            candidatePathList.add(name + '_' + locale.toString() + extension);
+            candidatePathList.add(name + '_' + locale.getLanguage() + "_" + locale.getCountry() + extension);
         }
         if (!StringUtils.isEmpty(locale.getLanguage())) {
             candidatePathList.add(name + '_' + locale.getLanguage() + extension);
@@ -57,6 +62,19 @@ public class LocalizeUtil {
         } catch (IllegalArgumentException e) {
             return null;
         }
+    }
+
+    public static final Locale defaultWhenNull(Locale locale) {
+        if (locale == null) {
+            locale = Context.getCurrentThreadContext().getCurrentLocale();
+            if (locale == null) {
+                locale = Locale.getDefault();
+                if (locale == null) {
+                    locale = Locale.ROOT;
+                }
+            }
+        }
+        return locale;
     }
 
     private LocalizeUtil() {
