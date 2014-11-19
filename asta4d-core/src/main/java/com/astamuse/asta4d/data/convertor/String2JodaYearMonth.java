@@ -4,7 +4,7 @@ import org.joda.time.YearMonth;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class String2JodaYearMonth extends AbstractString2DateConvertor<String, YearMonth> implements DataValueConvertor<String, YearMonth> {
+public class String2JodaYearMonth extends AbstractString2DateConvertor<YearMonth> {
 
     //@formatter:off
     static final DateTimeFormatter[] dtfs = new DateTimeFormatter[] {

@@ -5,7 +5,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-public class String2JodaLocalTime extends AbstractString2DateConvertor<String, LocalTime> implements DataValueConvertor<String, LocalTime> {
+public class String2JodaLocalTime extends AbstractString2DateConvertor<LocalTime> {
 
     //@formatter:off
     static final DateTimeFormatter[] dtfs = new DateTimeFormatter[] {
