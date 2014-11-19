@@ -41,10 +41,9 @@
 
       <para>There are also two extended classes from I18nMessageHelper, which afford more flexible message functionalities especially about formatting message by given parameters. 
             Configuration#setI18nMessageHelper can be used to customized which helper you want to use. The default is OrderedParamI18nMessageHelper.
+            (<remark>I18nMessageHelperTypeAssistant#getConfiguredMappedHelper and I18nMessageHelperTypeAssistant#getConfiguredOrderedHelper can be used to retrieve a type safe 
+              configured helper.</remark>)
       </para>
-      <sbr/>
-      <remark>I18nMessageHelperTypeAssistant#getConfiguredMappedHelper and I18nMessageHelperTypeAssistant#getConfiguredOrderedHelper can be used to retrieve a type safe 
-              configured helper.</remark>      
 
       <itemizedlist>
         <listitem>
@@ -54,7 +53,7 @@
             <sbr/>
         </listitem>
         <listitem>
-            <para>OrderedParamI18nMessageHelper</para>
+            <para>OrderedParamI18nMessageHelper(default)</para>
             <para> Allow format message by a given parameter array. A OrderedValueFormatter is required to supply concrete formatting style and the default is 
                    JDKMessageFormatFormatter which uses JDK's MessageFormat to format message string.</para>
             <sbr/>
@@ -114,20 +113,149 @@
             <ulink url="http://docs.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String, java.util.Locale, java.lang.ClassLoader)">
             ResourceBundle#getBundle(String baseName, Locale locale, ClassLoader loader)</ulink> to retrieve messages.
       </para>
-            
+
+      <para>As the implementation of JDKResourceBundleMessagePatternRetriever, if the given locale is null, the default locale decision mechanism will be performed. 
+            See <xref linkend="i18n-default-locale-decision"/>.</para>
+
       <para>Further, the JDKResourceBundleMessagePatternRetriever accepts ResourceBundleFactory to allow customize how to retrieve a resource bundle. The default is        
             CharsetResourceBundleFactory which allows specify the encoding of message bundle files. Another built-in implementation is the LatinEscapingResourceBundleFactory,
             as the name suggests, the message files must be escaped by JDK's standard mechanism(via native2ascii).
       </para>
     </sect2>
+    <sect2 id="i18n-default-locale-decision">
+      <title>Default locale</title>
+      <para>The default locale will be decided by the following order and stop at the first non-null returned value.</para>
+      <orderedlist>
+        <listitem>
+            <para>Context.getCurrentThreadContext().getCurrentLocale()</para>
+        </listitem>
+        <listitem>
+            <para>Locale.getDefault()</para>
+        </listitem>
+        <listitem>
+            <para>Locale.ROOT</para>
+        </listitem>
+      </orderedlist>
+      <remark>Since the Locale.getDefault() will return the local machine's locale by default, you may need to override the default locale to ROOT at the staring of 
+              your web application.</remark>
+    </sect2>
     <sect2 id="i18n-afd-msg">
       <title>afd:msg</title>
-      <para>"afd:msg" tag can be used to declare an i18n aware message in a template file.</para>
+      <para>"afd:msg" tag can be used to declare an i18n aware message in a template file. The basic usage is as following:</para>
+      <programlisting language="xml">
+<![CDATA[
+<section>
+    <article>
+        <div class="panel panel-default"><div class="panel-body">
+            <!-- the inner html will be treated as default message if the key is not found in message bundle -->
+            <afd:msg id="notexistingkey" key="sample.notexistingkey" p0="parameter works as well.">text here to be treated as default message.{0}</afd:msg><br/>
+        </div></div>
+        
+        <div class="panel panel-default"><div class="panel-body">
+            <!-- simply specify parameters on tag -->
+            <afd:msg id="peoplecount" key="sample.peoplecount" p0="4">dummy text</afd:msg><br/>
+            <afd:msg id="peoplecount" key="sample.peoplecount" p0="7" locale="ja_JP">dummy text</afd:msg><br/>
+        </div></div>
+        
+        <div class="panel panel-default"><div class="panel-body">
+            <!-- the parameter can be rendered by snippet too -->
+            <afd:snippet render="ComplicatedSnippet:setMsgParam">
+                <afd:msg id="peoplecount" key="sample.peoplecount" p0="4">dummy text</afd:msg><br/>
+                <afd:msg id="peoplecount" key="sample.peoplecount" p0="7" locale="ja_JP">dummy text</afd:msg><br/>
+            </afd:snippet>
+        </div></div>
+        
+        <div class="panel panel-default"><div class="panel-body">
+            <!-- attribute started with "@" will be treated as a key -->
+            <afd:msg id="weatherreport" key="sample.weatherreport" @p0="sample.weatherreport.sunny">天気</afd:msg><br/>
+            <afd:msg id="weatherreport" key="sample.weatherreport" @p0="sample.weatherreport.sunny" locale="ja_JP">天気</afd:msg><br/>
+        </div></div>
+        
+        <div class="panel panel-default"><div class="panel-body">
+            <!-- attribute started with "#" will be treated as a sub key of current key, thus sample.weatherreport.sunny will be searched -->
+            <afd:msg id="weatherreport" key="sample.weatherreport" #p0="rain">天気</afd:msg><br/>
+            <afd:msg id="weatherreport" key="sample.weatherreport" #p0="rain" locale="ja_JP">天気</afd:msg><br/>
+        </div></div>
+        
+        <div class="panel panel-default"><div class="panel-body">
+            <!-- treat message as text -->
+            <afd:msg key="sample.textUrl"></afd:msg><br/>
+            
+            <!-- treat message as html -->
+            <afd:msg key="sample.htmlUrl"></afd:msg><br/>
+            
+            <!-- treat message as text even it begins with html: -->
+            <afd:msg key="sample.escapedUrl"></afd:msg><br/>
+        </div></div>
+    </article>
+</section>
+]]>
+      </programlisting>
+      <programlisting language="java">
+<![CDATA[
+public Renderer setMsgParam() {
+    Renderer render = Renderer.create();
+    render.add("#peoplecount", "p0", 15);
+    return render;
+}
+]]>
+    </programlisting>
+    <para>There are something need to be explained:</para>
+      <itemizedlist>
+        <listitem>
+            <para>default message</para>
+            <para>As commented in the source, the inner content of "afd:msg" will be treated as default message in case of the message of specified key cannot be found. 
+                  Note that the default message will be formatted by specified parameters too.</para>
+            <para>This mechanism can also be used as a simple text replacing mechanism in the html template file in case of necessity.</para>
+            <sbr/>
+        </listitem>
+        <listitem>
+            <para>parameter name</para>
+            <para>If the configured I18nMessageHelper is MappedParamI18nMessageHelper, the attribute names of current "afd:msg" element will be treated as parameter names directly.
+                  And if the configured I18nMessageHelper is OrderedParamI18nMessageHelper which is the default one, the attribute names started with single "p" and following with
+                  0-started numbers will be treated as the values of parameter value array.</para>
+            <sbr/>
+        </listitem>
+        <listitem>
+            <para>recursive parameter</para>
+            <para>The attributes which name started with "@" or "#" will be treated as recursive message's key. The different between "@" and "#" is that the "@" will be treated as a
+                  complete key but the "#" will be treated as a sub key of current message key.</para>
+            <sbr/>
+        </listitem>
+        <listitem>
+            <para>parameter value</para>
+            <para>The value of attributes can be specified directly in the html template file, also can be rendered by a snippet as in the above example.</para>
+            <sbr/>
+        </listitem>
+        <listitem>
+            <para>locale</para>
+            <para>Locale can be specified explicitly by ISO 639 locale string, if not, the default locale decision mechanism will be performed. 
+                 See <xref linkend="i18n-default-locale-decision"/>.</para>
+            <sbr/>
+        </listitem>
+      </itemizedlist>
     </sect2>
   </sect1>
   
-  <sect1 id="i18n-template-file">
-    <title>template file search</title>
+  <sect1 id="i18n-file-search">
+    <title>file search order</title>
+    <para>The built-in template resolver and static resource handler can match the target file name with awareness of locale. The match locale will be decided by the default locale
+          decision mechanism(See <xref linkend="i18n-default-locale-decision"/>). After the locale is decided, for example, for a locale as Locale("fr", "CA", "UNIX") to search a 
+          html template file "index.html", the target file will be searched by following order:</para>
+    <orderedlist>
+        <listitem>
+            <para>index_fr_CA_UNIX.html</para>
+        </listitem>
+        <listitem>
+            <para>index_fr_CA.html</para>
+        </listitem>
+        <listitem>
+            <para>index_fr.html</para>
+        </listitem>
+        <listitem>
+            <para>index.html</para>
+        </listitem>
+    </orderedlist>
+    <para>For the static resource files such as js, css, jpg, etc. will be searched by the same order as well.</para>
   </sect1>
-  
 </chapter>
