@@ -53,7 +53,17 @@ public class RequestDispatcher {
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
 
-        HttpMethod method = HttpMethod.valueOf(request.getMethod().toUpperCase());
+        HttpMethod method;
+        try {
+            method = HttpMethod.valueOf(request.getMethod().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            // the unknown methods
+            if (ex.getMessage().startsWith("No enum constatnt")) {
+                method = HttpMethod.UNKNOWN;
+            } else {
+                throw ex;
+            }
+        }
         String uri = context.getAccessURI();
         if (uri == null) {
             uri = URLDecoder.decode(request.getRequestURI(), "UTF-8");
