@@ -3,7 +3,7 @@ package com.astamuse.asta4d.data.convertor;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.format.DateTimeFormatter;
 
-public abstract class AbstractString2DateConvertor<T> implements DataValueConvertor<String, T> {
+public abstract class AbstractString2DateConvertor<T> {
 
     public T convert(String s) throws UnsupportedValueException {
         if (StringUtils.isEmpty(s)) {

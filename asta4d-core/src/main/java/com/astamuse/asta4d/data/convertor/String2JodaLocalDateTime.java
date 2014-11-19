@@ -3,7 +3,8 @@ package com.astamuse.asta4d.data.convertor;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 
-public class String2JodaLocalDateTime extends AbstractString2DateConvertor<LocalDateTime> {
+public class String2JodaLocalDateTime extends AbstractString2DateConvertor<LocalDateTime> implements
+        DataValueConvertor<String, LocalDateTime> {
 
     protected DateTimeFormatter[] availableFormatters() {
         return String2JodaDateTime.dtfs;

@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.joda.time.format.DateTimeFormatter;
 
-public class String2Date extends AbstractString2DateConvertor<Date> {
+public class String2Date extends AbstractString2DateConvertor<Date> implements DataValueConvertor<String, Date> {
 
     protected DateTimeFormatter[] availableFormatters() {
         return String2JodaDateTime.dtfs;

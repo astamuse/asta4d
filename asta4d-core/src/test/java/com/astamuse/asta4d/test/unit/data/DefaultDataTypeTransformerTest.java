@@ -17,9 +17,15 @@
 
 package com.astamuse.asta4d.test.unit.data;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.YearMonth;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
@@ -170,6 +176,12 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
             {String.class, Integer[].class, "123", new Integer[]{123}},
             {String[].class, Integer[].class, new String[]{"123", "456"}, new Integer[]{123, 456}},
             {String[].class, Integer.class, new String[]{"123", "456"}, 123},
+            {String[].class, Date.class, new String[]{"2014-11-10"}, new Date(2014-1900, 11-1, 10)},
+            {String[].class, DateTime.class, new String[]{"2014-11-10"}, new DateTime(2014, 11, 10, 0,0)},
+            {String[].class, LocalDate.class, new String[]{"2014-11-10"}, new LocalDate(2014, 11, 10)},
+            {String[].class, LocalDateTime.class, new String[]{"2014-11-10T12:00:00"}, new LocalDateTime(2014, 11, 10, 12,0,0)},
+            {String[].class, LocalTime.class, new String[]{"12:00:00"}, new LocalTime( 12,0,0)},
+            {String[].class, YearMonth.class, new String[]{"2014-11"}, new YearMonth( 2014,11)},
             
             //explicit array conversion
             {String.class, Long[].class, "123,456", new Long[]{123L, 456L}},
