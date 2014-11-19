@@ -3,7 +3,7 @@
    <title>Asta4D Framework User Guide</title><link rel="stylesheet" type="text/css" href="css/manual-singlepage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, framework"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><div><h1 class="title"><a name="asta4d-user-guide"></a>Asta4D Framework User Guide</h1></div><div><div class="authorgroup"><h2>Authors</h2>
       <span class="author"><span class="firstname">Rui</span> <span class="surname">Liu</span></span>
       , <span class="author"><span class="firstname">Shunsuke</span> <span class="surname">Otani</span></span>	  
-    </div></div><div><p class="releaseinfo">Version: 1.0-b3-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-11-19 16:39</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e67">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e87">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e111">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e121">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e144">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e162">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e165">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e176">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e184">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e191">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e238">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e243">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e247">5.3. Isolate side effect and multi thread rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e259">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e265">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e294">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e308">6.4. Global forward/redirect</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-adv-request-handler">7. Advanced usage of request handler</a></span></dt><dd><dl><dt><span class="sect1"><a href="#advanced-mvc">7.1. Advanced MVC architecture</a></span></dt><dt><span class="sect1"><a href="#d5e352">7.2. Normalize page url patterns</a></span></dt><dt><span class="sect1"><a href="#d5e363">7.3. Restful and ajax</a></span></dt><dt><span class="sect1"><a href="#d5e382">7.4. Handle static resouce files</a></span></dt><dt><span class="sect1"><a href="#d5e394">7.5. Handle generic path template files</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">8. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e405">8.1. Supported tags</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e408">8.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="#d5e420">8.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="#d5e449">8.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="#d5e463">8.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="#d5e486">8.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="#d5e494">8.1.6. afd:comment</a></span></dt><dt><span class="sect2"><a href="#d5e502">8.1.7. afd:msg</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e514">8.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">9. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e560">9.1. Rendering APIs</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e564">9.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#css selector">9.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="#d5e716">9.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e724">9.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e761">9.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e768">9.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e775">9.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e785">9.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e790">9.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e796">9.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e804">9.1.11. List rendering</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e834">9.2. Other things about snippet and rendering</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e836">9.2.1. Nested snippet</a></span></dt><dt><span class="sect2"><a href="#d5e844">9.2.2. InitializableSnippet</a></span></dt><dt><span class="sect2"><a href="#d5e850">9.2.3. Component rendering</a></span></dt><dt><span class="sect2"><a href="#d5e864">9.2.4. SnippetInterceptor</a></span></dt><dt><span class="sect2"><a href="#d5e866">9.2.5. SnippetExtractor</a></span></dt><dt><span class="sect2"><a href="#d5e868">9.2.6. SnippetResolver</a></span></dt><dt><span class="sect2"><a href="#d5e870">9.2.7. SnippetInvoker</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-var-injection">10. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e874">10.1. Context</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e876">10.1.1. Context/WebApplicationContext</a></span></dt><dt><span class="sect2"><a href="#d5e900">10.1.2. Scope</a></span></dt><dt><span class="sect2"><a href="#d5e955">10.1.3. ContextBindData</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e964">10.2. Injection</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e966">10.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e1020">10.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">10.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e1055">10.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e1057">10.2.5. ContextDataHolder</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-url-rule">11. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1061">11.1. Rule apis</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1063">11.1.1. UrlMappingRuleInitializer</a></span></dt><dt><span class="sect2"><a href="#d5e1105">11.1.2. Handy rules</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e1188">11.2. Request handler result process</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1191">11.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e1193">11.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="#d5e1195">11.2.3. Request handler chain</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">12. i18n</a></span></dt><dd><dl><dt><span class="sect1"><a href="#i18n-message">12.1. message stringization</a></span></dt><dd><dl><dt><span class="sect2"><a href="#i18n-I18nMessageHelper">12.1.1. I18nMessageHelper</a></span></dt><dt><span class="sect2"><a href="#i18n-MessagePatternRetriever">12.1.2. MessagePatternRetriever</a></span></dt><dt><span class="sect2"><a href="#i18n-afd-msg">12.1.3. afd:msg</a></span></dt></dl></dd><dt><span class="sect1"><a href="#i18n-template-file">12.2. template file search</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Asta4dServlet and configuration</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1277">13.1. Asta4dServlet</a></span></dt><dt><span class="sect1"><a href="#d5e1303">13.2. Configuration file</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-integration-spring">14. Integration with Spring</a></span></dt><dd><dl><dt><span class="sect1"><a href="#integrate-spring-ioc">14.1. Integrate with Spring IOC</a></span></dt><dt><span class="sect1"><a href="#integrate-spring-mvc">14.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
+    </div></div><div><p class="releaseinfo">Version: 1.0-b3-SNAPSHOT</p></div><div><p class="pubdate">Last update at: 2014-11-19 19:26</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="part"><a href="#asta4d-introduction">I. Introduction</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-overview">1. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e26">1.1. Why Asta4D</a></span></dt><dt><span class="section"><a href="#d5e39">1.2. How Asta4D helps us</a></span></dt><dt><span class="section"><a href="#d5e67">1.3. What does the name of "Asta4D" mean</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-user-guide">II. User Guide</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-Inheritable-template">2. Flexible template</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e87">2.1. Inheritable template</a></span></dt><dt><span class="section"><a href="#d5e111">2.2. Parametrized embeding</a></span></dt></dl></dd><dt><span class="chapter"><a href="#renderer">3. Renderer: easy to use, secure, testable</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e121">3.1. Split rendering logic from template</a></span></dt><dt><span class="section"><a href="#d5e144">3.2. Render data to page</a></span></dt><dt><span class="section"><a href="#d5e162">3.3. Immune from cross-site hole</a></span></dt><dt><span class="section"><a href="#d5e165">3.4. Test your rendering logic</a></span></dt></dl></dd><dt><span class="chapter"><a href="#url-mapping">4. View first URL mapping and variable injection</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e176">4.1. View first</a></span></dt><dt><span class="section"><a href="#d5e184">4.2. The grammer of URL rule and path variable</a></span></dt><dt><span class="section"><a href="#d5e191">4.3. Variable Injection</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-side-effect">5. Side effect and request handler</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e238">5.1. The role with responsibility to http request: Request Handler</a></span></dt><dt><span class="section"><a href="#d5e243">5.2. Side effect of system operations</a></span></dt><dt><span class="section"><a href="#d5e247">5.3. Isolate side effect and multi thread rendering</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-request-handler">6. Impement request handler and url mapping</a></span></dt><dd><dl><dt><span class="section"><a href="#d5e259">6.1. @RequestHandler</a></span></dt><dt><span class="section"><a href="#d5e265">6.2. delcare url rule for request handler</a></span></dt><dt><span class="section"><a href="#d5e294">6.3. Default request handler</a></span></dt><dt><span class="section"><a href="#d5e308">6.4. Global forward/redirect</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-adv-request-handler">7. Advanced usage of request handler</a></span></dt><dd><dl><dt><span class="sect1"><a href="#advanced-mvc">7.1. Advanced MVC architecture</a></span></dt><dt><span class="sect1"><a href="#d5e352">7.2. Normalize page url patterns</a></span></dt><dt><span class="sect1"><a href="#d5e363">7.3. Restful and ajax</a></span></dt><dt><span class="sect1"><a href="#d5e382">7.4. Handle static resouce files</a></span></dt><dt><span class="sect1"><a href="#d5e394">7.5. Handle generic path template files</a></span></dt></dl></dd></dl></dd><dt><span class="part"><a href="#asta4d-reference">III. Reference</a></span></dt><dd><dl><dt><span class="chapter"><a href="#chapter-detail-template">8. Details of Template</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e405">8.1. Supported tags</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e408">8.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="#d5e420">8.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="#d5e449">8.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="#d5e463">8.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="#d5e486">8.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="#d5e494">8.1.6. afd:comment</a></span></dt><dt><span class="sect2"><a href="#d5e502">8.1.7. afd:msg</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e514">8.2. Additional</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-detail-snippet">9. Details of snippet class</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e560">9.1. Rendering APIs</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e564">9.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="#css selector">9.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="#d5e716">9.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="#d5e724">9.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="#d5e761">9.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="#d5e768">9.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="#d5e775">9.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="#d5e785">9.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="#d5e790">9.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="#d5e796">9.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="#d5e804">9.1.11. List rendering</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e834">9.2. Other things about snippet and rendering</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e836">9.2.1. Nested snippet</a></span></dt><dt><span class="sect2"><a href="#d5e844">9.2.2. InitializableSnippet</a></span></dt><dt><span class="sect2"><a href="#d5e850">9.2.3. Component rendering</a></span></dt><dt><span class="sect2"><a href="#d5e864">9.2.4. SnippetInterceptor</a></span></dt><dt><span class="sect2"><a href="#d5e866">9.2.5. SnippetExtractor</a></span></dt><dt><span class="sect2"><a href="#d5e868">9.2.6. SnippetResolver</a></span></dt><dt><span class="sect2"><a href="#d5e870">9.2.7. SnippetInvoker</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-var-injection">10. Variable injection</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e874">10.1. Context</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e876">10.1.1. Context/WebApplicationContext</a></span></dt><dt><span class="sect2"><a href="#d5e900">10.1.2. Scope</a></span></dt><dt><span class="sect2"><a href="#d5e955">10.1.3. ContextBindData</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e964">10.2. Injection</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e966">10.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="#d5e1020">10.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="#sect-ContextDataFinder">10.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="#d5e1055">10.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="#d5e1057">10.2.5. ContextDataHolder</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-url-rule">11. URL rule</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1061">11.1. Rule apis</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1063">11.1.1. UrlMappingRuleInitializer</a></span></dt><dt><span class="sect2"><a href="#d5e1105">11.1.2. Handy rules</a></span></dt></dl></dd><dt><span class="sect1"><a href="#d5e1188">11.2. Request handler result process</a></span></dt><dd><dl><dt><span class="sect2"><a href="#d5e1191">11.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="#d5e1193">11.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="#d5e1195">11.2.3. Request handler chain</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#chapter-detail-i18n">12. i18n</a></span></dt><dd><dl><dt><span class="sect1"><a href="#i18n-message">12.1. message stringization</a></span></dt><dd><dl><dt><span class="sect2"><a href="#i18n-I18nMessageHelper">12.1.1. I18nMessageHelper</a></span></dt><dt><span class="sect2"><a href="#i18n-MessagePatternRetriever">12.1.2. MessagePatternRetriever</a></span></dt><dt><span class="sect2"><a href="#i18n-default-locale-decision">12.1.3. Default locale</a></span></dt><dt><span class="sect2"><a href="#i18n-afd-msg">12.1.4. afd:msg</a></span></dt></dl></dd><dt><span class="sect1"><a href="#i18n-file-search">12.2. file search order</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">13. Asta4dServlet and configuration</a></span></dt><dd><dl><dt><span class="sect1"><a href="#d5e1327">13.1. Asta4dServlet</a></span></dt><dt><span class="sect1"><a href="#d5e1353">13.2. Configuration file</a></span></dt></dl></dd><dt><span class="chapter"><a href="#chapter-integration-spring">14. Integration with Spring</a></span></dt><dd><dl><dt><span class="sect1"><a href="#integrate-spring-ioc">14.1. Integrate with Spring IOC</a></span></dt><dt><span class="sect1"><a href="#integrate-spring-mvc">14.2. Integrate with Spring MVC</a></span></dt></dl></dd></dl></dd></dl></div>
   
 
   
@@ -2949,7 +2949,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-i18n"></a>12.&nbsp;i18n</h2></div></div></div>
   
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="i18n-message"></a>12.1.&nbsp;message stringization</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#i18n-I18nMessageHelper">12.1.1. I18nMessageHelper</a></span></dt><dt><span class="sect2"><a href="#i18n-MessagePatternRetriever">12.1.2. MessagePatternRetriever</a></span></dt><dt><span class="sect2"><a href="#i18n-afd-msg">12.1.3. afd:msg</a></span></dt></dl></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="i18n-message"></a>12.1.&nbsp;message stringization</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="#i18n-I18nMessageHelper">12.1.1. I18nMessageHelper</a></span></dt><dt><span class="sect2"><a href="#i18n-MessagePatternRetriever">12.1.2. MessagePatternRetriever</a></span></dt><dt><span class="sect2"><a href="#i18n-default-locale-decision">12.1.3. Default locale</a></span></dt><dt><span class="sect2"><a href="#i18n-afd-msg">12.1.4. afd:msg</a></span></dt></dl></div>
     
     <p>Asta4D affords basic i18n support by a built-in I18nMessageHelper. I18nMessageHelper requires a MessagePatternRetriever implementation 
       to retrieve message by key. There is also a default implementation JDKResourceBundleMessagePatternRetriever which uses the JDK's built-in 
@@ -2976,10 +2976,9 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
 
       <p>There are also two extended classes from I18nMessageHelper, which afford more flexible message functionalities especially about formatting message by given parameters. 
             Configuration#setI18nMessageHelper can be used to customized which helper you want to use. The default is OrderedParamI18nMessageHelper.
+            (<em><span class="remark">I18nMessageHelperTypeAssistant#getConfiguredMappedHelper and I18nMessageHelperTypeAssistant#getConfiguredOrderedHelper can be used to retrieve a type safe 
+              configured helper.</span></em>)
       </p>
-      <br>
-      <p class="remark"><em><span class="remark">I18nMessageHelperTypeAssistant#getConfiguredMappedHelper and I18nMessageHelperTypeAssistant#getConfiguredOrderedHelper can be used to retrieve a type safe 
-              configured helper.</span></em></p>      
 
       <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
             <p>MappedParamI18nMessageHelper</p>
@@ -2987,7 +2986,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
                   ApacheStrSubstitutorFormatter which uses StrSubstitutor from Apache Common lang3.</p>
             <br>
         </li><li class="listitem">
-            <p>OrderedParamI18nMessageHelper</p>
+            <p>OrderedParamI18nMessageHelper(default)</p>
             <p> Allow format message by a given parameter array. A OrderedValueFormatter is required to supply concrete formatting style and the default is 
                    JDKMessageFormatFormatter which uses JDK's MessageFormat to format message string.</p>
             <br>
@@ -2997,7 +2996,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
             OrderedParamI18nMessageHelper requires implementation of OrderedValueFormatter.
       </p>
       
-      <div class="table"><a name="d5e1233"></a><p class="title"><b>Table&nbsp;12.1.&nbsp;Built-in value formatters</b></p><div class="table-contents">
+      <div class="table"><a name="d5e1232"></a><p class="title"><b>Table&nbsp;12.1.&nbsp;Built-in value formatters</b></p><div class="table-contents">
       <table summary="Built-in value formatters" style="border-collapse: collapse;border-top: 0.5pt solid ; border-bottom: 0.5pt solid ; border-left: 0.5pt solid ; border-right: 0.5pt solid ; "><colgroup><col align="left" class="c1"><col align="left" class="c2"><col align="left" class="c3"><col align="left" class="c4"></colgroup><thead><tr><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">formatter</th><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">interface</th><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Description</th><th style="border-bottom: 0.5pt solid ; " align="left">Example</th></tr></thead><tbody><tr><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">ApacheStrSubstitutorFormatter(default)</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">MappedValueFormatter</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Use Apache Commons Lang's <a class="ulink" href="http://commons.apache.org/proper/commons-lang/javadocs/api-release/org/apache/commons/lang3/text/StrSubstitutor.html#replace(java.lang.CharSequence)" target="_top">
           StrSubstitutor#replace</a> to format messages. Use "{" and "}" to represent variables place holder.</td><td style="border-bottom: 0.5pt solid ; " align="left">"There are {count} items in the {item-name} list."</td></tr><tr><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">JDKMessageFormatFormatter(default)</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">OrderedValueFormatter</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Use JDK's <a class="ulink" href="http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html#format(java.lang.String, java.lang.Object...)" target="_top">
           MessageFormat#format</a> to format messages.</td><td style="border-bottom: 0.5pt solid ; " align="left">"There are {1} items in the {2} list."</td></tr><tr><td style="border-right: 0.5pt solid ; " align="left">SymbolPlaceholderFormatter</td><td style="border-right: 0.5pt solid ; " align="left">OrderedValueFormatter</td><td style="border-right: 0.5pt solid ; " align="left">Use JDK's <a class="ulink" href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String, java.lang.Object...)" target="_top">
@@ -3013,31 +3012,145 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
             <a class="ulink" href="http://docs.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String, java.util.Locale, java.lang.ClassLoader)" target="_top">
             ResourceBundle#getBundle(String baseName, Locale locale, ClassLoader loader)</a> to retrieve messages.
       </p>
-            
+
+      <p>As the implementation of JDKResourceBundleMessagePatternRetriever, if the given locale is null, the default locale decision mechanism will be performed. 
+            See <a class="xref" href="#i18n-default-locale-decision" title="12.1.3.&nbsp;Default locale">Section&nbsp;12.1.3, &#8220;Default locale&#8221;</a>.</p>
+
       <p>Further, the JDKResourceBundleMessagePatternRetriever accepts ResourceBundleFactory to allow customize how to retrieve a resource bundle. The default is        
             CharsetResourceBundleFactory which allows specify the encoding of message bundle files. Another built-in implementation is the LatinEscapingResourceBundleFactory,
             as the name suggests, the message files must be escaped by JDK's standard mechanism(via native2ascii).
       </p>
     </div>
-    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-afd-msg"></a>12.1.3.&nbsp;afd:msg</h3></div></div></div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-default-locale-decision"></a>12.1.3.&nbsp;Default locale</h3></div></div></div>
       
-      <p>"afd:msg" tag can be used to declare an i18n aware message in a template file.</p>
+      <p>The default locale will be decided by the following order and stop at the first non-null returned value.</p>
+      <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+            <p>Context.getCurrentThreadContext().getCurrentLocale()</p>
+        </li><li class="listitem">
+            <p>Locale.getDefault()</p>
+        </li><li class="listitem">
+            <p>Locale.ROOT</p>
+        </li></ol></div>
+      <p class="remark"><em><span class="remark">Since the Locale.getDefault() will return the local machine's locale by default, you may need to override the default locale to ROOT at the staring of 
+              your web application.</span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-afd-msg"></a>12.1.4.&nbsp;afd:msg</h3></div></div></div>
+      
+      <p>"afd:msg" tag can be used to declare an i18n aware message in a template file. The basic usage is as following:</p>
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;section&gt;</span>
+    <span class="hl-tag">&lt;article&gt;</span>
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- the inner html will be treated as default message if the key is not found in message bundle --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"notexistingkey"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.notexistingkey"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"parameter works as well."</span><span class="hl-tag">&gt;</span>text here to be treated as default message.{0}<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- simply specify parameters on tag --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"4"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"7"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- the parameter can be rendered by snippet too --&gt;</span>
+            <span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"ComplicatedSnippet:setMsgParam"</span><span class="hl-tag">&gt;</span>
+                <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"4"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+                <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"7"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;/afd:snippet&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- attribute started with "@" will be treated as a key --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">@p0</span>=<span class="hl-value">"sample.weatherreport.sunny"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">@p0</span>=<span class="hl-value">"sample.weatherreport.sunny"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- attribute started with "#" will be treated as a sub key of current key, thus sample.weatherreport.sunny will be searched --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">#p0</span>=<span class="hl-value">"rain"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">#p0</span>=<span class="hl-value">"rain"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- treat message as text --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.textUrl"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            
+            <span class="hl-comment">&lt;!-- treat message as html --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.htmlUrl"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            
+            <span class="hl-comment">&lt;!-- treat message as text even it begins with html: --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.escapedUrl"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+    <span class="hl-tag">&lt;/article&gt;</span>
+<span class="hl-tag">&lt;/section&gt;</span>
+
+      </pre>
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> Renderer setMsgParam() {
+    Renderer render = Renderer.create();
+    render.add(<span class="hl-string">"#peoplecount"</span>, <span class="hl-string">"p0"</span>, <span class="hl-number">15</span>);
+    <span class="hl-keyword">return</span> render;
+}
+
+    </pre>
+    <p>There are something need to be explained:</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            <p>default message</p>
+            <p>As commented in the source, the inner content of "afd:msg" will be treated as default message in case of the message of specified key cannot be found. 
+                  Note that the default message will be formatted by specified parameters too.</p>
+            <p>This mechanism can also be used as a simple text replacing mechanism in the html template file in case of necessity.</p>
+            <br>
+        </li><li class="listitem">
+            <p>parameter name</p>
+            <p>If the configured I18nMessageHelper is MappedParamI18nMessageHelper, the attribute names of current "afd:msg" element will be treated as parameter names directly.
+                  And if the configured I18nMessageHelper is OrderedParamI18nMessageHelper which is the default one, the attribute names started with single "p" and following with
+                  0-started numbers will be treated as the values of parameter value array.</p>
+            <br>
+        </li><li class="listitem">
+            <p>recursive parameter</p>
+            <p>The attributes which name started with "@" or "#" will be treated as recursive message's key. The different between "@" and "#" is that the "@" will be treated as a
+                  complete key but the "#" will be treated as a sub key of current message key.</p>
+            <br>
+        </li><li class="listitem">
+            <p>parameter value</p>
+            <p>The value of attributes can be specified directly in the html template file, also can be rendered by a snippet as in the above example.</p>
+            <br>
+        </li><li class="listitem">
+            <p>locale</p>
+            <p>Locale can be specified explicitly by ISO 639 locale string, if not, the default locale decision mechanism will be performed. 
+                 See <a class="xref" href="#i18n-default-locale-decision" title="12.1.3.&nbsp;Default locale">Section&nbsp;12.1.3, &#8220;Default locale&#8221;</a>.</p>
+            <br>
+        </li></ul></div>
     </div>
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="i18n-template-file"></a>12.2.&nbsp;template file search</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="i18n-file-search"></a>12.2.&nbsp;file search order</h2></div></div></div>
     
+    <p>The built-in template resolver and static resource handler can match the target file name with awareness of locale. The match locale will be decided by the default locale
+          decision mechanism(See <a class="xref" href="#i18n-default-locale-decision" title="12.1.3.&nbsp;Default locale">Section&nbsp;12.1.3, &#8220;Default locale&#8221;</a>). After the locale is decided, for example, for a locale as Locale("fr", "CA", "UNIX") to search a 
+          html template file "index.html", the target file will be searched by following order:</p>
+    <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+            <p>index_fr_CA_UNIX.html</p>
+        </li><li class="listitem">
+            <p>index_fr_CA.html</p>
+        </li><li class="listitem">
+            <p>index_fr.html</p>
+        </li><li class="listitem">
+            <p>index.html</p>
+        </li></ol></div>
+    <p>For the static resource files such as js, css, jpg, etc. will be searched by the same order as well.</p>
   </div>
-  
 </div>
     <div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>13.&nbsp;Asta4dServlet and configuration</h2></div></div></div>
   
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1277"></a>13.1.&nbsp;Asta4dServlet</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1327"></a>13.1.&nbsp;Asta4dServlet</h2></div></div></div>
     
     <p>All the http requests are handled by Asta4dServlet which allows developers to override several methods to customize
     its actions. The web.xml would be like following:</p>
-    <div class="example"><a name="d5e1280"></a><p class="title"><b>Example&nbsp;13.1.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1330"></a><p class="title"><b>Example&nbsp;13.1.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
@@ -3066,7 +3179,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
         <p>createConfiguration()</p>
         <p>Overriding this methods allows developers to configure the framework by code. </p>
-        <div class="example"><a name="d5e1287"></a><p class="title"><b>Example&nbsp;13.2.&nbsp;</b></p><div class="example-contents">
+        <div class="example"><a name="d5e1337"></a><p class="title"><b>Example&nbsp;13.2.&nbsp;</b></p><div class="example-contents">
           <pre class="programlisting">
 
     <em><span class="hl-annotation" style="color: gray">@Override</span></em>
@@ -3094,7 +3207,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       </li><li class="listitem">
         <p>service()</p>
         <p>Developers can intercept the http request by overriding this method. The following example shows how to rewrite the access url by adding pre request logic:</p>
-        <div class="example"><a name="d5e1292"></a><p class="title"><b>Example&nbsp;13.3.&nbsp;</b></p><div class="example-contents">
+        <div class="example"><a name="d5e1342"></a><p class="title"><b>Example&nbsp;13.3.&nbsp;</b></p><div class="example-contents">
           <pre class="programlisting">
 
     <em><span class="hl-annotation" style="color: gray">@Override</span></em>
@@ -3111,7 +3224,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
           </pre>
         </div></div><br class="example-break">
         <p>Request time measuring can be performed too:</p>
-        <div class="example"><a name="d5e1295"></a><p class="title"><b>Example&nbsp;13.4.&nbsp;</b></p><div class="example-contents">
+        <div class="example"><a name="d5e1345"></a><p class="title"><b>Example&nbsp;13.4.&nbsp;</b></p><div class="example-contents">
           <pre class="programlisting">
 
     <em><span class="hl-annotation" style="color: gray">@Override</span></em>
@@ -3136,7 +3249,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       </li></ul></div>
   </div>
   
-  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1303"></a>13.2.&nbsp;Configuration file</h2></div></div></div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1353"></a>13.2.&nbsp;Configuration file</h2></div></div></div>
     
     <p>In the previous section, we introduced that Asta4D can be configured by overriding createConfiguration() method and we also introduced a method called 
     createConfigurationInitializer which allows customize the configuration file initialization logic. Asta4D allows to be configured by an extra configuration file
@@ -3162,7 +3275,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
     <p>Further, the default implementation does only support the format of configuration file as Java standard properties file. All the configured key/value will be treated
     as setXXX method calling on WebApplicationConfiguration instance. The key can be a dot split string which will be treated as recursive property accessing on 
     WebApplicationConfiguration instance.</p>
-    <div class="example"><a name="d5e1320"></a><p class="title"><b>Example&nbsp;13.5.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1370"></a><p class="title"><b>Example&nbsp;13.5.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-attribute">urlMappingRuleInitializer</span>=com.astamuse.asta4d.sample.UrlRules
@@ -3178,7 +3291,7 @@ rules.add(<span class="hl-string">"/app/handler"</span>)
       </pre>
     </div></div><br class="example-break">
     <p>The above configuration equals to the following source:</p>
-    <div class="example"><a name="d5e1323"></a><p class="title"><b>Example&nbsp;13.6.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1373"></a><p class="title"><b>Example&nbsp;13.6.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 WebApplicationConfiguration conf = <span class="hl-keyword">super</span>.createConfiguration();
@@ -3211,7 +3324,7 @@ conf.setCacheEnable(false);
     to Asta4D. Firstly, as an alternative for Asta4dServlet introduced in the  previous chapter, SpringInitializableServlet can be 
     used to initialize Spring configuration automatically. The web.xml file should be like following:</p>
     
-    <div class="example"><a name="d5e1333"></a><p class="title"><b>Example&nbsp;14.1.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1383"></a><p class="title"><b>Example&nbsp;14.1.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
@@ -3241,7 +3354,7 @@ conf.setCacheEnable(false);
     </div></div><br class="example-break">
     <p>Secondly, the WebApplicationConfiguration instance should be declared as a bean in spring with additional Spring special
     configurations:</p>
-    <div class="example"><a name="d5e1336"></a><p class="title"><b>Example&nbsp;14.2.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1386"></a><p class="title"><b>Example&nbsp;14.2.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
@@ -3262,7 +3375,7 @@ conf.setCacheEnable(false);
       name in html template files as bean id.</span></em>
     </div></div><br class="example-break">
     <p>The following example shows a full image of Spring's configuration for Asta4D:</p>
-    <div class="example"><a name="d5e1340"></a><p class="title"><b>Example&nbsp;14.3.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1390"></a><p class="title"><b>Example&nbsp;14.3.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
 <span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
@@ -3312,7 +3425,7 @@ conf.setCacheEnable(false);
   <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="integrate-spring-mvc"></a>14.2.&nbsp;Integrate with Spring MVC</h2></div></div></div>
     
     <p>Asta4D's template engine can be integrated to Spring MVC as view solution too. The following configuration shows how:</p>
-    <div class="example"><a name="d5e1346"></a><p class="title"><b>Example&nbsp;14.4.&nbsp;</b></p><div class="example-contents">
+    <div class="example"><a name="d5e1396"></a><p class="title"><b>Example&nbsp;14.4.&nbsp;</b></p><div class="example-contents">
       <pre class="programlisting">
 
     <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateInitializer"</span><span class="hl-tag">/&gt;</span>
