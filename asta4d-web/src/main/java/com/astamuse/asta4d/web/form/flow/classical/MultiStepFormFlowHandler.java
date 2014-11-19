@@ -161,7 +161,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
 
     @Override
     protected CommonFormResult process(FormProcessData processData, T form) {
-        CommonFormResult result = super.processValidation(processData, form);
+        CommonFormResult result = processValidation(processData, form);
         if (result == CommonFormResult.SUCCESS && doUpdateOnValidationSuccess(processData)) {
             try {
                 updateForm(form);
