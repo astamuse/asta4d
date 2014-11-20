@@ -15,8 +15,6 @@ import com.astamuse.asta4d.web.WebApplicationTemplateResolver;
 
 public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
 
-    private TemplateResolver legacy_underlineTemplateResolver = null;
-
     private Class<? extends TemplateResolver> underlineTemplateResolverCls = null;
 
     private MemorySafeResourceCache<Object, TemplateResolver> underlineTemplateResolverCache = new MemorySafeResourceCache<>();
@@ -43,16 +41,6 @@ public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
             }
         }
     };
-
-    /**
-     * will be removed when release
-     * 
-     * @param underlineTemplateResolver
-     */
-    @Deprecated
-    public SiteCategoryAwaredTemplateResolver(TemplateResolver legacy_underlineTemplateResolver) {
-        this.legacy_underlineTemplateResolver = legacy_underlineTemplateResolver;
-    }
 
     public SiteCategoryAwaredTemplateResolver() {
         this(WebApplicationTemplateResolver.class);
@@ -96,11 +84,7 @@ public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
     }
 
     protected TemplateResolver createUnderlineTemplateResolverInstance(Class<? extends TemplateResolver> cls) throws Exception {
-        if (legacy_underlineTemplateResolver == null) {
-            return cls.newInstance();
-        } else {
-            return legacy_underlineTemplateResolver;
-        }
+        return cls.newInstance();
     }
 
     @Override
