@@ -7,23 +7,18 @@
     - data value convertor for date/time string (joda-time as well)
     - form field renderer for html5 date/time input element
     - test methods for no operation on RenderTester
-    - 
-
 	
     FIX
     - bug in sample project
     - NullPointerException occurs when the default forward/redirect is missing
     - SiteCategoryAwaredTemplateResolver should cache found template file by different search categories
     - handle unknown http method better(rather than throw exception)
-
-
     
     ENHANCE
     - reduce memory usage of form flow trace storing mechanism
     - source refactoring to allow more flexible form process logic
     - allow pass logger to debug rendering
     - handle unknown http method better(rather than throw exception)
-
 
 -   1.0-b2 (2014.10.29)
 
