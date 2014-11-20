@@ -22,35 +22,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.render.transformer.ElementSetterTransformer;
+import com.astamuse.asta4d.render.transformer.Transformer;
 
 /**
- * When this renderer is applied, the current rendering element (see
- * {@link Context#setCurrentRenderingElement(Element)}) will be output by logger
- * in debug level.
+ * When this renderer is applied, the current rendering element (see {@link Context#setCurrentRenderingElement(Element)}) will be output by
+ * logger in debug level.
  * 
  * @author e-ryu
  * 
  */
 public class DebugRenderer extends Renderer {
 
-    private final static String CurrentNodeSelector = "DebugRenderer-CurrentNodeSelector";
+    private static final class DebugTransformer extends Transformer<Object> {
 
-    final static Logger logger = LoggerFactory.getLogger(DebugRenderer.class);
+        Logger logger = null;
+        String logMessage = null;
+        String creationSiteInfo = null;
 
-    public DebugRenderer(final String logMessage) {
-        super(CurrentNodeSelector + ":" + logMessage, new ElementSetterTransformer(new ElementSetter() {
-            @Override
-            public void set(Element elem) {
-                String logStr = logMessage + ":\n" + elem.toString();
-                logger.debug(logStr);
-            }
-        }));
+        public DebugTransformer() {
+            super(null);
+        }
+
+        @Override
+        protected Element transform(Element elem, Object content) {
+            String logStr = logMessage + "( " + creationSiteInfo + " ):\n" + elem.toString();
+            logger.debug(logStr);
+
+            // we have to clone a new element, which is how transformer works.
+            Element newElem = elem.clone();
+            return newElem;
+        }
+
     }
 
+    final static Logger DefaultLogger = LoggerFactory.getLogger(DebugRenderer.class);
+
+    public DebugRenderer(Logger logger, String logMessage) {
+        super(":root", new DebugTransformer());
+        DebugTransformer dts = (DebugTransformer) getTransformerList().get(0);
+        dts.logMessage = logMessage;
+        dts.creationSiteInfo = getCreationSiteInfo();
+        dts.logger = logger;
+    }
+
+    /*
     @Override
     RendererType getRendererType() {
         return RendererType.DEBUG;
     }
+    */
 
 }

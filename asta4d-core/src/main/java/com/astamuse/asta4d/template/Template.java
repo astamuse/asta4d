@@ -23,7 +23,7 @@ import java.io.InputStream;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.BlockTagSupportHtmlTreeBuilder;
+import org.jsoup.parser.Asta4DTagSupportHtmlTreeBuilder;
 import org.jsoup.parser.Parser;
 
 import com.astamuse.asta4d.Configuration;
@@ -36,31 +36,36 @@ public class Template {
 
     private String path;
 
-    private Document doc;
+    private Document doc = null;
 
     /**
      * 
      * @param path
-     *            not being used, just for debug purpose
+     *            the actual template path
+     * 
      * @param input
      * @throws IOException
      */
-    public Template(String path, InputStream input) throws TemplateException {
+    public Template(String path, InputStream input) throws TemplateException, TemplateNotFoundException {
         try {
             this.path = path;
-            this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new BlockTagSupportHtmlTreeBuilder()));
-            // this.doc = Jsoup.parse(input, "UTF-8", "");
-            initDocument();
+            if (input != null) {
+                this.doc = Jsoup.parse(input, "UTF-8", "", new Parser(new Asta4DTagSupportHtmlTreeBuilder()));
+                // this.doc = Jsoup.parse(input, "UTF-8", "");
+                initDocument();
+            }
+        } catch (TemplateNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             String msg = String.format("Template %s initialize failed.", path);
             throw new TemplateException(msg, e);
         }
     }
 
-    private void initDocument() throws TemplateException {
+    private void initDocument() throws TemplateException, TemplateNotFoundException {
         clearCommentNode();
         processExtension();
-        TemplateUtil.regulateElement(doc);
+        TemplateUtil.regulateElement(path, doc);
     }
 
     private void clearCommentNode() throws TemplateException {
@@ -68,7 +73,7 @@ public class Template {
         ElementUtil.removeNodesBySelector(doc, commentSelector, false);
     }
 
-    private void processExtension() throws TemplateException {
+    private void processExtension() throws TemplateException, TemplateNotFoundException {
         Element extension = doc.select(ExtNodeConstants.EXTENSION_NODE_TAG_SELECTOR).first();
         if (extension != null) {
             String parentPath = extension.attr(ExtNodeConstants.EXTENSION_NODE_ATTR_PARENT);

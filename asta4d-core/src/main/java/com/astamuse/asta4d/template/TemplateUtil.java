@@ -31,19 +31,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.extnode.ExtNode;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.extnode.GroupNode;
-import com.astamuse.asta4d.extnode.SnippetNode;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 public class TemplateUtil {
 
+    private static class SnippetNode extends ExtNode {
+
+        /**
+         * 
+         * @param renderer
+         *            a plain text renderer declaration
+         */
+        public SnippetNode(String renderer) {
+            super(ExtNodeConstants.SNIPPET_NODE_TAG);
+            this.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_READY);
+            this.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER, renderer);
+        }
+
+    }
+
     private final static Logger logger = LoggerFactory.getLogger(TemplateUtil.class);
 
-    public final static void regulateElement(Document doc) throws TemplateException {
-        regulateSnippets(doc);
+    public final static void regulateElement(String path, Document doc) throws TemplateException, TemplateNotFoundException {
+        // disabled. see {@link #loadStaticEmebed}
+        // load static embed at first
+        // loadStaticEmebed(doc);
+
+        regulateSnippets(path, doc);
+        regulateMsgs(path, doc);
         regulateEmbed(doc);
     }
 
@@ -51,7 +70,17 @@ public class TemplateUtil {
         return "sn-" + IdGenerator.createId();
     }
 
-    private final static void regulateSnippets(Document doc) {
+    private final static void regulateMsgs(String path, Document doc) {
+        List<Element> msgElems = doc.select(ExtNodeConstants.MSG_NODE_TAG_SELECTOR);
+        for (Element element : msgElems) {
+            // record template path
+            if (!element.hasAttr(ExtNodeConstants.ATTR_TEMPLATE_PATH)) {
+                element.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH, path);
+            }
+        }
+    }
+
+    private final static void regulateSnippets(String path, Document doc) {
 
         // find nodes emebed with snippet attribute
         String snippetSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER_WITH_NS);
@@ -90,6 +119,10 @@ public class TemplateUtil {
         List<Element> snippetNodes = doc.select(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR);
         String status;
         for (Element sn : snippetNodes) {
+            // record template path
+            if (!sn.hasAttr(ExtNodeConstants.ATTR_TEMPLATE_PATH)) {
+                sn.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH, path);
+            }
             // regulate status
             if (sn.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS)) {
                 status = sn.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS);
@@ -132,9 +165,7 @@ public class TemplateUtil {
         setBlockingParentSnippetId(snippetNodes);
     }
 
-    private final static void regulateEmbed(Document doc) throws TemplateException {
-        // load static embed at first
-        loadStaticEmebed(doc);
+    private final static void regulateEmbed(Document doc) throws TemplateException, TemplateNotFoundException {
         // check nodes without block attr for blocking parent snippets
         String selector = SelectorUtil.attr(ExtNodeConstants.EMBED_NODE_ATTR_BLOCK);
         selector = SelectorUtil.not(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR, selector);
@@ -142,7 +173,26 @@ public class TemplateUtil {
         setBlockingParentSnippetId(embedElemes);
     }
 
-    private final static void loadStaticEmebed(Document doc) throws TemplateException {
+    /**
+     * Disabled static embed at 2014.09.26.
+     * 
+     * Developers would like to use different snippets to render a same static embed file as following:
+     * 
+     * <pre>
+     *   &lt;afd:snippet render="SomeSnippet"&gt;
+     *      &lt;afd:embed target="/someEmbed.html" static/&gt;
+     *   &lt;/afd:snippet&gt;
+     * </pre>
+     * 
+     * Which confuses rendering logic and makes bad source smell, thus we decide to disable this feature.
+     * 
+     * @param doc
+     * @throws TemplateException
+     * @throws TemplateNotFoundException
+     */
+    @SuppressWarnings("unused")
+    @Deprecated
+    private final static void loadStaticEmebed(Document doc) throws TemplateException, TemplateNotFoundException {
 
         String selector = SelectorUtil.attr(SelectorUtil.tag(ExtNodeConstants.EMBED_NODE_TAG_SELECTOR),
                 ExtNodeConstants.EMBED_NODE_ATTR_STATIC, null);
@@ -185,7 +235,7 @@ public class TemplateUtil {
         }
     }
 
-    private final static void resetSnippetRefs(Element elem) {
+    public final static void resetSnippetRefs(Element elem) {
         String snippetRefSelector = SelectorUtil.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
         List<Element> snippets = new ArrayList<>(elem.select(snippetRefSelector));
         String oldRef, newRef;
@@ -221,10 +271,11 @@ public class TemplateUtil {
             String message = "Target not defined[" + elem.toString() + "]";
             throw new TemplateException(message);
         }
-        Template embedTarget = templateResolver.findTemplate(target);
-        if (embedTarget == null) {
-            String message = "Target of emebed node not found[" + elem.toString() + "]";
-            throw new TemplateException(message);
+        Template embedTarget;
+        try {
+            embedTarget = templateResolver.findTemplate(target);
+        } catch (TemplateNotFoundException e) {
+            throw new TemplateException(e);
         }
 
         // TODO all of the following process should be merged into template
@@ -238,8 +289,6 @@ public class TemplateUtil {
         // retrieve all the blocks that misincluded into head
         Element head = embedDoc.head();
         Elements headChildren = head.children();
-        List<Node> tempList = new ArrayList<>();
-        String tagName;
         for (Element child : headChildren) {
             if (StringUtil.in(child.tagName(), "script", "link", ExtNodeConstants.BLOCK_NODE_TAG)) {
                 child.remove();
@@ -249,7 +298,7 @@ public class TemplateUtil {
 
         Element body = embedDoc.body();
         Elements bodyChildren = body.children();
-        ElementUtil.appendNodes(wrappingNode, new ArrayList<Node>(bodyChildren));
+        wrappingNode.insertChildren(-1, bodyChildren);
 
         // copy all the attrs to the wrapping group node
         Iterator<Attribute> attrs = elem.attributes().iterator();
@@ -300,20 +349,16 @@ public class TemplateUtil {
                 continue;
             }
             childNodes = new ArrayList<>(block.childNodes());
-            ElementUtil.safeEmpty(block);
             switch (blockType) {
             case ExtNodeConstants.BLOCK_NODE_ATTR_OVERRIDE:
                 targetBlock.empty();
-                ElementUtil.appendNodes(targetBlock, childNodes);
+                targetBlock.insertChildren(-1, childNodes);
                 break;
             case ExtNodeConstants.BLOCK_NODE_ATTR_APPEND:
-                ElementUtil.appendNodes(targetBlock, childNodes);
+                targetBlock.insertChildren(-1, childNodes);
                 break;
             case ExtNodeConstants.BLOCK_NODE_ATTR_INSERT:
-                List<Node> originNodes = new ArrayList<>(targetBlock.childNodes());
-                ElementUtil.safeEmpty(targetBlock);
-                ElementUtil.appendNodes(targetBlock, childNodes);
-                ElementUtil.appendNodes(targetBlock, originNodes);
+                targetBlock.insertChildren(0, childNodes);
                 break;
             }
             block.remove();

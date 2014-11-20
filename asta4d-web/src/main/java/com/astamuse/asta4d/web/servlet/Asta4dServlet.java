@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.util.concurrent.ListExecutorServiceUtil;
+import com.astamuse.asta4d.util.concurrent.SnippetExecutorServiceUtil;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
@@ -65,6 +67,7 @@ public class Asta4dServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException(e);
         }
+        WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().start();
         ruleList = createRuleList();
     }
 
@@ -128,6 +131,15 @@ public class Asta4dServlet extends HttpServlet {
 
     protected WebApplicatoinConfigurationInitializer createConfigurationInitializer() {
         return new WebApplicatoinConfigurationInitializer();
+    }
+
+    @Override
+    public void destroy() {
+        ListExecutorServiceUtil.getExecutorService().shutdownNow();
+        SnippetExecutorServiceUtil.getExecutorService().shutdownNow();
+        WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().stop();
+        WebApplicationConfiguration.setConfiguration(null);// gc
+        super.destroy();
     }
 
 }

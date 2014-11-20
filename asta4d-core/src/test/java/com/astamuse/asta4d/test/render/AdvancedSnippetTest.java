@@ -19,16 +19,15 @@ package com.astamuse.asta4d.test.render;
 
 import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
-import org.jsoup.nodes.Element;
+import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.extnode.EmbedNode;
-import com.astamuse.asta4d.extnode.SnippetNode;
-import com.astamuse.asta4d.render.ChildReplacer;
+import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
 
+@Test
 public class AdvancedSnippetTest extends BaseTest {
 
     public static class TestSnippet {
@@ -50,45 +49,54 @@ public class AdvancedSnippetTest extends BaseTest {
             return Renderer.create("#kv", value);
         }
 
-        public Renderer dynamicSnippetOuter() {
-            Element subSnippet = new SnippetNode("AdvancedSnippetTest$TestSnippet:dynamicSnippetSub");
-            Renderer render = Renderer.create("#pv", new ChildReplacer(subSnippet));
-            return render;
-        }
-
         public Renderer dynamicSnippetSub() {
             Renderer render = Renderer.create("*", ElementUtil.text("ff"));
             return render;
         }
 
-        public Renderer dynamicEmbed() {
-            Element embed = new EmbedNode("/AdvancedSnippet_nestedEmbed_include.html");
-            embed.attr("value", "6");
-            return Renderer.create("#pv", embed);
+    }
+
+    public static class ParentSnippet {
+        public Renderer render() {
+            return Renderer.create("p", "parent");
+        }
+
+        public Renderer rx(String x) {
+            return Renderer.create("p", "parent");
+        }
+    }
+
+    public static class MiddleSnippet extends ParentSnippet {
+
+    }
+
+    public static class ChildSnippet extends MiddleSnippet {
+        public Renderer render() {
+            return Renderer.create("p", "child");
+        }
+
+        public Renderer rx(@ContextData(name = "xxx") String x) {
+            return Renderer.create("p", "child");
         }
     }
 
     public AdvancedSnippetTest() {
     }
 
-    public void testDeletedNestedSnippet() {
+    public void testDeletedNestedSnippet() throws Throwable {
         new SimpleCase("AdvancedSnippet_deletedNestedSnippet.html");
     }
 
-    public void testNestedSnippet() {
+    public void testNestedSnippet() throws Throwable {
         new SimpleCase("AdvancedSnippet_nestedSnippet.html");
     }
 
-    public void testNestedEmbed() {
+    public void testNestedEmbed() throws Throwable {
         new SimpleCase("AdvancedSnippet_nestedEmbed.html");
     }
 
-    public void testDynamicSnippet() {
-        new SimpleCase("AdvancedSnippet_dynamicSnippet.html");
-    }
-
-    public void testDynamicEmbed() {
-        new SimpleCase("AdvancedSnippet_dynamicEmbed.html");
+    public void testOverrideRenderMethod() throws Throwable {
+        new SimpleCase("AdvancedSnippet_overrideRenderMethod.html");
     }
 
 }

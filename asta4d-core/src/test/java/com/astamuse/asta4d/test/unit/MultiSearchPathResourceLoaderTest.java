@@ -20,8 +20,6 @@ package com.astamuse.asta4d.test.unit;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 
-import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
@@ -52,7 +50,7 @@ public class MultiSearchPathResourceLoaderTest {
     @Test
     public void searchForMultiPath() {
         StringResourceLoaderForTest loader = new StringResourceLoaderForTest(new String[] { "foo", "bar", "baz", "path1/bar", "path2/qux" });
-        loader.setSearchPathList(Arrays.asList(new String[] { "path1", "path2" }));
+        loader.setSearchPathList("path1", "path2");
         String resource = loader.searchResource("/", "qux");
         assertEquals("path2/qux", resource);
     }
@@ -60,7 +58,7 @@ public class MultiSearchPathResourceLoaderTest {
     @Test
     public void searchForMultiPath_FindMultiResource() {
         StringResourceLoaderForTest loader = new StringResourceLoaderForTest(new String[] { "foo", "bar", "baz", "path1/bar", "path2/qux" });
-        loader.setSearchPathList(Arrays.asList(new String[] { "path1", "path2" }));
+        loader.setSearchPathList("path1", "path2");
         String resource = loader.searchResource("/", "bar");
         assertEquals("bar", resource);
     }
@@ -68,7 +66,7 @@ public class MultiSearchPathResourceLoaderTest {
     @Test
     public void searchForMultiPath_NotFound() {
         StringResourceLoaderForTest loader = new StringResourceLoaderForTest(new String[] { "foo", "bar", "baz", "path1/bar", "path2/qux" });
-        loader.setSearchPathList(Arrays.asList(new String[] { "path1", "path2" }));
+        loader.setSearchPathList("path1", "path2");
         String resource = loader.searchResource("/", "quux", "foobar");
         assertNull(resource);
     }

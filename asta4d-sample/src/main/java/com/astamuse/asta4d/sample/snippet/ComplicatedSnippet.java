@@ -22,50 +22,51 @@ import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
-import com.astamuse.asta4d.extnode.EmbedNode;
-import com.astamuse.asta4d.extnode.SnippetNode;
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.annotation.QueryParam;
 
 public class ComplicatedSnippet {
 
     // @ShowCode:showRenderertypesStart
     public Renderer render() {
-        // それ自体は何もしない Renderer です。
-        Renderer render = new GoThroughRenderer();
+        // a renderer which does nothing
+        Renderer render = Renderer.create();
 
-        // 該当 Element の子要素全てを置換します。
+        // replace all the children nodes of the corresponding node by selector
+        render.add("ul#childreplacer", new ChildReplacer(createElement()));
 
-        ChildReplacer replacer = new ChildReplacer(createElement());
-        render.add("ul#childreplacer", replacer);
-
-        // 該当 Element を削除します。
+        // remove a node
         render.add("ul#clearnode", Clear);
 
-        // レンダリング結果をデバッグ出力します。
+        // output the whole html string of current node to log console
         render.addDebugger("current element");
 
         return render;
+    }
+
+    private Element createElement() {
+        Element ul = new Element(Tag.valueOf("ul"), "");
+        ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(1)"));
+        ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(2)"));
+        ul.appendChild(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(3)"));
+        return ul;
     }
 
     // @ShowCode:showRenderertypesEnd
 
     // @ShowCode:showPassvariablesStart
     public Renderer outer() {
-        // 文字列, 整数, Date型の値, List型の値を内部Snippetで使用するためにセットします。
-        Renderer render = new GoThroughRenderer();
+        // prepare all necessary data for the inner snippet
+        Renderer render = Renderer.create();
         render.add("div#inner", "name", "baz");
         render.add("div#inner", "age", "30");
         render.add("div#inner", "currenttime", new Date());
@@ -74,12 +75,14 @@ public class ComplicatedSnippet {
         list.add("This text is passed by outer snippet.(1)");
         list.add("This text is passed by outer snippet.(2)");
         list.add("This text is passed by outer snippet.(3)");
+
         render.add("div#inner", "list", list);
+
         return render;
     }
 
     public Renderer inner(String name, int age, Date currenttime, List<String> list) {
-        // 外部Snippetでセットされた値を変数から取得し、使用します。
+        // receive the parameters by method declaration and then make use of them
         Renderer render = new GoThroughRenderer();
         render.add("p#name span", name);
         render.add("p#age span", age);
@@ -89,18 +92,7 @@ public class ComplicatedSnippet {
     }
 
     // @ShowCode:showPassvariablesEnd
-    // @ShowCode:showDynamicsnippetStart
-    public Renderer createDynamicSnippet() {
-        Renderer render = new GoThroughRenderer();
-        Element snippet = new SnippetNode("SimpleSnippet");
-        snippet.attr("name", "Dynamic Snippet");
-        render.add("div#snippet", snippet);
-        Element embed = new EmbedNode("/templates/embed/embedded.html");
-        render.add("div#embed", embed);
-        return render;
-    }
 
-    // @ShowCode:showDynamicsnippetEnd
     // @ShowCode:showContextdataStart
     public Renderer changeName(@ContextData(name = "var") String changedName) {
         return Renderer.create("dd", changedName);
@@ -110,31 +102,19 @@ public class ComplicatedSnippet {
         return Renderer.create("dd", var == null ? "" : var);
     }
 
+    public Renderer convenientAnnotation(@QueryParam String var) {
+        return Renderer.create("dd", var == null ? "" : var);
+    }
+
     // @ShowCode:showContextdataEnd
+
     // @ShowCode:showLocalizeStart
-    public Renderer setWeatherreportParam() {
-        Renderer render = new GoThroughRenderer();
-        Locale locale = Context.getCurrentThreadContext().getCurrentLocale();
-        if (locale.equals(Locale.JAPANESE) || locale.equals(Locale.JAPAN)) {
-            render.add("afd|msg#weatherreport1", "p0", "晴れ");
-        } else {
-            render.add("afd|msg#weatherreport1", "p0", "sunny");
-        }
-        render.add("afd|msg#weatherreport2", "p0", "cloudy");
-        render.add("afd|msg#weatherreport3", "p0", "rain");
+    public Renderer setMsgParam() {
+        Renderer render = Renderer.create();
+        render.add("#peoplecount", "p0", 15);
         return render;
     }
 
     // @ShowCode:showLocalizeEnd
-    // @ShowCode:showRenderertypesStart
-    private Element createElement() {
-        Element ul = new Element(Tag.valueOf("ul"), "");
-        List<Node> lis = new ArrayList<>();
-        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(1)"));
-        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(2)"));
-        lis.add(new Element(Tag.valueOf("li"), "").appendText("This text is created by snippet.(3)"));
-        ElementUtil.appendNodes(ul, lis);
-        return ul;
-    }
-    // @ShowCode:showRenderertypesEnd
+
 }

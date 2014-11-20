@@ -19,142 +19,113 @@ package com.astamuse.asta4d.test.unit;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
-import com.astamuse.asta4d.util.i18n.CharsetResourceBundleFactory;
-import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
-import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
-import com.astamuse.asta4d.util.i18n.ResourceBundleHelper;
-import com.astamuse.asta4d.util.i18n.format.NamedPlaceholderFormatter;
-import com.astamuse.asta4d.util.i18n.format.NumberPlaceholderFormatter;
-import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.I18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.MappedParamI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.formatter.ApacheStrSubstitutorFormatter;
+import com.astamuse.asta4d.util.i18n.formatter.JDKMessageFormatFormatter;
+import com.astamuse.asta4d.util.i18n.formatter.SymbolPlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.pattern.CharsetResourceBundleFactory;
+import com.astamuse.asta4d.util.i18n.pattern.JDKResourceBundleMessagePatternRetriever;
+import com.astamuse.asta4d.util.i18n.pattern.LatinEscapingResourceBundleFactory;
 
+@Test
 public class ResourceBundleUtilTest extends BaseTest {
-
-    @Test
-    public void useHelperDefault() throws Exception {
-        setUp("symbol_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper();
-        assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
-    }
 
     @BeforeClass
     public void setDefaultLocale() {
         Locale.setDefault(Locale.ROOT);
     }
 
-    @BeforeTest
-    public void prepareResourceBundle() {
-        Configuration.getConfiguration().setResourceBundleFactory(new LatinEscapingResourceBundleFactory());
-        ResourceBundle.clearCache();
-    }
-
     @Test
     public void useSymbolFormatter() throws Exception {
-        setUp("symbol_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper(new SymbolPlaceholderFormatter());
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new SymbolPlaceholderFormatter());
+        setUp(helper, "symbol_placeholder_messages");
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
     }
 
     @Test
     public void useSymbolFormatterJaJp() throws Exception {
-        setUp("symbol_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new SymbolPlaceholderFormatter());
-        assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "今日の天気は曇りです。");
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new SymbolPlaceholderFormatter());
+        setUp(helper, "symbol_placeholder_messages");
+        assertEquals(helper.getMessage(Locale.JAPAN, "weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
     }
 
     @Test
     public void useNumberFormatter() throws Exception {
-        setUp("number_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper(new NumberPlaceholderFormatter());
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new JDKMessageFormatFormatter());
+        setUp(helper, "number_placeholder_messages");
         assertEquals(helper.getMessage("weatherreport1", "Tomorrow", "sunny"), "Tomorrow's weather is sunny.");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "Today's weather is cloudy.");
     }
 
     @Test
     public void useNumberFormatterJaJp() throws Exception {
-        setUp("number_placeholder_messages");
-        ResourceBundleHelper helper = new ResourceBundleHelper(Locale.JAPAN, new NumberPlaceholderFormatter());
-        assertEquals(helper.getMessage("weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
-        assertEquals(
-                helper.getMessage("weatherreport2", helper.getExternalParamValue("weatherreport2", "date"),
-                        helper.getExternalParamValue("weatherreport2", "weather")), "今日の天気は曇りです。");
+        OrderedParamI18nMessageHelper helper = new OrderedParamI18nMessageHelper(new JDKMessageFormatFormatter());
+        setUp(helper, "number_placeholder_messages");
+        assertEquals(helper.getMessage(Locale.JAPAN, "weatherreport1", "明日", "晴れ"), "明日の天気は晴れです。");
     }
 
     @Test
     public void useNamedFormatter() throws Exception {
-        setUp("named_placeholder_messages");
-        ParamMapResourceBundleHelper helper = new ParamMapResourceBundleHelper(new NamedPlaceholderFormatter());
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", "Tomorrow");
-            params.put("weather", "sunny");
-            assertEquals(helper.getMessage("weatherreport1", params), "Tomorrow's weather is sunny.");
-        }
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", helper.getExternalParamValue("weatherreport2", "date"));
-            params.put("weather", helper.getExternalParamValue("weatherreport2", "weather"));
-            assertEquals(helper.getMessage("weatherreport2", params), "Today's weather is cloudy.");
-        }
+
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        setUp(helper, "named_placeholder_messages");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("date", "Tomorrow");
+        params.put("weather", "sunny");
+        assertEquals(helper.getMessage("weatherreport1", params), "Tomorrow's weather is sunny.");
+    }
+
+    @Test
+    public void useNamedFormatterWithSplittedMessagePattern() throws Exception {
+
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        setUp(helper, "named_placeholder_messages");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("date", "Tomorrow");
+        params.put("weather", "sunny");
+        assertEquals(helper.getMessage("weatherreport-split", params), "Tomorrow's weather is sunny.");
     }
 
     @Test
     public void useNamedFormatterJaJp() throws Exception {
-        setUp("named_placeholder_messages");
-        ParamMapResourceBundleHelper helper = new ParamMapResourceBundleHelper(Locale.JAPAN, new NamedPlaceholderFormatter());
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", "明日");
-            params.put("weather", "晴れ");
-            assertEquals(helper.getMessage("weatherreport1", params), "明日の天気は晴れです。");
-        }
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", helper.getExternalParamValue("weatherreport2", "date"));
-            params.put("weather", helper.getExternalParamValue("weatherreport2", "weather"));
-            assertEquals(helper.getMessage("weatherreport2", params), "今日の天気は曇りです。");
-        }
+
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        setUp(helper, "named_placeholder_messages");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("date", "明日");
+        params.put("weather", "晴れ");
+        assertEquals(helper.getMessage(Locale.JAPAN, "weatherreport1", params), "明日の天気は晴れです。");
     }
 
     @Test
     public void utf8MessageFileJaJp() throws Exception {
-        setUp("utf_8_messages");
-        Configuration.getConfiguration().setResourceBundleFactory(new CharsetResourceBundleFactory());
-        ParamMapResourceBundleHelper helper = new ParamMapResourceBundleHelper(Locale.JAPAN, new NamedPlaceholderFormatter());
-        {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("date", "明日");
-            params.put("weather", "晴れ");
-            assertEquals(helper.getMessage("weatherreport", params), "明日の天気は晴れです。");
-        }
+        MappedParamI18nMessageHelper helper = new MappedParamI18nMessageHelper(new ApacheStrSubstitutorFormatter());
+        setUp(helper, "utf_8_messages");
+        // reset to utf-8
+        ((JDKResourceBundleMessagePatternRetriever) helper.getMessagePatternRetriever())
+                .setResourceBundleFactory(new CharsetResourceBundleFactory("UTF-8"));
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("date", "明日");
+        params.put("weather", "晴れ");
+        assertEquals(helper.getMessage(Locale.JAPAN, "weatherreport", params), "明日の天気は晴れです。");
     }
 
-    private void setUp(String fileName) {
+    private void setUp(I18nMessageHelper helper, String fileName) {
         Context context = Context.getCurrentThreadContext();
         context.setCurrentLocale(Locale.US);
-        Configuration.getConfiguration().setResourceNames(Arrays.asList("com.astamuse.asta4d.test.render.messages." + fileName));
+        JDKResourceBundleMessagePatternRetriever retriever = (JDKResourceBundleMessagePatternRetriever) helper.getMessagePatternRetriever();
+        retriever.setResourceNames("com.astamuse.asta4d.test.render.messages." + fileName);
+        retriever.setResourceBundleFactory(new LatinEscapingResourceBundleFactory());
     }
 }

@@ -51,6 +51,9 @@ public class ResultTransformerUtil {
             resultTransformer = transformerList.get(i);
             try {
                 after = resultTransformer.transformToContentProvider(before);
+                if (after instanceof Exception) {
+                    logger.error("Error occured on result transform.", (Exception) after);
+                }
             } catch (Exception ex) {
                 logger.error("Error occured on result transform.", ex);
                 after = ex;
@@ -67,9 +70,14 @@ public class ResultTransformerUtil {
             }
         }
         if (cp == null) {
-            String msg = "Cannot recognize the result type of:%s. Maybe a ResultTransformer is neccessory.";
-            String.format(msg, result.getClass().getName());
-            throw new UnsupportedOperationException(msg);
+            if (result == null) {
+                String msg = "Cannot recognize the result null. Maybe a default ResultTransformer is neccessory(Usually a non result default forward/rediredt declaration of current url rule is missing).";
+                throw new UnsupportedOperationException(msg);
+            } else {
+                String msg = "Cannot recognize the result :[%s:%s]. Maybe a ResultTransformer is neccessory(Usually a result specified forward/rediredt declaration of current url rule is missing).";
+                msg = String.format(msg, result.getClass().getName(), result.toString());
+                throw new UnsupportedOperationException(msg);
+            }
         } else {
             return cp;
         }

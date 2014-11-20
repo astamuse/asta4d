@@ -88,11 +88,7 @@ public class Page {
         Configuration conf = Configuration.getConfiguration();
         TemplateResolver templateResolver = conf.getTemplateResolver();
         Template template = templateResolver.findTemplate(path);
-        if (template == null) {
-            return null;
-        } else {
-            return new Page(template);
-        }
+        return new Page(template);
     }
 
     protected Document renderTemplate(Template template) throws Exception {
@@ -107,6 +103,8 @@ public class Page {
                 RenderUtil.applyClearAction(doc, true);
             }
         });
+        // clear after page interceptors was executed
+        RenderUtil.applyClearAction(doc, true);
         return doc;
     }
 

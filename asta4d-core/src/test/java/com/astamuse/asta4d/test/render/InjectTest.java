@@ -1,5 +1,7 @@
 /*
- * Copyright 2012 astamuse company,Ltd.
+
+
+ * [Copyright 2012 astamuse company,Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,28 +159,7 @@ public class InjectTest extends BaseTest {
 
     }
 
-    public static class ReverseRenderFirst {
-
-        @ContextData(scope = ReverseInjectableScope, reverse = true)
-        private String reverseValue;
-
-        public Renderer render() {
-            reverseValue = "set by frist";
-            return new GoThroughRenderer();
-        }
-    }
-
-    public static class ReverseRenderSecond {
-
-        @ContextData(scope = ReverseInjectableScope)
-        private String reverseValue;
-
-        public Renderer render() {
-            return Renderer.create("*", reverseValue);
-        }
-    }
-
-    public void testMethodDefaultSearch() {
+    public void testMethodDefaultSearch() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "pv", "pv-value at context");
         context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value at context");
@@ -187,7 +168,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testMethodDefaultSearch.html");
     }
 
-    public void testMethodScopeSearch() {
+    public void testMethodScopeSearch() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "av", "av-value at context");
         context.setData(Context.SCOPE_DEFAULT, "pv", "pv-value at context");
@@ -198,7 +179,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testMethodScopeSearch.html");
     }
 
-    public void testMethodNameSearch() {
+    public void testMethodNameSearch() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value");
         context.setData(Context.SCOPE_DEFAULT, "cv-r", "cv-value for name replace");
@@ -207,7 +188,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testMethodNameSearch.html");
     }
 
-    public void testMethodTypeConvertor() {
+    public void testMethodTypeConvertor() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "intvalue", "222");
         context.setData(Context.SCOPE_DEFAULT, "longvalue", "333");
@@ -215,7 +196,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testMethodTypeConvertor.html");
     }
 
-    public void testInstanceDefaultSearch() {
+    public void testInstanceDefaultSearch() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value at context");
         context.setData(Context.SCOPE_GLOBAL, "cv", "cv-value at global");
@@ -223,7 +204,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testInstanceDefaultSearch.html");
     }
 
-    public void testInstanceScopeSearch() {
+    public void testInstanceScopeSearch() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value at context");
         context.setData(Context.SCOPE_GLOBAL, "cv", "cv-value at global");
@@ -232,7 +213,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testInstanceScopeSearch.html");
     }
 
-    public void testInstanceNameSearch() {
+    public void testInstanceNameSearch() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "cv", "cv-value");
         context.setData(Context.SCOPE_DEFAULT, "cv-r", "cv-value for name replace");
@@ -241,7 +222,7 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testInstanceNameSearch.html");
     }
 
-    public void testInstanceTypeConvertor() {
+    public void testInstanceTypeConvertor() throws Throwable {
         Context context = Context.getCurrentThreadContext();
         context.setData(Context.SCOPE_DEFAULT, "intvalue", "111");
         context.setData(Context.SCOPE_DEFAULT, "longvalue", "555");
@@ -249,7 +230,4 @@ public class InjectTest extends BaseTest {
         new SimpleCase("Inject_testInstanceTypeConvertor.html");
     }
 
-    public void testReverseInjection() {
-        new SimpleCase("Inject_testReverseInjection.html");
-    }
 }

@@ -19,11 +19,23 @@ public class InjectUtilForInstanceTest extends BaseTest {
     public static class TestSet {
         @ContextData
         private long f1;
+
         @ContextData
         public ContextDataHolder<Long> f2 = new ContextDataHolder<>(Long.class);
 
+        private String f3;
+
         public long getF1() {
             return f1;
+        }
+
+        @ContextData
+        public String getF3() {
+            return f3;
+        }
+
+        public void setF3(String f3) {
+            this.f3 = f3;
         }
     }
 
@@ -68,12 +80,14 @@ public class InjectUtilForInstanceTest extends BaseTest {
         Context ctx = Context.getCurrentThreadContext();
         ctx.setData("f1", "6678");
         ctx.setData("f2", "12345");
+        ctx.setData("f3", "QQQ");
 
         TestCls tc = new TestCls();
         InjectUtil.injectToInstance(tc);
 
         assertEquals(tc.myset.getF1(), 6678L);
         assertEquals(tc.myset.f2.getValue().longValue(), 12345L);
+        assertEquals(tc.myset.getF3(), "QQQ");
 
         assertEquals(tc.mySingletonSet.getF1(), 6678L);
         assertEquals(tc.mySingletonSet.f2.getValue().longValue(), 12345L);

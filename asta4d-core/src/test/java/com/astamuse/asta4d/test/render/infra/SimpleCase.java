@@ -27,26 +27,34 @@ import com.astamuse.asta4d.Page;
 
 public class SimpleCase {
 
-    public SimpleCase(String templateFileName) {
+    public SimpleCase(String templateFileName) throws Throwable {
         this(templateFileName, templateFileName);
     }
 
-    public SimpleCase(String templateFileName, String confirmFileName) {
+    public SimpleCase(String templateFileName, String confirmFileName) throws Throwable {
         String ostr = null;
         String cstr = null;
         try {
-            Page originPage = Page.buildFromPath("/com/astamuse/asta4d/test/render/templates/" + templateFileName);
+            Page originPage = Page.buildFromPath(retrieveTempateFielParentPath() + templateFileName);
             ostr = revert2comparableString(originPage);
 
-            cstr = revert2comparableString("/com/astamuse/asta4d/test/render/confirms/" + confirmFileName);
+            cstr = revert2comparableString(retrieveConfirmFielParentPath() + confirmFileName);
 
             Assert.assertEquals(ostr, cstr);
 
         } catch (Throwable t) {
             output(templateFileName + ":rendering result", ostr);
             output(confirmFileName + ":expected result", cstr);
-            throw new RuntimeException("verify failed", t);
+            throw t;
         }
+    }
+
+    protected String retrieveTempateFielParentPath() {
+        return "/com/astamuse/asta4d/test/render/templates/";
+    }
+
+    protected String retrieveConfirmFielParentPath() {
+        return "/com/astamuse/asta4d/test/render/confirms/";
     }
 
     private String revert2comparableString(Page page) {

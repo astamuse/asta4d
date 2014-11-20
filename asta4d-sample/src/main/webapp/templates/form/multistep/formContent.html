@@ -1,0 +1,70 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<!-- @ShowCode:showFormContentStart -->
+<!-- this file can be shared across all the step pages -->
+<afd:snippet render="form.MultiStepFormSnippet">
+<table border=0 class="form-input-table">
+	<tr>
+		<td>name *:<br>(length &lt;= 6)</td>
+		<td class="name">
+			<input name="name" type="text"/>
+			<!-- custom error message tag(default id as xxx-err-msg) -->
+			<div><span id="name-err-msg" class="label label-danger"></span></div>
+		</td>
+	</tr>
+	<tr>
+		<td>age *:<br>(&lt;= 45)</td>
+		<td class="age">
+			<input name="age" type="text"/>
+			<!-- custom error message tag(default id as xxx-err-msg) -->
+			<div><span id="age-err-msg" class="label label-danger"></span></div>
+		</td>
+	</tr>
+	<tr>
+		<td>sex *:</td>
+		<td class="sex">
+			<!-- static option data in html -->
+			<input id="sex-m" name="sex" type="radio" value="Male"/><label for="sex-m">Male</label>
+			<input id="sex-f" name="sex" type="radio" value="Female"/><label for="sex-f">Female</label>
+			<div><span id="sex-err-msg" class="label label-danger"></span></div>
+		</td>
+	</tr>
+	<tr>
+		<td>bloodtype *:</td>
+		<td class="bloodtype">
+			<select id="bloodtype" name="bloodtype">
+				<!-- static option data in html -->
+				<option value="">&nbsp;</option>
+				<option value="A">A</option>
+				<option value="B">B</option>
+				<option value="O">O</option>
+				<option value="AB">AB</option>
+			</select>
+			<div><span id="bloodtype-err-msg" class="label label-danger"></span></div>
+		</td>
+	</tr>
+	<tr>
+		<td>language *:</td>
+		<td class="language">
+			<!-- static option data in html -->
+			<input id="language-e" name="language" type="checkbox" value="English"/><label for="language-e">English</label>
+			<input id="language-j" name="language" type="checkbox" value="Japanese"/><label for="language-j">Japanese</label>
+			<input id="language-z" name="language" type="checkbox" value="Chinese"/><label for="language-z">Chinese</label>
+			<div><span id="language-err-msg" class="label label-danger"></span></div>
+		</td>
+	</tr>
+	<tr>
+		<td>memo:</td>
+		<td class="memo">
+			<textarea name="memo"></textarea>
+		</td>
+	</tr>
+</table>
+<input type="hidden" name="id">
+</afd:snippet>
+<!-- @ShowCode:showFormContentEnd -->
+</body>
+</html>

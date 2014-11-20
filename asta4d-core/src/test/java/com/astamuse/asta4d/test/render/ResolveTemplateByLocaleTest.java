@@ -28,31 +28,31 @@ import com.astamuse.asta4d.test.render.infra.SimpleCase;
 public class ResolveTemplateByLocaleTest extends BaseTest {
 
     @Test
-    public void currentLocaleJaJP() {
+    public void currentLocaleJaJP() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPAN);
         new SimpleCase("ResolveTemplateByLocale.html", "ResolveTemplateByLocale_ja_JP.html");
     }
 
     @Test
-    public void currentLocaleJa() {
+    public void currentLocaleJa() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.JAPANESE);
         new SimpleCase("ResolveTemplateByLocale.html", "ResolveTemplateByLocale.html");
     }
 
     @Test
-    public void currentLocaleEnUS() {
+    public void currentLocaleEnUS() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.US);
         new SimpleCase("ResolveTemplateByLocale.html", "ResolveTemplateByLocale_en.html");
     }
 
     @Test
-    public void currentLocaleEnGB() {
+    public void currentLocaleEnGB() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.UK);
         new SimpleCase("ResolveTemplateByLocale.html", "ResolveTemplateByLocale_en.html");
     }
 
     @Test
-    public void currentLocaleDeDE() {
+    public void currentLocaleDeDE() throws Throwable {
         Context.getCurrentThreadContext().setCurrentLocale(Locale.GERMANY);
         new SimpleCase("ResolveTemplateByLocale.html", "ResolveTemplateByLocale.html");
     }

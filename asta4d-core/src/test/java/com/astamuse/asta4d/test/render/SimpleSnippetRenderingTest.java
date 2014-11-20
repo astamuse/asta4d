@@ -17,6 +17,8 @@
 
 package com.astamuse.asta4d.test.render;
 
+import org.testng.annotations.Test;
+
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.Renderer;
@@ -76,23 +78,24 @@ public class SimpleSnippetRenderingTest extends BaseTest {
         }
     }
 
-    public void testTagEmbed() {
+    public void testTagEmbed() throws Throwable {
         new SimpleCase("SimpleSnippet_TagEmbed.html");
     }
 
-    public void testStaticEmbed() {
+    @Test(enabled = false)
+    public void testStaticEmbed() throws Throwable {
         new SimpleCase("SimpleSnippet_StaticEmbed.html");
     }
 
-    public void testSnippetTag() {
+    public void testSnippetTag() throws Throwable {
         new SimpleCase("SimpleSnippet_SnippetTag.html");
     }
 
-    public void testBasePackageSnippetSearch() {
+    public void testBasePackageSnippetSearch() throws Throwable {
         new SimpleCase("SimpleSnippet_BasePackage.html");
     }
 
-    public void testSnippetInit() {
+    public void testSnippetInit() throws Throwable {
         Context.getCurrentThreadContext().setData("value", "fire");
         new SimpleCase("SimpleSnippet_SnippetInit.html");
     }

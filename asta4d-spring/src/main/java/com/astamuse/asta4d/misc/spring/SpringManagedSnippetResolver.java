@@ -38,7 +38,7 @@ public class SpringManagedSnippetResolver extends DefaultSnippetResolver impleme
         try {
             return applicationContext.getBean(name);
         } catch (NoSuchBeanDefinitionException e) {
-            return null;
+            return super.loadResource(name);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

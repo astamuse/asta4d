@@ -18,19 +18,30 @@
 package com.astamuse.asta4d.web;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.interceptor.PageInterceptor;
+import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
+import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
+import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
+import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareTimeoutDataManager;
+import com.astamuse.asta4d.web.util.timeout.TimeoutDataManager;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
+
+    private TimeoutDataManager timeoutDataManager = new DefaultSessionAwareTimeoutDataManager();
+
+    private MessageRenderingHelper messageRenderingHelper = new DefaultMessageRenderingHelper();
 
     private RequestHandlerInvokerFactory requestHandlerInvokerFactory;
 
@@ -44,12 +55,37 @@ public class WebApplicationConfiguration extends Configuration {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
         this.setContextDataFinder(new WebApplicationContextDataFinder());
         this.setRequestHandlerInvokerFactory(new DefaultRequestHandlerInvokerFactory());
+        this.setPageInterceptorList(new LinkedList<PageInterceptor>());
 
-        // we only allow request scope being reversely injected
-        List<String> reverseInjectableScopes = new ArrayList<>();
-        reverseInjectableScopes.add(WebApplicationContext.SCOPE_REQUEST);
-        this.setReverseInjectableScopes(reverseInjectableScopes);
+    }
 
+    protected List<PageInterceptor> createDefaultPageInterceptorList() {
+        // afford a convenience for global rendering by default
+        List<PageInterceptor> pageInterceptorList = new LinkedList<>();
+        // configurable message rendering interceptor
+        pageInterceptorList.add(new PageInterceptor() {
+
+            @Override
+            public void prePageRendering(Renderer renderer) {
+                // do nothing
+            }
+
+            @Override
+            public void postPageRendering(Renderer renderer) {
+                MessageRenderingHelper helper = WebApplicationConfiguration.getWebApplicationConfiguration().getMessageRenderingHelper();
+                if (helper != null) {
+                    renderer.add(helper.createMessageRenderer());
+                }
+            }
+        });
+        return pageInterceptorList;
+    }
+
+    @Override
+    public void setPageInterceptorList(List<PageInterceptor> pageInterceptorList) {
+        List<PageInterceptor> list = createDefaultPageInterceptorList();
+        list.addAll(pageInterceptorList);
+        super.setPageInterceptorList(list);
     }
 
     public final static WebApplicationConfiguration getWebApplicationConfiguration() {
@@ -62,6 +98,22 @@ public class WebApplicationConfiguration extends Configuration {
 
     public void setFlashScopeForwardParameterName(String flashScopeForwardParameterName) {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
+    }
+
+    public TimeoutDataManager getTimeoutDataManager() {
+        return timeoutDataManager;
+    }
+
+    public void setTimeoutDataManager(TimeoutDataManager timeoutDataManager) {
+        this.timeoutDataManager = timeoutDataManager;
+    }
+
+    public MessageRenderingHelper getMessageRenderingHelper() {
+        return messageRenderingHelper;
+    }
+
+    public void setMessageRenderingHelper(MessageRenderingHelper messageRenderingHelper) {
+        this.messageRenderingHelper = messageRenderingHelper;
     }
 
     public RequestHandlerInvokerFactory getRequestHandlerInvokerFactory() {

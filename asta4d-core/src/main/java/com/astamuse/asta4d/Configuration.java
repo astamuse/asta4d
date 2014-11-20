@@ -18,8 +18,6 @@
 package com.astamuse.asta4d;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
@@ -38,10 +36,8 @@ import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.concurrent.DefaultExecutorServiceFactory;
 import com.astamuse.asta4d.util.concurrent.ExecutorServiceFactory;
-import com.astamuse.asta4d.util.i18n.LatinEscapingResourceBundleFactory;
-import com.astamuse.asta4d.util.i18n.ResourceBundleFactory;
-import com.astamuse.asta4d.util.i18n.format.PlaceholderFormatter;
-import com.astamuse.asta4d.util.i18n.format.SymbolPlaceholderFormatter;
+import com.astamuse.asta4d.util.i18n.I18nMessageHelper;
+import com.astamuse.asta4d.util.i18n.OrderedParamI18nMessageHelper;
 
 public class Configuration {
 
@@ -59,11 +55,7 @@ public class Configuration {
 
     private DataTypeTransformer dataTypeTransformer = new DefaultDataTypeTransformer();
 
-    private List<String> resourceNames = null;
-
-    private PlaceholderFormatter placeholderFormatter = new SymbolPlaceholderFormatter();
-
-    private ResourceBundleFactory resourceBundleFactory = new LatinEscapingResourceBundleFactory();
+    private I18nMessageHelper i18nMessageHelper = new OrderedParamI18nMessageHelper();
 
     private boolean cacheEnable = true;
 
@@ -78,11 +70,6 @@ public class Configuration {
     private ExecutorServiceFactory listExecutorFactory = new DefaultExecutorServiceFactory("asta4d-list", 600);
 
     private ParallelRecursivePolicy parallelRecursivePolicyForListRendering = ParallelRecursivePolicy.EXCEPTION;
-
-    /**
-     * at present, the following items are regarded as global settings
-     */
-    private List<String> reverseInjectableScopes = Arrays.asList(Context.SCOPE_DEFAULT, Context.SCOPE_GLOBAL);
 
     private List<String> clearNodeClasses = new ArrayList<>();
 
@@ -156,32 +143,12 @@ public class Configuration {
         this.dataTypeTransformer = dataTypeTransformer;
     }
 
-    public List<String> getResourceNames() {
-        if (resourceNames == null) {
-            resourceNames = new ArrayList<>();
-            resourceNames.add("messages");
-        }
-        return new ArrayList<String>(resourceNames);
+    public I18nMessageHelper getI18nMessageHelper() {
+        return i18nMessageHelper;
     }
 
-    public void setResourceNames(List<String> resourceNames) {
-        this.resourceNames = Collections.unmodifiableList(resourceNames);
-    }
-
-    public PlaceholderFormatter getPlaceholderFormatter() {
-        return placeholderFormatter;
-    }
-
-    public void setPlaceholderFormatter(PlaceholderFormatter placeholderFormatter) {
-        this.placeholderFormatter = placeholderFormatter;
-    }
-
-    public ResourceBundleFactory getResourceBundleFactory() {
-        return resourceBundleFactory;
-    }
-
-    public void setResourceBundleFactory(ResourceBundleFactory resourceBundleFactory) {
-        this.resourceBundleFactory = resourceBundleFactory;
+    public void setI18nMessageHelper(I18nMessageHelper i18nMessageHelper) {
+        this.i18nMessageHelper = i18nMessageHelper;
     }
 
     public boolean isCacheEnable() {
@@ -238,14 +205,6 @@ public class Configuration {
 
     public void setBlockParallelListRendering(boolean blockParallelListRendering) {
         this.blockParallelListRendering = blockParallelListRendering;
-    }
-
-    public List<String> getReverseInjectableScopes() {
-        return reverseInjectableScopes;
-    }
-
-    public void setReverseInjectableScopes(List<String> reverseInjectableScopes) {
-        this.reverseInjectableScopes = reverseInjectableScopes;
     }
 
     public List<String> getClearNodeClasses() {

@@ -19,14 +19,21 @@ package com.astamuse.asta4d.render;
 
 class RenderAction {
 
-    private boolean outputMissingSelectorWarning = true;
+    private int disableMissingSelectorWarningCounter = 0;
 
     public boolean isOutputMissingSelectorWarning() {
-        return outputMissingSelectorWarning;
+        return disableMissingSelectorWarningCounter == 0;
     }
 
     public void setOutputMissingSelectorWarning(boolean outputMissingSelectorWarning) {
-        this.outputMissingSelectorWarning = outputMissingSelectorWarning;
+        if (outputMissingSelectorWarning) {
+            disableMissingSelectorWarningCounter--;
+        } else {
+            disableMissingSelectorWarningCounter++;
+        }
+        if (disableMissingSelectorWarningCounter < 0) {
+            disableMissingSelectorWarningCounter = 0;
+        }
     }
 
 }

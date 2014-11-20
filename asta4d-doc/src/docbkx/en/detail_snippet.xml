@@ -83,7 +83,7 @@ Renderer renderer = Renderer.create();
       <para>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
       cases. You can also read the Java doc of Renderer for more details.</para>
     </sect2>
-    <sect2 id="css selector">
+    <sect2 id="css-selector">
       <title>CSS Selector</title>
       <para>Asta4D is using a modified version of <ulink url="http://jsoup.org/">jsoup library</ulink> to afford CSS selector function.
       Currently, we support the following selectors:
@@ -171,6 +171,11 @@ Renderer renderer = Renderer.create();
           <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Combinators</emphasis></entry>
         </row>
         <row>
+          <entry></entry>
+          <entry></entry>
+          <entry></entry>
+        </row>
+        <row>
           <entry>E F</entry>
           <entry>an F element descended from an E element</entry>
           <entry>div a, .logo h1</entry>
@@ -197,6 +202,11 @@ Renderer renderer = Renderer.create();
         </row>
         <row>
           <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Pseudo selectors</emphasis></entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry></entry>
+          <entry></entry>
         </row>
         <row>
           <entry>:lt(n)</entry>
@@ -251,9 +261,88 @@ Renderer renderer = Renderer.create();
           <entry>The above may be combined in any order and with other selectors</entry>
           <entry>.light:contains(name):eq(0)</entry>
         </row>
+        <row>
+          <entry></entry>
+          <entry></entry>
+          <entry></entry>
+        </row>
+        <row>
+          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Structural pseudo selectors</emphasis></entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry></entry>
+          <entry></entry>
+        </row>
+        <row>
+          <entry>:root</entry>
+          <entry>The element that is the root of the document. In HTML, this is the html element. In a snippet method, this is the element where the current snippet method is declared. In a recursive Renderer, this is the target element which the current renderer is applied to.</entry>
+          <entry>:root</entry>
+        </row>
+        <row>
+          <entry>:nth-child(an+b)</entry>
+          <entry>elements that have an+b-1 siblings before it in the document tree, for any positive integer or zero value of n, and has a parent element. For values of a and b greater than zero, this effectively divides the element's children into groups of a elements (the last group taking the remainder), and selecting the bth element of each group. For example, this allows the selectors to address every other row in a table, and could be used to alternate the color of paragraph text in a cycle of four. The a and b values must be integers (positive, negative, or zero). The index of the first child of an element is 1.
+          In addition to this, :nth-child() can take odd and even as arguments instead. odd has the same signification as 2n+1, and even has the same signification as 2n.</entry>
+          <entry>tr:nth-child(2n+1) finds every odd row of a table. :nth-child(10n-1) the 9th, 19th, 29th, etc, element. li:nth-child(5) the 5h li</entry>
+        </row>
+        <row>
+          <entry>:nth-last-child(an+b)</entry>
+          <entry>elements that have an+b-1 siblings after it in the document tree. Otherwise like :nth-child()</entry>
+          <entry>tr:nth-last-child(-n+2) the last two rows of a table</entry>
+        </row>
+        <row>
+          <entry>:nth-of-type(an+b)</entry>
+          <entry>pseudo-class notation represents an element that has an+b-1 siblings with the same expanded element name before it in the document tree, for any zero or positive integer value of n, and has a parent element</entry>
+          <entry>img:nth-of-type(2n+1)</entry>
+        </row>
+        <row>
+          <entry>:nth-last-of-type(an+b)</entry>
+          <entry>pseudo-class notation represents an element that has an+b-1 siblings with the same expanded element name after it in the document tree, for any zero or positive integer value of n, and has a parent element</entry>
+          <entry>img:nth-last-of-type(2n+1)</entry>
+        </row>
+        <row>
+          <entry>:first-child</entry>
+          <entry>elements that are the first child of some other element.</entry>
+          <entry>div > p:first-child</entry>
+        </row>
+        <row>
+          <entry>:last-child</entry>
+          <entry>elements that are the last child of some other element.</entry>
+          <entry>ol > li:last-child</entry>
+        </row>
+        <row>
+          <entry>:first-of-type</entry>
+          <entry>elements that are the first sibling of its type in the list of children of its parent element</entry>
+          <entry>dl dt:first-of-type</entry>
+        </row>
+        <row>
+          <entry>:last-of-type</entry>
+          <entry>elements that are the last sibling of its type in the list of children of its parent element</entry>
+          <entry>tr > td:last-of-type</entry>
+        </row>
+        
+        <row>
+          <entry>:only-child</entry>
+          <entry>elements that have a parent element and whose parent element hasve no other element children</entry>
+          <entry></entry>
+        </row>
+        <row>
+          <entry>:only-of-type</entry>
+          <entry>an element that has a parent element and whose parent element has no other element children with the same expanded element name</entry>
+          <entry></entry>
+        </row>
+        <row>
+          <entry>:empty</entry>
+          <entry>elements that have no children at all</entry>
+          <entry></entry>
+        </row>
       </tbody>
       </tgroup>
       </table>
+      <remark>Note: Because of the internal implementation of how to perform Renderer on target element, there may be unexpected temporary elements to be added into the 
+              Current DOM tree, which will be removed safely at the final stage of page production but may cause the structural pseudo selectors work incorrectly
+              (However, the :root selector can still work well).
+      </remark>
       
     </sect2>
     <sect2>

@@ -18,30 +18,32 @@
 package com.astamuse.asta4d.sample;
 
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.GET;
-import static com.astamuse.asta4d.web.dispatch.HttpMethod.POST;
 import static com.astamuse.asta4d.web.dispatch.HttpMethod.PUT;
 
 import com.astamuse.asta4d.sample.forward.LoginFailure;
 import com.astamuse.asta4d.sample.handler.AddUserHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
-import com.astamuse.asta4d.sample.handler.FormCompleteHandler;
-import com.astamuse.asta4d.sample.handler.FormValidateHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
+import com.astamuse.asta4d.sample.handler.form.CascadeFormHandler;
+import com.astamuse.asta4d.sample.handler.form.MultiStepFormHandler;
+import com.astamuse.asta4d.sample.handler.form.SingleInputFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
+import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
+import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
     @Override
     public void initUrlMappingRules(UrlMappingRuleHelper rules) {
         //@formatter:off
-        rules.add(GET, "/")
-             .redirect("/app/index");
+        rules.add("/", "/templates/index.html");
+        rules.add("/index", "/templates/index.html");
         
-        rules.add(GET, "/redirect-to-index")
-        .redirect("p:/app/index");
+        rules.add(GET, "/redirect-to-index").redirect("p:/index");
         
         initSampleRules(rules);
         //@formatter:on
@@ -52,31 +54,32 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add("/js/**/*").handler(new StaticResourceHandler());
         
-        rules.add("/app/", "/templates/index.html");
-        rules.add("/app/index", "/templates/index.html");
-
-        rules.add("/app/snippet", "/templates/snippet.html");
+        rules.add("/snippet", "/templates/snippet.html");
         
         // @ShowCode:showVariableinjectionStart
-        rules.add("/app/{name}/{age}", "/templates/variableinjection.html").priority(1);
+        rules.add("/var-injection/{name}/{age}", "/templates/variableinjection.html").priority(1);
         // @ShowCode:showVariableinjectionEnd
         
-        rules.add("/app/attributevalues", "/templates/attributevalues.html");
+        rules.add("/attributevalues", "/templates/attributevalues.html");
 
-        rules.add("/app/extend/appendchild", "/templates/extend/appendchild.html");
-        rules.add("/app/extend/insertchild", "/templates/extend/insertchild.html");
-        rules.add("/app/extend/overridechild", "/templates/extend/overridechild.html");
-
-        rules.add("/app/embed/main", "/templates/embed/main.html");
-
-        rules.add("/app/ajax/getUserList").handler(GetUserListHandler.class).json();
+        rules.add("/extend/{target}").handler(new Object(){
+            @RequestHandler
+            public String handle(String target){
+                return "/templates/extend/"+target+".html";
+            }
+        });
         
-        rules.add(PUT, "/app/ajax/addUser").handler(AddUserHandler.class).rest();
+
+        rules.add("/embed/main", "/templates/embed/main.html");
+
+        rules.add("/ajax/getUserList").handler(GetUserListHandler.class).json();
         
-        rules.add("/app/", "/templates/index.html");
+        rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).rest();
+        
+        rules.add("/", "/templates/index.html");
 
         // @ShowCode:showSuccessStart
-        rules.add("/app/handler")
+        rules.add("/handler")
              .handler(LoginHandler.class)
              .handler(EchoHandler.class)
              .forward(LoginFailure.class, "/templates/error.html")
@@ -84,17 +87,52 @@ public class UrlRules implements UrlMappingRuleInitializer {
         // @ShowCode:showSuccessEnd
         
 
-        rules.add("/app/renderertypes", "/templates/renderertypes.html");
-        rules.add("/app/passvariables", "/templates/passvariables.html");
-        rules.add("/app/dynamicsnippet", "/templates/dynamicsnippet.html");
+        rules.add("/renderertypes", "/templates/renderertypes.html");
+        rules.add("/passvariables", "/templates/passvariables.html");
+        rules.add("/dynamicsnippet", "/templates/dynamicsnippet.html");
 
-        rules.add("/app/contextdata", "/templates/contextdata.html");
+        rules.add("/contextdata", "/templates/contextdata.html");
 
-        rules.add("/app/form/input", "/templates/form/input.html");
-        rules.add(POST, "/app/form/confirm").handler(FormValidateHandler.class);
-        rules.add(POST, "/app/form/complete").handler(FormCompleteHandler.class);
+        
+        rules.add("/form", "/templates/form/list.html");
+        
+        // @ShowCode:showSingleInputStart
+        rules.add((HttpMethod)null, "/form/singleInput")
+             //specify the target template file of input page by constructor
+             .handler(new SingleInputFormHandler("/templates/form/singleInput/edit.html"))
+             //specify the exit target
+             .redirect("/form?type=single-input");
+        // @ShowCode:showSingleInputEnd
+             
+        // @ShowCode:showMultiStepStart
+        rules.add((HttpMethod)null, "/form/multistep")
+             //specify the base path of target template file by constructor
+             .handler(new MultiStepFormHandler("/templates/form/multistep/"))
+             //specify the exit target
+             .redirect("/form?type=multi-step");
+        // @ShowCode:showMultiStepEnd
+        
+        // @ShowCode:showCascadeStart
+        rules.add((HttpMethod)null, "/form/cascade/add")
+             //specify the base path of target template file by path var
+             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
+             .handler(CascadeFormHandler.Add.class)
+             //specify the exit target
+             .redirect("/form?type=cascade");
 
-        rules.add("/app/localize", "/templates/localize.html");
+        rules.add((HttpMethod)null, "/form/cascade/edit")
+             //specify the base path of target template file by path var
+             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
+             .handler(CascadeFormHandler.Edit.class)
+             //specify the exit target
+             .redirect("/form?type=cascade");
+        // @ShowCode:showCascadeEnd
+           
+        rules.add("/localize", "/templates/localize.html");
+        
+        
+        
+        
         //@formatter:on
     }
 }

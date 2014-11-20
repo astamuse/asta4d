@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
 
 import com.astamuse.asta4d.Context;
 
@@ -33,18 +35,22 @@ public class InjectTrace {
     private static final String InstanceTraceListSaveKey = InjectTrace.class.getName() + "#InstanceTraceListSaveKey";
 
     public static final void saveInstanceInjectionTraceInfo(Object instance, Method setter, ContextDataHolder valueHolder) {
-        saveInstanceInjectionTraceInfo(instance, createTraceKey(setter), valueHolder);
+        saveInstanceInjectionTraceInfoInner(instance, createTraceKey(setter), valueHolder);
     }
 
     public static final void saveInstanceInjectionTraceInfo(Object instance, Field field, ContextDataHolder valueHolder) {
-        saveInstanceInjectionTraceInfo(instance, createTraceKey(field), valueHolder);
+        saveInstanceInjectionTraceInfoInner(instance, createTraceKey(field), valueHolder);
+    }
+
+    public static final void saveInstanceInjectionTraceInfo(Object instance, String propertyName, ContextDataHolder valueHolder) {
+        saveInstanceInjectionTraceInfoInner(instance, "pn:" + propertyName, valueHolder);
     }
 
     public static final void saveMethodInjectionTraceInfo(Method method, int parameterIndex, ContextDataHolder valueHolder) {
-        saveInstanceInjectionTraceInfo(null, createTraceKey(method, parameterIndex), valueHolder);
+        saveInstanceInjectionTraceInfoInner(null, createTraceKey(method, parameterIndex), valueHolder);
     }
 
-    private static final void saveInstanceInjectionTraceInfo(Object instance, String traceKey, ContextDataHolder valueHolder) {
+    private static final void saveInstanceInjectionTraceInfoInner(Object instance, String traceKey, ContextDataHolder valueHolder) {
         Context context = Context.getCurrentThreadContext();
         InstanceTraceList traceList = context.getData(InstanceTraceListSaveKey);
         if (traceList == null) {
@@ -70,18 +76,22 @@ public class InjectTrace {
     }
 
     public static final ContextDataHolder getInstanceInjectionTraceInfo(Object instance, Method setter) {
-        return getInstanceInjectionTraceInfo(instance, createTraceKey(setter));
+        return getInstanceInjectionTraceInfoInner(instance, createTraceKey(setter));
     }
 
     public static final ContextDataHolder getInstanceInjectionTraceInfo(Object instance, Field field) {
-        return getInstanceInjectionTraceInfo(instance, createTraceKey(field));
+        return getInstanceInjectionTraceInfoInner(instance, createTraceKey(field));
+    }
+
+    public static final ContextDataHolder getInstanceInjectionTraceInfo(Object instance, String propertyName) {
+        return getInstanceInjectionTraceInfoInner(instance, "pn:" + propertyName);
     }
 
     public static final ContextDataHolder getMethodInjectionTraceInfo(Method method, int parameterIndex) {
-        return getInstanceInjectionTraceInfo(null, createTraceKey(method, parameterIndex));
+        return getInstanceInjectionTraceInfoInner(null, createTraceKey(method, parameterIndex));
     }
 
-    private static final ContextDataHolder getInstanceInjectionTraceInfo(Object instance, String traceKey) {
+    private static final ContextDataHolder getInstanceInjectionTraceInfoInner(Object instance, String traceKey) {
         Context context = Context.getCurrentThreadContext();
         InstanceTraceList traceList = context.getData(InstanceTraceListSaveKey);
         if (traceList == null) {
@@ -114,4 +124,21 @@ public class InjectTrace {
     private static final String createTraceKey(Method m, int parameterIndex) {
         return m.getDeclaringClass().getName() + ":" + m.toString() + ":" + parameterIndex;
     }
+
+    public static final List retrieveTraceList() {
+        Context context = Context.getCurrentThreadContext();
+        return context.getData(InstanceTraceListSaveKey);
+    }
+
+    public static final void restoreTraceList(List restoreList) {
+        if (restoreList == null) {
+            return;
+        }
+        for (TraceMap map : (InstanceTraceList) restoreList) {
+            for (Entry<String, ContextDataHolder> entry : map.entrySet()) {
+                saveInstanceInjectionTraceInfo(map.targetInstance, entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
 }

@@ -1,6 +1,40 @@
 <html>
 <head>
 <meta charset="utf-8" />
+</head>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Pass variables from outer Snippet to inner Snippet
+	</afd:block>
+	<afd:block override="content-detail">
+		<!-- @ShowCode:showPassvariablesStart -->
+		<section>
+			<article>
+				<div id="outer" afd:render="ComplicatedSnippet:outer">
+					<div id="inner" afd:render="ComplicatedSnippet:inner">
+						<p id="name">name:<span>name</span></p>
+						<p id="age">age:<span>age</span></p>
+						<p id="currenttime">currenttime:<span>currenttime</span></p>
+						<ul id="list">
+							<li>dummy list</li>
+						</ul>
+					</div>
+				</div>
+			</article>
+		</section>
+		<!-- @ShowCode:showPassvariablesEnd -->
+	
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/passvariables.html" startMark="showPassvariablesStart" endMark="showPassvariablesEnd"/>
+
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showPassvariablesStart" endMark="showPassvariablesEnd"/>
+
+	</afd:block>
+</body>
+</html>
+<html>
+<head>
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="../css/common.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
@@ -8,30 +42,11 @@
 <title>Asta4D Sample Project</title>
 </head>
 <body onload="prettyPrint()">
-	<h1>Pass variables from outer Snippet to inner Snippet.</h1>
+	<h1>.</h1>
 
-    <!-- @ShowCode:showPassvariablesStart -->
-	<section>
-		<article>
-			<div id="outer" afd:render="ComplicatedSnippet:outer">
-				<div id="inner" afd:render="ComplicatedSnippet:inner">
-					<p id="name">name:<span>name</span></p>
-					<p id="age">age:<span>age</span></p>
-					<p id="currenttime">currenttime:<span>currenttime</span></p>
-					<ul id="list">
-						<li>dummy list</li>
-					</ul>
-				</div>
-			</div>
-		</article>
-	</section>
-	<!-- @ShowCode:showPassvariablesEnd -->
+    
 
-	<div afd:render="ShowCodeSnippet:showCode" file="/templates/passvariables.html" startMark="showPassvariablesStart" endMark="showPassvariablesEnd">
-    </div>
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showPassvariablesStart" endMark="showPassvariablesEnd">
-    </div>
+	
 
 </body>
 </html>

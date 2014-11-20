@@ -51,6 +51,7 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
@@ -63,7 +64,6 @@ import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
-import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
@@ -107,7 +107,7 @@ public class RequestDispatcherTest {
             context = new WebApplicationContext();
             Context.setCurrentThreadContext(context);
         }
-        context.clear();
+        context.init();
         WebApplicationContext webContext = (WebApplicationContext) context;
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -201,7 +201,9 @@ public class RequestDispatcherTest {
     }
 
     private final static Asta4DPageProvider getExpectedPage(final String path) throws Exception {
-        return Context.with(new WebApplicationContext(), new Callable<Asta4DPageProvider>() {
+        Context ctx = new WebApplicationContext();
+        ctx.init();
+        return Context.with(ctx, new Callable<Asta4DPageProvider>() {
             @Override
             public Asta4DPageProvider call() throws Exception {
                 return new Asta4DPageProvider(Page.buildFromPath(path));

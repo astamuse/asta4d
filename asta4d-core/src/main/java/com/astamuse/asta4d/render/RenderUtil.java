@@ -18,15 +18,17 @@
 package com.astamuse.asta4d.render;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
@@ -41,16 +43,18 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.render.concurrent.ConcurrentRenderHelper;
 import com.astamuse.asta4d.render.concurrent.FutureRendererHolder;
+import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.snippet.SnippetInvoker;
 import com.astamuse.asta4d.snippet.SnippetNotResovlableException;
 import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.template.TemplateUtil;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
+import com.astamuse.asta4d.util.i18n.I18nMessageHelperTypeAssistant;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
-import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
 
 /**
  * 
@@ -61,6 +65,12 @@ import com.astamuse.asta4d.util.i18n.ParamMapResourceBundleHelper;
  */
 public class RenderUtil {
 
+    public static final String PSEUDO_ROOT_SELECTOR = ":root";
+
+    public static final String TRACE_VAR_TEMPLATE_PATH = "TRACE_VAR_TEMPLATE_PATH#" + RenderUtil.class;
+
+    public static final String TRACE_VAR_SNIPPET = "TRACE_VAR_SNIPPET#" + RenderUtil.class;
+
     private final static Logger logger = LoggerFactory.getLogger(RenderUtil.class);
 
     private final static List<String> EXCLUDE_ATTR_NAME_LIST = new ArrayList<>();
@@ -68,7 +78,7 @@ public class RenderUtil {
     static {
         EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_KEY);
         EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_LOCALE);
-        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE);
+        EXCLUDE_ATTR_NAME_LIST.add(ExtNodeConstants.ATTR_TEMPLATE_PATH);
     }
 
     /**
@@ -83,7 +93,8 @@ public class RenderUtil {
      * @throws SnippetInvokeException
      * @throws TemplateException
      */
-    public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException {
+    public final static void applySnippets(Document doc) throws SnippetNotResovlableException, SnippetInvokeException, TemplateException,
+            TemplateNotFoundException {
         if (doc == null) {
             return;
         }
@@ -113,6 +124,7 @@ public class RenderUtil {
         final SnippetInvoker invoker = conf.getSnippetInvoker();
 
         String refId;
+        String currentTemplatePath;
         Element renderTarget;
         for (Element element : snippetList) {
             if (!conf.isSkipSnippetExecution()) {
@@ -129,9 +141,20 @@ public class RenderUtil {
                 } else {
                     renderTarget = element;
                 }
+
+                // we have to reset the ref of current snippet at every time to make sure the ref is always unique(duplicated snippet ref
+                // could be created by list rendering)
+                TemplateUtil.resetSnippetRefs(element);
+
                 context.setCurrentRenderingElement(renderTarget);
                 renderDeclaration = element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_RENDER);
+
                 refId = element.attr(ExtNodeConstants.ATTR_SNIPPET_REF);
+                currentTemplatePath = element.attr(ExtNodeConstants.ATTR_TEMPLATE_PATH);
+
+                context.setCurrentRenderingElement(renderTarget);
+                context.setData(TRACE_VAR_TEMPLATE_PATH, currentTemplatePath);
+
                 try {
                     if (element.hasAttr(ExtNodeConstants.SNIPPET_NODE_ATTR_PARALLEL)) {
                         ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
@@ -152,9 +175,11 @@ public class RenderUtil {
                     throw e;
                 } catch (Exception e) {
                     SnippetInvokeException se = new SnippetInvokeException("Error occured when executing rendering on [" +
-                            renderDeclaration + "]", e);
+                            renderDeclaration + "]:" + e.getMessage(), e);
                     throw se;
                 }
+
+                context.setData(TRACE_VAR_TEMPLATE_PATH, null);
                 context.setCurrentRenderingElement(null);
             } else {// if skip snippet
                 element.attr(ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS, ExtNodeConstants.SNIPPET_NODE_ATTR_STATUS_FINISHED);
@@ -180,7 +205,7 @@ public class RenderUtil {
         }
 
         if ((readySnippetCount + embedNodeListCount) > 0) {
-            TemplateUtil.regulateElement(doc);
+            TemplateUtil.regulateElement(null, doc);
             applySnippets(doc);
         } else {
             ConcurrentRenderHelper crHelper = ConcurrentRenderHelper.getInstance(context, doc);
@@ -242,7 +267,7 @@ public class RenderUtil {
         } else {
             String parentSelector = SelectorUtil.attr(ExtNodeConstants.SNIPPET_NODE_TAG_SELECTOR, ExtNodeConstants.ATTR_SNIPPET_REF,
                     blockingId);
-            Elements parentSnippetSearch = doc.select(parentSelector);
+            Elements parentSnippetSearch = elem.parents().select(parentSelector);
             if (parentSnippetSearch.isEmpty()) {
                 isBlocked = false;
             } else {
@@ -291,7 +316,7 @@ public class RenderUtil {
             return;
         }
 
-        Renderer currentRenderer = rendererList.get(startIndex);
+        final Renderer currentRenderer = rendererList.get(startIndex);
 
         RendererType rendererType = currentRenderer.getRendererType();
 
@@ -299,10 +324,12 @@ public class RenderUtil {
         case GO_THROUGH:
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
-        case DEBUG:
+            /*
+            case DEBUG:
             currentRenderer.getTransformerList().get(0).invoke(target);
             apply(target, rendererList, renderAction, startIndex + 1, count);
             return;
+            */
         case RENDER_ACTION:
             ((RenderActionRenderer) currentRenderer).getStyle().apply(renderAction);
             apply(target, rendererList, renderAction, startIndex + 1, count);
@@ -313,11 +340,22 @@ public class RenderUtil {
         }
 
         String selector = currentRenderer.getSelector();
+        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
 
-        List<Element> elemList = new ArrayList<>(target.select(selector));
+        List<Element> elemList;
+        if (PSEUDO_ROOT_SELECTOR.equals(selector)) {
+            elemList = new LinkedList<Element>();
+            elemList.add(target);
+        } else {
+            elemList = new ArrayList<>(target.select(selector));
+        }
 
         if (elemList.isEmpty()) {
-            if (renderAction.isOutputMissingSelectorWarning()) {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                elemList.add(target);
+                transformerList.clear();
+                transformerList.add(new RendererTransformer(((ElementNotFoundHandler) currentRenderer).alternativeRenderer()));
+            } else if (renderAction.isOutputMissingSelectorWarning()) {
                 String creationInfo = currentRenderer.getCreationSiteInfo();
                 if (creationInfo == null) {
                     creationInfo = "";
@@ -328,12 +366,16 @@ public class RenderUtil {
                         "There is no element found for selector [{}]{}, if it is deserved, try Renderer#disableMissingSelectorWarning() "
                                 + "to disable this message and Renderer#enableMissingSelectorWarning could enable this warning again in "
                                 + "your renderer chain", selector, creationInfo);
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
             }
-            apply(target, rendererList, renderAction, startIndex + 1, count);
-            return;
-        }
 
-        List<Transformer<?>> transformerList = currentRenderer.getTransformerList();
+        } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER) {
+                apply(target, rendererList, renderAction, startIndex + 1, count);
+                return;
+            }
+        }
 
         Element delayedElement = null;
         Element resultNode;
@@ -341,12 +383,17 @@ public class RenderUtil {
         // to children, so we reverse it. Perhaps we need a real order process
         // to ensure the wanted order.
         Collections.reverse(elemList);
+        boolean renderForRoot;
         for (Element elem : elemList) {
-            // faked group node will be not applied by renderers
-            if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
-                    ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
-                continue;
+            renderForRoot = PSEUDO_ROOT_SELECTOR.equals(selector) || rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER;
+            if (!renderForRoot) {
+                // faked group node will be not applied by renderers(only when the current selector is not the pseudo :root)
+                if (elem.tagName().equals(ExtNodeConstants.GROUP_NODE_TAG) &&
+                        ExtNodeConstants.GROUP_NODE_ATTR_TYPE_FAKE.equals(elem.attr(ExtNodeConstants.GROUP_NODE_ATTR_TYPE))) {
+                    continue;
+                }
             }
+
             if (elem == target) {
                 delayedElement = elem;
                 continue;
@@ -365,6 +412,9 @@ public class RenderUtil {
         if (delayedElement == null) {
             apply(target, rendererList, renderAction, startIndex + 1, count);
         } else {
+            if (rendererType == RendererType.ELEMENT_NOT_FOUND_HANDLER && delayedElement instanceof Document) {
+                delayedElement = delayedElement.child(0);
+            }
             for (Transformer<?> transformer : transformerList) {
                 resultNode = transformer.invoke(delayedElement);
                 delayedElement.before(resultNode);
@@ -403,26 +453,45 @@ public class RenderUtil {
 
     }
 
+    // public final static void
+
     public final static void applyMessages(Element target) {
-        String selector = SelectorUtil.tag(ExtNodeConstants.MSG_NODE_TAG);
-        List<Element> msgElems = target.select(selector);
-        for (Element msgElem : msgElems) {
+        Context context = Context.getCurrentThreadContext();
+        List<Element> msgElems = target.select(ExtNodeConstants.MSG_NODE_TAG_SELECTOR);
+        for (final Element msgElem : msgElems) {
             Attributes attributes = msgElem.attributes();
             String key = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_KEY);
-            List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
-            String defaultMsg = ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
-
-            // TODO cache localed helper instance
-            ParamMapResourceBundleHelper helper = null;
-            if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)) {
-                helper = new ParamMapResourceBundleHelper(LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE)));
+            // List<String> externalizeParamKeys = getExternalizeParamKeys(attributes);
+            Object defaultMsg = new Object() {
+                @Override
+                public String toString() {
+                    return ExtNodeConstants.MSG_NODE_ATTRVALUE_HTML_PREFIX + msgElem.html();
+                }
+            };
+            Locale locale = LocalizeUtil.getLocale(attributes.get(ExtNodeConstants.MSG_NODE_ATTR_LOCALE));
+            String currentTemplatePath = attributes.get(ExtNodeConstants.ATTR_TEMPLATE_PATH);
+            if (StringUtils.isEmpty(currentTemplatePath)) {
+                logger.warn("There is a msg tag which does not hold corresponding template file path:{}", msgElem.outerHtml());
             } else {
-                helper = new ParamMapResourceBundleHelper();
+                context.setData(TRACE_VAR_TEMPLATE_PATH, currentTemplatePath);
             }
 
-            Map<String, Object> paramMap = getMessageParams(attributes, helper, key, externalizeParamKeys);
+            final Map<String, Object> paramMap = getMessageParams(attributes, locale, key);
             String text;
-            text = helper.getMessageWithDefault(key, defaultMsg, paramMap);
+            switch (I18nMessageHelperTypeAssistant.configuredHelperType()) {
+            case Mapped:
+                text = I18nMessageHelperTypeAssistant.getConfiguredMappedHelper().getMessageWithDefault(locale, key, defaultMsg, paramMap);
+                break;
+            case Ordered:
+            default:
+                // convert map to array
+                List<Object> numberedParamNameList = new ArrayList<>();
+                for (int index = 0; paramMap.containsKey(ExtNodeConstants.MSG_NODE_ATTR_PARAM_PREFIX + index); index++) {
+                    numberedParamNameList.add(paramMap.get(ExtNodeConstants.MSG_NODE_ATTR_PARAM_PREFIX + index));
+                }
+                text = I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper().getMessageWithDefault(locale, key, defaultMsg,
+                        numberedParamNameList.toArray());
+            }
 
             Node node;
             if (text.startsWith(ExtNodeConstants.MSG_NODE_ATTRVALUE_TEXT_PREFIX)) {
@@ -433,34 +502,57 @@ public class RenderUtil {
                 node = ElementUtil.text(text);
             }
             msgElem.replaceWith(node);
+
+            context.setData(TRACE_VAR_TEMPLATE_PATH, null);
         }
     }
 
-    private static Map<String, Object> getMessageParams(Attributes attributes, ParamMapResourceBundleHelper helper, String key,
-            List<String> externalizeParamKeys) {
+    private static Map<String, Object> getMessageParams(final Attributes attributes, final Locale locale, final String key) {
         List<String> excludeAttrNameList = EXCLUDE_ATTR_NAME_LIST;
-        Map<String, Object> paramMap = new HashMap<>();
+        final Map<String, Object> paramMap = new HashMap<>();
         for (Attribute attribute : attributes) {
             String attrKey = attribute.getKey();
             if (excludeAttrNameList.contains(attrKey)) {
                 continue;
             }
             String value = attribute.getValue();
-            if (externalizeParamKeys.contains(attrKey)) {
-                paramMap.put(attrKey, helper.getExternalParamValue(key, value));
+
+            final String recursiveKey;
+
+            if (attrKey.startsWith("@")) {
+                attrKey = attrKey.substring(1);
+                recursiveKey = value;
+            } else if (attrKey.startsWith("#")) {
+                attrKey = attrKey.substring(1);
+                // we treat the # prefixed attribute value as a sub key of current key
+                if (StringUtils.isEmpty(key)) {
+                    recursiveKey = value;
+                } else {
+                    recursiveKey = key + "." + value;
+                }
             } else {
+                recursiveKey = null;
+            }
+
+            if (recursiveKey == null) {
                 paramMap.put(attrKey, value);
+            } else {
+                paramMap.put(attrKey, new Object() {
+                    @Override
+                    public String toString() {
+                        switch (I18nMessageHelperTypeAssistant.configuredHelperType()) {
+                        case Mapped:
+                            // for the mapped helper, we can pass the parameter map recursively
+                            return I18nMessageHelperTypeAssistant.getConfiguredMappedHelper().getMessage(locale, recursiveKey, paramMap);
+                        case Ordered:
+                        default:
+                            return I18nMessageHelperTypeAssistant.getConfiguredOrderedHelper().getMessage(locale, recursiveKey);
+                        }
+                    }
+                });
             }
         }
         return paramMap;
     }
 
-    private static List<String> getExternalizeParamKeys(Attributes attributes) {
-        if (attributes.hasKey(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE)) {
-            String externalizeParamKeys = attributes.get(ExtNodeConstants.MSG_NODE_ATTR_EXTERNALIZE);
-            return Arrays.asList(externalizeParamKeys.split(","));
-        } else {
-            return Collections.emptyList();
-        }
-    }
 }

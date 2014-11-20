@@ -20,6 +20,7 @@ package com.astamuse.asta4d.web.dispatch.request.transformer;
 import java.net.HttpURLConnection;
 
 import com.astamuse.asta4d.Page;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
@@ -58,13 +59,11 @@ public class DefaultStringTransformer implements ResultTransformer {
             } else {// asta4d page
                 try {
                     Page page = Page.buildFromPath(result.toString());
-                    if (page == null) {
-                        return new TemplateNotFoundException(result.toString());
-                    } else {
-                        Asta4DPageProvider provider = DeclareInstanceUtil.createInstance(Asta4DPageProvider.class);
-                        provider.setPage(page);
-                        return provider;
-                    }
+                    Asta4DPageProvider provider = DeclareInstanceUtil.createInstance(Asta4DPageProvider.class);
+                    provider.setPage(page);
+                    return provider;
+                } catch (TemplateNotFoundException tne) {
+                    return tne;
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

@@ -84,13 +84,15 @@ public class ExtNodeConstants {
 
     public final static String MSG_NODE_NAME = "msg";
     public final static String MSG_NODE_TAG = addNS(MSG_NODE_NAME);
+    public final static String MSG_NODE_TAG_SELECTOR = SelectorUtil.tag(MSG_NODE_TAG);
 
     public final static String MSG_NODE_ATTR_KEY = "key";
     public final static String MSG_NODE_ATTRVALUE_TEXT_PREFIX = "text:";
     public final static String MSG_NODE_ATTRVALUE_HTML_PREFIX = "html:";
     public final static String MSG_NODE_ATTR_PARAM_PREFIX = "p";
     public final static String MSG_NODE_ATTR_LOCALE = "locale";
-    public final static String MSG_NODE_ATTR_EXTERNALIZE = "externalize";
+
+    public final static String ATTR_TEMPLATE_PATH = "template-path";
 
     public final static String ATTR_SNIPPET_REF = "snippet-ref";
     public final static String ATTR_DOC_REF = "doc-ref";

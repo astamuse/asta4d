@@ -1,36 +1,33 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../css/common.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
-<script type="text/javascript" src="../js/prettify.js"></script>
-<title>Asta4D Sample Project</title>
 </head>
-<body onload="prettyPrint()">
-	<h1>Experience some type of Renderers.</h1>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Experience some type of Renderers
+	</afd:block>
+	<afd:block override="content-detail">
+		<!-- @ShowCode:showRenderertypesStart -->
+		<section>
+			<article>
+				<afd:snippet render="ComplicatedSnippet">
+					<ul id="childreplacer">
+						<li>This is dummy list.</li>
+						<li>This is dummy list.</li>
+					</ul>
+					<ul id="clearnode">
+						<p>This is dummy text.</p>
+					</ul>
+				</afd:snippet>
+			</article>
+		</section>
+		<!-- @ShowCode:showRenderertypesEnd -->
+	
+	<div afd:render="ShowCodeSnippet:showCode" file="/templates/renderertypes.html" startMark="showRenderertypesStart" endMark="showRenderertypesEnd"/>
 
-    <!-- @ShowCode:showRenderertypesStart -->
-	<section>
-		<article>
-			<afd:snippet render="ComplicatedSnippet">
-				<ul id="childreplacer">
-					<li>This is dummy list.</li>
-					<li>This is dummy list.</li>
-				</ul>
-				<ul id="clearnode">
-					<p>This is dummy text.</p>
-				</ul>
-			</afd:snippet>
-		</article>
-	</section>
-	<!-- @ShowCode:showRenderertypesEnd -->
+	<div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showRenderertypesStart" endMark="showRenderertypesEnd"/>
 
-	<div afd:render="ShowCodeSnippet:showCode" file="/templates/renderertypes.html" startMark="showRenderertypesStart" endMark="showRenderertypesEnd">
-    </div>
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/ComplicatedSnippet.java" startMark="showRenderertypesStart" endMark="showRenderertypesEnd">
-    </div>
-
+	</afd:block>
 </body>
 </html>

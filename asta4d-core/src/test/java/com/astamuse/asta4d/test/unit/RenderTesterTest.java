@@ -45,6 +45,9 @@ public class RenderTesterTest extends BaseTest {
 
         // perform test
         RendererTester tester = RendererTester.forRenderer(render);
+
+        Assert.assertFalse(tester.noOp());
+
         Assert.assertEquals(tester.get("#someIdForInt"), 12345);
         Assert.assertEquals(tester.get("#someIdForLong"), 12345L);
         Assert.assertEquals(tester.get("#someIdForBool"), true);
@@ -52,12 +55,19 @@ public class RenderTesterTest extends BaseTest {
         Assert.assertEquals(tester.get("#someIdForNull"), null);
         Assert.assertEquals(tester.get("#someIdForClear"), Clear);
 
+        Assert.assertFalse(tester.noOp("#someIdForClear"));
+        Assert.assertTrue(tester.noOp("#notexistop"));
+
         Assert.assertEquals(tester.get("#someIdForElementSetter"), new ChildReplacer(ElementUtil.parseAsSingle("<div></div>")));
 
         Assert.assertEquals(tester.get("#someIdForElement"), TestableElementWrapper.parse("<div>eee</div>"));
 
         RendererTester recursiveTester = RendererTester.forRenderer((Renderer) tester.get("#someIdForRenderer"));
         Assert.assertEquals(recursiveTester.get("#value"), "value");
+
+        // noop test
+        tester = RendererTester.forRenderer(Renderer.create());
+        Assert.assertTrue(tester.noOp());
 
     }
 
@@ -185,6 +195,14 @@ public class RenderTesterTest extends BaseTest {
         Assert.assertEquals(tester.getAttr("#id", "value"), "hg");
         Assert.assertEquals(tester.getAttr("#id", "href"), null);
         Assert.assertEquals(tester.getAttr("#X", "value"), new Date(123456L));
+
+        Assert.assertFalse(tester.noOp("#id", "+class"));
+        Assert.assertFalse(tester.noOp("#id", "-class"));
+        Assert.assertFalse(tester.noOp("#id", "value"));
+
+        Assert.assertTrue(tester.noOp("#id", "+cccc"));
+        Assert.assertTrue(tester.noOp("#id", "-cccc"));
+        Assert.assertTrue(tester.noOp("#id", "cccc"));
 
     }
 

@@ -1,0 +1,23 @@
+<html>
+<head>
+</head>
+<body>
+
+<div afd:render="AdvancedRenderingTest$TestRender:pseudoRootRenderingOnFackedGroup">
+xxx
+</div>
+
+<div afd:render="AdvancedRenderingTest$TestRender:pseudoRootRenderingWithElementNotFoundHandler">
+yyy
+</div>
+
+<div afd:render="AdvancedRenderingTest$TestRender:pseudoRootRenderingWithNestedSnippet_outer">
+
+<afd:snippet id="inner" render="AdvancedRenderingTest$TestRender:pseudoRootRenderingWithNestedSnippet_inner">
+<div id="v"></div>
+</afd:snippet>
+
+</div>
+
+</body>
+</html>

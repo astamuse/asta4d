@@ -22,19 +22,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.util.ElementUtil;
 
 public class ShowCodeSnippet {
     private static final String JAVA_PACKAGE = "/com/astamuse/asta4d/sample";
@@ -51,36 +48,35 @@ public class ShowCodeSnippet {
     }
 
     private Element makeShowHtml(String file, String title, String contents) {
+
+        // create the panel tag
+        Element panel = new Element(Tag.valueOf("div"), "");
+        panel.addClass("panel");
+        panel.addClass("panel-default");
+
+        Element heading = new Element(Tag.valueOf("div"), "");
+        heading.addClass("panel-heading");
+
+        Element body = new Element(Tag.valueOf("div"), "");
+        body.addClass("panel-body");
+
+        panel.appendChild(heading);
+        panel.appendChild(body);
+
+        // write title and file path
+        String headStr = StringUtils.isEmpty(title) ? "" : title + ":";
+        headStr += file;
+        heading.appendText(headStr);
+
         // create the pre tag
         Element pre = new Element(Tag.valueOf("pre"), "");
         pre.addClass("prettyprint source");
         pre.attr("style", "overflow-x:auto");
-        List<Node> preChildren = new ArrayList<>();
         if (contents != null) {
-            preChildren.add(new Element(Tag.valueOf("span"), "").appendText(contents));
+            pre.appendChild(new Element(Tag.valueOf("span"), "").appendText(contents));
         }
-        ElementUtil.appendNodes(pre, preChildren);
-
-        // create the article tag
-        Element article = new Element(Tag.valueOf("article"), "");
-        List<Node> articleChildren = new ArrayList<>();
-        if (title == null) {
-            if (file != null) {
-                articleChildren.add(new Element(Tag.valueOf("div"), "").appendText(file));
-            }
-        } else {
-            articleChildren.add(new Element(Tag.valueOf("div"), "").appendText(title));
-        }
-        articleChildren.add(pre);
-        ElementUtil.appendNodes(article, articleChildren);
-
-        // create the section tag
-        Element section = new Element(Tag.valueOf("section"), "");
-        List<Node> sectionChildren = new ArrayList<>();
-        sectionChildren.add(article);
-        ElementUtil.appendNodes(section, sectionChildren);
-
-        return section;
+        body.appendChild(pre);
+        return panel;
     }
 
     private static String readFileByLines(ServletContext servletContext, String fileName, String startMark, String endMark) {
@@ -110,16 +106,23 @@ public class ShowCodeSnippet {
             reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
             String line = null;
             String contents = "";
-            boolean isMark = false;
+            int markStart = -1;
             while ((line = reader.readLine()) != null) {
                 if (line.contains(endMark)) {
-                    isMark = false;
+                    break;
                 }
-                if (isMark && !line.contains(SHOW_MARK)) {
+                if (markStart >= 0 && !line.contains(SHOW_MARK)) {
+                    if (line.length() <= markStart) {
+                        line = "";
+                    } else {
+                        line = line.substring(markStart);
+                    }
                     contents = contents + line + "\n";
                 }
+
                 if (line.contains(startMark)) {
-                    isMark = true;
+                    String trim = line.trim();
+                    markStart = line.indexOf(trim);
                 }
             }
 

@@ -4,12 +4,12 @@
   <parent>
       <groupId>com.astamuse</groupId>
       <artifactId>asta4d</artifactId>
-      <version>0.14.606</version>
+      <version>1.0-b3</version>
   </parent>
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d-sample</artifactId>
-  <version>0.14.606</version>
+  <version>1.0-b3</version>
   <packaging>war</packaging>
 
   <name>com.astamuse.asta4d-sample</name>
@@ -21,19 +21,11 @@
         <artifactId>asta4d-web</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
-      
       <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-context</artifactId>
-       <version>3.1.2.RELEASE</version>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>5.0.2.Final</version>
       </dependency>
-
-      <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-webmvc</artifactId>
-       <version>3.1.2.RELEASE</version>
-      </dependency>
-      
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
@@ -45,6 +37,14 @@
 
     <build>
       <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.5</version>
+            <configuration>
+                <skip>true</skip>
+            </configuration>
+        </plugin>
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.7</version>
@@ -102,6 +102,16 @@
               <artifactId>jetty-maven-plugin</artifactId>
               <version>8.1.2.v20120308</version>
               <configuration>
+                    <systemProperties>
+                      <systemProperty>
+                        <name>asta4d.sample.debug</name>
+                        <value>true</value>
+                      </systemProperty>
+                      <systemProperty>
+                        <name>asta4d.sample.source_location</name>
+                        <value>${basedir}/src/main/java</value>
+                      </systemProperty>
+                    </systemProperties>
                     <webApp>
                       <contextPath>/</contextPath>
                     </webApp>

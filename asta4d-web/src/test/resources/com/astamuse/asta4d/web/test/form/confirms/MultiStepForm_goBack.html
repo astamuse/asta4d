@@ -1,0 +1,29 @@
+<html>
+ <head> 
+ </head> 
+ <body> 
+  <form> 
+   <input type="hidden" name="id" value="22"> 
+   <input type="text" name="data" value="data-content"> 
+   <input type="text" name="subData" value="123"> 
+   <input type="hidden" name="subArrayLength" value="2"> 
+   <div cascade-ref="subArray-container-@" style="display:none">
+    <input type="text" name="year-@" value="">
+   </div>
+   <div cascade-ref="subArray-container-0">
+    <input type="text" name="year-0" value="1998">
+   </div>
+   <div cascade-ref="subArray-container-1">
+    <input type="text" name="year-1" value="1999">
+   </div> 
+   <input type="hidden" name="subArrayLength2" value="1"> 
+   <div cascade-ref="subArray2-container-@" style="display:none">
+    <input type="text" name="age-@" value="">
+   </div>
+   <div cascade-ref="subArray2-container-0">
+    <input type="text" name="age-0" value="88">
+   </div> 
+   <input name="FORM_STEP_TRACE_MAP_STR#FlowFormConstants" type="hidden" value="FAKE_TRACE_MAP_ID">
+  </form>  
+ </body>
+</html>

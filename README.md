@@ -1,6 +1,41 @@
+## Quick start
+
+[User Guide](http://astamuse.github.io/asta4d/userguide/index.html)(English, being updated at irregular intervals)
+
+[JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
+
+[Online Sample](http://asta4dsample-xzer.rhcloud.com/)(sometimes slow, be patient)
+
+There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
+
+```batch
+mvn archetype:generate                       \
+    -DarchetypeGroupId=com.astamuse          \
+    -DarchetypeArtifactId=asta4d-archetype   \
+    -DarchetypeVersion=1.0-b3                \
+    -DgroupId=<your.groupid>                 \
+    -DartifactId=<your-artifactId>
+```
+
+or simply follow the wizard by filtered list:
+
+```batch
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b3
+```
+
+After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
+
+```batch
+mvn jetty:run
+```
+ 
+Then you can access the sample project by http://localhost:8080, there are source samples shown, it is a good start from reading the samples.
+After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
+and also you can add your own html template files to /src/main/webapp.
+
 ## What is Asta4D
 
-Asta4D is a web application framework which is friendly to designer and flexible to developer. Asta4D affords high productivity than traditional MVC architecture by View First architecture. It also allows front-end engineers and back-end engineers work independently without interference by separating rendering logic from template files.
+Asta4D is a view first web application framework which is friendly to designer and flexible to developer. Asta4D affords high productivity than traditional MVC architecture by View First architecture. It also allows front-end engineers and back-end engineers work independently without interference by separating rendering logic from template files.
 
 Asta4D is inspired by [lift](http://liftweb.net/)  which is a famous scala web application framework and it is developed by astamuse company Ltd. locating at Tokyo Japan. We are concentrating on global innovation support and developing Asta4D for our own services. Currently, Asta4D is driving our new service development.
 
@@ -14,6 +49,22 @@ productivity. But unfortunately, we are still suffering from the following situa
 1. The developers are discontented with the counterproductivity of MVC architecture and desire a more efficient approach.
 
 Thus, we created Asta4D. Currently, Asta4D is driving our service site:[astamuse.com](http://astamuse.com)
+
+## What does "Asta4D" mean
+
+The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:
+
+1. For designers
+    
+    Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
+
+1. For developers
+    
+    We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup of coffee.
+
+1. 4 dimension
+    
+    We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just like we are going through the 4 dimensional space.
 
 ## How Asta4D helps us
 
@@ -135,59 +186,25 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
 	By above architecture, we could perfectly uncouple our logics by clarifying the obligation of each layer.
 
-## What does "Asta4D" means
+1. Built-in form flow mechanism
 
-The name of Asta4D is from our company's name: astamuse. We explain the "4D" as following ways:
+    Asta4D treat all the form processes as flow and afford a well defined architecture for various form processes. Asta4D gives developers the possibility of concentrating on their real business logics rather than technic issues. Basically, developers only need to implement an init method and an update method for a form process.
 
-1. For Designer
+    ```java
+    public class SingleInputFormHandler extends OneStepFormHandler<PersonForm> {
     
-    Asta4D consider the design friendliness as the most important factor of itself. We hope web designers can fulfil their maximum potential of creativity without squandering their time on the back-end technologies which they could never be adept at.
-
-1. For developer
+        @Override
+        protected PersonForm createInitForm() throws Exception {
+            ...
+        }
     
-    We hope Asta4D can help developers to achieve their work more easily. Developers would never be afflicted with complex rendering logic because they can use powerful Java language to do whatever they want since the rendering has been split from template files. View first also releases developers from the cumbersome MVC architecture, now they have more time to have a cup of coffee.
-
-1. 4 Dimension
+        @Override
+        protected void updateForm(PersonForm form) {
+            ...
+        }
     
-    We believe that Asta4D can act as a wormhole that connects the front-end and the back-end. We can move quicker by Asta4D just like we are going through the 4 dimensional space.
-
-
-## Quick start
-
-[User Guide](http://astamuse.github.io/asta4d/userguide/index.html)(English, being updated at irregular intervals)
-
-[JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
-
-[Online Sample](http://asta4d-sample.xzer.cloudbees.net/)
-
-There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
-
+    }
     ```
-    mvn archetype:generate                       \
-        -DarchetypeGroupId=com.astamuse          \
-        -DarchetypeArtifactId=asta4d-archetype   \
-        -DarchetypeVersion=0.14.606              \
-        -DgroupId=<your.groupid>                 \
-        -DartifactId=<your-artifactId>
-    ```
-
-or simply follow the wizard by filtered list:
-
-    ```
-    mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=0.14.606
-    ```
-
-After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
-
-    ```
-    mvn jetty:run
-    ```
- 
-Then you can access the sample project by http://localhost:8080, there are source samples shown, it is a good start from reading the samples.
-After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
-and also you can add your own html template files to /src/main/webapp.
-
-There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/userguide/index_jp.html) and something has changed from when it was written.
 
 ## Best practices
 
@@ -203,13 +220,16 @@ There is also an obsolete [Japanese document](http://astamuse.github.com/asta4d/
 
     We also use request hanlders to prepare the "target data" for the target page. A significant point is that preparing "target data" does not mean MVC architecture, we just query a simple entity or build a pojo to **represent the normalized condition** of the target page. 
 
-## Todo
+## Roadmap
 
-Immediate tasks: 
+1.0
 
--   Rendering helper for validation
-    
-    Not implementing validaiton which should use third-party implementations such as [JSR 303/349](http://beanvalidation.org/), just help rendering validation result easier.
+-	refactor the sample project to supply more understable example
+-	complete the user guide
+
+1.1
+
+-	java 8 support(lambda, etc.)
 
 Want to do: 
 
@@ -221,130 +241,7 @@ Want to do:
     
     The current @ContextData does not support declaring default value, we need support it and additionally Unified EL([JSR341](https://jcp.org/en/jsr/detail?id=341)) is desired.
 
-    
-## Release Notes
-
--   0.14.606
-
-    ADD
-    - support a callback rendering interface called Renderable
-    - support static embeding which will embed the target file to the holding file when the holding file is initialized
-    - allow customize json and rest result transformer
-    
-    FIX
-    - template files are locked due to the input stream is not closed
-
--   0.14.4.30
-    
-    FIX
-    - missing annotation convertor for web convenience annotations
-
--   0.14.4.28
-    
-    ADD
-	- allow customize ResourceBundle loading and add encoding support for message file
-	- more flexible usage of @ContextData
-		- annotation conversion mechanism(name of @SessionData, @QueryParam can be speficied now)
-		- The policy of how to handle type unmatch situation on context data conversion can be specified now: throw exception(default action), assign default value, record trace information in context.
-		- customized element to array conversion can be supported in context data conversion
-	- more flexible usage of @ContextDataSet
-		- Allow search data by name in context at first for ContextDataSet annotated class data
-		- allow singleton instance of ContextDataSet in single context life cycle
-		- allow create ContextDataSet by specified factory class
-	- afd:comment tag support
-	- allow configuration initializer customizable
-	- allow configure the parameter name of forwarded flash scope data on url
-	- allow rendering Component directly by Render#add method
-
-
-	FIX
-    - potential concurrent hashmap access in ParallelRowConvertor
-    - allow any asta4d's tag in head
-    - make sample project runnable without spring
-    - forwarded flash scope id on url should be encrypted to avoid guessing attack
-    - timeout check is necessary even the target data map of flash data exists
-    - make SpringWebPageView workable
-	
-	REMOVE
-    - deprecated transform methods in ListConvertUtil
-    - dependency from activemq (since we dont need it)
-    - redundant source
-    
--   0.14.2.10
-    
-    FIX
-    - deprecated reverse injection(it is not necessary and should be removed in future)
-    - NullPointerException on removed nested snippet declared by "afd:render"
-
--   0.14.1.31
-    
-    ADD
-    - allow default msg content for msg rendering
-    - allow extra attribution and var declaration on remaped rules
-    - allow initialize asta4d in spring mvc as template solution only
-    
-    FIX
-    - predefined clear nodes are not removed correctly
-    - wrong spelled method name
-    - refactor rendering test mechanism for better test support(with minor bug fix)
-
--   0.12.30
-    
-    ADD
-    - more sample references to sample projects
-    - add fixVersion.sh to make release simpler
-    
-    FIX
-    - minor bugs on handling SpecialRenderer#Clear
-    - bugs in archetype
-    - format of asta4d-doc(make it prettier)
-
--   0.12.13
-    
-    ADD
-    - RendererTest can be used for unit test of Renderer now
-    - Treat null rendering value as removing target node
-    - More debug-friendly log messages
-    - Some tests
-    
-    FIX
-    - BinaryDataUtil does not handle file path of "classpath:" correctly
-    - Does not handle default request handler instance correctly
-    - Refactor for context map for scopes, the Session scope will not create new session any more
-
--   0.8.6
-    
-    ADD
-    - Some debug friendly message
-    - Redirect now can specify code 301 or 302
-    - Allow initialize asta4d Configuration from external properties file
-    
-    FIX
-    - Refactor request chain process, now we can perfectly handle request chain
-    - A bug that post process of request interceptor will be executed multiple times
-    - BinaryDataUtil does not handle file path correctly
-    - Context does not be initialized before dispatch
-
--   0.7.24
-    
-    ADD
-    - ico MIME type
-    - A empty content provider which can be used to stop the request handler chain
-    
-    FIX
-    - GenericPathHandler should get access url from Context
-    - A bug when selector not found on rendering
-
--   0.7.22
-    
-    ADD
-    - A request handler can be set as generic as request interceptor.
-    - Access URL can be rewritten.
-    - URL Rule can be rewritten.
-    - A @ContextDataSet can be used for collecting context variables in a single class, eg. form parameters.(This is a base for form validation mechanism in furture)
-    
-    Remove
-    - Depencies of Spring MVC is no longer necessary. Asta4dServlet can be used for handling http requests and StaticResourceHandler can be used for static resource files.
+-   customize data value convertor
 
 
 

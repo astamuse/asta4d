@@ -6,14 +6,15 @@ import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
@@ -21,6 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.util.MemorySafeResourceCache;
+import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
+import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
+import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
@@ -81,18 +86,16 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     // one hour
     private final static long DefaultCacheTime = 1000 * 60 * 60;
 
-    private final static class StaticFileInfoHolder {
+    protected final static class StaticFileInfo {
         String contentType;
-        String path;
+        String actualPath;
         long lastModified;
         int cacheLimit;
         SoftReference<byte[]> content;
         InputStream firstTimeInput;
     }
 
-    private final static StaticFileInfoHolder NoContent = new StaticFileInfoHolder();
-
-    private final static ConcurrentHashMap<String, StaticFileInfoHolder> StaticFileInfoMap = new ConcurrentHashMap<>();
+    private final static MemorySafeResourceCache<String, StaticFileInfo> StaticFileInfoMap = new MemorySafeResourceCache<>();
 
     public StaticResourceHandler() {
         super();
@@ -117,22 +120,43 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
             return createSimpleHeaderResponse(404);
         }
 
-        boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
+        StaticFileInfo info = retrieveStaticFileInfo(servletContext, path);
 
-        StaticFileInfoHolder info = cacheEnable ? StaticFileInfoMap.get(path) : null;
+        return response(request, response, servletContext, info, path);
+    }
+
+    protected StaticFileInfo retrieveStaticFileInfo(ServletContext servletContext, String path) throws FileNotFoundException, IOException {
+
+        Locale locale = LocalizeUtil.defaultWhenNull(null);
+        String staticFileInfoKey = LocalizeUtil.createLocalizedKey(path, locale);
+
+        ResouceHolder<StaticFileInfo> cachedResource = Configuration.getConfiguration().isCacheEnable() ? StaticFileInfoMap
+                .get(staticFileInfoKey) : null;
+
+        StaticFileInfo info = null;
+
+        if (cachedResource == null) {
+            info = createInfo(servletContext, locale, path);
+            StaticFileInfoMap.put(staticFileInfoKey, info);
+        } else {
+            if (cachedResource.exists()) {
+                info = cachedResource.get();
+            } else {
+                info = null;
+            }
+        }
+        return info;
+    }
+
+    protected Object response(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, StaticFileInfo info,
+            String requiredPath) throws FileNotFoundException, IOException {
 
         if (info == null) {
-            info = createInfo(servletContext, path);
-            StaticFileInfoMap.put(path, info);
-        }
-
-        if (info == NoContent) {
             return createSimpleHeaderResponse(404);
         }
 
-        if (cacheEnable) {
+        if (Configuration.getConfiguration().isCacheEnable()) {
             long clientTime = retrieveClientCachedTime(request);
-
             if (clientTime >= info.lastModified) {
                 return createSimpleHeaderResponse(304);
             }
@@ -140,7 +164,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
         // our header provider is not convenient for date header... hope we can
         // improve it in future
-        long cacheTime = decideCacheTime(path);
+        long cacheTime = decideCacheTime(requiredPath, info.actualPath);
         response.setStatus(200);
         response.setHeader("Content-Type", info.contentType);
         response.setDateHeader("Expires", DateTime.now().getMillis() + cacheTime);
@@ -156,13 +180,14 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
             return new BinaryDataProvider(input);
         } else if (info.content == null && info.firstTimeInput == null) {
             // no cache
-            return new BinaryDataProvider(servletContext, this.getClass().getClassLoader(), info.path);
+            return new BinaryDataProvider(servletContext, this.getClass().getClassLoader(), info.actualPath);
         } else {
             // should cache
             byte[] data = null;
             data = info.content.get();
             if (data == null) {
-                InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
+                InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(),
+                        info.actualPath);
                 data = retrieveBytesFromInputStream(input, info.cacheLimit);
                 info.content = new SoftReference<byte[]>(data);
             }
@@ -180,17 +205,30 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         }
     }
 
-    private StaticFileInfoHolder createInfo(ServletContext servletContext, String path) throws FileNotFoundException, IOException {
+    private StaticFileInfo createInfo(final ServletContext servletContext, Locale locale, String path) throws FileNotFoundException,
+            IOException {
 
-        InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), path);
+        MultiSearchPathResourceLoader<Pair<String, InputStream>> loader = new MultiSearchPathResourceLoader<Pair<String, InputStream>>() {
+            @Override
+            protected Pair<String, InputStream> loadResource(String name) {
+                InputStream is = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(), name);
+                if (is != null) {
+                    return Pair.of(name, is);
+                } else {
+                    return null;
+                }
+            }
+        };
 
-        if (input == null) {
-            return NoContent;
+        Pair<String, InputStream> foundResource = loader.searchResource("/", LocalizeUtil.getCandidatePaths(path, locale));
+
+        if (foundResource == null) {
+            return null;
         }
 
-        StaticFileInfoHolder info = new StaticFileInfoHolder();
+        StaticFileInfo info = new StaticFileInfo();
         info.contentType = judgContentType(path);
-        info.path = path;
+        info.actualPath = foundResource.getLeft();
         info.lastModified = getLastModifiedTime(path);
 
         // cut the milliseconds
@@ -200,13 +238,13 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
         if (info.cacheLimit == 0) {// don't cache
             info.content = null;
-            info.firstTimeInput = input;
+            info.firstTimeInput = foundResource.getRight();
         } else {
-            byte[] contentData = retrieveBytesFromInputStream(input, info.cacheLimit);
+            byte[] contentData = retrieveBytesFromInputStream(foundResource.getRight(), info.cacheLimit);
             try {
                 info.content = new SoftReference<byte[]>(contentData);
             } finally {
-                input.close();
+                foundResource.getRight().close();
             }
             info.firstTimeInput = null;
         }
@@ -214,15 +252,11 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     }
 
     private byte[] retrieveBytesFromInputStream(InputStream input, int cacheSize) throws IOException {
-        int bufferSize = cacheSize + 1;
-        byte[] b = new byte[bufferSize];
-        int len = input.read(b);
-        if (len > cacheSize) {// over the limit of cache size
+        byte[] b = new byte[cacheSize];
+        if (input.read() >= 0) {// over the limit of cache size
             return null;
         } else {
-            byte[] rtn = new byte[len];
-            System.arraycopy(b, 0, rtn, 0, len);
-            return rtn;
+            return b;
         }
     }
 
@@ -272,7 +306,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
      * @param path
      * @return cache time in millisecond unit
      */
-    protected long decideCacheTime(String path) {
+    protected long decideCacheTime(String requiredPath, String actualTargetFilePath) {
         Long varCacheTime = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_CACHE_TIME);
         if (varCacheTime != null) {
             return varCacheTime;

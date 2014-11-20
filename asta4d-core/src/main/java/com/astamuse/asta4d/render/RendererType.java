@@ -23,7 +23,7 @@ package com.astamuse.asta4d.render;
  * @author e-ryu
  * 
  */
-enum RendererType {
+public enum RendererType {
     /**
      * common renderer
      */
@@ -32,7 +32,7 @@ enum RendererType {
     /**
      * a debug renderer will output the target element to log
      */
-    DEBUG,
+    // DEBUG,
 
     /**
      * a do nothing renderer
@@ -42,5 +42,10 @@ enum RendererType {
     /**
      * a renderer which will change the action style of rendering process
      */
-    RENDER_ACTION
+    RENDER_ACTION,
+
+    /**
+     * a renderer which will handle the case that the specified selector is not found
+     */
+    ELEMENT_NOT_FOUND_HANDLER
 }

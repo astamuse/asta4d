@@ -17,20 +17,25 @@
 
 package com.astamuse.asta4d.data.convertor;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Convert String to Long
  * 
  * @author e-ryu
  * 
  */
-public class String2Long implements DataConvertor<String, Long> {
+public class String2Long implements DataValueConvertor<String, Long> {
 
     @Override
-    public Long convert(String s) {
+    public Long convert(String s) throws UnsupportedValueException {
+        if (StringUtils.isEmpty(s)) {
+            return null;
+        }
         try {
             return Long.parseLong(s);
         } catch (NumberFormatException nfe) {
-            return null;
+            throw new UnsupportedValueException();
         }
     }
 

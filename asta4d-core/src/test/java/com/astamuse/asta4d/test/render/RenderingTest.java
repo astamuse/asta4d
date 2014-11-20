@@ -55,6 +55,11 @@ public class RenderingTest extends BaseTest {
             return renderer;
         }
 
+        public Renderer pseudoRootRendering() {
+            Renderer renderer = Renderer.create(":root", "rendering at pseudo root");
+            return renderer;
+        }
+
         public Renderer normalAttrSetting() {
             Renderer renderer = new GoThroughRenderer();
             renderer.add("#testadd", "+v", "2");
@@ -210,23 +215,27 @@ public class RenderingTest extends BaseTest {
         }
     }
 
-    public void testElementRendering() {
+    public void testElementRendering() throws Throwable {
         new SimpleCase("Rendering_elementRendering.html");
     }
 
-    public void testTextRendering() {
+    public void testTextRendering() throws Throwable {
         new SimpleCase("Rendering_textRendering.html");
     }
 
-    public void testNormalAttrSetting() {
+    public void testPseudoRootRendering() throws Throwable {
+        new SimpleCase("Rendering_pseudoRootRendering.html");
+    }
+
+    public void testNormalAttrSetting() throws Throwable {
         new SimpleCase("Rendering_normalAttrSetting.html");
     }
 
-    public void testClassAttrSetting() {
+    public void testClassAttrSetting() throws Throwable {
         new SimpleCase("Rendering_classAttrSetting.html");
     }
 
-    public void testRemoveClassInListRendering() {
+    public void testRemoveClassInListRendering() throws Throwable {
         // TODO to resovle this problem
         new SimpleCase("Rendering_removeClassInListRendering.html");
     }
@@ -237,39 +246,39 @@ public class RenderingTest extends BaseTest {
             new SimpleCase("Rendering_elementSetter.html");
         }
     */
-    public void testClearNode() {
+    public void testClearNode() throws Throwable {
         new SimpleCase("Rendering_clearNode.html");
     }
 
-    public void testChildReplacing() {
+    public void testChildReplacing() throws Throwable {
         new SimpleCase("Rendering_childReplacing.html");
     }
 
-    public void testRecursiveRendering() {
+    public void testRecursiveRendering() throws Throwable {
         new SimpleCase("Rendering_recursiveRendering.html");
     }
 
-    public void testRenderableRendering() {
+    public void testRenderableRendering() throws Throwable {
         new SimpleCase("Rendering_renderableRendering.html");
     }
 
-    public void testListElementRendering() {
+    public void testListElementRendering() throws Throwable {
         new SimpleCase("Rendering_listElementRendering.html");
     }
 
-    public void testListTextRendering() {
+    public void testListTextRendering() throws Throwable {
         new SimpleCase("Rendering_listTextRendering.html");
     }
 
-    public void testListChildReplacing() {
+    public void testListChildReplacing() throws Throwable {
         new SimpleCase("Rendering_listChildReplacing.html");
     }
 
-    public void testListRecursiveRendering() {
+    public void testListRecursiveRendering() throws Throwable {
         new SimpleCase("Rendering_listRecursiveRendering.html");
     }
 
-    public void testRendererAddOperation() {
+    public void testRendererAddOperation() throws Throwable {
         // it should act correctly even though we do not add renderer to
         // the first created render and do not return the head renderer
         new SimpleCase("Rendering_addOperation.html");

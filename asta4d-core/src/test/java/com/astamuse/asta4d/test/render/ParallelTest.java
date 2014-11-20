@@ -86,7 +86,11 @@ public class ParallelTest extends BaseTest {
         TimeCalculator.shouldRunInTime(new Runnable() {
             @Override
             public void run() {
-                new SimpleCase("ParallelTest_parallelListConversion.html");
+                try {
+                    new SimpleCase("ParallelTest_parallelListConversion.html");
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
         }, 2000);
     }
@@ -97,7 +101,11 @@ public class ParallelTest extends BaseTest {
         TimeCalculator.shouldRunInTime(new Runnable() {
             @Override
             public void run() {
-                new SimpleCase("ParallelTest_parallelSnippet.html");
+                try {
+                    new SimpleCase("ParallelTest_parallelSnippet.html");
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
             }
         }, 2000);
 

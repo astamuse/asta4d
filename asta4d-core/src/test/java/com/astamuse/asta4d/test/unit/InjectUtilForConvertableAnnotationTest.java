@@ -87,11 +87,6 @@ public class InjectUtilForConvertableAnnotationTest extends BaseTest {
                 }
 
                 @Override
-                public boolean reverse() {
-                    return false;
-                }
-
-                @Override
                 public TypeUnMacthPolicy typeUnMatch() {
                     return TypeUnMacthPolicy.DEFAULT_VALUE;
                 }

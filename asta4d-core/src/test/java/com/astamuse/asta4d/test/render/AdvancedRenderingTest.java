@@ -18,16 +18,20 @@
 package com.astamuse.asta4d.test.render;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jsoup.nodes.Element;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.render.ElementNotFoundHandler;
+import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
+import com.astamuse.asta4d.util.collection.RowRenderer;
 
 public class AdvancedRenderingTest extends BaseTest {
 
@@ -78,6 +82,50 @@ public class AdvancedRenderingTest extends BaseTest {
             render.add("#inner", "-outerList", (Object) null);
             return render;
         }
+
+        public Renderer pseudoRootRenderingWithNestedSnippet_outer() {
+            Renderer renderer = Renderer.create("#inner", Arrays.asList(1, 2, 3), new RowRenderer<Integer>() {
+
+                @Override
+                public Renderer convert(int rowIndex, Integer row) {
+                    return Renderer.create(":root", "value", row);
+                }
+            });
+            return renderer;
+        }
+
+        public Renderer pseudoRootRenderingWithNestedSnippet_inner(String value) {
+            Renderer renderer = Renderer.create("#v", value);
+            renderer.add(":root", new ElementSetter() {
+                @Override
+                public void set(Element elem) {
+                    elem.appendText("test-append");
+                }
+            });
+            return renderer;
+        }
+
+        public Renderer pseudoRootRenderingOnFackedGroup() {
+            // The recursive renderer will create a faked group on the target root, which causes the pseudo :root selector failed.
+            // So we have to handle this case.
+            Renderer renderer = Renderer.create(":root", Renderer.create("div", "t1"));
+            renderer.add(":root", Renderer.create("div", "t2"));
+            return renderer;
+        }
+
+        public Renderer pseudoRootRenderingWithElementNotFoundHandler() {
+
+            Renderer renderer = Renderer.create(":root", Renderer.create("div", "t1"));
+            renderer.add(new ElementNotFoundHandler("span") {
+                @Override
+                public Renderer alternativeRenderer() {
+                    return Renderer.create(":root", Renderer.create("div", "t2"));
+                }
+            });
+            renderer.add(":root", Renderer.create("div", "t3"));
+
+            return renderer;
+        }
     }
 
     public AdvancedRenderingTest() {
@@ -85,12 +133,17 @@ public class AdvancedRenderingTest extends BaseTest {
     }
 
     @Test
-    public void testContinualSelectAll() {
+    public void testPseudoRootRenderingOnFackedGroup() throws Throwable {
+        new SimpleCase("AdvancedRendering_pseudoRootRendering.html");
+    }
+
+    @Test
+    public void testContinualSelectAll() throws Throwable {
         new SimpleCase("AdvancedRendering_continualSelectAll.html");
     }
 
     @Test
-    public void testDataRef() {
+    public void testDataRef() throws Throwable {
         new SimpleCase("AdvancedRendering_dataRef.html");
     }
 }

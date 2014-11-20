@@ -30,6 +30,7 @@ import com.astamuse.asta4d.data.ContextBindData;
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
+import com.astamuse.asta4d.snippet.interceptor.SnippetInitializeInterceptor;
 import com.astamuse.asta4d.util.DelegatedContextMap;
 
 public class Context {
@@ -184,6 +185,7 @@ public class Context {
         clear();
         ContextBindData.initConext(this);
         InjectUtil.initContext(this);
+        SnippetInitializeInterceptor.initContext(this);
     }
 
     public void clear() {
@@ -220,6 +222,30 @@ public class Context {
             return caller.call();
         } finally {
             Context.setCurrentThreadContext(oldContext);
+        }
+    }
+
+    public void with(String varName, Object varValue, Runnable runner) {
+        Object orinialData = null;
+        try {
+            orinialData = this.getData(varName);
+            this.setData(varName, varValue);
+            runner.run();
+        } finally {
+            // revive the scene
+            this.setData(varName, orinialData);
+        }
+    }
+
+    public <T> T with(String varName, Object varValue, Callable<T> caller) throws Exception {
+        Object orinialData = null;
+        try {
+            orinialData = this.getData(varName);
+            this.setData(varName, varValue);
+            return caller.call();
+        } finally {
+            // revive the scene
+            this.setData(varName, orinialData);
         }
     }
 

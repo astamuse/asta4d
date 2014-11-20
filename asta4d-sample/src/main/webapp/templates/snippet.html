@@ -1,32 +1,29 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../css/common.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
-<script type="text/javascript" src="../js/prettify.js"></script>
-<title>Asta4D Sample Project</title>
 </head>
-<body onload="prettyPrint()">
-	<h1>Use Snippet for rendering dynamic page.</h1>
-
-    <!-- @ShowCode:showSnippetStart -->
-	<section>
-		<article>
-			<div afd:render="SimpleSnippet">dummy text</div>
-
-			<afd:snippet render="SimpleSnippet:setProfile">
-				<p id="name">name:<span>dummy name</span></p>
-				<p id="age">age:<span>0</span></p>
-			</afd:snippet>
-		</article>
-	</section>
-	<!--@ShowCode:showSnippetEnd -->
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/templates/snippet.html" startMark="showSnippetStart" endMark="showSnippetEnd">
-    </div>
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showSnippetStart" endMark="showSnippetEnd">
-    </div>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Use Snippet for rendering dynamic page
+	</afd:block>
+	<afd:block override="content-detail">
+		<!-- @ShowCode:showSnippetStart -->
+		<section>
+			<article>
+				<div afd:render="SimpleSnippet">dummy text</div>
+	
+				<afd:snippet render="SimpleSnippet:setProfile">
+					<p id="name">name:<span>dummy name</span></p>
+					<p id="age">age:<span>0</span></p>
+				</afd:snippet>
+			</article>
+		</section>
+		<!--@ShowCode:showSnippetEnd -->
+	
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/snippet.html" startMark="showSnippetStart" endMark="showSnippetEnd"/>
+	
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showSnippetStart" endMark="showSnippetEnd"/>
+	</afd:block>
 </body>
 </html>

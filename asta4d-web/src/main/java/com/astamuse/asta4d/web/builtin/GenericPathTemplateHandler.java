@@ -1,9 +1,9 @@
 package com.astamuse.asta4d.web.builtin;
 
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.dispatch.request.transformer.TemplateNotFoundException;
 
 public class GenericPathTemplateHandler extends AbstractGenericPathHandler {
 

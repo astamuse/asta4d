@@ -24,6 +24,7 @@ import java.lang.annotation.Target;
 
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.data.TypeUnMacthPolicy;
+import com.astamuse.asta4d.util.annotation.ConvertableAnnotation;
 
 /**
  * This annotation is for marking a field (including getter/setter method) or a method parameter as {@link Context} associated.
@@ -33,6 +34,7 @@ import com.astamuse.asta4d.data.TypeUnMacthPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+@ConvertableAnnotation(ContextDataAnnotationConvertor.class)
 public @interface ContextData {
 
     /**
@@ -45,16 +47,6 @@ public @interface ContextData {
      * scopes.
      */
     String scope() default "";
-
-    /**
-     * It is only valid on field or getter method, if it is set to true, when a snippet execution finished, the current value of the field
-     * will be reversely injected to Context.
-     * 
-     * This specification is not necessary and it also complicate the variable injection mechanism. It should be removed at sometime.
-     * 
-     */
-    @Deprecated
-    boolean reverse() default false;
 
     /**
      * the policy of how to handle the unmatched type on data conversion.

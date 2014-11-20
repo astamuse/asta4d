@@ -27,7 +27,7 @@ public abstract class MultiSearchPathResourceLoader<T> {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private List<String> searchPathList = new ArrayList<>();
+    private String[] searchPathList = new String[0];
 
     public MultiSearchPathResourceLoader() {
     }
@@ -45,11 +45,11 @@ public abstract class MultiSearchPathResourceLoader<T> {
             String searchName;
             if (index < 0) {
                 searchName = name;
-            } else if (index >= searchPathList.size()) {
+            } else if (index >= searchPathList.length) {
                 logger.debug("Did not find any associated resource for name {}", name);
                 return null;
             } else {
-                String searchPath = searchPathList.get(index);
+                String searchPath = searchPathList[index];
                 boolean pathWithSeparator = searchPath.endsWith(pathSeparator);
                 boolean nameWithSeparator = name.startsWith(pathSeparator);
                 if (pathWithSeparator && nameWithSeparator) {
@@ -73,15 +73,12 @@ public abstract class MultiSearchPathResourceLoader<T> {
 
     protected abstract T loadResource(String name);
 
-    public List<String> getSearchPathList() {
-        return new ArrayList<>(searchPathList);
+    public String[] getSearchPathList() {
+        return searchPathList.clone();
     }
 
-    public void setSearchPathList(List<String> searchPathList) {
-        this.searchPathList.clear();
-        if (searchPathList != null) {
-            this.searchPathList.addAll(searchPathList);
-        }
+    public void setSearchPathList(String... searchPathList) {
+        this.searchPathList = searchPathList.clone();
     }
 
 }

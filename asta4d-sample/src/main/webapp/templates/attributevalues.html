@@ -1,36 +1,35 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<link href="../css/common.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="../css/prettify.css" type="text/css" media="all">
-<script type="text/javascript" src="../js/prettify.js"></script>
-<title>Asta4D Sample Project</title>
 </head>
-<body onload="prettyPrint()">
-	<h1>Manipulate attribute values.</h1>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="content-title">
+		Manipulate attribute values
+	</afd:block>
+	<afd:block override="content-detail">
+		<!-- @ShowCode:showAttributevaluesStart -->
+		<section>
+			<article>
+				<afd:snippet render="SimpleSnippet:manipulateAttrValues">
+					<ul>
+						<li>set checked attribute to no button<br/>
+							<input type="radio" id="yes" name="yesno" value="YES"/><label for="yes">YES</label>
+							<input type="radio" id="no" name="yesno" value="NO"/><label for="no">NO</label>
+						<li>delete disabled attribute<br/>
+							<button type="button" id="delete" disabled="disabled">button</button>
+						<li id="plus" class="bold italic">add "red" to class value
+						<li id="minus" class="bold italic">remove "bold" to class value
+					</ul>
+				</afd:snippet>
+			</article>
+		</section>
+	    <!-- @ShowCode:showAttributevaluesEnd -->
+	
+		 <div afd:render="ShowCodeSnippet:showCode" file="/templates/attributevalues.html" startMark="showAttributevaluesStart" endMark="showAttributevaluesEnd"/>
 
-    <!-- @ShowCode:showAttributevaluesStart -->
-	<section>
-		<article>
-			<afd:snippet render="SimpleSnippet:manipulateAttrValues">
-				<ul>
-					<li>set checked attribute to no button<br/>
-					<input type="radio" id="yes" name="yesno" value="YES"/><label for="yes">YES</label>&nbsp;<input type="radio" id="no" name="yesno" value="NO"/><label for="no">NO</label></li>
-					<li>delete disabled attribute<br/>
-					<button type="button" id="delete" disabled="disabled">button</button></li>
-					<li id="plus" class="bold italic">add "red" to class value</li>
-					<li id="minus" class="bold italic">remove "bold" to class value</li>
-				</ul>
-			</afd:snippet>
-		</article>
-	</section>
-    <!-- @ShowCode:showAttributevaluesEnd -->
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/templates/attributevalues.html" startMark="showAttributevaluesStart" endMark="showAttributevaluesEnd">
-    </div>
-
-    <div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showAttributevaluesStart" endMark="showAttributevaluesEnd">
-    </div>
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/SimpleSnippet.java" startMark="showAttributevaluesStart" endMark="showAttributevaluesEnd"/>
+	
+	</afd:block>
 </body>
 </html>

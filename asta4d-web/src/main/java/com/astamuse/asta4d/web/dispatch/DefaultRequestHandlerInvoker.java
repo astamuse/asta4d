@@ -23,6 +23,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.interceptor.base.Executor;
 import com.astamuse.asta4d.interceptor.base.GenericInterceptor;
@@ -37,6 +38,8 @@ import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.util.bean.AnnotationMethodHelper;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
+
+    public static final String TRACE_VAR_CURRENT_HANDLER = "TRACE_VAR_CURRENT_HANDLER#" + DefaultRequestHandlerInvoker.class;
 
     /* (non-Javadoc)
      * @see com.astamuse.asta4d.web.dispatch.RequestHandlerInvoker#invoke(com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule)
@@ -108,12 +111,16 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
             List<ContentProvider> cpList = new ArrayList<>();
             Object result;
             ContentProvider cp;
+            Context context = Context.getCurrentThreadContext();
             for (Object handler : requestHandlerList) {
                 try {
+                    context.setData(TRACE_VAR_CURRENT_HANDLER, handler);
                     result = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);
                 } catch (Throwable t) {
                     logger.error(t.getMessage(), t);
                     result = t;
+                } finally {
+                    context.setData(TRACE_VAR_CURRENT_HANDLER, null);
                 }
                 if (result != null) {
                     cp = ResultTransformerUtil.transform(result, resultTransformerList);

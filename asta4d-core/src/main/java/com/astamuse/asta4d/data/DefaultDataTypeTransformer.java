@@ -14,10 +14,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.data.convertor.DataConvertor;
+import com.astamuse.asta4d.data.convertor.DataValueConvertor;
+import com.astamuse.asta4d.data.convertor.DataValueConvertorTargetTypeConvertable;
 import com.astamuse.asta4d.data.convertor.String2Bool;
+import com.astamuse.asta4d.data.convertor.String2Date;
+import com.astamuse.asta4d.data.convertor.String2Enum;
 import com.astamuse.asta4d.data.convertor.String2Int;
+import com.astamuse.asta4d.data.convertor.String2JodaDateTime;
+import com.astamuse.asta4d.data.convertor.String2JodaLocalDate;
+import com.astamuse.asta4d.data.convertor.String2JodaLocalDateTime;
+import com.astamuse.asta4d.data.convertor.String2JodaLocalTime;
+import com.astamuse.asta4d.data.convertor.String2JodaYearMonth;
 import com.astamuse.asta4d.data.convertor.String2Long;
+import com.astamuse.asta4d.data.convertor.UnsupportedValueException;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 
@@ -26,12 +35,12 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultDataTypeTransformer.class);
 
-    private static final class DataConvertorKey {
+    private static final class DataTypeConvertorKey {
         private String srcTypeName;
         private String targetTypeName;
         private int hashCode;
 
-        DataConvertorKey(Class srcType, Class targetType) {
+        DataTypeConvertorKey(Class srcType, Class targetType) {
             this.srcTypeName = srcType.getName();
             this.targetTypeName = targetType.getName();
             this.hashCode = this.srcTypeName.hashCode() ^ this.targetTypeName.hashCode();
@@ -50,7 +59,7 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            DataConvertorKey other = (DataConvertorKey) obj;
+            DataTypeConvertorKey other = (DataTypeConvertorKey) obj;
             if (srcTypeName == null) {
                 if (other.srcTypeName != null)
                     return false;
@@ -66,47 +75,56 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
 
     }
 
-    private Map<DataConvertorKey, List<DataConvertor>> convertorCacheMap = new ConcurrentHashMap<>();
+    private Map<DataTypeConvertorKey, List<DataValueConvertor>> convertorCacheMap = new ConcurrentHashMap<>();
 
-    private List<DataConvertor> dataConvertorList = getDefaultDataConvertorList();
+    private List<DataValueConvertor> DataTypeConvertorList = getDefaultDataTypeConvertorList();
 
-    private final static List<DataConvertor> getDefaultDataConvertorList() {
-        List<DataConvertor> defaultList = new ArrayList<>();
+    private final static List<DataValueConvertor> getDefaultDataTypeConvertorList() {
+        List<DataValueConvertor> defaultList = new ArrayList<>();
         defaultList.add(new String2Long());
         defaultList.add(new String2Int());
         defaultList.add(new String2Bool());
+        defaultList.add(new String2Enum());
+        defaultList.add(new String2Date());
+        defaultList.add(new String2JodaDateTime());
+        defaultList.add(new String2JodaLocalDate());
+        defaultList.add(new String2JodaLocalDateTime());
+        defaultList.add(new String2JodaLocalTime());
+        defaultList.add(new String2JodaYearMonth());
         return defaultList;
     }
 
-    public List<DataConvertor> getDataConvertorList() {
-        return dataConvertorList;
+    public List<DataValueConvertor> getDataTypeConvertorList() {
+        return DataTypeConvertorList;
     }
 
-    public void setDataConvertorList(List<DataConvertor> dataConvertorList) {
-        List<DataConvertor> list = new LinkedList<>(dataConvertorList);
-        list.addAll(getDefaultDataConvertorList());
-        this.dataConvertorList = list;
+    public void setDataTypeConvertorList(List<DataValueConvertor> DataTypeConvertorList) {
+        List<DataValueConvertor> list = new LinkedList<>(DataTypeConvertorList);
+        list.addAll(getDefaultDataTypeConvertorList());
+        this.DataTypeConvertorList = list;
     }
 
-    public Object transform(Class<?> srcType, Class<?> targetType, Object data) throws DataOperationException {
-        List<DataConvertor> convertorList = findConvertor(srcType, targetType);
+    public Object transform(Class<?> srcType, Class<?> targetType, Object data) throws UnsupportedValueException {
+        List<DataValueConvertor> convertorList = findConvertor(srcType, targetType);
         if (convertorList.isEmpty()) {
-            return null;
+            throw new UnsupportedValueException();
         }
-        Object ret;
-        for (DataConvertor dataConvertor : convertorList) {
-            ret = dataConvertor.convert(data);
-            if (ret != null) {
-                return ret;
+        Object ret = null;
+        for (DataValueConvertor DataTypeConvertor : convertorList) {
+            try {
+                ret = DataTypeConvertor.convert(data);
+            } catch (UnsupportedValueException e) {
+                continue;
             }
+            return ret;
         }
-        return null;
+        throw new UnsupportedValueException();
     }
 
-    private List<DataConvertor> findConvertor(Class<?> srcType, Class<?> targetType) {
-        DataConvertorKey cacheKey = new DataConvertorKey(srcType, targetType);
+    private List<DataValueConvertor> findConvertor(Class<?> srcType, Class<?> targetType) {
+        DataTypeConvertorKey cacheKey = new DataTypeConvertorKey(srcType, targetType);
 
-        List<DataConvertor> foundConvertorList = null;
+        List<DataValueConvertor> foundConvertorList = null;
 
         // find in cache
         if (Configuration.getConfiguration().isCacheEnable()) {
@@ -122,19 +140,24 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
         }
     }
 
-    private List<DataConvertor> extractConvertors(Class<?> srcType, Class<?> targetType) {
+    private List<DataValueConvertor> extractConvertors(final Class<?> srcType, final Class<?> targetType) {
 
-        List<DataConvertor> foundConvertorList = new LinkedList<DataConvertor>();
+        List<DataValueConvertor> foundConvertorList = new LinkedList<DataValueConvertor>();
 
         // find in list as element to element
-        for (DataConvertor convertor : dataConvertorList) {
+        for (DataValueConvertor convertor : DataTypeConvertorList) {
             Pair<Class, Class> typePair = extractConvertorTypeInfo(convertor);
             if (typePair == null) {
                 continue;
             }
-            if (typePair.getLeft().isAssignableFrom(srcType) && targetType.isAssignableFrom(typePair.getRight())) {// found one
-                foundConvertorList.add(convertor);
+            if (typePair.getLeft().isAssignableFrom(srcType)) {
+                if (targetType.isAssignableFrom(typePair.getRight())) {// found one
+                    foundConvertorList.add(convertor);
+                } else if (convertor instanceof DataValueConvertorTargetTypeConvertable && typePair.getRight().isAssignableFrom(targetType)) {
+                    foundConvertorList.add(((DataValueConvertorTargetTypeConvertable) convertor).convert(targetType));
+                }
             }
+            // @formatter:on
         }
 
         if (!foundConvertorList.isEmpty()) {
@@ -144,22 +167,22 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
         // find as array to array
         if (srcType.isArray() && targetType.isArray()) {
 
-            List<DataConvertor> componentConvertorList = findConvertor(srcType.getComponentType(), targetType.getComponentType());
-            List<DataConvertor> toArrayConvertorList = ListConvertUtil.transform(componentConvertorList,
-                    new RowConvertor<DataConvertor, DataConvertor>() {
+            List<DataValueConvertor> componentConvertorList = findConvertor(srcType.getComponentType(), targetType.getComponentType());
+            List<DataValueConvertor> toArrayConvertorList = ListConvertUtil.transform(componentConvertorList,
+                    new RowConvertor<DataValueConvertor, DataValueConvertor>() {
                         @Override
-                        public DataConvertor convert(int rowIndex, final DataConvertor originalConvertor) {
-                            return new DataConvertor() {
+                        public DataValueConvertor convert(int rowIndex, final DataValueConvertor originalConvertor) {
+                            return new DataValueConvertor() {
                                 Pair<Class, Class> typePair = extractConvertorTypeInfo(originalConvertor);
 
                                 @Override
-                                public Object convert(Object obj) {
+                                public Object convert(Object obj) throws UnsupportedValueException {
                                     if (typePair == null) {
                                         return null;
                                     }
 
                                     int length = Array.getLength(obj);
-                                    Object targetArray = Array.newInstance(typePair.getRight(), length);
+                                    Object targetArray = Array.newInstance(targetType.getComponentType(), length);
 
                                     for (int i = 0; i < length; i++) {
                                         Array.set(targetArray, i, originalConvertor.convert(Array.get(obj, i)));
@@ -180,20 +203,20 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
         // find as element to array
         if (targetType.isArray()) {
 
-            List<DataConvertor> componentConvertorList = findConvertor(srcType, targetType.getComponentType());
-            List<DataConvertor> toArrayConvertorList = ListConvertUtil.transform(componentConvertorList,
-                    new RowConvertor<DataConvertor, DataConvertor>() {
+            List<DataValueConvertor> componentConvertorList = findConvertor(srcType, targetType.getComponentType());
+            List<DataValueConvertor> toArrayConvertorList = ListConvertUtil.transform(componentConvertorList,
+                    new RowConvertor<DataValueConvertor, DataValueConvertor>() {
                         @Override
-                        public DataConvertor convert(int rowIndex, final DataConvertor originalConvertor) {
-                            return new DataConvertor() {
+                        public DataValueConvertor convert(int rowIndex, final DataValueConvertor originalConvertor) {
+                            return new DataValueConvertor() {
                                 private Pair<Class, Class> typePair = extractConvertorTypeInfo(originalConvertor);
 
                                 @Override
-                                public Object convert(Object obj) {
+                                public Object convert(Object obj) throws UnsupportedValueException {
                                     if (typePair == null) {
                                         return null;
                                     }
-                                    Object array = Array.newInstance(typePair.getRight(), 1);
+                                    Object array = Array.newInstance(targetType.getComponentType(), 1);
                                     Array.set(array, 0, originalConvertor.convert(obj));
                                     return array;
                                 }
@@ -210,14 +233,14 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
 
         // find as array to element
         if (srcType.isArray()) {
-            List<DataConvertor> componentConvertorList = findConvertor(srcType.getComponentType(), targetType);
-            List<DataConvertor> toArrayConvertorList = ListConvertUtil.transform(componentConvertorList,
-                    new RowConvertor<DataConvertor, DataConvertor>() {
+            List<DataValueConvertor> componentConvertorList = findConvertor(srcType.getComponentType(), targetType);
+            List<DataValueConvertor> toArrayConvertorList = ListConvertUtil.transform(componentConvertorList,
+                    new RowConvertor<DataValueConvertor, DataValueConvertor>() {
                         @Override
-                        public DataConvertor convert(int rowIndex, final DataConvertor originalConvertor) {
-                            return new DataConvertor() {
+                        public DataValueConvertor convert(int rowIndex, final DataValueConvertor originalConvertor) {
+                            return new DataValueConvertor() {
                                 @Override
-                                public Object convert(Object obj) {
+                                public Object convert(Object obj) throws UnsupportedValueException {
                                     int length = Array.getLength(obj);
                                     if (length == 0) {
                                         return null;
@@ -239,20 +262,21 @@ public class DefaultDataTypeTransformer implements DataTypeTransformer {
         return foundConvertorList;
     }
 
-    private Pair<Class, Class> extractConvertorTypeInfo(DataConvertor convertor) {
+    private Pair<Class, Class> extractConvertorTypeInfo(DataValueConvertor convertor) {
         Type[] intfs = convertor.getClass().getGenericInterfaces();
         Class rawCls;
         for (Type intf : intfs) {
             if (intf instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType) intf;
                 rawCls = (Class) pt.getRawType();
-                if (rawCls.getName().equals(DataConvertor.class.getName())) {
+                if (rawCls.getName().equals(DataValueConvertor.class.getName()) ||
+                        rawCls.getName().equals(DataValueConvertorTargetTypeConvertable.class.getName())) {
                     Type[] typeArgs = pt.getActualTypeArguments();
                     return Pair.of((Class) typeArgs[0], (Class) typeArgs[1]);
                 }
             }
         }
-        logger.warn("Could not extract type information from DataConvertor:" + convertor.getClass().getName());
+        logger.warn("Could not extract type information from DataTypeConvertor:" + convertor.getClass().getName());
         return null;
     }
 }
