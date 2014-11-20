@@ -35,7 +35,7 @@ and also you can add your own html template files to /src/main/webapp.
 
 ## What is Asta4D
 
-Asta4D is a view first web application framework which is friendly to designer and flexible to developer. Asta4D affords high productivity than traditional MVC architecture by View First architecture. It also allows front-end engineers and back-end engineers work independently without interference by separating rendering logic from template files.
+Asta4D is a view first web application framework which is friendly to designers and flexible to developers. Asta4D affords high productivity than traditional MVC architecture by "View First" architecture. It also allows front-end engineers and back-end engineers work independently without interference by separating rendering logic from template files.
 
 Asta4D is inspired by [lift](http://liftweb.net/)  which is a famous scala web application framework and it is developed by astamuse company Ltd. locating at Tokyo Japan. We are concentrating on global innovation support and developing Asta4D for our own services. Currently, Asta4D is driving our new service development.
 
