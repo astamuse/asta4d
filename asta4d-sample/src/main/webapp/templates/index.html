@@ -1,6 +1,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
+</head>
 <body>
 <afd:extension parent="/layout/common.html">
 	<afd:block override="content-title">
@@ -24,6 +25,12 @@
 					<li><a href="/embed/main">Embed other template.</a></li>
 					<!-- li><a href="/handler">Use Request Handler for side effects.</a></li-->
 					<li><a href="/localize">Localize Messages(i18n support).</a></li>
+					<li>Error handling
+						<ul>
+							<li><a href="/error-sample/handler404">404 exception by request handler</a></li>
+							<li><a href="/error-sample/handler">exception occurs at the request handler</a></li>
+							<li><a href="/error-sample/snippet">exception occurs at the snippet</a></li>
+						</ul>
 			</ul>
 		</div>
 	</div>

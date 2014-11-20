@@ -66,5 +66,10 @@ public class SimpleSnippet {
         render.add("li#minus", "-class", "bold");
         return render;
     }
+
     // @ShowCode:showAttributevaluesEnd
+
+    public Renderer errorOccurs() {
+        throw new RuntimeException("Error occurs at snippet side");
+    }
 }

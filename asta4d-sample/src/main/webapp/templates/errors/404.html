@@ -1,0 +1,23 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<afd:extension parent="/layout/common.html">
+
+	<afd:comment>
+	we extend this page from the common parent because this is an expected action and we know that there is no error.
+	</afd:comment>
+
+	<afd:block override="content-title">
+		Asta4D Sample Project - 404
+	</afd:block>
+	<afd:block override="content-detail">
+		The target data does not exist.
+		
+		<div afd:render="ShowCodeSnippet:showCode" file="/UrlRules.java" startMark="showGlobal404RuleStart" endMark="showGlobal404RuleEnd"/>
+	</afd:block>
+
+</afd:extension>
+</body>
+</html>
