@@ -64,6 +64,8 @@
     <xi:include href="en/side_effect.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/adv_request_handler.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/form_flow.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/best_practice.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   </part>  
 
   <part id="asta4d-reference">

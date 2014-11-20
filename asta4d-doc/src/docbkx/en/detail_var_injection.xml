@@ -9,7 +9,7 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Variable injection</title>
   
-  <sect1>
+  <sect1 id="vi-context">
     <title>Context</title>
     <sect2>
       <title>Context/WebApplicationContext</title>
@@ -59,7 +59,7 @@ public class PageSnippet {
         </listitem>
       </itemizedlist>
     </sect2>
-    <sect2>
+    <sect2 id="vi-scope">
       <title>Scope</title>
       
       <para>The context provides a mechanism to manage data by scopes. There are only 3 scopes supplied by asta4d-core's
@@ -184,7 +184,7 @@ public class MyContext extends WebApplicationContext {
       default WebApplicationContext.</para>
     </sect2>
     
-    <sect2>
+    <sect2 id="vi-ContextBindData">
       <title>ContextBindData</title>
       <para>Since all the data query logic are performed at snippet class, we will want to avoid duplicated query on same page
       rendering. The recommended solution is caching your query result by cache library such as ehcache. But Asta4D also affords
@@ -223,22 +223,15 @@ public class PageSnippet {
       method may be invoked multiple times in multi-thread rendering, but which is faster than warranted initialization simply because
       of skipping the multi-thread lock process.</para>
       
-      <para>There is another case that the ContextBindData would be initialized multiple times even if you construct it by requiring warranty.
-      In template file, we can declare a snippet as parallel, Asta4D will clone a new context from current context if parallel snippet rendering
-      is required, so if the snippet class which holds the ContextBindData is first required in the cloned child context, the multi-thread lock
-      will not be available in the parent context or other cloned child context because the lock is only saved into the current context and will
-      not be spread to other contexts.
-      </para>
-      
       <para>Again, we recommend to use cache library to avoid duplicated query, but you can use ContextBindData as a simple, light weight
-      alternative.</para>
+      alternative. See detail of <xref linkend="best-snippet-way"/>.</para>
       
     </sect2>
   </sect1>
   
-  <sect1>
+  <sect1 id="vi-injection">
     <title>Injection</title>
-    <sect2>
+    <sect2 id="vi-contextdata">
       <title>@ContextData</title>
       <para>All fields annotated by @ContextData in a snippet class will be initialized/injected automatically when the snippet class instance is initialized.
       Further, even the method parameters of snippet rendering method and request handle method are automatically injected, you can still customize the injection
@@ -290,7 +283,7 @@ public class PageSnippet {
                   <para>global(SCOPE_GLOBAL)</para>
                 </listitem>
               </orderedlist>
-              <para>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <xref linkend="sect-ContextDataFinder"/></para>
+              <para>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <xref linkend="vi-ContextDataFinder"/></para>
           </listitem>
         </varlistentry>
         <varlistentry>
@@ -329,7 +322,7 @@ public class PageSnippet {
       <remark>All the above annotation have the same configurable items with the original @ContextData annotation except being fixed with according data scope.</remark>
 
     </sect2>
-    <sect2>
+    <sect2 id="vi-contextdataset">
       <title>@ContextDataSet</title>
       <para>A pojo class annotated by @ContextDataSet will be treated as a variable holder. If the type of a snippet class field or a method parameter is a class annotated by
       @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
@@ -401,7 +394,7 @@ public static class MySnippet2 {
       </variablelist>
       
     </sect2>
-    <sect2 id="sect-ContextDataFinder">
+    <sect2 id="vi-ContextDataFinder">
       <title>ContextDataFinder</title>
       <para>Asta4D search data in context by pre configured ContextDataFinder implementation. The default implementation is WebApplicationContextDataFinder. You can supply your own
       search mechanism by implementing the ContextDataFinder interface or extending from WebApplicationContextDataFinder. WebApplicationContextDataFinder defines the scope search
