@@ -234,14 +234,14 @@ public class MySnippet{
       </listitem>
       <listitem>
         <para>Avoid duplicated query</para>
-        <para>An frequently asked question is how to avoid duplicated query in the snippet class. That is actually an problem since we encourage the developer perform queries at 
+        <para>An frequently asked question is how to avoid duplicated query in the snippet class. That is actually an problem since we encourage the developers perform queries at 
         the place where the data is required. We have the following options to combat this issue:</para>
         <itemizedlist>
             <listitem>
                 <para>Global query lock via AOP</para>
-                <para>This is the first option that we recommend for heavy systems and exactly what we chose in our system. We split all the real queries to a service layer then 
-                perform a global lock for all the equal calling parameters on the same method. We use spring as our IOC container and simply add the lock logic by the spring's
-                AOP mechanism.</para>
+                <para>This is the first option that we recommend for query heavy systems and exactly what we did in our system before we moved to saas architecture. We split all the real 
+                queries to a service layer then perform a global lock for all the equal calling parameters on the same method. We use spring as our IOC container and simply add the 
+                lock logic by the spring's AOP mechanism.</para>
             </listitem>
             <listitem>
                 <para>ContextBindData</para>
@@ -270,8 +270,23 @@ public class MySnippet{
         <para>The classical usage of InitializableSnippet is that we can set default value of declared @ContextData fields if some of them are set to null.</para>
       </listitem>
       <listitem>
-        <para>class selector and "x-" convention</para>
-        <remark>To be written.</remark>
+        <para>css class name selector and "x-" convention</para>
+        <para>Though we can use various selectors to render data into the template file, we recommend to use css class name selector in common cases, which affords the best
+        compatibility to the frond-end refactoring. We also made a convention which is called "x-" convention. we will always add a css class started with "x-" to the data rendering
+        target, which tells the front-end guys try their best to keep the compatibility against the "x-" marked elements when they are refactoring the html sources.</para>
+        <para>Although we always use "x-" convention to render our data, there are still some acceptable exceptions in our practice:</para>
+        <itemizedlist>
+            <listitem>
+                <para>use "a" directly when rendering the link to the "href" attribute</para>
+            </listitem>
+            <listitem>
+                <para>use "img" directly when rendering the link to the "src" attribute</para>
+            </listitem>
+            <listitem>
+                <para>use "li" directly when rendering a list</para>
+                <remark>This one is controversial, some of our members argue that we should use "x-" instead of direct "li" selector.</remark>
+            </listitem>
+        </itemizedlist>
       </listitem>
     </orderedlist>
   </sect1>
