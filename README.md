@@ -33,6 +33,8 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
+Reading the [Best Practice](http://astamuse.github.io/asta4d/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
+
 ## What is Asta4D
 
 Asta4D is a view first web application framework which is friendly to designers and flexible to developers. Asta4D affords high productivity than traditional MVC architecture by "View First" architecture. It also allows front-end engineers and back-end engineers work independently without interference by separating rendering logic from template files.
@@ -205,21 +207,6 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     }
     ```
-
-## Best practices
-
--   Use class name selectors instead of others in most cases
-
-    Frontend designers would change html structures frequently, using class selector can avoid modifying the backend sources every time the html changed.
-
-    We made a convention that all the classes with prefix "X-" are faked and used by backend logics to mark the anchor points of data.
-
--   Use request handler to normalize requests
-
-    Some pages holds multiple url patterns, you can normalize all the patterns by a request handler. 
-
-    We also use request hanlders to prepare the "target data" for the target page. A significant point is that preparing "target data" does not mean MVC architecture, we just query a simple entity or build a pojo to **represent the normalized condition** of the target page. 
-
 ## Roadmap
 
 1.0
