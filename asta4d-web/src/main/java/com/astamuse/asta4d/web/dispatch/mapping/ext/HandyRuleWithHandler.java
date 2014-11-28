@@ -20,6 +20,10 @@ package com.astamuse.asta4d.web.dispatch.mapping.ext;
 import java.util.List;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.request.func.ro.RequestHandlerObjIntf;
+import com.astamuse.asta4d.web.dispatch.request.func.ro.RequestHandlerObjIntf1;
+import com.astamuse.asta4d.web.dispatch.request.func.ro.RequestHandlerObjIntf2;
+import com.astamuse.asta4d.web.dispatch.request.func.ro.RequestHandlerObjIntf3;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class HandyRuleWithHandler extends HandyRuleWithForward {
@@ -28,11 +32,44 @@ public class HandyRuleWithHandler extends HandyRuleWithForward {
         super(rule);
     }
 
-    public HandyRuleWithHandler handler(Object... handlerList) {
+    // There is a eclipse bug, we are waiting for the fix
+    /*
+    public HandyRuleWithHandler handler(RequestHandlerVoidIntf handler) {
+        return this;
+    }
+
+    public <T> HandyRuleWithHandler handler(RequestHandlerVoidIntf1<T> handler) {
+        return this;
+    }
+
+    public <T1, T2> HandyRuleWithHandler handler(RequestHandlerVoidIntf2<T1, T2> handler) {
+        return this;
+    }
+    */
+
+    public HandyRuleWithHandler handler(RequestHandlerObjIntf handler) {
+        return _handler(handler);
+    }
+
+    public <T> HandyRuleWithHandler handler(RequestHandlerObjIntf1<T> handler) {
+        return _handler(handler);
+    }
+
+    public <T1, T2> HandyRuleWithHandler handler(RequestHandlerObjIntf2<T1, T2> handler) {
+        return _handler(handler);
+    }
+
+    public <T1, T2, T3> HandyRuleWithHandler handler(RequestHandlerObjIntf3<T1, T2, T3> handler) {
+        return _handler(handler);
+    }
+
+    public HandyRuleWithHandler handler(Object handler) {
+        return _handler(handler);
+    }
+
+    private HandyRuleWithHandler _handler(Object handler) {
         List<Object> list = rule.getHandlerList();
-        for (Object handler : handlerList) {
-            list.add(DeclareInstanceUtil.createInstance((handler)));
-        }
+        list.add(DeclareInstanceUtil.createInstance((handler)));
         return this;
     }
 

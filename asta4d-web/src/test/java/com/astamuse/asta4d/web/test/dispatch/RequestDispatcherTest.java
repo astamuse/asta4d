@@ -67,8 +67,6 @@ import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
@@ -168,14 +166,17 @@ public class RequestDispatcherTest {
                            .forward(Throwable.class, "/error.html", 500)
                            .forward("/index.html");
         
-
-        
         rules.add("/index-duplicated").reMapTo("index-page");
-        
         
         rules.add("/index-remap-with-attr").reMapTo("index-page").attribute("remap-with-attr").var("extraPath", "extra_path");
 
         rules.add("/body-only", "/bodyOnly.html").attribute(Asta4DPageProvider.AttrBodyOnly);
+        
+
+        rules.add("/method-reference/handle2Param")
+             .var("s", "handle2Param")
+             .var("number", 34)
+             .handler(MethodReferenceHandler::handle2Param);
         
         rules.add("/go-redirect").redirect("/go-redirect/ok");
         rules.add("/go-redirect-301").redirect("301:/go-redirect/301");
@@ -216,12 +217,16 @@ public class RequestDispatcherTest {
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
+                /*
                 { "get", "/index", 0, getExpectedPage("/index.html")},
                 
                 { "get", "/index-rewrite", 0, getExpectedPage("/index.html") },
                 { "get", "/index-duplicated", 0, getExpectedPage("/index.html") },
                 { "get", "/index-remap-with-attr", 0, getExpectedPage("/index-index_var-extra_path.html") },
                 { "get", "/body-only", 0, getExpectedPage("/bodyOnly.html") },
+                */
+                { "get", "/method-reference/handle2Param", 0, getExpectedPage("/handle2Param/35") },
+                /*
                 { "get", "/go-redirect", 302, new RedirectTargetProvider(302, "/go-redirect/ok", null)},
                 { "get", "/go-redirect-301", 301, new RedirectTargetProvider(301, "/go-redirect/301", null)},
                 { "get", "/go-redirect-302", 302, new RedirectTargetProvider(302, "/go-redirect/302", null)},
@@ -244,7 +249,7 @@ public class RequestDispatcherTest {
 
                 { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
                 { "get", "/throwexception", 500, getExpectedPage("/Exception")},
-
+                */
                 };
         //@formatter:on
     }
@@ -385,6 +390,12 @@ public class RequestDispatcherTest {
         }
     }
 
+    public static class MethodReferenceHandler {
+        public static String handle2Param(String s, Integer num) {
+            return s + "/" + num;
+        }
+    }
+
     public static class CounterInterceptor implements RequestHandlerInterceptor {
 
         private int counter = 0;
@@ -419,103 +430,4 @@ public class RequestDispatcherTest {
 
     }
 
-    /*
-        private void assertContentProvider(ContentProvider result, ContentProvider expected) {
-            if (expected instanceof Asta4DPageProvider) {
-                Assert.assertEquals(((Asta4DPageProvider) result).getPath(), ((Asta4DPageProvider) expected).getPath());
-            } else if (expected instanceof RedirectTargetProvider) {
-                Assert.assertEquals(((RedirectTargetProvider) result).getUrl(), ((RedirectTargetProvider) expected).getUrl());
-            } else {
-                throw new UnsupportedOperationException(expected.getClass().toString());
-            }
-        }
-
-        private UrlMappingRule getRule(Object... handlers) {
-            UrlMappingRule rule = new UrlMappingRule();
-            rule.setHandlerList(Arrays.asList(handlers));
-            Map<Class<? extends ForwardDescriptor>, String> forwardDescriptors = new HashMap<>();
-            forwardDescriptors.put(TestDescriptor.class, "/test2.html");
-            rule.setForwardDescriptorMap(forwardDescriptors);
-            return rule;
-        }
-
-        private static RequestHandlerInvoker getInvoker() {
-            RequestHandlerInvokerFactory factory = new DefaultRequestHandlerInvokerFactory();
-            return factory.getInvoker();
-        }
-
-        private abstract static class ExecutedCheckHandler {
-            boolean executed = false;
-
-            public void execute() {
-                executed = true;
-            }
-
-            public boolean isExecuted() {
-                return executed;
-            }
-        }
-
-        private static class VoidHandler extends ExecutedCheckHandler {
-            @RequestHandler
-            public void handle() {
-                super.execute();
-            }
-        }
-
-        private static class ReturnStringHandler extends ExecutedCheckHandler {
-            @RequestHandler
-            public String handle() {
-                super.execute();
-                return "/test1.html";
-            }
-        }
-
-        private static class ReturnDescriptorHandler extends ExecutedCheckHandler {
-            @RequestHandler
-            public ForwardDescriptor handle() {
-                super.execute();
-                return new TestDescriptor();
-            }
-        }
-
-        private static class ThrowDescriptorHandler extends ExecutedCheckHandler {
-            @RequestHandler
-            public void handle() {
-                super.execute();
-                throw new ForwardableException(new TestDescriptor(), new IllegalArgumentException());
-            }
-        }
-
-        private static class TestDescriptor implements ForwardDescriptor {
-
-        }
-
-        private static class ViewChangeDescriptor implements ForwardDescriptor {
-
-        }
-
-        private static class ViewChangeIntercepter implements RequestHandlerInterceptor {
-            @Override
-            public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
-            }
-
-            @Override
-            public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
-                holder.setForwardDescriptor(new ViewChangeDescriptor());
-            }
-        }
-
-        private static class CancelExceptionIntercepter implements RequestHandlerInterceptor {
-            @Override
-            public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
-            }
-
-            @Override
-            public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
-                exceptionHandler.setException(null);
-            }
-
-        }
-        */
 }
