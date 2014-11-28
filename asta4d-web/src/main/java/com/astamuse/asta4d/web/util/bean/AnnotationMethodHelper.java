@@ -18,7 +18,6 @@
 package com.astamuse.asta4d.web.util.bean;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.data.InjectUtil;
 
 public class AnnotationMethodHelper {
 
@@ -57,7 +55,7 @@ public class AnnotationMethodHelper {
     }
 
     private final static Method findMethod(Class<?> cls, Class<? extends Annotation> annotation) {
-        if (cls.getName().equals(Object.class.getName())) {
+        if (cls == null || cls.getName().equals(Object.class.getName())) {
             return null;
         }
         Method[] methodList = cls.getMethods();
@@ -69,44 +67,30 @@ public class AnnotationMethodHelper {
             }
         }
         if (m == null) {
-            return findMethod(cls.getSuperclass(), annotation);
-        } else {
-            return m;
-        }
-    }
-
-    public final static Object invokeMethodForAnnotation(Object obj, Class<? extends Annotation> annotation) throws Exception {
-        Object targetObj = obj instanceof DeclareInstanceAdapter ? ((DeclareInstanceAdapter) obj).asTargetInstance() : obj;
-        Method m = findMethod(targetObj, annotation);
-        if (m == null) {
-            // TODO maybe we can return a null?
-            String msg = String.format("Method not found for annotation %s at class %s:", annotation.toString(), targetObj.getClass()
-                    .getName());
-            throw new InvocationTargetException(new RuntimeException(msg));
-        }
-
-        Object[] params = InjectUtil.getMethodInjectParams(m);
-        if (params == null) {
-            params = new Object[0];
-        }
-
-        try {
-            return m.invoke(targetObj, params);
-        } catch (Exception e) {
-
-            Exception throwEx = e;
-            if (e instanceof InvocationTargetException) {
-                Throwable t = ((InvocationTargetException) e).getTargetException();
-                if (t instanceof Exception) {
-                    throwEx = (Exception) t;
+            m = findMethod(cls.getSuperclass(), annotation);
+            if (m == null) {
+                Class<?>[] intfs = cls.getInterfaces();
+                for (Class<?> intf : intfs) {
+                    m = findMethod(intf, annotation);
+                    if (m != null) {
+                        break;
+                    }
+                }
+                /*
+                 * we need to find out the implemented method rather than the interface declared method because 
+                 * we need retrieve the actual parameter names later.
+                 */
+                if (m != null) {
+                    try {
+                        m = cls.getMethod(m.getName(), m.getParameterTypes());
+                    } catch (Exception e) {
+                        // it seems impossible
+                        throw new RuntimeException(e);
+                    }
                 }
             }
-
-            String msg = "Error occured when invoke method for annotiona %s on %s with params:%s";
-            msg = String.format(msg, annotation.getName(), targetObj.getClass().getName(), params);
-            logger.error(msg, throwEx);
-
-            throw throwEx;
         }
+        return m;
     }
+
 }

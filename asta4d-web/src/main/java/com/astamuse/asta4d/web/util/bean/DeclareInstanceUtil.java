@@ -17,13 +17,21 @@
 
 package com.astamuse.asta4d.web.util.bean;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
 public class DeclareInstanceUtil {
 
     private final static DeclareInstanceResolver defaultResolver = new DefaultDeclareInstanceResolver();
+
+    private final static Logger logger = LoggerFactory.getLogger(AnnotationMethodHelper.class);
 
     @SuppressWarnings("unchecked")
     public final static <T> T createInstance(Object declaration) {
@@ -40,5 +48,36 @@ public class DeclareInstanceUtil {
             handler = defaultResolver.resolve(declaration);
         }
         return (T) handler;
+    }
+
+    public final static Object retrieveInovkeTargetObject(Object instance) {
+        return instance instanceof DeclareInstanceAdapter ? ((DeclareInstanceAdapter) instance).asTargetInstance() : instance;
+    }
+
+    public final static Object invokeMethod(Object obj, Method m) throws Exception {
+
+        Object[] params = InjectUtil.getMethodInjectParams(m);
+        if (params == null) {
+            params = new Object[0];
+        }
+
+        try {
+            return m.invoke(obj, params);
+        } catch (Exception e) {
+
+            Exception throwEx = e;
+            if (e instanceof InvocationTargetException) {
+                Throwable t = ((InvocationTargetException) e).getTargetException();
+                if (t instanceof Exception) {
+                    throwEx = (Exception) t;
+                }
+            }
+
+            String msg = "Error occured when invoke method for method:%s on %s, with params:%s";
+            msg = String.format(msg, m.toString(), obj.getClass().getName(), params);
+            logger.error(msg, throwEx);
+
+            throw throwEx;
+        }
     }
 }
