@@ -8,6 +8,6 @@
         http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Built in form flow</title>
-  <remark>To be written.</remark>
+  <remark>To be written. See the online sample: <ulink url="http://asta4dsample-xzer.rhcloud.com/form">Form Flow Sample</ulink></remark>
   
 </chapter>

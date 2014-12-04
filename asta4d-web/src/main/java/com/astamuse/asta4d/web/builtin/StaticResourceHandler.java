@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 astamuse company,Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
 package com.astamuse.asta4d.web.builtin;
 
 import java.io.FileNotFoundException;
@@ -34,8 +50,7 @@ import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
 import com.astamuse.asta4d.web.util.data.BinaryDataUtil;
 
 /**
- * A static resouce handler for service static resources such as js, css or
- * static html files.
+ * A static resouce handler for service static resources such as js, css or static html files.
  * 
  * The following path vars can be configured for specializing response headers:
  * 
@@ -271,8 +286,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
      * The header value of Content-Type
      * 
      * @param path
-     * @return a guess of the content type by file name extension,
-     *         "application/octet-stream" when not matched
+     * @return a guess of the content type by file name extension, "application/octet-stream" when not matched
      */
     protected String judgContentType(String path) {
 
@@ -322,8 +336,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
      * override this method to supply the specialized last modified time
      * 
      * @param path
-     * @return the time of last modified time in millisecond unit(In http
-     *         protocol, the time unit should be second, but we will cope with
+     * @return the time of last modified time in millisecond unit(In http protocol, the time unit should be second, but we will cope with
      *         this matter)
      */
     protected long getLastModifiedTime(String path) {
@@ -343,14 +356,11 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
     }
 
     /**
-     * Retrieve the max cachable size limit for a certain path in byte unit.Be
-     * care of that the path var is set by kilobyte unit for convenience but
-     * this method will return in byte unit. <br>
-     * This is a default implementation which does not see the path and will
-     * return 0 for not caching when path var is not set.
+     * Retrieve the max cachable size limit for a certain path in byte unit.Be care of that the path var is set by kilobyte unit for
+     * convenience but this method will return in byte unit. <br>
+     * This is a default implementation which does not see the path and will return 0 for not caching when path var is not set.
      * <p>
-     * Note: we do not cache it by default because the resources in war should
-     * have been cached by the servlet container.
+     * Note: we do not cache it by default because the resources in war should have been cached by the servlet container.
      * 
      * 
      * @param path
