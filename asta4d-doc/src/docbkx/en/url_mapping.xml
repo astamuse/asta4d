@@ -9,7 +9,7 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>View first URL mapping and variable injection</title>
   
-  <section>
+  <section id="view-first-mechanism">
     <title>View first</title>
 
     <para>
@@ -54,7 +54,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
     </example>
   </section>
   
-  <section>
+  <section id="url-rule-grammer">
     <title>The grammer of URL rule and path variable</title>
     <para>
     The grammer of Asta4D's URL rule is almost the same as Spring MVC's URL mapping rule and the parts surrounded by braces are 
@@ -74,7 +74,7 @@ rules.add("/app/{name}/{age}", "/templates/variableinjection.html")
     </example>
   </section>
   
-  <section>
+  <section id="variable-injection">
     <title>Variable Injection</title>
     <para>
     Asta4D implements a variable injection mechanism which is very closed to Spring MVC, all of the instance fields 
