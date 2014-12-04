@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 astamuse company,Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
 package com.astamuse.asta4d.util.i18n;
 
 import java.util.HashMap;
@@ -11,14 +27,11 @@ import com.astamuse.asta4d.util.i18n.formatter.ApacheStrSubstitutorFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.MappedValueFormatter;
 
 /**
- * Allow format message by a given parameter map, A {@link MappedValueFormatter}
- * is required to supply concrete formatting style and the default is
- * {@link ApacheStrSubstitutorFormatter} which uses StrSubstitutor from Apache
- * Common lang3.
+ * Allow format message by a given parameter map, A {@link MappedValueFormatter} is required to supply concrete formatting style and the
+ * default is {@link ApacheStrSubstitutorFormatter} which uses StrSubstitutor from Apache Common lang3.
  * <p>
  * 
- * If message is not found for given key(and locale), the key will be treated as
- * default message if the default message is not specified.
+ * If message is not found for given key(and locale), the key will be treated as default message if the default message is not specified.
  * 
  * @author e-ryu
  * @see ApacheStrSubstitutorFormatter
@@ -73,8 +86,7 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given locale and key and format it by given parameter
-     * map.
+     * Retrieve message by given locale and key and format it by given parameter map.
      * 
      * @param locale
      * @param key
@@ -86,8 +98,7 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given locale and key and format it by given parameter
-     * pairs.
+     * Retrieve message by given locale and key and format it by given parameter pairs.
      * 
      * @param locale
      * @param key
@@ -110,9 +121,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given key and format it by given parameter map. If
-     * message is not found, defaultPattern#toString will be used to generate a
-     * default message pattern to be formatted.
+     * Retrieve message by given key and format it by given parameter map. If message is not found, defaultPattern#toString will be used to
+     * generate a default message pattern to be formatted.
      * 
      * @param key
      * @param defaultPattern
@@ -124,9 +134,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given key and format it by given parameter pairs. If
-     * message is not found, defaultPattern#toString will be used to generate a
-     * default message pattern to be formatted.
+     * Retrieve message by given key and format it by given parameter pairs. If message is not found, defaultPattern#toString will be used
+     * to generate a default message pattern to be formatted.
      * 
      * @param key
      * @param defaultPattern
@@ -139,9 +148,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given locale and key and format it by given parameter
-     * map. If message is not found, defaultPattern#toString will be used to
-     * generate a default message pattern to be formatted.
+     * Retrieve message by given locale and key and format it by given parameter map. If message is not found, defaultPattern#toString will
+     * be used to generate a default message pattern to be formatted.
      * 
      * @param locale
      * @param key
@@ -154,9 +162,8 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given locale and key and format it by given parameter
-     * pairs. If message is not found, defaultPattern#toString will be used to
-     * generate a default message pattern to be formatted.
+     * Retrieve message by given locale and key and format it by given parameter pairs. If message is not found, defaultPattern#toString
+     * will be used to generate a default message pattern to be formatted.
      * 
      * @param locale
      * @param key

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 astamuse company,Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
 package com.astamuse.asta4d.util.i18n;
 
 import java.text.MessageFormat;
@@ -9,13 +25,10 @@ import com.astamuse.asta4d.util.i18n.formatter.JDKMessageFormatFormatter;
 import com.astamuse.asta4d.util.i18n.formatter.OrderedValueFormatter;
 
 /**
- * Allow format message by a given parameter array. A
- * {@link OrderedValueFormatter} is required to supply concrete formatting style
- * and the default is {@link JDKMessageFormatFormatter} which uses JDK's
- * {@link MessageFormat} to format message string.
+ * Allow format message by a given parameter array. A {@link OrderedValueFormatter} is required to supply concrete formatting style and the
+ * default is {@link JDKMessageFormatFormatter} which uses JDK's {@link MessageFormat} to format message string.
  * <p>
- * If message is not found for given key(and locale), the key will be treated as
- * default message if the default message is not specified.
+ * If message is not found for given key(and locale), the key will be treated as default message if the default message is not specified.
  * 
  * @author e-ryu
  *
@@ -58,8 +71,7 @@ public class OrderedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given locale and key and format it by given parameter
-     * array.
+     * Retrieve message by given locale and key and format it by given parameter array.
      * 
      * @param locale
      * @param key
@@ -81,9 +93,8 @@ public class OrderedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given key and format it by given parameter array.If
-     * message is not found, defaultPattern#toString will be used to generate a
-     * default message pattern to be formatted.
+     * Retrieve message by given key and format it by given parameter array.If message is not found, defaultPattern#toString will be used to
+     * generate a default message pattern to be formatted.
      * 
      * @param key
      * @param defaultPattern
@@ -95,9 +106,8 @@ public class OrderedParamI18nMessageHelper extends I18nMessageHelper {
     }
 
     /**
-     * Retrieve message by given locale and key and format it by given parameter
-     * array.If message is not found, defaultPattern#toString will be used to
-     * generate a default message pattern to be formatted.
+     * Retrieve message by given locale and key and format it by given parameter array.If message is not found, defaultPattern#toString will
+     * be used to generate a default message pattern to be formatted.
      * 
      * @param locale
      * @param key
