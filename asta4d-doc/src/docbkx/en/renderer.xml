@@ -9,7 +9,7 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Renderer: easy to use, secure, testable</title>
   
-  <section>
+  <section id="split-rendering">
     <title>Split rendering logic from template</title>
     
     <para>
@@ -106,7 +106,7 @@ public class SimpleSnippet {
     </para>
   </section>
   
-  <section>
+  <section id="render-to-page">
     <title>Render data to page</title>
     <itemizedlist>
       <listitem>
@@ -183,7 +183,7 @@ render.add("#X", "value", new Date(123456L));
     </itemizedlist>
   </section>
 
-  <section>
+  <section id="immune-from-xss">
     <title>Immune from cross-site hole</title>
     <para>
     The previous samples show us that all the operations to DOM are delegated by Renderer except create DOM
@@ -198,7 +198,7 @@ render.add("#X", "value", new Date(123456L));
     then you can say bye-bye to the cross-site holes.    
   </section>
   
-  <section>
+  <section id="test-rendering">
     <title>Test your rendering logic</title>
     <para>
     Testing web page is always a complex task and we usually verify rendering results by selenuim which is as a common

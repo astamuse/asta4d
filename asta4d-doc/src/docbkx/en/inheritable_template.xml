@@ -9,7 +9,7 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Flexible template</title>
   
-    <section>
+    <section id="inheritable-template">
       <title>Inheritable template</title>
       <para>
       The template of Asta4D is inheritable, child template can override, append or insert content to certain place
@@ -127,8 +127,8 @@
       
     </section>
 
-    <section>
-      <title>Parametrized embeding</title>
+    <section id="parametrized-embedding">
+      <title>Parametrized embedding</title>
       
       <para>
       Extra parameters can be passed to the target embeded file by specifying the DOM attribute of "afd:embed" when we
