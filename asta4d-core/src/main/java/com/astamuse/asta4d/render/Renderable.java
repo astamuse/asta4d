@@ -6,6 +6,7 @@ package com.astamuse.asta4d.render;
  * @author e-ryu
  * 
  */
+@FunctionalInterface
 public interface Renderable {
     public Renderer render();
 }

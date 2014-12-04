@@ -40,7 +40,7 @@ public class ListConvertUtil {
 
     private final static ExecutorService ParallelFallbackExecutor = Executors.newCachedThreadPool();
 
-    public final static <S, T> List<T> transform(Iterable<S> sourceList, RowConvertor<S, T> convertor) {
+    private final static <S, T> List<T> _transform(Iterable<S> sourceList, RowConvertor<S, T> convertor) {
         List<T> newList = new LinkedList<>();
         Iterator<S> it = sourceList.iterator();
         int idx = 0;
@@ -51,32 +51,41 @@ public class ListConvertUtil {
         return new ArrayList<>(newList);
     }
 
-    public final static <S, T> List<T> transform(Iterable<S> sourceList, ParallelRowConvertor<S, T> convertor) {
-        List<Future<T>> futureList = transformToFuture(sourceList, convertor);
-        List<T> newList = new ArrayList<>(futureList.size());
-        Iterator<Future<T>> it = futureList.iterator();
-        try {
-            while (it.hasNext()) {
-                newList.add(it.next().get());
+    public final static <S, T> List<T> transform(Iterable<S> sourceList, RowConvertor<S, T> convertor) {
+        if (convertor.isParallel()) {
+            List<Future<T>> futureList = transformToFuture(sourceList, convertor);
+            List<T> newList = new ArrayList<>(futureList.size());
+            Iterator<Future<T>> it = futureList.iterator();
+            try {
+                while (it.hasNext()) {
+                    newList.add(it.next().get());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
             }
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            return newList;
+        } else {
+            return _transform(sourceList, convertor);
         }
-        return newList;
     }
 
-    public final static <S, T> List<Future<T>> transformToFuture(final Iterable<S> sourceList, final ParallelRowConvertor<S, T> convertor) {
+    public final static <S, T> List<Future<T>> transformToFuture(final Iterable<S> sourceList, final RowConvertor<S, T> convertor) {
         final Context context = Context.getCurrentThreadContext();
         final Configuration conf = Configuration.getConfiguration();
         Boolean isInParallelConverting = context.getData(ParallelListConversionMark);
 
-        if (isInParallelConverting != null) {// recursive converting
-            switch (conf.getParallelRecursivePolicyForListRendering()) {
+        // for non-parallel converting, we will force to current thread converting.
+        boolean doParallel = convertor.isParallel();
+        ParallelRecursivePolicy policy = doParallel ? conf.getParallelRecursivePolicyForListRendering()
+                : ParallelRecursivePolicy.CURRENT_THREAD;
+
+        if (isInParallelConverting != null || !doParallel) {// recursive converting or non-parallel
+            switch (policy) {
             case EXCEPTION:
                 throw new RuntimeException(
                         "Parallel list converting is forbidden (by default) to avoid deadlock. You can change this policy by Configuration.setParallelRecursivePolicyForListRendering().");
             case CURRENT_THREAD:
-                List<T> list = transform(sourceList, (RowConvertor<S, T>) convertor);
+                List<T> list = _transform(sourceList, convertor);
                 return transform(list, new RowConvertor<T, Future<T>>() {
                     @Override
                     public Future<T> convert(int rowIndex, final T obj) {
@@ -113,7 +122,7 @@ public class ListConvertUtil {
                 List<Future<T>> futureList = new LinkedList<>();
                 int index = 0;
                 for (S obj : sourceList) {
-                    futureList.add(convertor.invoke(executor, index, obj));
+                    futureList.add(invokeByExecutor(executor, convertor, index, obj));
                     index++;
                 }
                 return futureList;
@@ -131,7 +140,7 @@ public class ListConvertUtil {
                         List<Future<T>> futureList = new LinkedList<>();
                         int index = 0;
                         for (S obj : sourceList) {
-                            futureList.add(convertor.invoke(executor, index, obj));
+                            futureList.add(invokeByExecutor(executor, convertor, index, obj));
                             index++;
                         }
                         return futureList;
@@ -145,4 +154,18 @@ public class ListConvertUtil {
 
     }
 
+    private static <S, T> Future<T> invokeByExecutor(ExecutorService es, RowConvertor<S, T> convertor, final int rowIndex, final S data) {
+        final Context context = Context.getCurrentThreadContext();
+        return es.submit(new Callable<T>() {
+            @Override
+            public T call() throws Exception {
+                return Context.with(context, new Callable<T>() {
+                    @Override
+                    public T call() throws Exception {
+                        return convertor.convert(rowIndex, data);
+                    }
+                });
+            }
+        });
+    }
 }
