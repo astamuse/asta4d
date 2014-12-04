@@ -288,6 +288,50 @@ public class MySnippet{
             </listitem>
         </itemizedlist>
       </listitem>
+      <listitem>
+        <para>Remove contents rather than add contents for conditional rendering</para>
+        <para>Sometimes we need to do conditional rendering. For instance, we assume that there are two tabs which can be switched by different query parameter, a possible way is 
+        to create the target tab contents dynamically at snippet side as following:</para>
+        <example>
+            <title>create contents dynamically</title>
+            <programlisting language="java">
+<![CDATA[
+public Renderer render(int id){
+    Element elem = null;
+    if(id == 0){
+        elem = ElementUtil.ParseAsSingle("<div>" + id + "</div>");
+    }else{
+        elem = ElementUtil.ParseAsSingle("<div class="great">" + id + "</div>");
+    }
+    return Renderer.create(".x-target", elem);
+}
+]]>
+            </programlisting>
+        </example>
+        <para>Apparently there is bad smell in above example, we generate DOM element at snippet side, which makes front-end refactoring difficult. The recommended way is to write all
+        the possible contents in template file and remove the unnecessary ones in snippet.</para>
+        <example>
+            <title>remove redundant contents</title>
+            <programlisting language="java">
+<![CDATA[
+public Renderer render(int id){
+    Renderer renderer = Renderer.create();
+    //remove the clear mark
+    renderer.add(".x-target-" + id, "-class", "x-clear");
+    //then clear the left ones which is not necessary
+    renderer.add(".x-clear", Clear);
+    return renderer;
+}
+]]>
+            </programlisting>
+            <programlisting language="xml">
+<![CDATA[
+<div class="x-target-0 x-clear">0<div>
+<div class="x-target-1 x-clear">1<div>
+]]>
+            </programlisting>
+        </example>
+      </listitem>
     </orderedlist>
   </sect1>
 
