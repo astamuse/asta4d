@@ -17,6 +17,7 @@
 package com.astamuse.asta4d.misc.spring;
 
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
@@ -29,8 +30,19 @@ public class SpringInitializableServlet extends Asta4dServlet {
      */
     private static final long serialVersionUID = 1L;
 
+    private ApplicationContext springContext = null;
+
     @Override
     protected WebApplicationConfiguration createConfiguration() {
+        springContext = createSpringContext(retrieveSpringConfigLocation());
+        return springContext.getBean(WebApplicationConfiguration.class);
+    }
+
+    protected ApplicationContext createSpringContext(String location) {
+        return new ClassPathXmlApplicationContext(location);
+    }
+
+    protected String retrieveSpringConfigLocation() {
         String configLocation = getServletConfig().getInitParameter("contextConfigLocation");
         if (configLocation.startsWith("classpath:")) {
             configLocation = configLocation.substring("classpath:".length());
@@ -38,8 +50,18 @@ public class SpringInitializableServlet extends Asta4dServlet {
         if (!configLocation.startsWith("/")) {
             configLocation = "/" + configLocation;
         }
-        ApplicationContext springContext = new ClassPathXmlApplicationContext(configLocation);
-        return springContext.getBean(WebApplicationConfiguration.class);
+        return configLocation;
     }
 
+    protected ApplicationContext getSpringContext() {
+        return springContext;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        ((ConfigurableApplicationContext) springContext).close();
+        springContext = null;
+
+    }
 }
