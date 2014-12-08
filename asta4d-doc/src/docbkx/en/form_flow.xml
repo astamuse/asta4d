@@ -9,5 +9,183 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Built in form flow</title>
   <remark>To be written. See the online sample: <ulink url="http://asta4dsample-xzer.rhcloud.com/form">Form Flow Sample</ulink></remark>
+  <para>Asta4D affords built-in form flow to accelerate development of traditional form process. Asta4D's form flow mechanism supports 
+  various flow style and supplies several classical flow style as built-in. For most cases, the developers only need to implement the init 
+  and update method to complete the entire form related logic.</para>
+  <sect1>
+    <title>Startup</title>
+    <sect2>
+      <title>Form and form field</title>
+      <para>In a form process, the basic conception is a POJO which represents the whole form data. In Asta4D, we use @Form annotation to annotate a
+      POJO as a form object which can be handled by the the form flow.</para>
+      <para>Also, there must be fields to represent the concrete data of a form, which can also be annotated by a set of form field annotations.
+      There are several built-in form field annotations for common cases and you can implement your own form field annotation too(See <xref linkend="chapter-detail-form-flow"/>
+      for more details about form field annotation).</para>
+      <example>
+        <title>annotations on form POJO and form fields</title>
+        <programlisting language="java">
+<![CDATA[
+@Form
+public class PersonForm extends Person{
+
+    @Hidden
+    public Integer getId() {
+        return super.getId();
+    }
+
+    @Input
+    public String getName() {
+        return super.getName();
+    }
+    
+    @Select(name = "bloodtype")
+    public BloodType getBloodType() {
+        return super.getBloodType();
+    }
+
+}
+]]>
+        </programlisting>
+        <remark>The @Hidden represents a hidden input of html, @Input represents a traditional common input and @Select is matched to the pull-down element in html. 
+                We also recommend to implement the form POJO by extending from the existing entity POJO, see details at <xref linkend="common-usage-form-flow"/>.
+        </remark>
+      </example>
+    </sect2>
+    <sect2>
+      <title>Form handler</title>
+      <para>After we defined our form POJO, we need to declare a request handler to handle the form request. There is an AbstractFormFlowHandler which affords most
+            necessary common operations of form process.</para>
+      <example>
+        <title>AbstractFormFlowHandler</title>
+        <programlisting language="java">
+<![CDATA[
+public abstract class AbstractFormFlowHandler<T> {
+
+    public AbstractFormFlowHandler(Class<T> formCls) {
+        this(formCls, SimpleFormProcessData.class);
+    }
+
+    public AbstractFormFlowHandler(Class<T> formCls, Class&lt;? extends FormProcessData> formProcessDataCls) {
+        this.formCls = formCls;
+        this.formProcessDataCls = formProcessDataCls;
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      <para>As the above source suggests, the AbstractFormFlowHandler has two constructors which requires the type of form POJO and also the type of a sub class of
+      "FormProcessData" in addition. In fact, FormProcessData is an interface as following:</para>
+      <example>
+        <title>FormProcessData</title>
+        <programlisting language="java">
+<![CDATA[
+public interface FormProcessData {
+
+    public abstract String getStepExit();
+
+    public abstract String getStepCurrent();
+
+    public abstract String getStepFailed();
+
+    public abstract String getStepSuccess();
+
+    public abstract String getStepBack();
+
+    public abstract String getStepTraceData();
+
+}
+]]>
+        </programlisting>
+      </example>
+      <para>The FormProcessData requires the developer to tell how to handle a form submit, the name of current step, the target step for success and the target for
+            failing, also want to know where to go if user want to go back to the previous step or exit. The getStepTraceData will return a data reference which holds
+            all the state of current flow(can be considered as a "session" id for the current in-progress form flow).</para>
+      <para>All the process data need to be submit every time so that the request handler can retrieve them from posted data and handle the data as expected. There is
+            also a predefined implementation of FormProcessData: SimpleFormProcessData, which is used as the default FormProcessData holder when not being specified.</para>
+      <example>
+        <title>FormProcessData</title>
+        <programlisting language="java">
+<![CDATA[
+@ContextDataSet
+public class SimpleFormProcessData implements FormProcessData {
+
+    @QueryParam(name = "step-exit")
+    private String stepExit;
+
+    @QueryParam(name = "step-current")
+    private String stepCurrent;
+
+    @QueryParam(name = "step-failed")
+    private String stepFailed;
+
+    @QueryParam(name = "step-success")
+    private String stepSuccess;
+
+    @QueryParam(name = "step-back")
+    private String stepBack;
+
+    @QueryParam(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR)
+    private String stepTraceData;
+}
+]]>
+        </programlisting>
+      </example>
+      <para>As the source suggests in the above source, the request parameter names have been decided so the developers have to comply with the convention of SimpleFormProcessData
+            if you do not want to implement your own FormProcessData. Thus, we will include the following HTML in our template file side commonly:</para>
+      <example>
+        <title>HTML for FormProcessData</title>
+        <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="confirm">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">send</button>
+<button type="submit" name="step-back" class="btn btn-sm btn-default" value="input">back</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+        </programlisting>
+      </example>
+      <para>Let us back to the AbstractFormFlowHandler, although AbstractFormFlowHandler has afforded most common operations, it is not convenient to use AbstractFormFlowHandler
+            directly. AbstractFormFlowHandler is designed as high layer abstraction of form flow and much concrete design is required for concrete cases. There are two built-in
+            out-of-box implementation for classical situations: OneStepFormHandler and MultiStepFormFlowHandler.</para>
+      <para>The OneStepFormHandler represents a most simple form process: there is a single input page, after submit, the submitted data will be handled and then return to a 
+            before-input page which is usually a list page of items. To use OneStepFormHandler, you have to put the following HTML in your form template files:</para>
+      <example>
+        <title>FormProcessData HTML for OneStepFormHandler</title>
+        <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="input">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">save</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+        </programlisting>
+        <remark>By OneStepFormHandler, the "step-current" and "step-failed" must be "input", the "step-success" must be "complete", the "step-exit" can be any non empty value
+                (usually "exit" is good enough).</remark>
+      </example>
+      <para>The MultiStepFormFlowHandler represents a little bit complicated situations: there are multiple steps in the flow. MultiStepFormFlowHandler assumes that there is 
+            at least one input page and one confirm page with a possible complete page. For the single input page case, MultiStepFormFlowHandler can be used directly, but if
+            there are multiple splitted input pages, the developer need to do more customization which will be introduced later.</para>
+      <para>For a classical 3-step form flow(input, confirm, complete), the following HTML must be put into the form template files:</para>
+      <example>
+        <title>FormProcessData HTML for OneStepFormHandler</title>
+        <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="input">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">save</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+        </programlisting>
+        <remark>By OneStepFormHandler, the "step-current" and "step-failed" must be "input", the "step-success" must be "complete", the "step-exit" can be any non empty value
+                (usually "exit" is good enough).</remark>
+      </example>
+    </sect2>
+    <sect2>
+      <title>form snippet</title>
+    </sect2>
+    <sect2>
+      <title>html template of form</title>
+    </sect2>
+  </sect1>
   
 </chapter>

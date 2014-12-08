@@ -74,6 +74,7 @@
     <xi:include href="en/detail_snippet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_var_injection.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_url_rule.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    <xi:include href="en/detail_form_flow.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_i18n.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_servlet_conf.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     <xi:include href="en/detail_integration_spring.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
