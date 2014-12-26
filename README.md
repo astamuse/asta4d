@@ -12,7 +12,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 mvn archetype:generate                       \
     -DarchetypeGroupId=com.astamuse          \
     -DarchetypeArtifactId=asta4d-archetype   \
-    -DarchetypeVersion=1.0-b3                \
+    -DarchetypeVersion=1.0-b4                \
     -DgroupId=<your.groupid>                 \
     -DartifactId=<your-artifactId>
 ```
@@ -20,7 +20,7 @@ mvn archetype:generate                       \
 or simply follow the wizard by filtered list:
 
 ```batch
-mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b3
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b4
 ```
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
@@ -106,9 +106,9 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
         }
     
         public Renderer setProfile() {
-            Renderer render = new GoThroughRenderer();
+            Renderer render = Renderer.create();
             render.add("p#name span", "asta4d");
-            render.add("p#age span", "20");
+            render.add("p#age span", 20);
             return render;
         }
     }
@@ -223,10 +223,6 @@ Want to do:
 -   cachable snippet
 
     A rendered snippet result should can be cached.
-
--   default value of context data
-    
-    The current @ContextData does not support declaring default value, we need support it and additionally Unified EL([JSR341](https://jcp.org/en/jsr/detail?id=341)) is desired.
 
 -   customize data value convertor
 
