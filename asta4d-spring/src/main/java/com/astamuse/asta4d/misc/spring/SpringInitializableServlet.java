@@ -59,9 +59,8 @@ public class SpringInitializableServlet extends Asta4dServlet {
 
     @Override
     public void destroy() {
-        super.destroy();
         ((ConfigurableApplicationContext) springContext).close();
         springContext = null;
-
+        super.destroy();
     }
 }
