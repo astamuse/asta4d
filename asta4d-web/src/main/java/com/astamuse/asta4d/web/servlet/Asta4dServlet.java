@@ -135,10 +135,12 @@ public class Asta4dServlet extends HttpServlet {
 
     @Override
     public void destroy() {
+        // TODO we want a more elegant way to release the threads rather than shutdown them explicitly
         ListExecutorServiceUtil.getExecutorService().shutdownNow();
         SnippetExecutorServiceUtil.getExecutorService().shutdownNow();
         WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().stop();
-        WebApplicationConfiguration.setConfiguration(null);// gc
+        WebApplicationConfiguration.setConfiguration(null);// for gc
+        System.gc();// if possible
         super.destroy();
     }
 

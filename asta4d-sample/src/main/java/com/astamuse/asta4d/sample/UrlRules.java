@@ -39,6 +39,17 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
     @Override
     public void initUrlMappingRules(UrlMappingRuleHelper rules) {
+
+        // global error handling
+
+        // @ShowCode:showGlobal404RuleStart
+        rules.addGlobalForward(PageNotFoundException.class, "/templates/errors/404.html", 404);
+        // @ShowCode:showGlobal404RuleEnd
+
+        // @ShowCode:showGlobalErrorRuleStart
+        rules.addGlobalForward(Throwable.class, "/templates/errors/500.html", 500);
+        // @ShowCode:showGlobalErrorRuleEnd
+
         //@formatter:off
         rules.add("/", "/templates/index.html");
         rules.add("/index", "/templates/index.html");
@@ -46,6 +57,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
         rules.add(GET, "/redirect-to-index").redirect("p:/index");
         
         initSampleRules(rules);
+
         //@formatter:on
     }
 
@@ -130,8 +142,21 @@ public class UrlRules implements UrlMappingRuleInitializer {
            
         rules.add("/localize", "/templates/localize.html");
         
+        rules.add("/error-sample/handler").handler(new Object(){
+            @RequestHandler
+            public void handle(){
+                throw new RuntimeException("error in /error-sample/handler"); 
+            }
+        });
         
+        rules.add("/error-sample/handler404").handler(new Object(){
+            @RequestHandler
+            public void handle(){
+                throw new PageNotFoundException();
+            }
+        });
         
+        rules.add("/error-sample/snippet", "/templates/snippet-error.html");
         
         //@formatter:on
     }
