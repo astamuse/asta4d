@@ -64,6 +64,24 @@ public class InjectUtilForTypeUnMatchTest extends BaseTest {
     }
 
     @Test(expectedExceptions = DataOperationException.class, expectedExceptionsMessageRegExp = ".*cannot be coverted from.*")
+    public void exceptionWhenInjectableOnMethodParam2() throws Exception {
+        Context ctx = Context.getCurrentThreadContext();
+        ctx.setData("holder", "xx77");
+
+        Object[] params = InjectUtil.getMethodInjectParams(getMethod("requestHolderForException2", int.class));
+
+    }
+
+    @Test(expectedExceptions = DataOperationException.class, expectedExceptionsMessageRegExp = ".*cannot be coverted from.*")
+    public void exceptionWhenInjectableOnMethodParam3() throws Exception {
+        Context ctx = Context.getCurrentThreadContext();
+        ctx.setData("holder", "xx77");
+
+        Object[] params = InjectUtil.getMethodInjectParams(getMethod("requestHolderForException3", int.class));
+
+    }
+
+    @Test(expectedExceptions = DataOperationException.class, expectedExceptionsMessageRegExp = ".*cannot be coverted from.*")
     public void exceptionWhenInjectArrayDataOnMethodSetParam() throws Exception {
         Context ctx = Context.getCurrentThreadContext();
         ctx.setData("f1", new String[] { "xx77" });
@@ -78,6 +96,14 @@ public class InjectUtilForTypeUnMatchTest extends BaseTest {
 
     @Test(enabled = false)
     public void requestHolderForException(@ContextData(typeUnMatch = TypeUnMacthPolicy.EXCEPTION) int holder) {
+    }
+
+    @Test(enabled = false)
+    public void requestHolderForException2(@ContextData int holder) {
+    }
+
+    @Test(enabled = false)
+    public void requestHolderForException3(int holder) {
     }
 
     @ContextDataSet
