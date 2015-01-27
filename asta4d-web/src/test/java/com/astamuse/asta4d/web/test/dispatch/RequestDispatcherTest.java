@@ -192,6 +192,9 @@ public class RequestDispatcherTest {
         
         rules.add("/json500").handler(new TestJsonHandler(new RuntimeException())).json();
         
+        rules.add("/variableinjection/{var_1}/{var_2}", "/templates/variableinjection.html");
+        rules.add("/variableinjection_regex/{var_1}/{var_2:[0-9]+}", "/templates/variableinjection_regex.html");
+        
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
@@ -236,7 +239,14 @@ public class RequestDispatcherTest {
                 
                 //TODO it seems that there is missing the way to declare return status for json transforming when exceptions occur 
                 //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
-                
+
+                // variableinjection (default and regex pattern)
+                { "get", "/variableinjection/foo/25", 0, getExpectedPage("/templates/variableinjection.html")},
+                { "get", "/variableinjection/foo/NaN", 0, getExpectedPage("/templates/variableinjection.html")},
+                { "get", "/variableinjection_regex/foo/25", 0, getExpectedPage("/templates/variableinjection_regex.html")},
+                { "get", "/variableinjection_regex/foo/NaN", 404, getExpectedPage("/notfound")},
+
+
                 { "get", "/nofile", 404, getExpectedPage("/notfound")},
                 
                 
