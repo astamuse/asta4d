@@ -261,7 +261,7 @@ public class SimpleFormProcessData implements FormProcessData {
       <title>HTML template of form</title>
       <para>As the common pages of Asta4D, the HTML template of a form is as pure HTML too.</para>
       <example>
-        <title>form template</title>
+        <title>Form template</title>
         <programlisting language="xml">                                                                 
 <![CDATA[
 <form method="post" afd:render="form.SingleInputFormSnippet">
@@ -331,9 +331,102 @@ public class PersonForm {
     </sect2>
     <sect2>
       <title>Form snippet</title>
+      <para>To render the form values to template, we have to declare a snippet which extends from the AbstractFormFlowSnippet. As the same
+        as the built-in two classical handler, there are two corresponding snippet class: OneStepFormSnippet and MultiStepFormFlowSnippet.
+      </para>
+      <example>
+        <title>Form snippet implementation</title>
+        <programlisting language="java">                                                                 
+<![CDATA[
+public class SingleInputFormSnippet extends OneStepFormSnippet {
+
+    /**
+     * override this method to supply the option data for select, radio and checkbox.
+     */
+    @Override
+    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+        List<FormFieldPrepareRenderer> list = new LinkedList<>();
+
+        list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
+
+        list.add(new RadioPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
+
+        list.add(new CheckboxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
+
+        return list;
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      <para>Developers are required to override the retrieveFieldPrepareRenderers method to supply extra data for field rendering, 
+            commonly the list of option data is required.</para>
+      <para>SelectPrepareRenderer can be used to afford option list for select element, RadioPrepareRenderer and CheckboxPrepareRenderer
+            can be used for radio and checbox input element.</para>
+      <para>Finally, do not forget to put your snippet declaration in your template file.</para>
+      <example>
+        <title>Declare snippet in form template</title>
+        <programlisting language="xml">
+<![CDATA[
+<form method="post" afd:render="form.SingleInputFormSnippet">
+</form>
+]]>
+        </programlisting>
+      </example>
+      <para>Basically, until now we have gotten a workable form flow implementation. There is only one thing left that is validation which
+            will be described in the next section.</para>
     </sect2>
     <sect2>
       <title>Validation</title>
+      <para>Asta4D allows any validation mechanism to be integrated and supports Bean Validation 1.1(JSR349 and JSR303) by default. We will explain
+            how to use the built-in Bean Validation mechanism in this section. The later section will introduce how to customize the validation.</para>
+      <para>To use Bean Validation, just simply add validation annotations to your form POJO as following:</para>
+      <example>
+        <title>Declare validation annotations</title>
+        <programlisting language="java">
+<![CDATA[
+@NotBlank
+@Size(max = 6)
+public String getName() {
+    return name;
+}
+
+public void setName(String name) {
+    this.name = name;
+}
+
+@Max(45)
+@NotNull
+public Integer getAge() {
+    return age;
+}
+]]>
+        </programlisting>
+      </example>
+      <para>More details of Bean Validation can be found at <ulink url="http://beanvalidation.org/">Bean Validation</ulink>. 
+            We are also using Hibernate Validator as the implementation(the only existing one in the earth currently). See details at
+            <ulink url="http://hibernate.org/validator/">Hibernate Validator</ulink>.</para>
+      <para>The validation will be invoked before the calling of method updateForm, if there is any validation error, the page will be
+            forwarded to the step specified by "step-failed" which is usually the input page, and the validation error message will be
+            rendered to page too. More details about validation message rendering will be introduced in later sections.</para>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Customize behaviours</title>
+    <sect2>
+      <title>Cascade form POJO and array field</title>
+    </sect2>
+    <sect2>
+      <title>Customize form flow definition</title>
+    </sect2>
+    <sect2>
+      <title>Customize form field annotation</title>
+    </sect2>
+    <sect2>
+      <title>Customize validation</title>
+    </sect2>
+    <sect2>
+      <title>Customize message rendering</title>
     </sect2>
 
   </sect1>
