@@ -504,7 +504,7 @@ public class InjectUtil {
             cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, target.type.getAnnotations());
             target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
-            target.typeUnMatch = cd == null ? TypeUnMacthPolicy.DEFAULT_VALUE : cd.typeUnMatch();
+            target.typeUnMatch = cd == null ? TypeUnMacthPolicy.EXCEPTION : cd.typeUnMatch();
             if (StringUtils.isEmpty(target.name)) {
                 target.name = parameterNames[i];
             }

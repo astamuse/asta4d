@@ -1,5 +1,10 @@
 ## Release Notes
 
+-   1.0-b4 (2014.12.26)
+
+    ENHANCE
+    - shutdown all threads by Asta4D at servlet's destroying
+    
 -   1.0-b3 (2014.11.20)
 
     ADD

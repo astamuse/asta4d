@@ -28,6 +28,7 @@ import com.astamuse.asta4d.web.annotation.FlashData;
 import com.astamuse.asta4d.web.annotation.HeaderData;
 import com.astamuse.asta4d.web.annotation.PathVar;
 import com.astamuse.asta4d.web.annotation.QueryParam;
+import com.astamuse.asta4d.web.annotation.RequestContextData;
 import com.astamuse.asta4d.web.annotation.SessionData;
 
 public class WebSpecialScopeConvertor implements AnnotationConvertor<Annotation, ContextData> {
@@ -45,6 +46,8 @@ public class WebSpecialScopeConvertor implements AnnotationConvertor<Annotation,
             scope = WebApplicationContext.SCOPE_PATHVAR;
         } else if (originalAnnotation instanceof QueryParam) {
             scope = WebApplicationContext.SCOPE_QUERYPARAM;
+        } else if (originalAnnotation instanceof RequestContextData) {
+            scope = WebApplicationContext.SCOPE_REQUEST;
         } else if (originalAnnotation instanceof SessionData) {
             scope = WebApplicationContext.SCOPE_SESSION;
         }
