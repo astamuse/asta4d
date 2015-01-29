@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.web.dispatch.mapping.ext;
 
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class HandyRuleWithRemap extends HandyRule {
@@ -28,6 +29,11 @@ public class HandyRuleWithRemap extends HandyRule {
     public HandyRuleWithAttrOnly reMapTo(String ruleId) {
         this.var(UrlMappingRuleHelper.REMAP_ID_VAR_NAME, ruleId);
         return new HandyRuleWithAttrOnly(this.rule);
+    }
+
+    public HandyRule matcher(DispatcherRuleMatcher ruleMatcher) {
+        rule.setRuleMatcher(ruleMatcher);
+        return this;
     }
 
 }

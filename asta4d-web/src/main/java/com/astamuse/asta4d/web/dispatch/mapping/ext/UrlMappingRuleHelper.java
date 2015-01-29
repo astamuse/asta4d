@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.util.IdGenerator;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
@@ -146,6 +148,8 @@ public class UrlMappingRuleHelper {
     private ResultTransformer restTransformer = null;
 
     private ResultTransformer defaultRestTransformer = new StopTransformer();
+
+    private DispatcherRuleMatcher defaultRuleMatcher = WebApplicationConfiguration.getWebApplicationConfiguration().getRuleMatcher();
 
     public void setDefaultMethod(HttpMethod defaultMethod) {
         this.defaultMethod = defaultMethod;
@@ -439,6 +443,7 @@ public class UrlMappingRuleHelper {
         rule.setSourcePath(sourcePath);
         rule.setSeq(Sequencer.incrementAndGet());
         rule.setPriority(DEFAULT_PRIORITY);
+        rule.setRuleMatcher(defaultRuleMatcher);
 
         return rule;
     }

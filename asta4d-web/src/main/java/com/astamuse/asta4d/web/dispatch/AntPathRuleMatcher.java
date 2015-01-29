@@ -18,7 +18,6 @@
 package com.astamuse.asta4d.web.dispatch;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.astamuse.asta4d.web.copyleft.SpringAntPathMatcher;
@@ -31,33 +30,45 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
  * @author e-ryu
  * 
  */
-public class AntPathRuleExtractor implements DispatcherRuleExtractor {
+public class AntPathRuleMatcher implements DispatcherRuleMatcher {
+
     private SpringAntPathMatcher pathMatcher = new SpringAntPathMatcher();
 
     @Override
-    public UrlMappingResult findMappedRule(List<UrlMappingRule> ruleList, HttpMethod method, String uri, String queryString) {
+    public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, String uri, String queryString) {
         UrlMappingResult mappingResult = null;
-        String srcPath;
-        HttpMethod ruleMethod;
-        for (UrlMappingRule rule : ruleList) {
-            ruleMethod = rule.getMethod();
-            if (ruleMethod != null) {
-                if (ruleMethod != method) {
-                    continue;
-                }
-            }
-            srcPath = rule.getSourcePath();
-            if (pathMatcher.match(srcPath, uri)) {
+
+        if (matchMethod(rule, method)) {
+            if (matchPath(rule, uri)) {
                 mappingResult = new UrlMappingResult();
-                Map<String, Object> pathVarMap = new HashMap<>();
-                pathVarMap.putAll(pathMatcher.extractUriTemplateVariables(srcPath, uri));
-                mappingResult.setPathVarMap(pathVarMap);
+                mappingResult.setPathVarMap(variables(rule, uri));
                 mappingResult.setRule(rule);
-                break;
             }
         }
 
         return mappingResult;
+    }
 
+    protected boolean matchMethod(UrlMappingRule rule, HttpMethod method) {
+        HttpMethod ruleMethod = rule.getMethod();
+
+        if (ruleMethod != null) {
+            if (ruleMethod != method) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected boolean matchPath(UrlMappingRule rule, String uri) {
+        return pathMatcher.match(rule.getSourcePath(), uri);
+    }
+
+    protected Map<String, Object> variables(UrlMappingRule rule, String uri) {
+        Map<String, Object> pathVarMap = new HashMap<>();
+
+        pathVarMap.putAll(pathMatcher.extractUriTemplateVariables(rule.getSourcePath(), uri));
+        return pathVarMap;
     }
 }

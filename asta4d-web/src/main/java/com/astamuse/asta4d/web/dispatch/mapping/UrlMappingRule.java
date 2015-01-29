@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
@@ -47,11 +48,13 @@ public class UrlMappingRule {
 
     private int priority;
 
+    private DispatcherRuleMatcher ruleMatcher;
+
     private UrlMappingRule unModifiableDelegator;
 
     public UrlMappingRule(int seq, HttpMethod method, String sourcePath, List<Object> handlerList,
             List<RequestHandlerInterceptor> interceptorList, Map<String, Object> extraVarMap, List<String> attributeList,
-            List<ResultTransformer> resultTransformerList, int priority) {
+            List<ResultTransformer> resultTransformerList, int priority, DispatcherRuleMatcher ruleMatcher) {
         super();
         this.seq = seq;
         this.method = method;
@@ -62,6 +65,7 @@ public class UrlMappingRule {
         this.attributeList = attributeList;
         this.resultTransformerList = resultTransformerList;
         this.priority = priority;
+        this.ruleMatcher = ruleMatcher;
     }
 
     public UrlMappingRule() {
@@ -145,6 +149,14 @@ public class UrlMappingRule {
         this.priority = priority;
     }
 
+    public DispatcherRuleMatcher getRuleMatcher() {
+        return ruleMatcher;
+    }
+
+    public void setRuleMatcher(DispatcherRuleMatcher ruleMatcher) {
+        this.ruleMatcher = ruleMatcher;
+    }
+
     public List<ResultTransformer> getResultTransformerList() {
         return resultTransformerList;
     }
@@ -165,7 +177,7 @@ public class UrlMappingRule {
     public String toString() {
         return "UrlMappingRule [seq=" + seq + ", method=" + method + ", sourcePath=" + sourcePath + ", handlerList=" + handlerList +
                 ", interceptorList=" + interceptorList + ", extraVarMap=" + extraVarMap + ", attributeList=" + attributeList +
-                ", resultTransformerList=" + resultTransformerList + ", priority=" + priority + "]";
+                ", resultTransformerList=" + resultTransformerList + ", priority=" + priority + ", ruleMatcher=" + ruleMatcher + "]";
     }
 
     private static class UnModifiableUrlMappingRule extends UrlMappingRule {
@@ -244,6 +256,14 @@ public class UrlMappingRule {
         }
 
         public void setPriority(int priority) {
+            throw new UnsupportedOperationException();
+        }
+
+        public DispatcherRuleMatcher getRuleMatcher() {
+            return rule.getRuleMatcher();
+        }
+
+        public void setRuleMatcher(DispatcherRuleMatcher ruleMatcher) {
             throw new UnsupportedOperationException();
         }
 
