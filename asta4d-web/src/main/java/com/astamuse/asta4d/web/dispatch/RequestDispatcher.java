@@ -74,7 +74,14 @@ public class RequestDispatcher {
 
         String queryString = request.getQueryString();
 
-        UrlMappingResult result = conf.getRuleExtractor().findMappedRule(ruleList, method, uri, queryString);
+        UrlMappingResult result = null;
+
+        for (UrlMappingRule rule : ruleList) {
+            result = rule.getRuleMatcher().match(rule, method, uri, queryString);
+            if (result != null) {
+                break;
+            }
+        }
 
         // if not found result, we do not need return 404, instead of user
         // defining all match rule

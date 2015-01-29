@@ -17,8 +17,6 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
-import java.util.List;
-
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
@@ -27,14 +25,14 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
  * @author e-ryu
  * 
  */
-public interface DispatcherRuleExtractor {
+public interface DispatcherRuleMatcher {
 
     /**
      * 
      * @param request
-     * @param ruleList
+     * @param rule
      * @return
      */
-    public UrlMappingResult findMappedRule(List<UrlMappingRule> ruleList, HttpMethod method, String uri, String queryString);
+    public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, String uri, String queryString);
 
 }
