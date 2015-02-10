@@ -88,8 +88,6 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).rest();
         
-        rules.add("/", "/templates/index.html");
-
         // @ShowCode:showSuccessStart
         rules.add("/handler")
              .handler(LoginHandler.class)
