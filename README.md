@@ -1,10 +1,10 @@
 ## Quick start
 
-[User Guide](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT/userguide/index.html)(English, being updated at irregular intervals)
+[User Guide](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT/userguide/index.html)(being updated at irregular intervals)
 
 [JavaDoc](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT/apidocs/)
 
-[Online Sample](http://asta4dsample-xzer.rhcloud.com/)(sometimes slow, be patient)
+[Online Sample](http://asta4dsample-xzer.rhcloud.com/)
 
 There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
 
