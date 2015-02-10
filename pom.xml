@@ -33,14 +33,16 @@
 
   <developers>
     <developer>
-      <id>s.otani</id>
-      <name>Shunsuke Otani</name>
-      <email>s.otani@astamuse.co.jp</email>
-    </developer>
-    <developer>
       <id>e.ryu</id>
       <name>Rui Liu</name>
-      <email>e.ryu@astamuse.co.jp</email>
+    </developer>
+    <developer>
+      <id>s.otani</id>
+      <name>Shunsuke Otani</name>
+    </developer>
+    <developer>
+      <id>t.ishima</id>
+      <name>Takayuki Ishima</name>
     </developer>
   </developers>
 
@@ -102,7 +104,7 @@
         <executions>
           <execution>
             <id>create-java-doc-separated</id>
-            <phase>package</phase>
+            <phase>site</phase>
             <goals>
               <goal>jar</goal>
             </goals>

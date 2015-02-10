@@ -1,8 +1,8 @@
 ## Quick start
 
-[User Guide](http://astamuse.github.io/asta4d/userguide/index.html)(English, being updated at irregular intervals)
+[User Guide](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT-userguide/index.html)(English, being updated at irregular intervals)
 
-[JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
+[JavaDoc](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT-apidocs/)
 
 [Online Sample](http://asta4dsample-xzer.rhcloud.com/)(sometimes slow, be patient)
 
