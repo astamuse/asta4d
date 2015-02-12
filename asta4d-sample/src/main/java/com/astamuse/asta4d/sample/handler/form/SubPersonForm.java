@@ -18,28 +18,21 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.beanutils.BeanUtils;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
-import com.astamuse.asta4d.web.form.annotation.renderable.Checkbox;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
-import com.astamuse.asta4d.web.form.annotation.renderable.Radio;
-import com.astamuse.asta4d.web.form.annotation.renderable.Select;
-import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
 
 //@ShowCode:showPersonFormStart
 //@Form to tell the framework this class can be initialized from context
 //extend from the entity POJO to annotate form field definitions on getters.
 @Form
-public class PersonForm extends Person {
+public class SubPersonForm extends Person {
 
-    public static PersonForm buildFromPerson(Person p) {
-        PersonForm form = new PersonForm();
+    public static SubPersonForm buildFromPerson(Person p) {
+        SubPersonForm form = new SubPersonForm();
         try {
             BeanUtils.copyProperties(form, p);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -49,49 +42,21 @@ public class PersonForm extends Person {
     }
 
     @Override
-    @Hidden
+    @Hidden(name = "subperson-id-@")
     public Integer getId() {
         return super.getId();
     }
 
     @Override
-    @Input
+    @Input(name = "subperson-name-@")
     public String getName() {
         return super.getName();
     }
 
     @Override
-    @Input
+    @Input(name = "subperson-age-@")
     public Integer getAge() {
         return super.getAge();
-    }
-
-    @Override
-    @Select(name = "bloodtype")
-    @NotNull
-    public BloodType getBloodType() {
-        return super.getBloodType();
-    }
-
-    // the field name would be displayed as "gender" rather than the original field name "sex"
-    @Override
-    @Radio(nameLabel = "gender")
-    @NotNull
-    public SEX getSex() {
-        return super.getSex();
-    }
-
-    @Override
-    @Checkbox
-    @NotEmpty
-    public Language[] getLanguage() {
-        return super.getLanguage();
-    }
-
-    @Override
-    @Textarea
-    public String getMemo() {
-        return super.getMemo();
     }
 
 }

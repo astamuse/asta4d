@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.sample.handler.form.SubPersonForm;
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.SelectorUtil;
@@ -39,9 +40,15 @@ public class ListSnippet {
                 renderer.add(".x-check input", "value", row.getId());
                 renderer.add(".x-name", row.getName());
                 renderer.add(".x-age", row.getAge());
-                renderer.add(".x-sex", row.getSex());
-                renderer.add(".x-blood", row.getBloodType());
-                renderer.add(".x-language span", Arrays.asList(row.getLanguage()));
+                if (row instanceof SubPersonForm) {
+                    renderer.add(".x-sex", "-");
+                    renderer.add(".x-blood", "-");
+                    renderer.add(".x-language", "-");
+                } else {
+                    renderer.add(".x-sex", row.getSex());
+                    renderer.add(".x-blood", row.getBloodType());
+                    renderer.add(".x-language span", Arrays.asList(row.getLanguage()));
+                }
                 return renderer;
             }
         });

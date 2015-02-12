@@ -213,17 +213,33 @@ public abstract class AbstractFormFlowHandler<T> {
      */
     protected T generateFormInstanceFromContext() {
         try {
-
             final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
-            List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
             Context currentContext = Context.getCurrentThreadContext();
-            for (final AnnotatedPropertyInfo field : list) {
-                CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
-                if (cff != null) {
+
+            return assignArrayValueFromContext(formCls, form, currentContext);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Assign array value to cascade forms of array type from context by recursively self call.
+     * 
+     * @param formCls
+     * @param form
+     * @param currentContext
+     * @return
+     * @throws Exception
+     */
+    private T assignArrayValueFromContext(Class formCls, T form, Context currentContext) throws Exception {
+        List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
+        for (final AnnotatedPropertyInfo field : list) {
+            CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
+            if (cff != null) {
+                if (field.getType().isArray()) {// a cascade form for array
                     if (field.retrieveValue(form) != null) {
                         continue;
                     }
-
                     if (StringUtils.isEmpty(cff.arrayLengthField())) {
                         continue;
                     }
@@ -264,13 +280,15 @@ public abstract class AbstractFormFlowHandler<T> {
                         });// end runnable and context.with
                     }// end for loop
 
-                    field.assginValue(form, array);
+                    field.assignValue(form, array);
+
+                } else {
+                    // a cascade form for not array
+                    assignArrayValueFromContext(field.getType(), (T) field.retrieveValue(form), currentContext);
                 }
             }
-            return form;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+        return form;
     }
 
     /**

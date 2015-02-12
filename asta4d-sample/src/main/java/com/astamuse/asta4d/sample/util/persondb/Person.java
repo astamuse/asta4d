@@ -24,7 +24,6 @@ import javax.validation.constraints.Size;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.util.collection.RowConvertor;
@@ -110,7 +109,6 @@ public class Person implements IdentifiableEntity, Cloneable {
         this.age = age;
     }
 
-    @NotNull
     public BloodType getBloodType() {
         return bloodType;
     }
@@ -119,7 +117,6 @@ public class Person implements IdentifiableEntity, Cloneable {
         this.bloodType = bloodType;
     }
 
-    @NotNull
     public SEX getSex() {
         return sex;
     }
@@ -128,7 +125,6 @@ public class Person implements IdentifiableEntity, Cloneable {
         this.sex = sex;
     }
 
-    @NotEmpty
     public Language[] getLanguage() {
         return language;
     }

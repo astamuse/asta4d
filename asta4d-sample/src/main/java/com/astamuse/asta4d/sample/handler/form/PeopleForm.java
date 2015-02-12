@@ -18,68 +18,61 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import javax.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 
-//@ShowCode:showCascadeFormStart
+//@ShowCode:showPeapleFormStart
 @Form
-public class CascadeForm {
+public class PeopleForm {
 
     // a field with @CascadeFormField without arrayLengthField configured will be treated a simple reused form POJO
     @CascadeFormField
     @Valid
-    private PeopleForm peopleForm;
+    // @NotEmpty
+    private PersonForm mainPersonForm;
 
-    @Hidden(name = "job-experience-length")
-    private Integer jobExperienceLength;
+    @Hidden(name = "subperson-length")
+    private Integer subpersonLength;
 
     // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
-    @CascadeFormField(name = "job-experience", arrayLengthField = "job-experience-length", containerSelector = "[cascade-ref=job-experience-row-@]")
+    @CascadeFormField(name = "subperson", arrayLengthField = "subperson-length", containerSelector = "[cascade-ref=subperson-row-@]")
     @Valid
-    @NotEmpty
-    private JobForm[] jobForms;
-
-    // show the input comments only when edit mode
-
-    @AvailableWhenEditOnly(selector = "#input-comment")
-    private String inputComment;
+    private SubPersonForm[] personForms;
 
     // show the add and remove buttons only when edit mode
 
-    @AvailableWhenEditOnly(selector = "#job-experience-add-btn")
-    private String jobExperienceAddBtn;
+    @AvailableWhenEditOnly(selector = "#subperson-add-btn")
+    private String subpersonAddBtn;
 
-    @AvailableWhenEditOnly(selector = "#job-experience-remove-btn")
-    private String jobExperienceRemoveBtn;
+    @AvailableWhenEditOnly(selector = "#subperson-remove-btn")
+    private String subpersonRemoveBtn;
 
-    // @ShowCode:showCascadeFormEnd
+    // @ShowCode:showPeapleFormEnd
 
-    public PeopleForm getPeopleForm() {
-        return peopleForm;
+    public PersonForm getMainPersonForm() {
+        return mainPersonForm;
     }
 
-    public void setPeopleForm(PeopleForm peopleForm) {
-        this.peopleForm = peopleForm;
+    public void setMainPersonForm(PersonForm mainPersonForm) {
+        this.mainPersonForm = mainPersonForm;
     }
 
-    public Integer getJobExperienceLength() {
-        return jobExperienceLength;
+    public Integer getSubpersonLength() {
+        return subpersonLength;
     }
 
-    public void setJobExperienceLength(Integer jobExperienceLength) {
-        this.jobExperienceLength = jobExperienceLength;
+    public void setSubpersonLength(Integer subpersonLength) {
+        this.subpersonLength = subpersonLength;
     }
 
-    public JobForm[] getJobForms() {
-        return jobForms;
+    public SubPersonForm[] getPersonForms() {
+        return personForms;
     }
 
-    public void setJobForms(JobForm[] jobForms) {
-        this.jobForms = jobForms;
+    public void setPersonForms(SubPersonForm[] personForms) {
+        this.personForms = personForms;
     }
 
 }
