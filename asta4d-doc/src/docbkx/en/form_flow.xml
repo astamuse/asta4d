@@ -418,6 +418,7 @@ public Integer getAge() {
     </sect2>
     <sect2>
       <title>Customize form flow definition</title>
+      <para>(Include about how to implement multiple input steps)</para>
     </sect2>
     <sect2>
       <title>Customize form field annotation</title>

@@ -130,7 +130,7 @@ rules.add("/user/{id}").id("user-page")
   <title>Restful and ajax</title>
   <para>For the request which does not require response of html files, such as restful or ajax request, request handler can be used to cope
   with such situation.</para>
-  <para>There is a rest() method which does nothing on the current rule but can be used as a comment to suggest that the current rule will 
+  <para>There is a rest() method which does nothing on the current rule by default but can be used as a hint to suggest that the current rule will 
   response customized contents as a restful api. A request handler can return a ContentProvider to supply customized response content. 
   Details of ContenProvider can be found at later chapters, here we only show examples of how to response customized contents.</para>
   
@@ -210,6 +210,12 @@ public class GetHandler {
 ]]>
     </programlisting>
   </example>
+  
+  <remark>By default, a rest rule will do nothing on the result of handler and a ContentProvider instance is expected, by contrast,
+          there is a built-in json transformer for rules which are declared as json. However, developers can still register a customized
+          result transformer for rest rules or even register a customized json transformer to override the default built-in implementation.
+          See details at <xref linkend="UrlMappingRuleInitializer"/></remark>
+  
   <para>Further, since a request handler can access HttpServletResponse instance directly, developer can do more complex customization
   on HttpServletResponse instance directly.</para>
   
