@@ -62,11 +62,16 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
     public static class Add extends CascadeFormHandler {
         @Override
         protected CascadeForm createInitForm() {
-            PersonForm pform = new PersonForm();
+            PeopleForm pform = new PeopleForm();
+            PersonForm mpform = new PersonForm();
+            SubPersonForm[] pforms = new SubPersonForm[0];
             JobForm[] jforms = new JobForm[0];
 
             CascadeForm cf = new CascadeForm();
-            cf.setPersonForm(pform);
+            pform.setMainPersonForm(mpform);
+            pform.setPersonForms(pforms);
+            pform.setSubpersonLength(pforms.length);
+            cf.setPeopleForm(pform);
             cf.setJobForms(jforms);
             cf.setJobExperienceLength(jforms.length);
 
@@ -75,11 +80,16 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
 
         @Override
         protected void updateForm(CascadeForm form) {
-            PersonForm pform = form.getPersonForm();
+            PeopleForm pform = form.getPeopleForm();
+            PersonForm mperson = pform.getMainPersonForm();
+            SubPersonForm[] people = pform.getPersonForms();
             JobForm[] jobs = form.getJobForms();
-            PersonDbManager.instance().add(pform);
+            PersonDbManager.instance().add(mperson);
+            for (SubPersonForm person : people) {
+                PersonDbManager.instance().add(person);
+            }
             for (JobForm job : jobs) {
-                job.setPersonId(pform.getId());
+                job.setPersonId(mperson.getId());
                 JobExperenceDbManager.instance().add(job);
             }
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
@@ -96,7 +106,8 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
         protected CascadeForm createInitForm() throws Exception {
             CascadeForm superForm = super.createInitForm();
 
-            PersonForm pform = PersonForm.buildFromPerson(PersonDbManager.instance().find(superForm.getPersonForm().getId()));
+            PersonForm pform = PersonForm.buildFromPerson(PersonDbManager.instance().find(
+                    superForm.getPeopleForm().getMainPersonForm().getId()));
             List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pform.getId());
             List<JobForm> jobFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
                 @Override
@@ -107,7 +118,12 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
             JobForm[] jforms = jobFormList.toArray(new JobForm[jobFormList.size()]);
 
             CascadeForm cf = new CascadeForm();
-            cf.setPersonForm(pform);
+            PeopleForm peopleForm = new PeopleForm();
+            peopleForm.setMainPersonForm(pform);
+            SubPersonForm[] pforms = new SubPersonForm[0];
+            peopleForm.setPersonForms(pforms);
+            peopleForm.setSubpersonLength(pforms.length);
+            cf.setPeopleForm(peopleForm);
             cf.setJobForms(jforms);
             cf.setJobExperienceLength(jforms.length);
 
@@ -116,12 +132,18 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
 
         @Override
         protected void updateForm(CascadeForm form) {
-            PersonForm pform = form.getPersonForm();
+            PeopleForm pform = form.getPeopleForm();
+            PersonForm mp = pform.getMainPersonForm();
+            SubPersonForm[] people = pform.getPersonForms();
             JobForm[] jobs = form.getJobForms();
 
-            PersonDbManager.instance().update(pform);
+            PersonDbManager.instance().update(mp);
+
+            for (SubPersonForm person : people) {
+                PersonDbManager.instance().add(person);
+            }
             for (JobForm job : jobs) {
-                job.setPersonId(pform.getId());
+                job.setPersonId(mp.getId());
                 if (job.getId() == null) {
                     JobExperenceDbManager.instance().add(job);
                 } else {

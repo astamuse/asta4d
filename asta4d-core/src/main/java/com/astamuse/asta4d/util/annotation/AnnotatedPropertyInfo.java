@@ -104,7 +104,7 @@ public class AnnotatedPropertyInfo {
         this.annotationList = annotationList;
     }
 
-    public void assginValue(Object instance, Object value) throws IllegalAccessException, IllegalArgumentException,
+    public void assignValue(Object instance, Object value) throws IllegalAccessException, IllegalArgumentException,
             InvocationTargetException {
         if (this.field == null) {
             setter.invoke(instance, value);
