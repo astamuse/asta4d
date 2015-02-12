@@ -101,8 +101,7 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
             if (StringUtils.isEmpty(name)) {
                 name = "Asta4D";
             }
-            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
-            return Renderer.create("*", element);
+            return Renderer.create("div", name);
         }
     
         public Renderer setProfile() {
@@ -120,7 +119,7 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
     ```java
         // prepare test target
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForInt", 12345);
     
         // perform test
@@ -133,7 +132,7 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     ```java
         // prepare test target
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForInt", Arrays.asList(123, 456, 789));
     
         // perform test

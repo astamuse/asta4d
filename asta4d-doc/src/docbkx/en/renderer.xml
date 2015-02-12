@@ -59,13 +59,12 @@ public class SimpleSnippet {
     public Renderer render(String name) {  
         if (StringUtils.isEmpty(name)) {  
             name = "Asta4D";  
-        }  
-        Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");  
-        return Renderer.create("*", element);  
+        }
+        return Renderer.create("div", name);  
     }  
   
     public Renderer setProfile() {  
-        Renderer render = new GoThroughRenderer();  
+        Renderer render = Renderer.create(); 
         render.add("p#name span", "asta4d");  
         render.add("p#age span", 20);  
         return render;  
@@ -108,25 +107,27 @@ public class SimpleSnippet {
   
   <section id="render-to-page">
     <title>Render data to page</title>
+    <remark>Be careful of "ElementUtil.parseAsSingle" which would cause cross-site issues. Basically the parseAsSingle api is not recommended for
+            common use. See more at<xref linkend="immune-from-xss"/>.</remark>
     <itemizedlist>
       <listitem>
         <para>In Asta4D, all the rendering logic is declared by a Renderer class which accepts various types as rendering value.</para>
         <example><title>Sample usage of Renderer</title>
         <programlisting language="java">
 <![CDATA[
-Renderer render = new GoThroughRenderer();  
+Renderer render = Renderer.create();
 render.add("#someIdForInt", 12345);  
 render.add("#someIdForLong", 12345L);  
 render.add("#someIdForBool", true);  
 render.add("#someIdForStr", "a str");  
 render.add("#someIdForNull", (Object) null);  
 render.add("#someIdForClear", Clear);  
-  
+
+// NOTE: parseAsSingle is not recommended to use
 Element newChild = ElementUtil.parseAsSingle("<div></div>");  
+
 render.add("#someIdForElementSetter", new ChildReplacer(newChild));  
-  
 render.add("#someIdForElement", ElementUtil.parseAsSingle("<div>eee</div>"));  
-  
 render.add("#someIdForRenderer", Renderer.create("#value", "value"));  
 ]]>
         </programlisting>
@@ -138,19 +139,19 @@ render.add("#someIdForRenderer", Renderer.create("#value", "value"));
         <example><title>Sample of list rendering</title>
         <programlisting language="java">
 <![CDATA[
-Renderer render = new GoThroughRenderer();  
+Renderer render = Renderer.create()();  
 render.add("#someIdForInt", Arrays.asList(123, 456, 789));  
 render.add("#someIdForLong", Arrays.asList(123L, 456L, 789L));  
 render.add("#someIdForBool", Arrays.asList(true, true, false));  
 render.add("#someIdForStr", Arrays.asList("str1", "str2", "str3"));  
-  
+
+// NOTE: parseAsSingle is not recommended to use
+
 Element newChild1 = ElementUtil.parseAsSingle("<div>1</div>");  
 Element newChild2 = ElementUtil.parseAsSingle("<div>2</div>");  
-  
+
 render.add("#someIdForElementSetter", Arrays.asList(new ChildReplacer(newChild1), new ChildReplacer(newChild2)));  
-  
 render.add("#someIdForElement", Arrays.asList(newChild1, newChild2));  
-  
 render.add("#someIdForRenderer", Arrays.asList(123, 456, 789), new RowRenderer<Integer>() {  
     @Override  
     public Renderer convert(int rowIndex, Integer obj) {  
