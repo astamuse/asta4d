@@ -1,8 +1,8 @@
 ## Quick start
 
-[User Guide](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT/userguide/index.html)(being updated at irregular intervals)
+[User Guide](http://astamuse.github.io/asta4d/1.0-b4/userguide/index.html)(being updated at irregular intervals)
 
-[JavaDoc](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT/apidocs/)
+[JavaDoc](http://astamuse.github.io/asta4d/1.0-b4/apidocs/)
 
 [Online Sample](http://asta4dsample-xzer.rhcloud.com/)
 
@@ -33,7 +33,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Reading the [Best Practice](http://astamuse.github.io/asta4d/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
+Reading the [Best Practice](http://astamuse.github.io/asta4d/userguide/1.0-b4/index.html#chapter-best-practice) before writing your own code is recommended.
 
 ## What is Asta4D
 
