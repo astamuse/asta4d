@@ -212,18 +212,17 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     ```
 ## Roadmap
 
-1.0.x
+1.0.x (maintainance branch)
 
--	fix bugs
--	minor funcationalities enhancement
--	update user guide
+-	bug fix
 
-1.1
+1.1 (current develop branch)
 
 (plain to officially release at March or April, snapshot will keep release)
 
 -	java 8 support(lambda, etc.)
--	merge fixes in 1.0 branch
+-	minor funcationalities enhancement
+-	user guide update
 
 2.0
 
