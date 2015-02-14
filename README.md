@@ -218,7 +218,7 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
 1.1 (current develop branch)
 
-(plain to officially release at March or April, snapshot will keep release)
+plain to officially release at March or April, snapshot will keep release(snapshot last release at 2015-02-14 12:21GMT+0).
 
 -	java 8 support(lambda, etc.)
 -	minor funcationalities enhancement
