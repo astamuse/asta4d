@@ -55,10 +55,13 @@ import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.AntPathRuleMatcher;
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
@@ -192,6 +195,22 @@ public class RequestDispatcherTest {
         
         rules.add("/json500").handler(new TestJsonHandler(new RuntimeException())).json();
         
+        // variableinjection (default and regex pattern)
+        rules.add("/variableinjection/{var_1}/{var_2}", "/templates/variableinjection.html");
+        rules.add("/variableinjection_regex/{var_1}/{var_2:[0-9]+}", "/templates/variableinjection_regex.html");
+        
+        // custom matcher
+        rules.add("/custom_matcher/{var}", "/templates/custom_matcher.html").matcher(new DispatcherRuleMatcher() {
+            @Override
+            public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, String uri, String queryString) {
+                UrlMappingResult result = null;
+                if(!uri.endsWith("NotFound")){
+                    result = new AntPathRuleMatcher().match(rule, method, uri, queryString);
+                }
+                return result;
+            }
+        });
+
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
@@ -236,7 +255,17 @@ public class RequestDispatcherTest {
                 
                 //TODO it seems that there is missing the way to declare return status for json transforming when exceptions occur 
                 //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
+
+                // variableinjection (default and regex pattern)
+                { "get", "/variableinjection/foo/25", 0, getExpectedPage("/templates/variableinjection.html")},
+                { "get", "/variableinjection/foo/NaN", 0, getExpectedPage("/templates/variableinjection.html")},
+                { "get", "/variableinjection_regex/foo/25", 0, getExpectedPage("/templates/variableinjection_regex.html")},
+                { "get", "/variableinjection_regex/foo/NaN", 404, getExpectedPage("/notfound")},
                 
+                // custom matcher
+                { "get", "/custom_matcher/NotFound", 404, getExpectedPage("/notfound")},
+                { "get", "/custom_matcher/Found", 0, getExpectedPage("/templates/custom_matcher.html")},
+
                 { "get", "/nofile", 404, getExpectedPage("/notfound")},
                 
                 

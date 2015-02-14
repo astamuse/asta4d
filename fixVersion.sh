@@ -10,6 +10,7 @@ then
 else
   BASEDIR=$(cd $(dirname $0) && pwd)
   cd $BASEDIR
+  echo $fixVer > currentVersion
   mvn versions:set -DnewVersion=$fixVer
   cd asta4d-archetype-prototype
   mvn versions:set -DnewVersion=$fixVer

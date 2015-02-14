@@ -9,9 +9,9 @@
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>URL rule</title>
   
-  <sect1>
+  <sect1 id="rule-apis">
     <title>Rule apis</title>
-    <sect2>
+    <sect2 id="UrlMappingRuleInitializer">
       <title>UrlMappingRuleInitializer</title>
       <para>All the url mapping rules can be supplied by implementing the UrlMappingRuleInitializer interface which can be configured by 
       WebApplicationConfiguration#setUrlMappingRuleInitializer.</para>
@@ -71,6 +71,17 @@
           <sbr/>
         </listitem>
         <listitem>
+          <para>registerRestTransformer(ResultTransformer transformer)</para>
+        </listitem>
+        <listitem>
+          <para>registerJsonTransformer(ResultTransformer transformer)</para>
+          <para>The returned value of a request handler which is declared as json at rule will be transformed to standard json string, and developers can still
+                register a customized result transformer to generate the response by the own way. Further, even the framework will do nothing on the returned value
+                of a handler if which is declared on a rest rule, developer can still use "registerRestTransformer" to add customized result transforming on a rule
+                declared as rest.</para>
+          <sbr/>
+        </listitem>
+        <listitem>
           <para>setDefaultMethod(HttpMethod defaultMethod) </para>
           <para>The default matching http method for url patterns without http method specified. The default value is GET.</para>
         </listitem>
@@ -116,7 +127,7 @@
           <sbr/>
           <para>Multi url patterns can be mapped to the same rule by reMapTo method. See following sample:
           </para>
-          <example><title>Retrieve an instance of WebApplicationContext by static method</title>
+          <example><title>Remap the rule to a existing rule</title>
           <programlisting language="java">
 <![CDATA[
     rules.add("/app/", "/templates/index.html").id("index-page");
@@ -232,7 +243,7 @@ rules.add("/app/handler")
         <listitem>
           <para>rest()</para>
           <sbr/>
-          <para>This method does nothing for the current url but declared as a comment that suggests the current rule will act as a restful api and will return customized
+          <para>This method does nothing for the current url by default, but declared as a hint that suggests the current rule will act as a restful api and will return customized
           response which would be head only response in many cases.
           </para>
           <sbr/>

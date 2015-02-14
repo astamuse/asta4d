@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class HandyRuleWithAttrOnly {
@@ -54,6 +55,11 @@ public class HandyRuleWithAttrOnly {
 
     public HandyRuleWithAttrOnly id(String id) {
         this.var(UrlMappingRuleHelper.ID_VAR_NAME, id);
+        return this;
+    }
+
+    public HandyRuleWithAttrOnly matcher(DispatcherRuleMatcher ruleMatcher) {
+        rule.setRuleMatcher(ruleMatcher);
         return this;
     }
 
