@@ -23,6 +23,7 @@ import org.joda.time.LocalDate;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.Java8TimeUtil;
 import com.astamuse.asta4d.web.form.field.impl.DateRenderer;
 import com.astamuse.asta4d.web.test.WebTestBase;
 import com.astamuse.asta4d.web.test.form.FormRenderCase;
@@ -36,6 +37,11 @@ public class DateTest extends WebTestBase {
             builder.addValue("datevalue", new Date(2014 - 1900, 10 - 1, 23, 12, 00, 00));
             builder.addValue("jodadatetimevalue", new DateTime(2014, 10, 23, 12, 00, 00));
             builder.addValue("jodalocaldatevalue", new LocalDate(2014, 10, 23));
+            builder.addValue("java8instantvalue",
+                    java.time.LocalDateTime.of(2014, 10, 23, 12, 00).toInstant(Java8TimeUtil.defaultZoneOffset()));
+            builder.addValue("java8localdatetimevalue", java.time.LocalDateTime.of(2014, 10, 23, 12, 0, 0));
+            builder.addValue("java8localdatevalue", java.time.LocalDate.of(2014, 10, 23));
+
             return builder.toRenderer(true);
         }
 
@@ -46,6 +52,10 @@ public class DateTest extends WebTestBase {
             builder.addValue("datevalue", new Date(2014 - 1900, 10 - 1, 23, 12, 00, 00));
             builder.addValue("jodadatetimevalue", new DateTime(2014, 10, 23, 12, 00, 00));
             builder.addValue("jodalocaldatevalue", new LocalDate(2014, 10, 23));
+            builder.addValue("java8instantvalue",
+                    java.time.LocalDateTime.of(2014, 10, 23, 12, 00).toInstant(Java8TimeUtil.defaultZoneOffset()));
+            builder.addValue("java8localdatetimevalue", java.time.LocalDateTime.of(2014, 10, 23, 12, 0, 0));
+            builder.addValue("java8localdatevalue", java.time.LocalDate.of(2014, 10, 23));
             return builder.toRenderer(false);
         }
     }

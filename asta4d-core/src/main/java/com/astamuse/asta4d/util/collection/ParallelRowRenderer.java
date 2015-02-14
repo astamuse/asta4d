@@ -19,6 +19,14 @@ package com.astamuse.asta4d.util.collection;
 
 import com.astamuse.asta4d.render.Renderer;
 
+/**
+ * Use {@link RowConvertorBuilder#parallel(RowConvertor)} or {@link RowConvertorBuilder#parallel(java.util.function.Function)} instead.
+ * 
+ * @author e-ryu
+ *
+ * @param <S>
+ */
+@Deprecated
 public abstract class ParallelRowRenderer<S> extends ParallelRowConvertor<S, Renderer> implements RowRenderer<S> {
 
 }

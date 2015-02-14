@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
@@ -37,6 +40,7 @@ import com.astamuse.asta4d.render.transformer.TransformerFactory;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
 import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 
 /**
  * A renderer is for describing rendering actions.
@@ -412,7 +416,22 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, List)}.
+     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, Stream)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param stream
+     *            a list that can contain all the types that supported by the non-list add methods of Renderer.
+     * @return the created renderer for chain calling
+     * @throws UnsupportedOperationException
+     *             if given stream is parallel
+     */
+    public Renderer add(String selector, Stream<?> stream) {
+        return add(create(selector, stream));
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, Iterable)}.
      * 
      * @param selector
      *            a css selector
@@ -426,7 +445,7 @@ public class Renderer {
 
     /**
      * Create a renderer for list rendering by given parameter with given {@link RowConvertor} and add it to the current renderer. See
-     * {@link #create(String, List)}.
+     * {@link #create(String, Iterable, RowConvertor)}.
      * 
      * @param selector
      * @param list
@@ -438,14 +457,29 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for list rendering by given parameter with given {@link RowConvertor} and add it to the current renderer. See
+     * {@link #create(String, Iterable, Function )}.
+     * 
+     * @param selector
+     * @param list
+     * @param mapper
+     * @return
+     */
+    public <S, T> Renderer add(String selector, Iterable<S> list, Function<S, T> mapper) {
+        return add(create(selector, list, mapper));
+    }
+
+    /**
      * Create a renderer for list rendering by given parameter with given {@link ParallelRowConvertor} and add it to the current renderer.
-     * See {@link #create(String, Iterable, ParallelRowConvertor)}.
+     * <p>
+     * Being deprecated. See {@link #create(String, Iterable, ParallelRowConvertor)}.
      * 
      * @param selector
      * @param list
      * @param convertor
      * @return the created renderer for chain calling
      */
+    @Deprecated
     public <S, T> Renderer add(String selector, Iterable<S> list, ParallelRowConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
@@ -821,6 +855,39 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for list rendering by given parameter with given {@link Stream}. See {@link #create(String, List)}.
+     * <p>
+     * 
+     * <b>Note:</b> Parallel stream is not supported because the parallel stream could not keep the original order of given list, thus an
+     * UnsupportedOperationException will be thrown if the given stream is parallel. For parallel rendering, use the combination of
+     * {@link #create(String, Iterable, RowConvertor)} and {@link RowConvertorBuilder#parallel(Function)}/
+     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead.
+     * 
+     * @param selector
+     *            a css selector
+     * @param stream
+     *            a stream with arbitrary type data
+     * @return the created renderer
+     * @throws UnsupportedOperationException
+     *             if the given stream is parallel
+     */
+    public final static Renderer create(String selector, Stream<?> stream) {
+        if (treatNullAsRemoveNode && stream == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            if (stream.isParallel()) {
+                throw new UnsupportedOperationException(
+                        "Cannot rendering by a parallel stream because the parallel stream could not keep the original order of given list.");
+            }
+            List<Transformer<?>> list = stream.map(obj -> {
+                return TransformerFactory.generateTransformer(obj);
+            }).collect(Collectors.toList());
+
+            return new Renderer(selector, list);
+        }
+    }
+
+    /**
      * Create a renderer for list rendering by given parameter.
      * <p>
      * The target Element specified by the given selector will be duplicated times as the count of the given list and the contents of the
@@ -860,7 +927,31 @@ public class Renderer {
         if (treatNullAsRemoveNode && list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            return create(selector, ListConvertUtil.transform(list, convertor));
+            if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListRendering()) {
+                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+            } else {
+                return create(selector, ListConvertUtil.transform(list, convertor));
+            }
+        }
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given mapper. See {@link #create(String, List)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list with arbitrary type data
+     * @param Function
+     *            a mapper that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
+     *            Renderer
+     * @return the created renderer
+     */
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, Function<S, T> mapper) {
+        if (treatNullAsRemoveNode && list == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, list, RowConvertorBuilder.map(mapper));
         }
     }
 
@@ -869,6 +960,13 @@ public class Renderer {
      * current thread and will return immediately.
      * 
      * See {@link #create(String, List)}.
+     * 
+     * <p>
+     * Being deprecated. use the combination of {@link #create(String, Iterable, RowConvertor)} and
+     * {@link RowConvertorBuilder#parallel(Function)}/ {@link RowConvertorBuilder#parallel(RowConvertor)} instead.
+     * 
+     * <p>
+     * See {@link ParallelRowConvertor} for more details.
      * 
      * @param selector
      *            a css selector
@@ -879,15 +977,12 @@ public class Renderer {
      *            Renderer
      * @return the created renderer
      */
+    @Deprecated
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
         if (treatNullAsRemoveNode && list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            if (Configuration.getConfiguration().isBlockParallelListRendering()) {
-                return create(selector, ListConvertUtil.transform(list, convertor));
-            } else {
-                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
-            }
+            return create(selector, list, (RowConvertor<S, T>) convertor);
         }
     }
 

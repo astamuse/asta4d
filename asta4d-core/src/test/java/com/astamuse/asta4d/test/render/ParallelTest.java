@@ -28,6 +28,7 @@ import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.test.render.infra.TimeCalculator;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
+import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 
 @Test(singleThreaded = true)
 public class ParallelTest extends BaseTest {
@@ -47,6 +48,19 @@ public class ParallelTest extends BaseTest {
                 }
 
             });
+            return renderer;
+        }
+
+        public Renderer listTextRenderingLambda() {
+            List<String> list = Arrays.asList("a", "b", "c", "d");
+            Renderer renderer = Renderer.create("div#test", list, RowConvertorBuilder.parallel(obj -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                return obj + "-sleep";
+            }));
             return renderer;
         }
 
@@ -88,6 +102,20 @@ public class ParallelTest extends BaseTest {
             public void run() {
                 try {
                     new SimpleCase("ParallelTest_parallelListConversion.html");
+                } catch (Throwable t) {
+                    throw new RuntimeException(t);
+                }
+            }
+        }, 2000);
+    }
+
+    @Test
+    public void paralleListConversionLambda() {
+        TimeCalculator.shouldRunInTime(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new SimpleCase("ParallelTest_parallelListConversionLambda.html");
                 } catch (Throwable t) {
                     throw new RuntimeException(t);
                 }

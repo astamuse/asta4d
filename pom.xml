@@ -10,7 +10,7 @@
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>1.0-Valentines</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
@@ -82,10 +82,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
+          <version>3.2</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+            <source>1.8</source>
+            <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -99,6 +99,7 @@
         <configuration>
           <locale>en_US</locale>
           <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
+            <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
         <version>2.9</version>
         <executions>

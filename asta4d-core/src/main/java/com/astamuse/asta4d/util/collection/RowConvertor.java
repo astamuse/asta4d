@@ -17,6 +17,14 @@
 
 package com.astamuse.asta4d.util.collection;
 
+
+@FunctionalInterface
 public interface RowConvertor<S, T> {
+
     public T convert(int rowIndex, S obj);
+
+    default public boolean isParallel() {
+        return false;
+    }
+
 }

@@ -16,6 +16,8 @@
  */
 package com.astamuse.asta4d.test.unit.data;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.joda.time.DateTime;
@@ -29,6 +31,10 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.data.convertor.String2Date;
+import com.astamuse.asta4d.data.convertor.String2Java8Instant;
+import com.astamuse.asta4d.data.convertor.String2Java8LocalDateTime;
+import com.astamuse.asta4d.data.convertor.String2Java8LocalTime;
+import com.astamuse.asta4d.data.convertor.String2Java8YearMonth;
 import com.astamuse.asta4d.data.convertor.String2JodaDateTime;
 import com.astamuse.asta4d.data.convertor.String2JodaLocalDate;
 import com.astamuse.asta4d.data.convertor.String2JodaLocalDateTime;
@@ -36,13 +42,14 @@ import com.astamuse.asta4d.data.convertor.String2JodaLocalTime;
 import com.astamuse.asta4d.data.convertor.String2JodaYearMonth;
 
 @Test
-public class DataValueConvertorTest {
+public class DateValueConvertorTest {
 
     //@formatter:off
     @DataProvider(name="string2Date")
     Object[][] string2DateData(){
         return new Object[][] { 
             {"2014-10-23T12:00:23.000+1100", new Date(2014-1900, 10-1, 23, 12, 0, 23), DateTimeZone.forOffsetHours(11)},
+            
             {"2014-10-23T12:00:23.000", new Date(2014-1900, 10-1, 23, 12, 0, 23), null},
             {"2014-10-23T12:00:23", new Date(2014-1900, 10-1, 23, 12, 0, 23), null},
             {"2014-10-23", new Date(2014-1900, 10-1, 23, 0, 0, 0), null},
@@ -53,6 +60,7 @@ public class DataValueConvertorTest {
             
             {"20141023", new Date(2014-1900, 10-1, 23, 0, 0, 0), null},
             {"", null, null},
+            
         };
     }
     //@formatter:on
@@ -90,7 +98,26 @@ public class DataValueConvertorTest {
                 Assert.assertEquals(actualDate, new DateTime(expectedTimeGMT));
             }
         }
+    }
 
+    @Test(dataProvider = "string2Date")
+    public void testString2Java8Instant(String s, Date d, DateTimeZone tz) throws Exception {
+        String2Java8Instant convertor = new String2Java8Instant();
+        Instant acturalInstant = convertor.convert(s);
+        if (d == null) {
+            Assert.assertEquals(acturalInstant, null);
+        } else {
+            if (tz == null) {
+                long expectedTimeGMT = d.getTime();
+                Assert.assertEquals(acturalInstant, Instant.ofEpochMilli(expectedTimeGMT));
+            } else {
+                long expectedTimeGMT = d.getTime();
+
+                expectedTimeGMT += DateTimeZone.getDefault().toTimeZone().getRawOffset() - tz.toTimeZone().getRawOffset();
+
+                Assert.assertEquals(acturalInstant, Instant.ofEpochMilli(expectedTimeGMT));
+            }
+        }
     }
 
     @Test(dataProvider = "string2Date")
@@ -111,6 +138,18 @@ public class DataValueConvertorTest {
             Assert.assertEquals(convertor.convert(s), null);
         } else {
             Assert.assertEquals(convertor.convert(s), new LocalDateTime(d.getTime()));
+        }
+    }
+
+    @Test(dataProvider = "string2Date")
+    public void testString2Java8LocalDateTime(String s, Date d, DateTimeZone tz) throws Exception {
+        String2Java8LocalDateTime convertor = new String2Java8LocalDateTime();
+        if (d == null) {
+            Assert.assertEquals(convertor.convert(s), null);
+        } else {
+            long expectedTimeGMT = d.getTime();
+            expectedTimeGMT += DateTimeZone.getDefault().toTimeZone().getRawOffset();
+            Assert.assertEquals(convertor.convert(s), java.time.LocalDateTime.ofEpochSecond(expectedTimeGMT / 1000, 0, ZoneOffset.UTC));
         }
     }
 
@@ -135,6 +174,13 @@ public class DataValueConvertorTest {
         Assert.assertEquals(convertor.convert(s), t);
     }
 
+    @Test(dataProvider = "string2Time")
+    public void testString2Java8LocalTime(String s, LocalTime t) throws Exception {
+        String2Java8LocalTime convertor = new String2Java8LocalTime();
+        java.time.LocalTime jlt = java.time.LocalTime.ofNanoOfDay(((long) t.getMillisOfDay()) * 1000 * 1000);
+        Assert.assertEquals(convertor.convert(s), jlt);
+    }
+
     //@formatter:off
     @DataProvider(name="string2ym")
     Object[][] string2ymData(){
@@ -148,5 +194,11 @@ public class DataValueConvertorTest {
     public void testString2JodaYearMonth(String s, YearMonth ym) throws Exception {
         String2JodaYearMonth convertor = new String2JodaYearMonth();
         Assert.assertEquals(convertor.convert(s), ym);
+    }
+
+    @Test(dataProvider = "string2ym")
+    public void testString2Java8YearMonth(String s, YearMonth ym) throws Exception {
+        String2Java8YearMonth convertor = new String2Java8YearMonth();
+        Assert.assertEquals(convertor.convert(s), java.time.YearMonth.of(ym.getYear(), ym.getMonthOfYear()));
     }
 }

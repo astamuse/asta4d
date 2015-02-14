@@ -29,7 +29,8 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
-import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
+import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 
 public class ListConvertPolicyTest extends BaseTest {
 
@@ -59,23 +60,25 @@ public class ListConvertPolicyTest extends BaseTest {
         List<Integer> list = new ArrayList<>();
         list.add(1);
 
-        ListConvertUtil.transform(list, new ParallelRowConvertor<Integer, List<Long>>() {
+        ListConvertUtil.transform(list, new RowConvertor<Integer, List<Long>>() {
+
+            public boolean isParallel() {
+                return true;
+            }
+
             @Override
             public List<Long> convert(int rowIndex, Integer obj) {
                 List<Long> subList = new ArrayList<>();
                 subList.add(Thread.currentThread().getId());
-                return ListConvertUtil.transform(subList, new ParallelRowConvertor<Long, Long>() {
-                    @Override
-                    public Long convert(int rowIndex, Long obj) {
-                        Long cid = Thread.currentThread().getId();
-                        if (policy == ParallelRecursivePolicy.CURRENT_THREAD) {
-                            Assert.assertEquals(cid, obj);
-                        } else {
-                            Assert.assertNotEquals(cid, obj);
-                        }
-                        return cid;
+                return ListConvertUtil.transform(subList, RowConvertorBuilder.parallel(internalObj -> {
+                    Long cid = Thread.currentThread().getId();
+                    if (policy == ParallelRecursivePolicy.CURRENT_THREAD) {
+                        Assert.assertEquals(cid, internalObj);
+                    } else {
+                        Assert.assertNotEquals(cid, internalObj);
                     }
-                });
+                    return cid;
+                }));
             }
         });
     }

@@ -20,12 +20,12 @@ package com.astamuse.asta4d.render;
 import org.jsoup.nodes.Element;
 
 /**
- * An ElementSetter is to be used to reset an element, including attribute
- * setting and any child nodes operations.
+ * An ElementSetter is to be used to reset an element, including attribute setting and any child nodes operations.
  * 
  * @author e-ryu
  * 
  */
+@FunctionalInterface
 public interface ElementSetter {
 
     /**
