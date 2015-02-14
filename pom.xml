@@ -10,7 +10,7 @@
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>1.0-b5-SNAPSHOT</version>
+  <version>1.0-Valentines</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
@@ -103,8 +103,15 @@
         <version>2.9</version>
         <executions>
           <execution>
-            <id>create-java-doc-separated</id>
+            <id>create-java-doc-site</id>
             <phase>site</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-java-doc-package</id>
+            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>

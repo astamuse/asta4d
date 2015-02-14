@@ -1,5 +1,18 @@
 ## Release Notes
 
+-   1.0-Valentines (2015.2.14)
+
+	The first official release version.
+
+	ADD
+	- convenience annotation for default scope(request scope)
+	- match url by regex(the original implementation was OK and add tests to confirm)
+	- allow customized url matcher
+
+    FIX
+	- exception should be thrown when type unmatched value is injected to a non annotated method parameter(it injects null or 0 currently)
+
+
 -   1.0-b4 (2014.12.26)
 
     ENHANCE

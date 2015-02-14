@@ -16,7 +16,7 @@ then
   exit 1
 fi
 
-#mvn clean site javadoc:aggregate-jar
+mvn clean site javadoc:aggregate-jar
 
 if [ $? -ne 0 ];
 then
