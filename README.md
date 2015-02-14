@@ -6,7 +6,7 @@
 
 [User Guide](http://astamuse.github.io/asta4d/1.0-Valentines/userguide/index.html)(being updated at irregular intervals)
 
-[JavaDoc](http://astamuse.github.io/asta4d/1.0-b5-SNAPSHOT/apidocs/)
+[JavaDoc](http://astamuse.github.io/asta4d/1.0-Valentines/apidocs/)
 
 [Online Sample](http://asta4dsample-xzer.rhcloud.com/)
 
