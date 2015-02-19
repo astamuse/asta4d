@@ -18,28 +18,26 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
+import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
-import com.astamuse.asta4d.web.form.annotation.renderable.Checkbox;
+import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
-import com.astamuse.asta4d.web.form.annotation.renderable.Radio;
-import com.astamuse.asta4d.web.form.annotation.renderable.Select;
-import com.astamuse.asta4d.web.form.annotation.renderable.Textarea;
 
 //@ShowCode:showPersonFormStart
 //@Form to tell the framework this class can be initialized from context
 //extend from the entity POJO to annotate form field definitions on getters.
 @Form
-public class PersonForm extends Person {
+public class SubPersonForm extends Person {
 
-    public static PersonForm buildFromPerson(Person p) {
-        PersonForm form = new PersonForm();
+    public static SubPersonForm buildFromPerson(Person p) {
+        SubPersonForm form = new SubPersonForm();
         try {
             BeanUtils.copyProperties(form, p);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -48,50 +46,60 @@ public class PersonForm extends Person {
         return form;
     }
 
+    public SubPersonForm() {
+        subJobForms = new SubJobForm[0];
+        subJobExperienceLength = subJobForms.length;
+    }
+
+    @Hidden(name = "sub-job-experience-length-@")
+    private Integer subJobExperienceLength;
+
+    // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
+    @CascadeFormField(name = "sub-job-experience-@", arrayLengthField = "sub-job-experience-length-@", containerSelector = "[cascade-ref=sub-job-experience-row-@-@@]")
+    @Valid
+    @NotEmpty
+    private SubJobForm[] subJobForms;
+
+    // show the add and remove buttons only when edit mode
+
+    @AvailableWhenEditOnly(selector = "#sub-job-experience-add-btn-@")
+    private String subJobExperienceAddBtn;
+
+    @AvailableWhenEditOnly(selector = "#sub-job-experience-remove-btn-@")
+    private String subJobExperienceRemoveBtn;
+
     @Override
-    @Hidden
+    @Hidden(name = "subperson-id-@")
     public Integer getId() {
         return super.getId();
     }
 
     @Override
-    @Input
+    @Input(name = "subperson-name-@")
     public String getName() {
         return super.getName();
     }
 
     @Override
-    @Input
+    @Input(name = "subperson-age-@")
     public Integer getAge() {
         return super.getAge();
     }
 
-    @Override
-    @Select(name = "bloodtype")
-    @NotNull
-    public BloodType getBloodType() {
-        return super.getBloodType();
+    public Integer getSubJobExperienceLength() {
+        return subJobExperienceLength;
     }
 
-    // the field name would be displayed as "gender" rather than the original field name "sex"
-    @Override
-    @Radio(nameLabel = "gender")
-    @NotNull
-    public SEX getSex() {
-        return super.getSex();
+    public void setSubJobExperienceLength(Integer subJobExperienceLength) {
+        this.subJobExperienceLength = subJobExperienceLength;
     }
 
-    @Override
-    @Checkbox
-    @NotEmpty
-    public Language[] getLanguage() {
-        return super.getLanguage();
+    public SubJobForm[] getSubJobForms() {
+        return subJobForms;
     }
 
-    @Override
-    @Textarea
-    public String getMemo() {
-        return super.getMemo();
+    public void setSubJobForms(SubJobForm[] subJobForms) {
+        this.subJobForms = subJobForms;
     }
 
 }

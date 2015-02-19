@@ -14,6 +14,52 @@
 	</afd:block>
 	<afd:block append="footer-resource">
 		<script>
+		function addPerson(){
+
+			var templateElem = $("[cascade-ref='subperson-row-@']");
+			templateElem = templateElem.clone();
+			templateElem.css("display", "");
+			
+			var subpersonLengthElem = $("[name='subperson-length']");
+			var subpersonLength = parseInt(subpersonLengthElem.val());
+
+			var templateStr = $("<div>").append(templateElem).html();
+			templateStr = templateStr.replace(/(-)@(?!@)/g, "$1" + subpersonLength );
+		
+			$("#subperson").append(templateStr);
+			
+			subpersonLength++;
+			subpersonLengthElem.val(subpersonLength);
+		}
+		function removePerson(targetBtn){
+			var targetRef = $(targetBtn).attr("cascade-ref-target");
+			$("[cascade-ref='" + targetRef+"']").remove();
+			return false;
+		}
+		function addSubJob(targetBtn){
+		
+			var parentIndexes = $(targetBtn).attr("cascade-parent-indexes");
+			
+			var templateElem = $("[cascade-ref='sub-job-experience-row"+ parentIndexes +"-@@']");
+			templateElem = templateElem.clone();
+			templateElem.css("display", "");
+			
+			var jobLengthElem = $("[name='sub-job-experience-length"+ parentIndexes +"']");
+			var jobLength = parseInt(jobLengthElem.val());
+
+			var templateStr = $("<div>").append(templateElem).html();
+			templateStr = templateStr.replace(/(-)@@(?!@)/g, "$1" + jobLength );
+		
+			$("#sub-job-experience" + parentIndexes).append(templateStr);
+			
+			jobLength++;
+			jobLengthElem.val(jobLength);
+		}
+		function removeSubJob(targetBtn){
+			var targetRef = $(targetBtn).attr("cascade-ref-target");
+			$("[cascade-ref='" + targetRef+"']").remove();
+			return false;
+		}
 		function addJob(){
 			var personId = $("[name=id]").val();
 			if(!personId){
@@ -36,8 +82,6 @@
 			
 			jobLength++;
 			jobLengthElem.val(jobLength);
-			
-		
 		}
 		function removeJob(targetBtn){
 			var targetRef = $(targetBtn).attr("cascade-ref-target");
@@ -94,6 +138,44 @@
 										<td>memo:</td>
 										<td class="memo">
 											<textarea name="memo"></textarea>
+										</td>
+									</tr>
+									<tr>
+										<td>sub people:</td>
+										<td>
+											<div id="subperson-err-msg" style="color: red"></div>
+											<!--  
+												The following "@" contained attributes will be rewritten to array index by default:
+													id
+													name
+													cascade-ref
+													cascade-ref-target
+												further rewriting can be performed by overriding the rewriteXXX methods in snippet. 
+											-->
+											<div id="subperson">
+												<div cascade-ref="subperson-row-@">
+													<div id="subperson-row-@-err-msg" style="color: red"></div>
+													name:<input name="subperson-name-@" type="text"/>
+													age:<input name="subperson-age-@" type="text"/>
+													<a id="subperson-remove-btn" href="javascript:void(0)" onclick="removePerson(this)" cascade-ref-target="subperson-row-@" class="glyphicon glyphicon-minus"></a>
+													<div>
+														job experiences *:
+														<div id="sub-job-experience-@">
+															<div cascade-ref="sub-job-experience-row-@-@@">
+																year:<select name="sub-job-year-@-@@">
+																		<option value="1980">1980</option>
+																	</select>
+																desc:<input type="text" name="sub-job-description-@-@@">
+																<a id="sub-job-experience-remove-btn-@" href="javascript:void(0)" onclick="removeSubJob(this)" cascade-ref-target="sub-job-experience-row-@-@@" class="glyphicon glyphicon-minus"></a>
+															</div>
+														</div>
+														<input type="hidden" name="sub-job-experience-length-@" value="0">
+														<a id="sub-job-experience-add-btn-@" href="javascript:void(0)" onclick="addSubJob(this)" cascade-parent-indexes="-@" class="glyphicon glyphicon-plus"></a>
+													</div>
+												</div>
+											</div>
+											<input type="hidden" name="subperson-length" value="0">
+											<a id="subperson-add-btn" href="javascript:addPerson()" class="glyphicon glyphicon-plus"></a>
 										</td>
 									</tr>
 									<tr>
