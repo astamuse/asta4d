@@ -216,7 +216,7 @@ public abstract class AbstractFormFlowHandler<T> {
             final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
             Context currentContext = Context.getCurrentThreadContext();
 
-            return assignArrayValueFromContext(formCls, form, currentContext);
+            return assignArrayValueFromContext(formCls, form, currentContext, CascadeFormUtil.ROOT_OF_INDEXES);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -228,10 +228,11 @@ public abstract class AbstractFormFlowHandler<T> {
      * @param formCls
      * @param form
      * @param currentContext
+     * @param indexes
      * @return
      * @throws Exception
      */
-    private T assignArrayValueFromContext(Class formCls, T form, Context currentContext) throws Exception {
+    private T assignArrayValueFromContext(Class formCls, T form, Context currentContext, Integer[] indexes) throws Exception {
         List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
         for (final AnnotatedPropertyInfo field : list) {
             CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
@@ -258,10 +259,11 @@ public abstract class AbstractFormFlowHandler<T> {
                     final Object[] array = (Object[]) Array.newInstance(field.getType().getComponentType(), len);
                     for (int i = 0; i < len; i++) {
                         final int seq = i;
+                        final Integer[] newIndex = CascadeFormUtil.addIndex(indexes, seq);
                         Context.with(new DelatedContext(currentContext) {
                             protected String convertKey(String scope, String key) {
                                 if (scope.equals(WebApplicationContext.SCOPE_QUERYPARAM)) {
-                                    return rewriteArrayIndexPlaceHolder(key, seq);
+                                    return rewriteArrayIndexPlaceHolder(key, newIndex);
                                 } else {
                                     return key;
                                 }
@@ -278,13 +280,14 @@ public abstract class AbstractFormFlowHandler<T> {
                                 }
                             }
                         });// end runnable and context.with
+
+                        assignArrayValueFromContext(field.getType().getComponentType(), (T) array[seq], currentContext, newIndex);
                     }// end for loop
 
                     field.assignValue(form, array);
-
                 } else {
                     // a cascade form for not array
-                    assignArrayValueFromContext(field.getType(), (T) field.retrieveValue(form), currentContext);
+                    assignArrayValueFromContext(field.getType(), (T) field.retrieveValue(form), currentContext, indexes);
                 }
             }
         }
@@ -295,12 +298,12 @@ public abstract class AbstractFormFlowHandler<T> {
      * Sub classes can override this method to supply a customized array index placeholder mechanism.
      * 
      * @param s
-     * @param seq
+     * @param indexes
      * @return
-     * @see AbstractFormFlowSnippet#rewriteArrayIndexPlaceHolder(String, int)
+     * @see AbstractFormFlowSnippet#rewriteArrayIndexPlaceHolder(String, Integer[])
      */
-    protected String rewriteArrayIndexPlaceHolder(String s, int seq) {
-        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, seq);
+    protected String rewriteArrayIndexPlaceHolder(String s, Integer[] indexes) {
+        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, indexes);
     }
 
     /**

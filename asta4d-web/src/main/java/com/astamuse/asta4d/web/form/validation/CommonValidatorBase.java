@@ -44,15 +44,11 @@ public abstract class CommonValidatorBase {
         }
     }
 
-    protected String retrieveFieldName(AnnotatedPropertyInfo field, int arrayIndex) {
-        String name = field.getName();
-        if (arrayIndex >= 0) {
-            name = CascadeFormUtil.rewriteArrayIndexPlaceHolder(name, arrayIndex);
-        }
-        return name;
+    protected String retrieveFieldName(AnnotatedPropertyInfo field, Integer[] indexes) {
+        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(field.getName(), indexes);
     }
 
-    protected String retrieveFieldLabel(AnnotatedPropertyInfo field, int arrayIndex) {
+    protected String retrieveFieldLabel(AnnotatedPropertyInfo field, Integer[] indexes) {
         FormField ff = field.getAnnotation(FormField.class);
         if (ff == null) {
             // impossible but
@@ -63,8 +59,7 @@ public abstract class CommonValidatorBase {
             label = field.getName();
         }
 
-        label = CascadeFormUtil.rewriteArrayIndexPlaceHolder(label, arrayIndex);
-        return label;
+        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(label, indexes);
     }
 
     protected String retrieveFieldTypeName(AnnotatedPropertyInfo field) {
