@@ -50,10 +50,10 @@ public abstract class AbstractFormFlowSnippet {
         String displaySelector;
         FormFieldValueRenderer valueRenderer;
 
-        FieldRenderingInfo replaceArrayIndex(int index) {
+        FieldRenderingInfo replaceArrayIndex(Integer[] indexes) {
             FieldRenderingInfo newInfo = new FieldRenderingInfo();
-            newInfo.editSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(editSelector, index);
-            newInfo.displaySelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(displaySelector, index);
+            newInfo.editSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(editSelector, indexes);
+            newInfo.displaySelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(displaySelector, indexes);
             newInfo.valueRenderer = valueRenderer;
             return newInfo;
         }
@@ -83,7 +83,7 @@ public abstract class AbstractFormFlowSnippet {
         return true;
     }
 
-    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int cascadeFormArrayIndex) {
+    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, Integer[] indexes) {
         FieldRenderingInfo info = FieldRenderingInfoMap.get(f);
         if (info == null) {
 
@@ -117,8 +117,8 @@ public abstract class AbstractFormFlowSnippet {
                 FieldRenderingInfoMap.put(f, info);
             }
         }
-        if (cascadeFormArrayIndex >= 0) {
-            return info.replaceArrayIndex(cascadeFormArrayIndex);
+        if (indexes.length > 0) {
+            return info.replaceArrayIndex(indexes);
         } else {
             return info;
         }
@@ -133,7 +133,8 @@ public abstract class AbstractFormFlowSnippet {
     public Renderer render() throws Exception {
         Renderer renderer = renderTraceMapData();
         Object form = retrieveRenderTargetForm();
-        return renderer.add(renderForm(renderTargetStep, form, -1));
+        renderer.add(renderForm(renderTargetStep, form, CascadeFormUtil.ROOT_OF_INDEXES));
+        return renderer;
     }
 
     /**
@@ -168,11 +169,11 @@ public abstract class AbstractFormFlowSnippet {
      * 
      * @param renderTargetStep
      * @param form
-     * @param cascadeFormArrayIndex
+     * @param indexes
      * @return
      * @throws Exception
      */
-    protected Renderer renderForm(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
+    protected Renderer renderForm(String renderTargetStep, Object form, Integer[] indexes) throws Exception {
         Renderer render = Renderer.create();
         if (form == null) {
             return render;
@@ -183,14 +184,14 @@ public abstract class AbstractFormFlowSnippet {
         List<FormFieldPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldPrepareRenderers(renderTargetStep, form);
 
         for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), cascadeFormArrayIndex);
+            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), indexes);
             render.add(formFieldDataPrepareRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
-        render.add(renderValueOfFields(renderTargetStep, form, cascadeFormArrayIndex));
+        render.add(renderValueOfFields(renderTargetStep, form, indexes));
 
         for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), cascadeFormArrayIndex);
+            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), indexes);
             render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
@@ -204,11 +205,11 @@ public abstract class AbstractFormFlowSnippet {
      * 
      * @param renderTargetStep
      * @param form
-     * @param cascadeFormArrayIndex
+     * @param indexes
      * @return
      * @throws Exception
      */
-    private Renderer renderValueOfFields(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
+    private Renderer renderValueOfFields(String renderTargetStep, Object form, Integer[] indexes) throws Exception {
         Renderer render = Renderer.create();
         List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
 
@@ -231,8 +232,11 @@ public abstract class AbstractFormFlowSnippet {
                     Class<?> subFormType = field.getType().getComponentType();
                     Object subForm;
                     for (int i = loopStart; i < len; i++) {
+                        Integer[] newIndex = indexes.clone();
+
                         // retrieve the form instance
                         if (i >= 0) {
+                            newIndex = CascadeFormUtil.addIndex(newIndex, i);
                             subForm = Array.get(v, i);
                         } else {
                             // create a template instance
@@ -243,11 +247,10 @@ public abstract class AbstractFormFlowSnippet {
 
                         // only rewrite the refs for normal instances
                         if (i >= 0) {
-                            // subRenderer.add(setCascadeFormContainerArrayRef(i));
-                            subRenderer.add(rewriteCascadeFormFieldArrayRef(renderTargetStep, subForm, i));
+                            subRenderer.add(rewriteCascadeFormFieldArrayRef(renderTargetStep, subForm, newIndex));
                         }
 
-                        subRenderer.add(renderForm(renderTargetStep, subForm, i));
+                        subRenderer.add(renderForm(renderTargetStep, subForm, newIndex));
 
                         // hide the template DOM
                         if (i < 0) {
@@ -256,13 +259,14 @@ public abstract class AbstractFormFlowSnippet {
 
                         subRendererList.add(subRenderer);
                     }
+                    containerSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(containerSelector, indexes);
                     render.add(containerSelector, subRendererList);
                 } else {// a simple cascade form
 
                     if (StringUtils.isNotEmpty(containerSelector)) {
-                        render.add(containerSelector, renderForm(renderTargetStep, v, -1));
+                        render.add(containerSelector, renderForm(renderTargetStep, v, indexes));
                     } else {
-                        render.add(renderForm(renderTargetStep, v, -1));
+                        render.add(renderForm(renderTargetStep, v, indexes));
                     }
                 }
                 continue;
@@ -283,7 +287,7 @@ public abstract class AbstractFormFlowSnippet {
                 }
             }
 
-            FieldRenderingInfo renderingInfo = getRenderingInfo(field, cascadeFormArrayIndex);
+            FieldRenderingInfo renderingInfo = getRenderingInfo(field, indexes);
 
             // render.addDebugger("whole form before: " + field.getName());
 
@@ -327,34 +331,15 @@ public abstract class AbstractFormFlowSnippet {
         return subFormType.newInstance();
     }
 
-    /*
-     * It seems that we do not need it?
-     * 
-     * @param cascadeFormArrayIndex
-     * @return
-     */
-    private Renderer setCascadeFormContainerArrayRef(final int cascadeFormArrayIndex) {
-        return Renderer.create(":root", new ElementSetter() {
-            @Override
-            public void set(Element elem) {
-                elem.attr(cascadeFormContainerArrayRefAttrName(), String.valueOf(cascadeFormArrayIndex));
-            }
-        });
-    }
-
-    private String cascadeFormContainerArrayRefAttrName() {
-        return "cascade-form-container-array-ref";
-    }
-
     /**
      * Sub classes could override this method to customize how to rewrite the array index for cascade array forms.
      * 
      * @param renderTargetStep
      * @param form
-     * @param cascadeFormArrayIndex
+     * @param indexes
      * @return
      */
-    protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final int cascadeFormArrayIndex) {
+    protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final Integer[] indexes) {
 
         final String[] targetAttrs = rewriteCascadeFormFieldArrayRefTargetAttrs();
         String[] attrSelectors = new String[targetAttrs.length];
@@ -369,14 +354,15 @@ public abstract class AbstractFormFlowSnippet {
                 for (String attr : targetAttrs) {
                     v = elem.attr(attr);
                     if (StringUtils.isNotEmpty(v)) {
-                        elem.attr(attr, rewriteArrayIndexPlaceHolder(v, cascadeFormArrayIndex));
+                        elem.attr(attr, rewriteArrayIndexPlaceHolder(v, indexes));
                     }
                 }
             }
         });
     }
 
-    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name", "cascade-ref", "cascade-ref-target" };
+    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name", "cascade-ref", "cascade-ref-target",
+            "cascade-parent-indexes" };
 
     /**
      * The attributes returned by this method will be rewritten for array index.
@@ -393,12 +379,12 @@ public abstract class AbstractFormFlowSnippet {
      * Sub classes can override this method to supply a customized array index placeholder mechanism.
      * 
      * @param s
-     * @param seq
+     * @param indexes
      * @return
      * @see AbstractFormFlowHandler#rewriteArrayIndexPlaceHolder(String, int)
      */
-    protected String rewriteArrayIndexPlaceHolder(String s, int seq) {
-        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, seq);
+    protected String rewriteArrayIndexPlaceHolder(String s, Integer[] indexes) {
+        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, indexes);
     }
 
     /**
@@ -419,7 +405,7 @@ public abstract class AbstractFormFlowSnippet {
      * @param rawTraceData
      * @return
      */
-    protected Object convertRawInjectionTraceDataToRenderingData(String fieldName, Class fieldDataType, Object rawTraceData) {
+    protected Object convertRawInjectionTraceDataToRenderingData(String fieldName, Class<?> fieldDataType, Object rawTraceData) {
         if (fieldDataType.isArray() && rawTraceData.getClass().isArray()) {
             return rawTraceData;
         } else if (rawTraceData.getClass().isArray()) {// but field data type is

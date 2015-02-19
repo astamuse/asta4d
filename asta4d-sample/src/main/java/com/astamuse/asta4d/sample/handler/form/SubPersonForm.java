@@ -18,10 +18,15 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.validation.Valid;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
+import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
+import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 
@@ -41,6 +46,28 @@ public class SubPersonForm extends Person {
         return form;
     }
 
+    public SubPersonForm() {
+        subJobForms = new SubJobForm[0];
+        subJobExperienceLength = subJobForms.length;
+    }
+
+    @Hidden(name = "sub-job-experience-length-@")
+    private Integer subJobExperienceLength;
+
+    // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
+    @CascadeFormField(name = "sub-job-experience-@", arrayLengthField = "sub-job-experience-length-@", containerSelector = "[cascade-ref=sub-job-experience-row-@-@@]")
+    @Valid
+    @NotEmpty
+    private SubJobForm[] subJobForms;
+
+    // show the add and remove buttons only when edit mode
+
+    @AvailableWhenEditOnly(selector = "#sub-job-experience-add-btn-@")
+    private String subJobExperienceAddBtn;
+
+    @AvailableWhenEditOnly(selector = "#sub-job-experience-remove-btn-@")
+    private String subJobExperienceRemoveBtn;
+
     @Override
     @Hidden(name = "subperson-id-@")
     public Integer getId() {
@@ -57,6 +84,22 @@ public class SubPersonForm extends Person {
     @Input(name = "subperson-age-@")
     public Integer getAge() {
         return super.getAge();
+    }
+
+    public Integer getSubJobExperienceLength() {
+        return subJobExperienceLength;
+    }
+
+    public void setSubJobExperienceLength(Integer subJobExperienceLength) {
+        this.subJobExperienceLength = subJobExperienceLength;
+    }
+
+    public SubJobForm[] getSubJobForms() {
+        return subJobForms;
+    }
+
+    public void setSubJobForms(SubJobForm[] subJobForms) {
+        this.subJobForms = subJobForms;
     }
 
 }

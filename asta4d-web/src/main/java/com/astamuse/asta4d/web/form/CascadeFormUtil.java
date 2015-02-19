@@ -16,10 +16,29 @@
  */
 package com.astamuse.asta4d.web.form;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CascadeFormUtil {
-    public static final String rewriteArrayIndexPlaceHolder(String s, int seq) {
-        return StringUtils.replace(s, "@", String.valueOf(seq));
+
+    public static final Integer[] ROOT_OF_INDEXES = new Integer[0];
+
+    public static final String rewriteArrayIndexPlaceHolder(String s, Integer[] indexes) {
+        if (indexes != null) {
+            String prefix = "(?<=-)";
+            String target = "@";
+            String suffix = "(?!@)";
+            for (int i = 0; i < indexes.length; i++, target += "@") {
+                s = s.replaceFirst(prefix + target + suffix, indexes[i].toString());
+            }
+        }
+        return s;
+    }
+
+    public static final Integer[] addIndex(Integer[] indexes, int index) {
+        List<Integer> arrayIndexes = new ArrayList<Integer>(Arrays.asList(indexes));
+        arrayIndexes.add(Integer.valueOf(index));
+        return arrayIndexes.toArray(ROOT_OF_INDEXES);
     }
 }
