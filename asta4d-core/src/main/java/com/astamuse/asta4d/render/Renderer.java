@@ -423,8 +423,6 @@ public class Renderer {
      * @param stream
      *            a list that can contain all the types that supported by the non-list add methods of Renderer.
      * @return the created renderer for chain calling
-     * @throws UnsupportedOperationException
-     *             if given stream is parallel
      */
     public Renderer add(String selector, Stream<?> stream) {
         return add(create(selector, stream));
@@ -858,32 +856,36 @@ public class Renderer {
      * Create a renderer for list rendering by given parameter with given {@link Stream}. See {@link #create(String, List)}.
      * <p>
      * 
-     * <b>Note:</b> Parallel stream is not supported because the parallel stream could not keep the original order of given list, thus an
-     * UnsupportedOperationException will be thrown if the given stream is parallel. For parallel rendering, use the combination of
-     * {@link #create(String, Iterable, RowConvertor)} and {@link RowConvertorBuilder#parallel(Function)}/
-     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead.
+     * <b>Note:</b> Parallel stream is supported but there is limitation that the current thread will be blocked to terminate current stream
+     * even {@link Configuration#isBlockParallelListRendering()} was set to false. In other words, all the stream operation will still be
+     * performed in multi-thread by the default JVM mechanism but the current thread will wait for all the operations to finish before
+     * perform other rendering. Use the combination of {@link #create(String, Iterable, RowConvertor)} and
+     * {@link RowConvertorBuilder#parallel(Function)}/ {@link RowConvertorBuilder#parallel(RowConvertor)} instead if you do not want the
+     * current thread to be blocked.
      * 
      * @param selector
      *            a css selector
      * @param stream
      *            a stream with arbitrary type data
      * @return the created renderer
-     * @throws UnsupportedOperationException
-     *             if the given stream is parallel
      */
     public final static Renderer create(String selector, Stream<?> stream) {
         if (treatNullAsRemoveNode && stream == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             if (stream.isParallel()) {
-                throw new UnsupportedOperationException(
-                        "Cannot rendering by a parallel stream because the parallel stream could not keep the original order of given list.");
-            }
-            List<Transformer<?>> list = stream.map(obj -> {
-                return TransformerFactory.generateTransformer(obj);
-            }).collect(Collectors.toList());
+                List<Transformer<?>> list = new LinkedList<Transformer<?>>();
+                stream.forEachOrdered(obj -> {
+                    list.add(TransformerFactory.generateTransformer(obj));
+                });
+                return new Renderer(selector, list);
+            } else {
+                List<Transformer<?>> list = stream.map(obj -> {
+                    return TransformerFactory.generateTransformer(obj);
+                }).collect(Collectors.toList());
 
-            return new Renderer(selector, list);
+                return new Renderer(selector, list);
+            }
         }
     }
 
