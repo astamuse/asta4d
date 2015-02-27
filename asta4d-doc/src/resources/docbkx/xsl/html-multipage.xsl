@@ -27,7 +27,7 @@ under the License.
 	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/html/chunk.xsl"/>
 	<xsl:import href="html.xsl"/>
 
-	<xsl:param name="html.stylesheet">../css/manual-multipage.css</xsl:param>
+	<xsl:param name="html.stylesheet">css/manual-multipage.css</xsl:param>
 
 	<xsl:param name="chunk.section.depth">'5'</xsl:param>
 	<xsl:param name="use.id.as.filename">'1'</xsl:param>

@@ -15,7 +15,7 @@
 
   <name>asta4d framework</name>
   <description>asta4d framework is a view first web framework</description>
-
+  
   <url>http://github.com/astamuse/asta4d</url>
   <licenses>
     <license>
@@ -48,6 +48,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <prjDocRoot>./asta4d-doc</prjDocRoot>
   </properties>
 
   <modules>

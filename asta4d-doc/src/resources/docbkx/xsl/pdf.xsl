@@ -25,8 +25,11 @@ under the License.
 				exclude-result-prefixes="xslthl"
 				version='1.0'>
 
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/>
-	<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/highlight.xsl"/>
+	<!-- import the main stylesheet, here pointing to fo/docbook.xsl -->
+	<xsl:import href="urn:docbkx:stylesheet"/>
+	<!-- highlight.xsl must be imported in order to enable highlighting support, highlightSource=1 parameter is not sufficient -->
+	<xsl:import href="urn:docbkx:stylesheet/highlight.xsl"/>
+
 	<xsl:import href="common.xsl"/>
 
 	<!-- Extensions -->
@@ -51,7 +54,7 @@ under the License.
 
 	<!-- TITLE PAGE -->
 
-	<xsl:template name="book.titlepage.recto">
+	<!--xsl:template name="book.titlepage.recto">
 		<fo:block>
 			<fo:table table-layout="fixed" width="175mm">
 				<fo:table-column column-width="175mm"/>
@@ -110,7 +113,7 @@ under the License.
 				</fo:table-body>
 			</fo:table>
 		</fo:block>
-	</xsl:template>
+	</xsl:template-->
 
 	<!-- Prevent blank pages in output -->
 	<xsl:template name="book.titlepage.before.verso">
