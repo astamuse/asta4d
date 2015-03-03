@@ -1,0 +1,112 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+	<afd:block append="footer-resource">
+		<script>
+		function addPos(targetBtn){
+			var jobId = $("[name=job-id"+ parentIndexes +"]").val();
+			if(!jobId){
+				jobId = "-1";
+			}
+		
+			var parentIndexes = $(targetBtn).attr("cascade-parent-indexes");
+			var positionLengthElem = $("[name='job-position-length"+ parentIndexes +"']");
+			var positionLength = parseInt(positionLengthElem.val());
+
+			var templateElem = $("[cascade-ref='job-position-row"+ parentIndexes +"-@@']");
+			templateElem = templateElem.clone();
+			templateElem.css("display", "");
+			
+			templateElem.find("[name='job-position-job-id"+ parentIndexes +"-@@']").val(jobId);
+			templateElem.find("[name='job-position-id"+ parentIndexes +"-@@']").val(positionLength*-1);
+
+			var templateStr = $("<div>").append(templateElem).html();
+			templateStr = templateStr.replace(/(-)@@(?!@)/g, "$1" + positionLength );
+		
+			$("#job-position" + parentIndexes).append(templateStr);
+			
+			positionLength++;
+			positionLengthElem.val(positionLength);
+		}
+		function removePos(targetBtn){
+			var targetRef = $(targetBtn).attr("cascade-ref-target");
+			$("[cascade-ref='" + targetRef+"']").remove();
+			return false;
+		}
+		function addJob(){
+			var personId = $("[name=id]").val();
+			if(!personId){
+				personId = "-1";
+			}
+			
+			var jobLengthElem = $("[name='job-experience-length']");
+			var jobLength = parseInt(jobLengthElem.val());
+			
+			var templateElem = $("[cascade-ref='job-experience-row-@']");
+			templateElem = templateElem.clone();
+			templateElem.css("display", "");
+			
+			templateElem.find("[name='job-person-id-@']").val(personId);
+			templateElem.find("[name='job-id-@']").val(jobLength*-1);
+			
+			var templateStr = $("<div>").append(templateElem).html();
+			templateStr = templateStr.replace(/(-)@(?!@)/g, "$1" + jobLength );
+		
+			$("#job-experience").append(templateStr);
+			
+			jobLength++;
+			jobLengthElem.val(jobLength);
+		}
+		function removeJob(targetBtn){
+			var targetRef = $(targetBtn).attr("cascade-ref-target");
+			$("[cascade-ref='" + targetRef+"']").remove();
+			return false;
+		}
+		</script>
+	</afd:block>
+	<afd:snippet render="form.SplittedFormSnippet">
+		<table border=0 class="form-input-table">
+			<tr>
+				<td>job experiences *:</td>
+				<td>
+					<div id="job-experience-err-msg" style="color: red"></div>
+					<!--  
+						The following "@" contained attributes will be rewritten to array index by default:
+							id
+							name
+							cascade-ref
+							cascade-ref-target
+						further rewriting can be performed by overriding the rewriteXXX methods in snippet. 
+					-->
+					<div id="job-experience">
+						<div cascade-ref="job-experience-row-@">
+							<input type="hidden" name="job-id-@">
+							<input type="hidden" name="job-person-id-@">
+							year:<select name="job-year-@">
+									<option value="1980">1980</option>
+								</select>
+							desc:<input type="text" name="job-description-@">
+							<a id="job-experience-remove-btn" href="javascript:void(0)" onclick="removeJob(this)" cascade-ref-target="job-experience-row-@" class="glyphicon glyphicon-minus"></a>
+							<div id="job-position-@">
+								job positions *:
+								<div cascade-ref="job-position-row-@-@@">
+									<input type="hidden" name="job-position-id-@-@@">
+									<input type="hidden" name="job-position-job-id-@-@@">
+									name:<input type="text" name="job-position-name-@-@@">
+									<a id="job-position-remove-btn-@" href="javascript:void(0)" onclick="removePos(this)" cascade-ref-target="job-position-row-@-@@" class="glyphicon glyphicon-minus"></a>
+								</div>
+								<input type="hidden" name="job-position-length-@" value="0">
+								<a id="job-position-add-btn-@" href="javascript:void(0)" onclick="addPos(this)" cascade-parent-indexes="-@" class="glyphicon glyphicon-plus"></a>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="job-experience-length" value="0">
+					<a id="job-experience-add-btn" href="javascript:addJob()" class="glyphicon glyphicon-plus"></a>
+				</td>
+			</tr>
+		</table>
+	</afd:snippet>
+</body>
+</html>

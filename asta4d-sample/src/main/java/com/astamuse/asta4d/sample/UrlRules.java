@@ -28,6 +28,7 @@ import com.astamuse.asta4d.sample.handler.LoginHandler;
 import com.astamuse.asta4d.sample.handler.form.CascadeFormHandler;
 import com.astamuse.asta4d.sample.handler.form.MultiStepFormHandler;
 import com.astamuse.asta4d.sample.handler.form.SingleInputFormHandler;
+import com.astamuse.asta4d.sample.handler.form.SplittedFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
@@ -137,7 +138,23 @@ public class UrlRules implements UrlMappingRuleInitializer {
              //specify the exit target
              .redirect("/form?type=cascade");
         // @ShowCode:showCascadeEnd
-           
+        
+        // @ShowCode:showSplittedStart
+        rules.add((HttpMethod)null, "/form/splitted/add")
+             //specify the base path of target template file by path var
+             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
+             .handler(SplittedFormHandler.Add.class)
+             //specify the exit target
+             .redirect("/form?type=splitted");
+
+        rules.add((HttpMethod)null, "/form/splitted/edit")
+             //specify the base path of target template file by path var
+             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
+             .handler(SplittedFormHandler.Edit.class)
+             //specify the exit target
+             .redirect("/form?type=splitted");
+        // @ShowCode:showSplittedEnd
+
         rules.add("/localize", "/templates/localize.html");
         
         rules.add("/error-sample/handler").handler(new Object(){

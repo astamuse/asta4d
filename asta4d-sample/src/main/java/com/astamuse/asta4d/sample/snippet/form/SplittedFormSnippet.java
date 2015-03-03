@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.astamuse.asta4d.sample.handler.form.EducationForm;
+import com.astamuse.asta4d.sample.handler.form.JobForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
@@ -33,8 +33,8 @@ import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
 
-//@ShowCode:showCascadeFormSnippetStart
-public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
+//@ShowCode:showSplittedFormSnippetStart
+public class SplittedFormSnippet extends MultiStepFormFlowSnippet {
     @Override
     protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         List<FormFieldPrepareRenderer> list = new LinkedList<>();
@@ -44,9 +44,9 @@ public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
             list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
             list.add(new RadioPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
             list.add(new CheckboxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
-        } else if (form instanceof EducationForm) {
+        } else if (form instanceof JobForm) {
             // to render the option data of arrayed form fields, simply use the field name with "@" mark as the same as plain fields
-            list.add(new SelectPrepareRenderer(EducationForm.class, "education-year-@").setOptionData(createYearOptionList()));
+            list.add(new SelectPrepareRenderer(JobForm.class, "job-year-@").setOptionData(createYearOptionList()));
         }
         return list;
     }
@@ -59,4 +59,4 @@ public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
         return new OptionValueMap(optionList);
     }
 }
-// @ShowCode:showCascadeFormSnippetEnd
+// @ShowCode:showSplittedFormSnippetEnd

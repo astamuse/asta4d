@@ -34,6 +34,14 @@
 		function casmod(){
 			location.href="form/cascade/edit?id="+getId();	
 		}
+				
+		function spladd(){
+			location.href="form/splitted/add";
+		}
+		
+		function splmod(){
+			location.href="form/splitted/edit?id="+getId();	
+		}
 		
 		</script>
 	
@@ -95,8 +103,8 @@
 					There are two splitted input forms for complicated input scenario. <br>
 					(sample has not been implemented yet but the framework has been supporting it)
 					<div>
-						<button type=button class="btn btn-sm btn-default" disabled>add</button>
-						<button type=button class="btn btn-sm btn-default" disabled>modify</button>
+						<button type=button class="btn btn-sm btn-default" onclick="spladd()">add</button>
+						<button type=button class="btn btn-sm btn-default" onclick="splmod()">modify</button>
 					</div>
 				</div>
 				</afd:snippet>

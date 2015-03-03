@@ -18,9 +18,14 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.validation.Valid;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
+import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
+import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.Select;
@@ -36,6 +41,28 @@ public class JobForm extends JobExperence {
         }
         return form;
     }
+
+    public JobForm() {
+        jobPositionForms = new JobPositionForm[0];
+        jobPositionLength = jobPositionForms.length;
+    }
+
+    @Hidden(name = "job-position-length-@")
+    private Integer jobPositionLength;
+
+    // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
+    @CascadeFormField(name = "job-position-@", arrayLengthField = "job-position-length-@", containerSelector = "[cascade-ref=job-position-row-@-@@]")
+    @Valid
+    @NotEmpty
+    private JobPositionForm[] jobPositionForms;
+
+    // show the add and remove buttons only when edit mode
+
+    @AvailableWhenEditOnly(selector = "#job-position-add-btn-@")
+    private String positionAddBtn;
+
+    @AvailableWhenEditOnly(selector = "#job-position-remove-btn-@")
+    private String positionRemoveBtn;
 
     // for arrayed form, all the field names must contain a "@" mark which will be rewritten to array index by framework.
 
@@ -61,6 +88,22 @@ public class JobForm extends JobExperence {
     @Input(name = "job-description-@")
     public String getDescription() {
         return super.getDescription();
+    }
+
+    public Integer getJobPositionLength() {
+        return jobPositionLength;
+    }
+
+    public void setJobPositionLength(Integer jobPositionLength) {
+        this.jobPositionLength = jobPositionLength;
+    }
+
+    public JobPositionForm[] getJobPositionForms() {
+        return jobPositionForms;
+    }
+
+    public void setJobPositionForms(JobPositionForm[] jobPositionForms) {
+        this.jobPositionForms = jobPositionForms;
     }
 
 }

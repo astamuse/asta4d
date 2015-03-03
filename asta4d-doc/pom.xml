@@ -34,7 +34,7 @@
       <plugin>
         <groupId>com.agilejava.docbkx</groupId>
         <artifactId>docbkx-maven-plugin</artifactId>
-        <version>2.0.14</version>
+        <version>2.0.16</version>
         <executions>
           <execution>
             <id>html-singlepage</id>
@@ -57,7 +57,7 @@
                 </postProcess>
             </configuration>
           </execution>
-          <!-- execution>
+          <execution>
             <id>html</id>
             <goals>
               <goal>generate-html</goal>
@@ -78,8 +78,8 @@
                     </copy>
                 </postProcess>
             </configuration>
-          </execution -->
-          <!-- pdf cannot work correctly yet
+          </execution>
+          <!-- pdf cannot work correctly yet -->
           <execution>
             <id>pdf</id>
             <goals>
@@ -87,18 +87,34 @@
             </goals>
             <phase>generate-sources</phase>
             <configuration>
-              <admonGraphicsPath>${basedir}/src/resources/docbkx/images/</admonGraphicsPath>
-              <imgSrcPath>${basedir}/src/resources/docbkx</imgSrcPath>
+              <!--we cannot use abstract path by the reference of $basedir due to a bug of apache fop which cause error on windows style path,
+                  thus we use a predefined relative path by the parent.
+              -->
+              <admonGraphicsPath>${prjDocRoot}/src/resources/docbkx/images/</admonGraphicsPath>
+              <imgSrcPath>${prjDocRoot}/src/resources/docbkx/</imgSrcPath>
+              <xincludeSupported>true</xincludeSupported>
+              <foCustomization>./src/resources/docbkx/xsl/pdf.xsl</foCustomization>
             </configuration>
           </execution>
-          -->
         </executions>
         <dependencies>
-            <dependency>
+            <!--dependency>
                 <groupId>org.docbook</groupId>
                 <artifactId>docbook-xml</artifactId>
                 <version>4.4</version>
                 <scope>runtime</scope>
+            </dependency-->
+            <dependency>
+              <groupId>net.sf.xslthl</groupId>
+              <artifactId>xslthl</artifactId>
+              <version>2.1.0</version>
+              <scope>runtime</scope>
+            </dependency>
+            <dependency>
+              <groupId>net.sf.offo</groupId>
+              <artifactId>fop-hyph</artifactId>
+              <version>2.0</version>
+              <scope>runtime</scope>
             </dependency>
         </dependencies>
         <!-- Common Docbook configuration -->
@@ -106,7 +122,6 @@
             <sourceDirectory>${basedir}/src/docbkx</sourceDirectory>
             <xincludeSupported>true</xincludeSupported>
             <chunkedOutput>false</chunkedOutput>
-            <foCustomization>${basedir}/src/resources/docbkx/xsl/pdf.xsl</foCustomization>
             <useExtensions>1</useExtensions>
             <highlightSource>1</highlightSource>
             <tocMaxDepth>4</tocMaxDepth>

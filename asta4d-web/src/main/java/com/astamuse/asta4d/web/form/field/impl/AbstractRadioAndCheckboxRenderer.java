@@ -314,33 +314,35 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
                 idList.add(elem.id());
             }
         });
-        renderer.add(":root", new Renderable() {
-            @Override
-            public Renderer render() {
-                String attachTargetSelector;
-                if (duplicatorRefList.size() > 0) {
-                    attachTargetSelector = SelectorUtil.attr(RadioPrepareRenderer.DUPLICATOR_REF_ID_ATTR,
-                            duplicatorRefList.get(duplicatorRefList.size() - 1));
-                } else {
-                    attachTargetSelector = SelectorUtil.id(idList.get(idList.size() - 1));
-                }
-                return new Renderer(attachTargetSelector, new ElementTransformer(null) {
-                    @Override
-                    public Element invoke(Element elem) {
-                        GroupNode group = new GroupNode();
+        if (idList.size() > 0) {
+            renderer.add(":root", new Renderable() {
+                @Override
+                public Renderer render() {
+                    String attachTargetSelector;
+                    if (duplicatorRefList.size() > 0) {
+                        attachTargetSelector = SelectorUtil.attr(RadioPrepareRenderer.DUPLICATOR_REF_ID_ATTR,
+                                duplicatorRefList.get(duplicatorRefList.size() - 1));
+                    } else {
+                        attachTargetSelector = SelectorUtil.id(idList.get(idList.size() - 1));
+                    }
+                    return new Renderer(attachTargetSelector, new ElementTransformer(null) {
+                        @Override
+                        public Element invoke(Element elem) {
+                            GroupNode group = new GroupNode();
 
-                        Element editClone = elem.clone();
-                        group.appendChild(editClone);
+                            Element editClone = elem.clone();
+                            group.appendChild(editClone);
 
-                        for (String v : valueList) {
-                            String nonNullString = retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, v);
-                            group.appendChild(createAlternativeDisplayElement(nonNullString));
-                        }
-                        return group;
-                    }// invoke
-                });// new renderer
-            }// render()
-        });// renderable
+                            for (String v : valueList) {
+                                String nonNullString = retrieveDisplayStringFromStoredOptionValueMap(editTargetSelector, v);
+                                group.appendChild(createAlternativeDisplayElement(nonNullString));
+                            }
+                            return group;
+                        }// invoke
+                    });// new renderer
+                }// render()
+            });// renderable
+        }
 
         return renderer;
     }
