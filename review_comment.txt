@@ -1,0 +1,7 @@
+AbstractRadioAndCheckboxRenderer:317  size of idList cannot be retrieved at that moment
+
+AbstractFormFlowSnippet:384  it seems that "cascade-parent-indexes" is not necessary
+
+Person/PersonForm   validation should be on entity pojo rather than form pojo
+
+ListSnippet:43       it seems that subpersonform is not necessary
