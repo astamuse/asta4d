@@ -29,10 +29,45 @@ import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 @Form
 public class SplittedForm {
 
-    public SplittedForm() {
-        personForm = new PersonForm();
-        jobForms = new JobForm[0];
-        jobExperienceLength = jobForms.length;
+    @Form
+    public static class CascadeJobForm {
+
+        // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
+        @CascadeFormField(name = "job-experience", arrayLengthField = "job-experience-length", containerSelector = "[cascade-ref=job-experience-row-@]")
+        @Valid
+        @NotEmpty
+        private JobForm[] jobForms;
+
+        @Hidden(name = "job-experience-length")
+        private Integer jobExperienceLength;
+
+        // show the add and remove buttons only when edit mode
+        @AvailableWhenEditOnly(selector = "#job-experience-add-btn")
+        private String jobExperienceAddBtn;
+
+        @AvailableWhenEditOnly(selector = "#job-experience-remove-btn")
+        private String jobExperienceRemoveBtn;
+
+        public CascadeJobForm() {
+            jobForms = new JobForm[0];
+            jobExperienceLength = jobForms.length;
+        }
+
+        public Integer getJobExperienceLength() {
+            return jobExperienceLength;
+        }
+
+        public void setJobExperienceLength(Integer jobExperienceLength) {
+            this.jobExperienceLength = jobExperienceLength;
+        }
+
+        public JobForm[] getJobForms() {
+            return jobForms;
+        }
+
+        public void setJobForms(JobForm[] jobForms) {
+            this.jobForms = jobForms;
+        }
     }
 
     // show the input comments only when edit mode
@@ -44,21 +79,14 @@ public class SplittedForm {
     @Valid
     private PersonForm personForm;
 
-    // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
-    @CascadeFormField(name = "job-experience", arrayLengthField = "job-experience-length", containerSelector = "[cascade-ref=job-experience-row-@]")
+    @CascadeFormField
     @Valid
-    @NotEmpty
-    private JobForm[] jobForms;
+    private CascadeJobForm cascadeJobForm;
 
-    @Hidden(name = "job-experience-length")
-    private Integer jobExperienceLength;
-
-    // show the add and remove buttons only when edit mode
-    @AvailableWhenEditOnly(selector = "#job-experience-add-btn")
-    private String jobExperienceAddBtn;
-
-    @AvailableWhenEditOnly(selector = "#job-experience-remove-btn")
-    private String jobExperienceRemoveBtn;
+    public SplittedForm() {
+        personForm = new PersonForm();
+        cascadeJobForm = new CascadeJobForm();
+    }
 
     // getter/setter
     public PersonForm getPersonForm() {
@@ -69,21 +97,14 @@ public class SplittedForm {
         this.personForm = personForm;
     }
 
-    public Integer getJobExperienceLength() {
-        return jobExperienceLength;
+    public CascadeJobForm getCascadeJobForm() {
+        return cascadeJobForm;
     }
 
-    public void setJobExperienceLength(Integer jobExperienceLength) {
-        this.jobExperienceLength = jobExperienceLength;
+    public void setCascadeJobForm(CascadeJobForm cascadeJobForm) {
+        this.cascadeJobForm = cascadeJobForm;
     }
 
-    public JobForm[] getJobForms() {
-        return jobForms;
-    }
-
-    public void setJobForms(JobForm[] jobForms) {
-        this.jobForms = jobForms;
-    }
 }
 // @ShowCode:showSplittedFormEnd
 

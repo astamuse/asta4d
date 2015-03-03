@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.astamuse.asta4d.sample.handler.form.SplittedForm.CascadeJobForm;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
 import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
 import com.astamuse.asta4d.sample.util.persondb.JobPosition;
@@ -30,6 +31,7 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
@@ -38,6 +40,19 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
 
     public SplittedFormHandler() {
         super(SplittedForm.class);
+    }
+
+    @Override
+    protected String firstStepName() {
+        return inputStep1Name();
+    }
+
+    protected String inputStep1Name() {
+        return "input-1";
+    }
+
+    protected String inputStep2Name() {
+        return "input-2";
     }
 
     protected String nextStepName() {
@@ -62,9 +77,8 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
 
     @Override
     protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        if (reachedConfirmStep(traceMap)) {
-            return false;
-        } else if (isEdit()) {
+        // we will always save trace map when we go to the first step because we need to retrieve the init form later.
+        if (inputStep1Name().equalsIgnoreCase(renderTargetStep)) {
             return false;
         } else {
             return super.skipSaveTraceMap(currentStep, renderTargetStep, traceMap);
@@ -72,49 +86,43 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     }
 
     @Override
-    protected SplittedForm retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
-        SplittedForm form = super.retrieveFormInstance(traceMap, currentStep);
-
-        // first input
-        if (isEdit() && currentStep.equalsIgnoreCase(FormFlowConstants.FORM_STEP_BEFORE_FIRST)) {
-            traceMap.put(currentStep, form);
-        }
-
-        // input -> next
-        if (currentStep.equalsIgnoreCase(firstStepName())) {
-            SplittedForm storedForm = (SplittedForm) traceMap.get(storedConfirmStepName());
-            if (storedForm == null) {
-                storedForm = (SplittedForm) traceMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
+    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+        if (inputStep2Name().equalsIgnoreCase(renderTargetStep)) {
+            /* 
+             * for the first input step, the initial form will be used by default, but for the second input step, we must store the initial 
+             * data by ourselves, which is why we force to save trace map data when we go to the first step(from the before first step at 
+             * when we retrieved the initial form from db)
+             */
+            SplittedForm savedForm = (SplittedForm) traceMap.get(renderTargetStep);
+            if (savedForm == null) {
+                SplittedForm initForm = (SplittedForm) traceMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
+                traceMap.put(renderTargetStep, initForm);
             }
-            if (storedForm != null) {
-                JobForm[] jobForms = storedForm.getJobForms();
-                form.setJobForms(jobForms);
-                form.setJobExperienceLength(jobForms.length);
-                traceMap.remove(nextStepName());
-            }
+        } else if (confirmStepName().equalsIgnoreCase(renderTargetStep)) {
+            /* 
+             * for the complete step, we should combine the saved data of first step and second step
+             */
+            SplittedForm form1 = (SplittedForm) traceMap.get(inputStep1Name());
+            SplittedForm form2 = (SplittedForm) traceMap.get(inputStep2Name());
+
+            // we can clone it or not, not matter
+            SplittedForm confirmForm = (SplittedForm) form1;
+
+            confirmForm.setCascadeJobForm(form2.getCascadeJobForm());
+
+            traceMap.put(ClassicalFormFlowConstant.STEP_CONFIRM, confirmForm);
         }
 
-        // next -> confirm
-        // input <- next
-        if (currentStep.equalsIgnoreCase(nextStepName())) {
-            SplittedForm traceForm = (SplittedForm) traceMap.get(firstStepName());
-            form.setPersonForm(traceForm.getPersonForm());
-        }
-
-        // next <- confirm
-        if (currentStep.equalsIgnoreCase(confirmStepName())) {
-            traceMap.put(storedConfirmStepName(), traceMap.get(confirmStepName()));
-        }
-
-        return form;
+        super.passDataToSnippet(currentStep, renderTargetStep, traceMap);
     }
 
     @Override
     protected SplittedForm generateFormInstanceFromContext() {
         SplittedForm form = super.generateFormInstanceFromContext();
+        CascadeJobForm cjForm = form.getCascadeJobForm();
 
         List<JobForm> rewriteJobList = new LinkedList<>();
-        for (JobForm jform : form.getJobForms()) {
+        for (JobForm jform : cjForm.getJobForms()) {
             List<JobPositionForm> rewritePosList = new LinkedList<>();
             for (JobPositionForm jpform : jform.getJobPositionForms()) {
                 if (jpform.getJobId() != null) {
@@ -128,8 +136,8 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
                 rewriteJobList.add(jform);
             }
         }
-        form.setJobForms(rewriteJobList.toArray(new JobForm[rewriteJobList.size()]));
-        form.setJobExperienceLength(form.getJobForms().length);
+        cjForm.setJobForms(rewriteJobList.toArray(new JobForm[rewriteJobList.size()]));
+        cjForm.setJobExperienceLength(cjForm.getJobForms().length);
 
         return form;
     }
@@ -140,11 +148,15 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
 
         Object validateObj;
 
-        if (currentStep.equalsIgnoreCase(firstStepName())) {
+        // at the end of first input step, we will only validate the content of first step
+        if (inputStep1Name().equalsIgnoreCase(currentStep)) {
             validateObj = ((SplittedForm) form).getPersonForm();
+        } else if (inputStep2Name().equalsIgnoreCase(currentStep)) {
+            validateObj = ((SplittedForm) form).getCascadeJobForm();
         } else {
             validateObj = form;
         }
+
         return super.processValidation(processData, validateObj);
     }
 
@@ -169,7 +181,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
         protected void updateForm(SplittedForm form) {
             PersonForm pForm = form.getPersonForm();
             PersonDbManager.instance().add(pForm);
-            for (JobForm jForm : form.getJobForms()) {
+            for (JobForm jForm : form.getCascadeJobForm().getJobForms()) {
                 jForm.setPersonId(pForm.getId());
                 JobExperenceDbManager.instance().add(jForm);
                 for (JobPositionForm jpForm : jForm.getJobPositionForms()) {
@@ -220,10 +232,13 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
                 jform.setJobPositionLength(jpForms.length);
             }
 
+            CascadeJobForm cjForm = new CascadeJobForm();
+            cjForm.setJobForms(jForms);
+            cjForm.setJobExperienceLength(jForms.length);
+
             SplittedForm form = new SplittedForm();
             form.setPersonForm(pForm);
-            form.setJobForms(jForms);
-            form.setJobExperienceLength(jForms.length);
+            form.setCascadeJobForm(cjForm);
 
             return form;
         }
@@ -235,7 +250,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
 
             List<Integer> validJobs = new LinkedList<Integer>();
             List<Integer> validJPs = new LinkedList<Integer>();
-            for (JobForm jForm : form.getJobForms()) {
+            for (JobForm jForm : form.getCascadeJobForm().getJobForms()) {
                 jForm.setPersonId(pForm.getId());
                 if (jForm.getId() > 0) {
                     JobExperenceDbManager.instance().update(jForm);

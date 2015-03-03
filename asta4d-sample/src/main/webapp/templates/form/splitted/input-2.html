@@ -5,14 +5,17 @@
 <body>
 <!-- @ShowCode:showInputStart -->
 <afd:extension parent="/templates/form/splitted/formBase.html">
+	<afd:block override="form-step-name">Input-2</afd:block>
 	<afd:block override="form-block">
-		<afd:embed target="/templates/form/splitted/formPerson.html"/>
+		<afd:embed target="/templates/form/splitted/formJob.html"/>
+		<input type="hidden" id="id" name="id">
 	</afd:block>
 	<afd:block override="form-btns">
 		<div class="form-btn-bar">
-			<input type="hidden" name="step-current" value="input">
-			<input type="hidden" name="step-failed" value="input">
-			<button type="submit" name="step-success" class="btn btn-sm btn-default" value="next">next</button>
+			<input type="hidden" name="step-current" value="input-2">
+			<input type="hidden" name="step-failed" value="input-2">
+			<button type="submit" name="step-success" class="btn btn-sm btn-default" value="confirm">confirm</button>
+			<button type="submit" name="step-back" class="btn btn-sm btn-default" value="input">back</button>
 			<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
 		</div>
 	</afd:block>
