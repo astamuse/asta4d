@@ -20,16 +20,17 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.astamuse.asta4d.sample.util.persondb.JobExperence;
+import com.astamuse.asta4d.sample.util.persondb.Education;
+import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 import com.astamuse.asta4d.web.form.annotation.renderable.Select;
 
-//@ShowCode:showJobFormStart
-public class SubJobForm extends JobExperence {
-    public static SubJobForm buildFromJob(JobExperence job) {
-        SubJobForm form = new SubJobForm();
+//@ShowCode:showEducationFormStart
+public class EducationForm extends Education {
+    public static EducationForm buildFromEducation(Education education) {
+        EducationForm form = new EducationForm();
         try {
-            BeanUtils.copyProperties(form, job);
+            BeanUtils.copyProperties(form, education);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -37,18 +38,29 @@ public class SubJobForm extends JobExperence {
     }
 
     // for arrayed form, all the field names must contain a "@" mark which will be rewritten to array index by framework.
+    @Override
+    @Hidden(name = "education-id-@")
+    public Integer getId() {
+        return super.getId();
+    }
 
     @Override
-    @Select(name = "sub-job-year-@-@@")
+    @Hidden(name = "education-person-id-@")
+    public Integer getPersonId() {
+        return super.getPersonId();
+    }
+
+    @Override
+    @Select(name = "education-year-@")
     public Integer getYear() {
         return super.getYear();
     }
 
     @Override
-    @Input(name = "sub-job-description-@-@@")
+    @Input(name = "education-description-@")
     public String getDescription() {
         return super.getDescription();
     }
 
 }
-// @ShowCode:showJobFormEnd
+// @ShowCode:showEducationFormEnd

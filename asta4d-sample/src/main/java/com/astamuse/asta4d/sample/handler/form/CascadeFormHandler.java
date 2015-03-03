@@ -19,8 +19,8 @@ package com.astamuse.asta4d.sample.handler.form;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.astamuse.asta4d.sample.util.persondb.JobExperence;
-import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
+import com.astamuse.asta4d.sample.util.persondb.Education;
+import com.astamuse.asta4d.sample.util.persondb.EducationDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
@@ -28,10 +28,10 @@ import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showCascadeFormHandlerStart
-public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<CascadeForm> {
+public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<PersonFormIncludingCascadeForm> {
 
     public CascadeFormHandler() {
-        super(CascadeForm.class);
+        super(PersonFormIncludingCascadeForm.class);
     }
 
     @Override
@@ -42,16 +42,16 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
 
     // intercept the form date construction to rewrite the form data
     @Override
-    protected CascadeForm generateFormInstanceFromContext() {
-        CascadeForm form = super.generateFormInstanceFromContext();
-        List<JobForm> rewriteList = new LinkedList<>();
-        for (JobForm jform : form.getJobForms()) {
+    protected PersonFormIncludingCascadeForm generateFormInstanceFromContext() {
+        PersonFormIncludingCascadeForm form = super.generateFormInstanceFromContext();
+        List<EducationForm> rewriteList = new LinkedList<>();
+        for (EducationForm eform : form.getEducationForms()) {
             // we assume all the job forms without person id are removed by client
-            if (jform.getPersonId() != null) {
-                rewriteList.add(jform);
+            if (eform.getPersonId() != null) {
+                rewriteList.add(eform);
             }
         }
-        form.setJobForms(rewriteList.toArray(new JobForm[rewriteList.size()]));
+        form.setEducationForms(rewriteList.toArray(new EducationForm[rewriteList.size()]));
         return form;
     }
 
@@ -61,36 +61,23 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
      */
     public static class Add extends CascadeFormHandler {
         @Override
-        protected CascadeForm createInitForm() {
-            PeopleForm pform = new PeopleForm();
-            PersonForm mpform = new PersonForm();
-            SubPersonForm[] pforms = new SubPersonForm[0];
-            JobForm[] jforms = new JobForm[0];
+        protected PersonFormIncludingCascadeForm createInitForm() {
+            PersonFormIncludingCascadeForm form = new PersonFormIncludingCascadeForm();
 
-            CascadeForm cf = new CascadeForm();
-            pform.setMainPersonForm(mpform);
-            pform.setPersonForms(pforms);
-            pform.setSubpersonLength(pforms.length);
-            cf.setPeopleForm(pform);
-            cf.setJobForms(jforms);
-            cf.setJobExperienceLength(jforms.length);
+            EducationForm[] eForms = new EducationForm[0];
+            form.setEducationForms(eForms);
+            form.setEducationLength(eForms.length);
 
-            return cf;
+            return form;
         }
 
         @Override
-        protected void updateForm(CascadeForm form) {
-            PeopleForm pform = form.getPeopleForm();
-            PersonForm mperson = pform.getMainPersonForm();
-            SubPersonForm[] people = pform.getPersonForms();
-            JobForm[] jobs = form.getJobForms();
-            PersonDbManager.instance().add(mperson);
-            for (SubPersonForm person : people) {
-                PersonDbManager.instance().add(person);
-            }
-            for (JobForm job : jobs) {
-                job.setPersonId(mperson.getId());
-                JobExperenceDbManager.instance().add(job);
+        protected void updateForm(PersonFormIncludingCascadeForm form) {
+            EducationForm[] eForms = form.getEducationForms();
+            PersonDbManager.instance().add(form);
+            for (EducationForm e : eForms) {
+                e.setPersonId(form.getId());
+                EducationDbManager.instance().add(e);
             }
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
         }
@@ -103,51 +90,37 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
     public static class Edit extends CascadeFormHandler {
 
         @Override
-        protected CascadeForm createInitForm() throws Exception {
-            CascadeForm superForm = super.createInitForm();
+        protected PersonFormIncludingCascadeForm createInitForm() throws Exception {
+            PersonFormIncludingCascadeForm superform = super.createInitForm();
 
-            PersonForm pform = PersonForm.buildFromPerson(PersonDbManager.instance().find(
-                    superForm.getPeopleForm().getMainPersonForm().getId()));
-            List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pform.getId());
-            List<JobForm> jobFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
+            PersonFormIncludingCascadeForm form = PersonFormIncludingCascadeForm.buildFromPerson(PersonDbManager.instance().find(
+                    superform.getId()));
+
+            List<Education> educations = EducationDbManager.instance().find("personId", form.getId());
+            List<EducationForm> eFormList = ListConvertUtil.transform(educations, new RowConvertor<Education, EducationForm>() {
                 @Override
-                public JobForm convert(int rowIndex, JobExperence job) {
-                    return JobForm.buildFromJob(job);
+                public EducationForm convert(int rowIndex, Education e) {
+                    return EducationForm.buildFromEducation(e);
                 }
             });
-            JobForm[] jforms = jobFormList.toArray(new JobForm[jobFormList.size()]);
+            EducationForm[] eForms = eFormList.toArray(new EducationForm[eFormList.size()]);
+            form.setEducationForms(eForms);
+            form.setEducationLength(eForms.length);
 
-            CascadeForm cf = new CascadeForm();
-            PeopleForm peopleForm = new PeopleForm();
-            peopleForm.setMainPersonForm(pform);
-            SubPersonForm[] pforms = new SubPersonForm[0];
-            peopleForm.setPersonForms(pforms);
-            peopleForm.setSubpersonLength(pforms.length);
-            cf.setPeopleForm(peopleForm);
-            cf.setJobForms(jforms);
-            cf.setJobExperienceLength(jforms.length);
-
-            return cf;
+            return form;
         }
 
         @Override
-        protected void updateForm(CascadeForm form) {
-            PeopleForm pform = form.getPeopleForm();
-            PersonForm mp = pform.getMainPersonForm();
-            SubPersonForm[] people = pform.getPersonForms();
-            JobForm[] jobs = form.getJobForms();
+        protected void updateForm(PersonFormIncludingCascadeForm form) {
+            EducationForm[] eForms = form.getEducationForms();
 
-            PersonDbManager.instance().update(mp);
-
-            for (SubPersonForm person : people) {
-                PersonDbManager.instance().add(person);
-            }
-            for (JobForm job : jobs) {
-                job.setPersonId(mp.getId());
-                if (job.getId() == null) {
-                    JobExperenceDbManager.instance().add(job);
+            PersonDbManager.instance().update(form);
+            for (EducationForm e : eForms) {
+                e.setPersonId(form.getId());
+                if (e.getId() == null) {
+                    EducationDbManager.instance().add(e);
                 } else {
-                    JobExperenceDbManager.instance().update(job);
+                    EducationDbManager.instance().update(e);
                 }
             }
             DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");

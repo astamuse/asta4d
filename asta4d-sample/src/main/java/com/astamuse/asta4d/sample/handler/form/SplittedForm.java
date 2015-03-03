@@ -25,17 +25,24 @@ import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 
-//@ShowCode:showCascadeFormStart
+//@ShowCode:showSplittedFormStart
 @Form
-public class CascadeForm {
+public class SplittedForm {
+
+    public SplittedForm() {
+        personForm = new PersonForm();
+        jobForms = new JobForm[0];
+        jobExperienceLength = jobForms.length;
+    }
+
+    // show the input comments only when edit mode
+    @AvailableWhenEditOnly(selector = "#input-comment")
+    private String inputComment;
 
     // a field with @CascadeFormField without arrayLengthField configured will be treated a simple reused form POJO
     @CascadeFormField
     @Valid
-    private PeopleForm peopleForm;
-
-    @Hidden(name = "job-experience-length")
-    private Integer jobExperienceLength;
+    private PersonForm personForm;
 
     // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
     @CascadeFormField(name = "job-experience", arrayLengthField = "job-experience-length", containerSelector = "[cascade-ref=job-experience-row-@]")
@@ -43,27 +50,23 @@ public class CascadeForm {
     @NotEmpty
     private JobForm[] jobForms;
 
-    // show the input comments only when edit mode
-
-    @AvailableWhenEditOnly(selector = "#input-comment")
-    private String inputComment;
+    @Hidden(name = "job-experience-length")
+    private Integer jobExperienceLength;
 
     // show the add and remove buttons only when edit mode
-
     @AvailableWhenEditOnly(selector = "#job-experience-add-btn")
     private String jobExperienceAddBtn;
 
     @AvailableWhenEditOnly(selector = "#job-experience-remove-btn")
     private String jobExperienceRemoveBtn;
 
-    // @ShowCode:showCascadeFormEnd
-
-    public PeopleForm getPeopleForm() {
-        return peopleForm;
+    // getter/setter
+    public PersonForm getPersonForm() {
+        return personForm;
     }
 
-    public void setPeopleForm(PeopleForm peopleForm) {
-        this.peopleForm = peopleForm;
+    public void setPersonForm(PersonForm personForm) {
+        this.personForm = personForm;
     }
 
     public Integer getJobExperienceLength() {
@@ -81,5 +84,6 @@ public class CascadeForm {
     public void setJobForms(JobForm[] jobForms) {
         this.jobForms = jobForms;
     }
-
 }
+// @ShowCode:showSplittedFormEnd
+

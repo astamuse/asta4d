@@ -16,9 +16,7 @@
  */
 package com.astamuse.asta4d.web.form;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class CascadeFormUtil {
 
@@ -37,8 +35,6 @@ public class CascadeFormUtil {
     }
 
     public static final Integer[] addIndex(Integer[] indexes, int index) {
-        List<Integer> arrayIndexes = new ArrayList<Integer>(Arrays.asList(indexes));
-        arrayIndexes.add(Integer.valueOf(index));
-        return arrayIndexes.toArray(ROOT_OF_INDEXES);
+        return ArrayUtils.add(indexes, Integer.valueOf(index));
     }
 }

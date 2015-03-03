@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<!-- @ShowCode:showInputStart -->
+<afd:extension parent="/templates/form/splitted/formBase.html">
+	<afd:block override="form-block">
+		<afd:embed target="/templates/form/splitted/formPerson.html"/>
+	</afd:block>
+	<afd:block override="form-btns">
+		<div class="form-btn-bar">
+			<input type="hidden" name="step-current" value="input">
+			<input type="hidden" name="step-failed" value="input">
+			<button type="submit" name="step-success" class="btn btn-sm btn-default" value="next">next</button>
+			<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+		</div>
+	</afd:block>
+<!-- @ShowCode:showInputEnd -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/UrlRules.java" startMark="showCascadeStart" endMark="showCascadeEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/formBase.html" startMark="showFormStart" endMark="showFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/input.html" startMark="showInputStart" endMark="showInputEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multistep/btns-input.html" startMark="showBtnsStart" endMark="showBtnsEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/form/SplittedFormSnippet.java" startMark="showSplittedFormSnippetStart" endMark="showSplittedFormSnippetEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/SplittedFormHandler.java" startMark="showSplittedFormHandlerStart" endMark="showSplittedFormHandlerEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/SplittedForm.java" startMark="showSplittedFormStart" endMark="showSplittedFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/JobForm.java" startMark="showJobFormStart" endMark="showJobFormEnd"/>
+		
+		<h3>The following shows how to customize the global message bar</h3>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/formBase.html" startMark="showMessageBarStart" endMark="showMessageBarEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/customGlobalMessageBar.html" startMark="showMessageBarStart" endMark="showMessageBarEnd"/>
+	</afd:block>
+</afd:extension>
+</body>
+</html>

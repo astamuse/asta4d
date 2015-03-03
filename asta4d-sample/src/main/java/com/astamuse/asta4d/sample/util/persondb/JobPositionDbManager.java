@@ -14,34 +14,24 @@
  * limitations under the License.
  * 
  */
-package com.astamuse.asta4d.sample.handler.form;
+package com.astamuse.asta4d.sample.util.persondb;
 
-import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.web.annotation.QueryParam;
+import java.util.LinkedList;
+import java.util.List;
 
-@ContextDataSet
-public class SubPersonFormDataHolder {
+public class JobPositionDbManager extends AbstractDbManager<JobPosition> {
+    private static JobPositionDbManager instance = new JobPositionDbManager();
 
-    @QueryParam
-    private String[] name;
-
-    @QueryParam
-    private String[] age;
-
-    public String[] getName() {
-        return name;
+    private JobPositionDbManager() {
+        super();
     }
 
-    public void setName(String[] name) {
-        this.name = name;
+    public static JobPositionDbManager instance() {
+        return instance;
     }
 
-    public String[] getAge() {
-        return age;
-    }
-
-    public void setAge(String[] age) {
-        this.age = age;
+    protected List<JobPosition> initEntityList() {
+        return new LinkedList<>();
     }
 
 }
