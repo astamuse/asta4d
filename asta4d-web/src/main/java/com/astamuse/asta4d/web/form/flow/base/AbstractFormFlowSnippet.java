@@ -97,7 +97,9 @@ public abstract class AbstractFormFlowSnippet {
                     it.remove();
                 }
             }
-            RenderingTargetFieldsMap.put(form.getClass().getName(), list);
+            if (Configuration.getConfiguration().isCacheEnable()) {
+                RenderingTargetFieldsMap.put(form.getClass().getName(), list);
+            }
         }
         return list;
     }
