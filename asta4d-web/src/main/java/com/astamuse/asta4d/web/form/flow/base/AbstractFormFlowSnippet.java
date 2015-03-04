@@ -18,6 +18,7 @@ package com.astamuse.asta4d.web.form.flow.base;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,8 @@ public abstract class AbstractFormFlowSnippet {
 
     private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
 
+    private static final Map<String, List<AnnotatedPropertyInfo>> RenderingTargetFieldsMap = new ConcurrentHashMap<>();
+
     @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP)
     protected Map<String, Object> formTraceMap;
 
@@ -81,6 +84,22 @@ public abstract class AbstractFormFlowSnippet {
      */
     protected boolean renderForEdit(String step, Object form, String fieldName) {
         return true;
+    }
+
+    private List<AnnotatedPropertyInfo> retrieveRenderTargetFieldList(Object form) {
+        List<AnnotatedPropertyInfo> list = RenderingTargetFieldsMap.get(form.getClass().getName());
+        if (list == null) {
+            list = new LinkedList<AnnotatedPropertyInfo>(AnnotatedPropertyUtil.retrieveProperties(form.getClass()));
+            Iterator<AnnotatedPropertyInfo> it = list.iterator();
+            while (it.hasNext()) {
+                // remove all the non form field properties
+                if (it.next().getAnnotation(FormField.class) == null) {
+                    it.remove();
+                }
+            }
+            RenderingTargetFieldsMap.put(form.getClass().getName(), list);
+        }
+        return list;
     }
 
     private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int cascadeFormArrayIndex) {
@@ -210,7 +229,7 @@ public abstract class AbstractFormFlowSnippet {
      */
     private Renderer renderValueOfFields(String renderTargetStep, Object form, int cascadeFormArrayIndex) throws Exception {
         Renderer render = Renderer.create();
-        List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
+        List<AnnotatedPropertyInfo> fieldList = retrieveRenderTargetFieldList(form);
 
         for (AnnotatedPropertyInfo field : fieldList) {
 
@@ -284,8 +303,6 @@ public abstract class AbstractFormFlowSnippet {
             }
 
             FieldRenderingInfo renderingInfo = getRenderingInfo(field, cascadeFormArrayIndex);
-
-            // render.addDebugger("whole form before: " + field.getName());
 
             if (renderForEdit(renderTargetStep, form, field.getName())) {
                 render.add(renderingInfo.valueRenderer.renderForEdit(renderingInfo.editSelector, v));
