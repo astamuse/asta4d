@@ -304,9 +304,7 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
     protected Renderer addDefaultAlternativeDom(final String editTargetSelector, final List<String> valueList) {
         final List<String> duplicatorRefList = new LinkedList<>();
         final List<String> idList = new LinkedList<>();
-        Renderer renderer = Renderer.create();
-        renderer.addDebugger("before retrieve dup");
-        renderer.add(editTargetSelector, new ElementSetter() {
+        Renderer renderer = Renderer.create(editTargetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
                 String duplicatorRef = elem.attr(RadioPrepareRenderer.DUPLICATOR_REF_ATTR);
@@ -317,7 +315,6 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
             }
         });
 
-        renderer.addDebugger("before render");
         renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
