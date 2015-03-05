@@ -200,7 +200,7 @@ public abstract class AbstractFormFlowHandler<T> {
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         // The subclass may override this method to retrieving form instance by various ways but we will always generate an instance from
         // the context since we have no idea about the concrete logic of sub classes.
-        return generateFormInstanceFromContext();
+        return generateFormInstanceFromContext(currentStep);
     }
 
     /**
@@ -209,9 +209,10 @@ public abstract class AbstractFormFlowHandler<T> {
      * <b>NOTE:</b> DO NOT replace this method completely at sub class, if you want to do some customized form retrieving, override the
      * method {@link #retrieveFormInstance(Map, String)} instead.
      * 
+     * @param currentStep
      * @return
      */
-    protected T generateFormInstanceFromContext() {
+    protected T generateFormInstanceFromContext(String currentStep) {
         try {
             final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
             Context currentContext = Context.getCurrentThreadContext();

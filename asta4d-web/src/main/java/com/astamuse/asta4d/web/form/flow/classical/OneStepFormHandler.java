@@ -34,7 +34,7 @@ public abstract class OneStepFormHandler<T> extends MultiStepFormFlowHandler<T> 
     }
 
     protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
-        return super.generateFormInstanceFromContext();
+        return super.generateFormInstanceFromContext(currentStep);
     }
 
     /**

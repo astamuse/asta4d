@@ -28,10 +28,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
 import com.astamuse.asta4d.Configuration;
-import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.InjectTrace;
-import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.SelectorUtil;
@@ -60,15 +58,6 @@ public abstract class AbstractFormFlowSnippet {
     }
 
     private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
-
-    @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP)
-    protected Map<String, Object> formTraceMap;
-
-    @ContextData(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR, scope = Context.SCOPE_DEFAULT)
-    protected String formTraceMapStr;
-
-    @ContextData(name = FormFlowConstants.FORM_STEP_RENDER_TARGET)
-    protected String renderTargetStep;
 
     /**
      * Sub class should tell us the current rendering mode. Since we have no any information about the concrete cases, we always return true
@@ -130,10 +119,10 @@ public abstract class AbstractFormFlowSnippet {
      * @return
      * @throws Exception
      */
-    public Renderer render() throws Exception {
-        Renderer renderer = renderTraceMapData();
-        Object form = retrieveRenderTargetForm();
-        renderer.add(renderForm(renderTargetStep, form, CascadeFormUtil.ROOT_OF_INDEXES));
+    public Renderer render(FormRenderingData renderingData) throws Exception {
+        Renderer renderer = renderTraceMapData(renderingData);
+        Object form = retrieveRenderTargetForm(renderingData);
+        renderer.add(renderForm(renderingData.getRenderTargetStep(), form, CascadeFormUtil.ROOT_OF_INDEXES));
         return renderer;
     }
 
@@ -142,7 +131,8 @@ public abstract class AbstractFormFlowSnippet {
      * 
      * @return
      */
-    protected Renderer renderTraceMapData() {
+    protected Renderer renderTraceMapData(FormRenderingData renderingData) {
+        String formTraceMapStr = renderingData.getTraceMapStr();
         if (StringUtils.isEmpty(formTraceMapStr)) {
             return Renderer.create();
         } else {
@@ -159,8 +149,8 @@ public abstract class AbstractFormFlowSnippet {
         }
     }
 
-    protected Object retrieveRenderTargetForm() {
-        return formTraceMap.get(renderTargetStep);
+    protected Object retrieveRenderTargetForm(FormRenderingData renderingData) {
+        return renderingData.getTraceMap().get(renderingData.getRenderTargetStep());
     }
 
     /**
