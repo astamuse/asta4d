@@ -42,16 +42,19 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Person
 
     // intercept the form date construction to rewrite the form data
     @Override
-    protected PersonFormIncludingCascadeForm generateFormInstanceFromContext() {
-        PersonFormIncludingCascadeForm form = super.generateFormInstanceFromContext();
-        List<EducationForm> rewriteList = new LinkedList<>();
-        for (EducationForm eform : form.getEducationForms()) {
-            // we assume all the job forms without person id are removed by client
-            if (eform.getPersonId() != null) {
-                rewriteList.add(eform);
+    protected PersonFormIncludingCascadeForm generateFormInstanceFromContext(String currentStep) {
+        PersonFormIncludingCascadeForm form = super.generateFormInstanceFromContext(currentStep);
+        if (firstStepName().equals(currentStep)) {
+            // for the submitting of input step, we need to rewrite the education list to handle deleted items.
+            List<EducationForm> rewriteList = new LinkedList<>();
+            for (EducationForm eform : form.getEducationForms()) {
+                // we assume all the job forms without person id are removed by client
+                if (eform.getPersonId() != null) {
+                    rewriteList.add(eform);
+                }
             }
+            form.setEducationForms(rewriteList.toArray(new EducationForm[rewriteList.size()]));
         }
-        form.setEducationForms(rewriteList.toArray(new EducationForm[rewriteList.size()]));
         return form;
     }
 

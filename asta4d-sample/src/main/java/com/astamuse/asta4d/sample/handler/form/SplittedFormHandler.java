@@ -36,7 +36,7 @@ import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showSplittedFormHandlerStart
-public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<SplittedForm> {
+public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<SplittedForm> implements SplittedFormStepInfo {
 
     public SplittedFormHandler() {
         super(SplittedForm.class);
@@ -46,28 +46,6 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     protected String firstStepName() {
         return inputStep1Name();
     }
-
-    protected String inputStep1Name() {
-        return "input-1";
-    }
-
-    protected String inputStep2Name() {
-        return "input-2";
-    }
-
-    protected String nextStepName() {
-        return "next";
-    }
-
-    protected String storedConfirmStepName() {
-        return "_" + confirmStepName();
-    }
-
-    protected boolean reachedConfirmStep(Map<String, Object> traceMap) {
-        return traceMap.containsKey(storedConfirmStepName());
-    }
-
-    protected abstract boolean isEdit();
 
     @Override
     protected boolean treatCompleteStepAsExit() {
@@ -117,27 +95,32 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     }
 
     @Override
-    protected SplittedForm generateFormInstanceFromContext() {
-        SplittedForm form = super.generateFormInstanceFromContext();
-        CascadeJobForm cjForm = form.getCascadeJobForm();
+    protected SplittedForm generateFormInstanceFromContext(String currentStep) {
+        SplittedForm form = super.generateFormInstanceFromContext(currentStep);
 
-        List<JobForm> rewriteJobList = new LinkedList<>();
-        for (JobForm jform : cjForm.getJobForms()) {
-            List<JobPositionForm> rewritePosList = new LinkedList<>();
-            for (JobPositionForm jpform : jform.getJobPositionForms()) {
-                if (jpform.getJobId() != null) {
-                    rewritePosList.add(jpform);
+        if (inputStep2Name().equalsIgnoreCase(currentStep)) {
+            // rewrite the array to handle deleted items
+            CascadeJobForm cjForm = form.getCascadeJobForm();
+
+            List<JobForm> rewriteJobList = new LinkedList<>();
+            for (JobForm jform : cjForm.getJobForms()) {
+                List<JobPositionForm> rewritePosList = new LinkedList<>();
+                for (JobPositionForm jpform : jform.getJobPositionForms()) {
+                    if (jpform.getJobId() != null) {
+                        rewritePosList.add(jpform);
+                    }
+                }
+                jform.setJobPositionForms(rewritePosList.toArray(new JobPositionForm[rewritePosList.size()]));
+                jform.setJobPositionLength(jform.getJobPositionForms().length);
+
+                if (jform.getPersonId() != null) {
+                    rewriteJobList.add(jform);
                 }
             }
-            jform.setJobPositionForms(rewritePosList.toArray(new JobPositionForm[rewritePosList.size()]));
-            jform.setJobPositionLength(jform.getJobPositionForms().length);
+            cjForm.setJobForms(rewriteJobList.toArray(new JobForm[rewriteJobList.size()]));
+            cjForm.setJobExperienceLength(cjForm.getJobForms().length);
 
-            if (jform.getPersonId() != null) {
-                rewriteJobList.add(jform);
-            }
         }
-        cjForm.setJobForms(rewriteJobList.toArray(new JobForm[rewriteJobList.size()]));
-        cjForm.setJobExperienceLength(cjForm.getJobForms().length);
 
         return form;
     }
@@ -165,10 +148,6 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
      * 
      */
     public static class Add extends SplittedFormHandler {
-        @Override
-        protected boolean isEdit() {
-            return false;
-        }
 
         @Override
         protected SplittedForm createInitForm() {
@@ -199,10 +178,6 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
      * 
      */
     public static class Edit extends SplittedFormHandler {
-        @Override
-        protected boolean isEdit() {
-            return true;
-        }
 
         @Override
         protected SplittedForm createInitForm() throws Exception {
