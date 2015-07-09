@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,8 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
 
     private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
 
+    private static final Map<String, List<AnnotatedPropertyInfo>> RenderingTargetFieldsMap = new ConcurrentHashMap<>();
+
     private static Element ClientCascadeJsContentCache = null;
 
     /**
@@ -78,6 +81,22 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      */
     protected boolean renderForEdit(String step, Object form, String fieldName) {
         return true;
+    }
+
+    private List<AnnotatedPropertyInfo> retrieveRenderTargetFieldList(Object form) {
+        List<AnnotatedPropertyInfo> list = RenderingTargetFieldsMap.get(form.getClass().getName());
+        if (list == null) {
+            list = new LinkedList<AnnotatedPropertyInfo>(AnnotatedPropertyUtil.retrieveProperties(form.getClass()));
+            Iterator<AnnotatedPropertyInfo> it = list.iterator();
+            while (it.hasNext()) {
+                // remove all the non form field properties
+                if (it.next().getAnnotation(FormField.class) == null) {
+                    it.remove();
+                }
+            }
+            RenderingTargetFieldsMap.put(form.getClass().getName(), list);
+        }
+        return list;
     }
 
     private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int[] indexes) {
@@ -215,7 +234,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      */
     private Renderer renderValueOfFields(String renderTargetStep, Object form, int[] indexes) throws Exception {
         Renderer render = Renderer.create();
-        List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
+        List<AnnotatedPropertyInfo> fieldList = retrieveRenderTargetFieldList(form);
 
         for (AnnotatedPropertyInfo field : fieldList) {
 
