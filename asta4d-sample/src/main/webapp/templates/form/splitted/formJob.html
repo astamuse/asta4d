@@ -3,118 +3,16 @@
 <meta charset="utf-8" />
 </head>
 <body>
-    <afd:block append="footer-resource">
-        <script>
-        
-        function replaceArrayIndexPlaceHolder(s, index, cascadeLayer){
-            var reg = new RegExp("(^|.*[^@])(@{" + cascadeLayer + "})([^@].*|$)", "g");
-            var ret = s.replace(reg, "$1"+index+"$3");
-            return ret;
-        }
-
-        var _rewriteCascadeFormFieldArrayRefTargetAttrs = [
-            "id", 
-            "name", 
-            "cascade-ref",
-            "cascade-ref-target",            
-            "cascade-ref-info-1",
-            "cascade-ref-info-2",
-            "cascade-ref-info-3",
-            "cascade-ref-info-4",
-            "cascade-ref-info-5",
-            "cascade-ref-info-6",
-            "cascade-ref-info-7",
-            "cascade-ref-info-8",
-            "cascade-ref-info-9",
-        ];
-        
-        function rewriteAttrs(elem, index, cascadeLayer){
-            if(elem.length === 0){
-                return;
-            }
-            for(var i=0;i<_rewriteCascadeFormFieldArrayRefTargetAttrs.length;i++){
-                var attr = _rewriteCascadeFormFieldArrayRefTargetAttrs[i];
-                elem.each(function(idx, e){
-                    var jq = $(e);
-                    var value = jq.attr(attr);
-                    if(value){
-                        jq.attr(attr, replaceArrayIndexPlaceHolder(value, index, cascadeLayer));
-                    }
-                });
-            }
-        }
-        
-        function rewriteArrayRefs(elem, index, cascadeLayer){
-            var selector = _rewriteCascadeFormFieldArrayRefTargetAttrs.map(function(attr){
-                return "[" + attr + "]";
-            }).join(",");
-            rewriteAttrs(elem.filter(selector), index, cascadeLayer);
-            rewriteAttrs(elem.find(selector), index, cascadeLayer);
-        }
-        
-        function buildCascadeInvokingParams(jqElem){
-            var params = [];
-            var value;
-            for(var i=1;i<=9;i++){
-                value = jqElem.attr("cascade-ref-info-" + i);
-                if(value){
-                    params.push(value);
-                }else{
-                    break;
-                }
-            }
-            return params;
-        }
-
-        
-        function addRowForArrayFieldBySelector(appendTargetParentSelector, lengthFieldSelector, copyTemplateSelector, cascadeLayer){
-        
-            if(arguments.length === 0){
-                var params = buildCascadeInvokingParams($(this));
-                if(params.length === 0){
-                    throw "addRowForArrayFieldBySelector requires necessary parameters.";
-                }else{
-                    addRowForArrayFieldBySelector.apply(this, params);
-                    return;
-                }
-            }
-            
-            if(typeof cascadeLayer !== "number"){
-                cascadeLayer = parseInt(cascadeLayer);
-            }
-        
-            var lengthElem = $(lengthFieldSelector);
-            var length = parseInt(lengthElem.val());
-            
-            var templateElem = $(copyTemplateSelector);
-            templateElem = templateElem.clone();
-            templateElem.css("display", "");
-            
-            rewriteArrayRefs(templateElem, length, cascadeLayer);
-            
-            $(appendTargetParentSelector).append(templateElem);
-            
-            lengthElem.val(length+1);
-        }
-        
-        function removeRowForArrayFieldBySelector(selector){
-            if(arguments.length === 0){
-                var params = buildCascadeInvokingParams($(this));
-                if(params.length === 0){
-                    throw "removeRowForArrayFieldBySelector requires necessary parameters.";
-                }else{
-                    removeRowForArrayFieldBySelector.apply(this, params);
-                    return;
-                }
-            }
-            $(selector).remove();
-        }
-        </script>
-    </afd:block>
     <afd:snippet render="form.SplittedFormSnippet" form-step="input-2">
         job experiences *:
             <a id="job-experience-add-btn" class="glyphicon glyphicon-plus"
-              href="javascript:addRowForArrayFieldBySelector('#job-experience', '[name=job-experience-length]', '[cascade-ref=\'job-experience-row-@\']', 1)"></a>
+              href="javascript:void(0)" 
+              onclick="$acu.addRow.apply(this)"
+              cascade-ref-info-1="#job-experience", 
+              cascade-ref-info-2="[name=job-experience-length]", 
+              cascade-ref-info-3="[cascade-ref='job-experience-row-@']", 
+              cascade-ref-info-4="1"
+            ></a>
         <div id="job-experience-err-msg" style="color: red"></div>
         <input type="hidden" name="job-experience-length" value="0">
         <!--  
@@ -142,7 +40,10 @@
                             <td>description:</td>
                             <td>
                                 <input type="text" name="job-description-@">
-                                <a id="job-experience-remove-btn" href="javascript:void(0)" onclick="removeRowForArrayFieldBySelector(this.getAttribute('cascade-ref-info-1'))" cascade-ref-info-1="[cascade-ref=job-experience-row-@]" class="glyphicon glyphicon-minus"></a>
+                                <a id="job-experience-remove-btn" href="javascript:void(0)" class="glyphicon glyphicon-minus"
+                                    onclick="$acu.removeRow.apply(this)" 
+                                    cascade-ref-info-1="[cascade-ref=job-experience-row-@]"
+                                ></a>
                             </td>
                         </tr>
                         <tr>
@@ -150,7 +51,7 @@
                             <td id="job-position-@" colspan=3>
                                 job positions *:
                                 <a id="job-position-add-btn-@" href="javascript:void(0)" class="glyphicon glyphicon-plus" style="color:green"
-                                    onclick="addRowForArrayFieldBySelector.apply(this)" 
+                                    onclick="$acu.addRow.apply(this)" 
                                     cascade-ref-info-1="#job-position-@",
                                     cascade-ref-info-2="[name=job-position-length-@]",
                                     cascade-ref-info-3="[cascade-ref='job-position-row-@-@@']",
@@ -162,7 +63,7 @@
                                     <input type="hidden" name="job-position-job-id-@-@@">
                                     <input type="text" name="job-position-name-@-@@">
                                     <a id="job-position-remove-btn-@" href="javascript:void(0)" class="glyphicon glyphicon-minus" style="color:green"
-                                        onclick="removeRowForArrayFieldBySelector.apply(this)" 
+                                        onclick="$acu.removeRow.apply(this)" 
                                         cascade-ref-info-1="[cascade-ref=job-position-row-@-@@]" 
                                     ></a>
                                 </div>

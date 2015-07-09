@@ -16,13 +16,17 @@
  */
 package com.astamuse.asta4d.web.form.flow.base;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
@@ -32,6 +36,7 @@ import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
@@ -58,6 +63,8 @@ public abstract class AbstractFormFlowSnippet {
     }
 
     private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
+
+    private static Element ClientCascadeJsContentCache = null;
 
     /**
      * Sub class should tell us the current rendering mode. Since we have no any information about the concrete cases, we always return true
@@ -123,6 +130,12 @@ public abstract class AbstractFormFlowSnippet {
         Renderer renderer = renderTraceMapData(renderingData);
         Object form = retrieveRenderTargetForm(renderingData);
         renderer.add(renderForm(renderingData.getRenderTargetStep(), form, CascadeFormUtil.ROOT_OF_INDEXES));
+        Element clientJs = retrieveClientCascadeUtilJsContent();
+        if (clientJs != null) {
+            renderer.add(":root", (Element elem) -> {
+                elem.appendChild(clientJs);
+            });
+        }
         return renderer;
     }
 
@@ -423,6 +436,45 @@ public abstract class AbstractFormFlowSnippet {
         } else {
             return rawTraceData;
         }
+    }
+
+    protected Element retrieveClientCascadeUtilJsContent() {
+        String exportName = clientCascadeUtilJsExportName();
+        if (exportName == null) {
+            return null;
+        }
+
+        /*
+        if (ClientCascadeJsContentCache != null) {
+            return ClientCascadeJsContentCache.clone();
+        }
+        */
+
+        StringBuilder jsContent = new StringBuilder(300);
+        jsContent.append("<script>\n");
+        jsContent.append("var ").append(exportName).append("=(\n");
+
+        try (InputStream jsInput = clientCascadeUtilJsInputStream()) {
+            jsContent.append(IOUtils.toString(jsInput, StandardCharsets.UTF_8));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        jsContent.append(")();\n");
+        jsContent.append("</script>");
+
+        ClientCascadeJsContentCache = ElementUtil.parseAsSingle(jsContent.toString());
+
+        return ClientCascadeJsContentCache.clone();
+    }
+
+    protected String clientCascadeUtilJsExportName() {
+        return null;
+    }
+
+    protected InputStream clientCascadeUtilJsInputStream() {
+        String jsPath = "/com/astamuse/asta4d/web/form/js/ClientCascadeUtil.js";
+        return this.getClass().getClassLoader().getResourceAsStream(jsPath);
     }
 
 }

@@ -105,5 +105,10 @@ public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements Spl
         return form;
     }
 
+    @Override
+    protected String clientCascadeUtilJsExportName() {
+        return "$acu";
+    }
+
 }
 // @ShowCode:showSplittedFormSnippetEnd
