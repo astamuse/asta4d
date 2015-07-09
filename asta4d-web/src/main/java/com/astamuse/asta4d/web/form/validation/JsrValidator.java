@@ -31,6 +31,7 @@ import javax.validation.Path.Node;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
@@ -42,7 +43,6 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.util.i18n.pattern.CharsetResourceBundleFactory;
 import com.astamuse.asta4d.util.i18n.pattern.ResourceBundleFactory;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 
 public class JsrValidator extends CommonValidatorBase implements FormValidator {
@@ -195,7 +195,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
     protected ValidationPropertyInfo retrieveValidationPropertyInfo(Class<?> formCls, Path path) {
         Iterator<Node> it = path.iterator();
         Class<?> cls = formCls;
-        int[] indexes = CascadeFormUtil.EMPTY_INDEXES;
+        int[] indexes = EMPTY_INDEXES;
         try {
             while (it.hasNext()) {
                 Node node = it.next();
@@ -217,7 +217,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
                         // array cascading
                         cls = field.getType().getComponentType();
                         if (node.getIndex() != null) {
-                            indexes = CascadeFormUtil.addIndex(indexes, node.getIndex().intValue());
+                            indexes = ArrayUtils.add(indexes, node.getIndex().intValue());
                         }
                     }
 
@@ -232,7 +232,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
                             // regular fields or simple cascading
                             return new ValidationPropertyInfo(path, field, indexes);
                         } else {
-                            return new ValidationPropertyInfo(path, field, CascadeFormUtil.addIndex(indexes, node.getIndex().intValue()));
+                            return new ValidationPropertyInfo(path, field, ArrayUtils.add(indexes, node.getIndex().intValue()));
                         }
                     }
                 }

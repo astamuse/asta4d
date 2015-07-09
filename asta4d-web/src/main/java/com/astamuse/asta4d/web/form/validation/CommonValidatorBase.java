@@ -19,10 +19,10 @@ package com.astamuse.asta4d.web.form.validation;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
-import com.astamuse.asta4d.web.form.CascadeFormUtil;
+import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 
-public abstract class CommonValidatorBase {
+public abstract class CommonValidatorBase implements CascadeArrayFunctions {
 
     protected boolean addFieldLablePrefixToMessage;
 
@@ -45,7 +45,7 @@ public abstract class CommonValidatorBase {
     }
 
     protected String retrieveFieldName(AnnotatedPropertyInfo field, int[] indexes) {
-        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(field.getName(), indexes);
+        return rewriteArrayIndexPlaceHolder(field.getName(), indexes);
     }
 
     protected String retrieveFieldLabel(AnnotatedPropertyInfo field, int[] indexes) {
@@ -59,7 +59,7 @@ public abstract class CommonValidatorBase {
             label = field.getName();
         }
 
-        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(label, indexes);
+        return rewriteArrayIndexPlaceHolder(label, indexes);
     }
 
     protected String retrieveFieldTypeName(AnnotatedPropertyInfo field) {

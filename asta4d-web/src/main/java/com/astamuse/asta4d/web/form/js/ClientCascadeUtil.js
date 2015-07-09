@@ -80,6 +80,10 @@ function(){
         return;
       }
     }
+    
+    if(cascadeLayer === undefined){
+      cascadeLayer = 1;
+    }
   
     if (typeof cascadeLayer !== "number") {
       cascadeLayer = parseInt(cascadeLayer);

@@ -58,5 +58,17 @@ public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
         }
         return new OptionValueMap(optionList);
     }
+
+    @Override
+    protected Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
+        Object form = super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
+        ((EducationForm) form).setPersonId(-1);
+        return form;
+    }
+
+    @Override
+    protected String clientCascadeUtilJsExportName() {
+        return "$acu";
+    }
 }
 // @ShowCode:showCascadeFormSnippetEnd

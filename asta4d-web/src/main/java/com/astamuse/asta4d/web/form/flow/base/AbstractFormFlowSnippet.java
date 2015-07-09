@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
@@ -40,23 +41,23 @@ import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
-import com.astamuse.asta4d.web.form.CascadeFormUtil;
+import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
-public abstract class AbstractFormFlowSnippet {
+public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
 
-    private static class FieldRenderingInfo {
+    private class FieldRenderingInfo {
         String editSelector;
         String displaySelector;
         FormFieldValueRenderer valueRenderer;
 
         FieldRenderingInfo replaceArrayIndex(int[] indexes) {
             FieldRenderingInfo newInfo = new FieldRenderingInfo();
-            newInfo.editSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(editSelector, indexes);
-            newInfo.displaySelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(displaySelector, indexes);
+            newInfo.editSelector = rewriteArrayIndexPlaceHolder(editSelector, indexes);
+            newInfo.displaySelector = rewriteArrayIndexPlaceHolder(displaySelector, indexes);
             newInfo.valueRenderer = valueRenderer;
             return newInfo;
         }
@@ -129,7 +130,7 @@ public abstract class AbstractFormFlowSnippet {
     public Renderer render(FormRenderingData renderingData) throws Exception {
         Renderer renderer = renderTraceMapData(renderingData);
         Object form = retrieveRenderTargetForm(renderingData);
-        renderer.add(renderForm(renderingData.getRenderTargetStep(), form, CascadeFormUtil.EMPTY_INDEXES));
+        renderer.add(renderForm(renderingData.getRenderTargetStep(), form, EMPTY_INDEXES));
         Element clientJs = retrieveClientCascadeUtilJsContent();
         if (clientJs != null) {
             renderer.add(":root", (Element elem) -> {
@@ -239,7 +240,7 @@ public abstract class AbstractFormFlowSnippet {
 
                         // retrieve the form instance
                         if (i >= 0) {
-                            newIndex = CascadeFormUtil.addIndex(newIndex, i);
+                            newIndex = ArrayUtils.add(newIndex, i);
                             subForm = Array.get(v, i);
                         } else {
                             // create a template instance
@@ -262,7 +263,7 @@ public abstract class AbstractFormFlowSnippet {
 
                         subRendererList.add(subRenderer);
                     }
-                    containerSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(containerSelector, indexes);
+                    containerSelector = rewriteArrayIndexPlaceHolder(containerSelector, indexes);
                     render.add(containerSelector, subRendererList);
                 } else {// a simple cascade form
 
@@ -391,18 +392,6 @@ public abstract class AbstractFormFlowSnippet {
      */
     protected String[] rewriteCascadeFormFieldArrayRefTargetAttrs() {
         return _rewriteCascadeFormFieldArrayRefTargetAttrs;
-    }
-
-    /**
-     * Sub classes can override this method to supply a customized array index placeholder mechanism.
-     * 
-     * @param s
-     * @param indexes
-     * @return
-     * @see AbstractFormFlowHandler#rewriteArrayIndexPlaceHolder(String, int)
-     */
-    protected String rewriteArrayIndexPlaceHolder(String s, int[] indexes) {
-        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, indexes);
     }
 
     /**

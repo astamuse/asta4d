@@ -16,8 +16,10 @@
  */
 package com.astamuse.asta4d.sample.handler.form;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.astamuse.asta4d.sample.util.persondb.Education;
 import com.astamuse.asta4d.sample.util.persondb.EducationDbManager;
@@ -118,14 +120,26 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Person
             EducationForm[] eForms = form.getEducationForms();
 
             PersonDbManager.instance().update(form);
-            for (EducationForm e : eForms) {
-                e.setPersonId(form.getId());
-                if (e.getId() == null) {
-                    EducationDbManager.instance().add(e);
+
+            List<Education> existingEdus = EducationDbManager.instance().find("personId", form.getId());
+
+            Set<Integer> validIds = new HashSet<>();
+            for (EducationForm edu : eForms) {
+                edu.setPersonId(form.getId());
+                if (edu.getId() == null) {
+                    EducationDbManager.instance().add(edu);
                 } else {
-                    EducationDbManager.instance().update(e);
+                    EducationDbManager.instance().update(edu);
+                }
+                validIds.add(edu.getId());
+            }
+
+            for (Education edu : existingEdus) {
+                if (!validIds.contains(edu.getId())) {
+                    EducationDbManager.instance().remove(edu);
                 }
             }
+
             DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
         }
     }

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.data.ContextDataHolder;
@@ -30,7 +31,6 @@ import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.CascadeFormUtil;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 
 public class TypeUnMatchValidator extends CommonValidatorBase implements FormValidator {
@@ -46,7 +46,7 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
     @Override
     public List<FormValidationMessage> validate(Object form) {
         List<FormValidationMessage> msgList = new LinkedList<>();
-        addMessage(msgList, form, CascadeFormUtil.EMPTY_INDEXES);
+        addMessage(msgList, form, EMPTY_INDEXES);
         return msgList;
     }
 
@@ -67,7 +67,7 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
                         // array cascade form
                         int len = Array.getLength(subform);
                         for (int i = 0; i < len; i++) {
-                            addMessage(msgList, Array.get(subform, i), CascadeFormUtil.addIndex(indexes, i));
+                            addMessage(msgList, Array.get(subform, i), ArrayUtils.add(indexes, i));
                         }
                     }
                     continue;

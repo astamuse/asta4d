@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Context;
@@ -35,7 +36,7 @@ import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
-import com.astamuse.asta4d.web.form.CascadeFormUtil;
+import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
@@ -46,7 +47,7 @@ import com.astamuse.asta4d.web.util.SecureIdGenerator;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class AbstractFormFlowHandler<T> {
+public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunctions {
 
     private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#" + AbstractFormFlowHandler.class.getName();
 
@@ -217,7 +218,7 @@ public abstract class AbstractFormFlowHandler<T> {
             final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
             Context currentContext = Context.getCurrentThreadContext();
 
-            return assignArrayValueFromContext(formCls, form, currentContext, CascadeFormUtil.EMPTY_INDEXES);
+            return assignArrayValueFromContext(formCls, form, currentContext, EMPTY_INDEXES);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -260,7 +261,7 @@ public abstract class AbstractFormFlowHandler<T> {
                     final Object[] array = (Object[]) Array.newInstance(field.getType().getComponentType(), len);
                     for (int i = 0; i < len; i++) {
                         final int seq = i;
-                        final int[] newIndex = CascadeFormUtil.addIndex(indexes, seq);
+                        final int[] newIndex = ArrayUtils.add(indexes, seq);
                         Context.with(new DelatedContext(currentContext) {
                             protected String convertKey(String scope, String key) {
                                 if (scope.equals(WebApplicationContext.SCOPE_QUERYPARAM)) {
@@ -293,18 +294,6 @@ public abstract class AbstractFormFlowHandler<T> {
             }
         }
         return form;
-    }
-
-    /**
-     * Sub classes can override this method to supply a customized array index placeholder mechanism.
-     * 
-     * @param s
-     * @param indexes
-     * @return
-     * @see AbstractFormFlowSnippet#rewriteArrayIndexPlaceHolder(String, Integer[])
-     */
-    protected String rewriteArrayIndexPlaceHolder(String s, int[] indexes) {
-        return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, indexes);
     }
 
     /**

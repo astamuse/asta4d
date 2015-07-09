@@ -16,9 +16,11 @@
  */
 package com.astamuse.asta4d.sample.handler.form;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.astamuse.asta4d.sample.handler.form.SplittedForm.CascadeJobForm;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
@@ -103,20 +105,20 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
             CascadeJobForm cjForm = form.getCascadeJobForm();
 
             List<JobForm> rewriteJobList = new LinkedList<>();
-            for (JobForm jform : cjForm.getJobForms()) {
+            for (JobForm jobform : cjForm.getJobForms()) {
                 List<JobPositionForm> rewritePosList = new LinkedList<>();
                 // remove rows without job id specified
-                for (JobPositionForm jpform : jform.getJobPositionForms()) {
-                    if (jpform.getJobId() != null) {
-                        rewritePosList.add(jpform);
+                for (JobPositionForm posForm : jobform.getJobPositionForms()) {
+                    if (posForm.getJobId() != null) {
+                        rewritePosList.add(posForm);
                     }
                 }
-                jform.setJobPositionForms(rewritePosList.toArray(new JobPositionForm[rewritePosList.size()]));
-                jform.setJobPositionLength(jform.getJobPositionForms().length);
+                jobform.setJobPositionForms(rewritePosList.toArray(new JobPositionForm[rewritePosList.size()]));
+                jobform.setJobPositionLength(jobform.getJobPositionForms().length);
 
                 // remove rows without person id specified
-                if (jform.getPersonId() != null) {
-                    rewriteJobList.add(jform);
+                if (jobform.getPersonId() != null) {
+                    rewriteJobList.add(jobform);
                 }
             }
             cjForm.setJobForms(rewriteJobList.toArray(new JobForm[rewriteJobList.size()]));
@@ -162,12 +164,12 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
         protected void updateForm(SplittedForm form) {
             PersonForm pForm = form.getPersonForm();
             PersonDbManager.instance().add(pForm);
-            for (JobForm jForm : form.getCascadeJobForm().getJobForms()) {
-                jForm.setPersonId(pForm.getId());
-                JobExperenceDbManager.instance().add(jForm);
-                for (JobPositionForm jpForm : jForm.getJobPositionForms()) {
-                    jpForm.setJobId(jForm.getId());
-                    JobPositionDbManager.instance().add(jpForm);
+            for (JobForm jobForm : form.getCascadeJobForm().getJobForms()) {
+                jobForm.setPersonId(pForm.getId());
+                JobExperenceDbManager.instance().add(jobForm);
+                for (JobPositionForm posForm : jobForm.getJobPositionForms()) {
+                    posForm.setJobId(jobForm.getId());
+                    JobPositionDbManager.instance().add(posForm);
                 }
             }
 
@@ -188,30 +190,30 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
             PersonForm pForm = PersonForm.buildFromPerson(PersonDbManager.instance().find(superform.getPersonForm().getId()));
 
             List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pForm.getId());
-            List<JobForm> jFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
+            List<JobForm> jobFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
                 @Override
                 public JobForm convert(int rowIndex, JobExperence j) {
                     return JobForm.buildFromJob(j);
                 }
             });
-            JobForm[] jForms = jFormList.toArray(new JobForm[jFormList.size()]);
+            JobForm[] jobForms = jobFormList.toArray(new JobForm[jobFormList.size()]);
 
-            for (JobForm jform : jForms) {
-                List<JobPosition> jps = JobPositionDbManager.instance().find("jobId", jform.getId());
-                List<JobPositionForm> jpFormList = ListConvertUtil.transform(jps, new RowConvertor<JobPosition, JobPositionForm>() {
+            for (JobForm jobform : jobForms) {
+                List<JobPosition> posList = JobPositionDbManager.instance().find("jobId", jobform.getId());
+                List<JobPositionForm> posFormList = ListConvertUtil.transform(posList, new RowConvertor<JobPosition, JobPositionForm>() {
                     @Override
                     public JobPositionForm convert(int rowIndex, JobPosition jp) {
                         return JobPositionForm.buildFromJobPosition(jp);
                     }
                 });
-                JobPositionForm[] jpForms = jpFormList.toArray(new JobPositionForm[jpFormList.size()]);
-                jform.setJobPositionForms(jpForms);
-                jform.setJobPositionLength(jpForms.length);
+                JobPositionForm[] posForms = posFormList.toArray(new JobPositionForm[posFormList.size()]);
+                jobform.setJobPositionForms(posForms);
+                jobform.setJobPositionLength(posForms.length);
             }
 
             CascadeJobForm cjForm = new CascadeJobForm();
-            cjForm.setJobForms(jForms);
-            cjForm.setJobExperienceLength(jForms.length);
+            cjForm.setJobForms(jobForms);
+            cjForm.setJobExperienceLength(jobForms.length);
 
             SplittedForm form = new SplittedForm();
             form.setPersonForm(pForm);
@@ -233,37 +235,37 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
             PersonForm pForm = form.getPersonForm();
             PersonDbManager.instance().update(pForm);
 
-            List<Integer> validJobs = new LinkedList<Integer>();
-            List<Integer> validJPs = new LinkedList<Integer>();
-            for (JobForm jForm : form.getCascadeJobForm().getJobForms()) {
-                jForm.setPersonId(pForm.getId());
-                if (isExistingId(jForm.getId())) {
-                    JobExperenceDbManager.instance().update(jForm);
+            Set<Integer> validJobIds = new HashSet<>();
+            Set<Integer> validPosIds = new HashSet<>();
+            for (JobForm jobForm : form.getCascadeJobForm().getJobForms()) {
+                jobForm.setPersonId(pForm.getId());
+                if (isExistingId(jobForm.getId())) {
+                    JobExperenceDbManager.instance().update(jobForm);
                 } else {
-                    JobExperenceDbManager.instance().add(jForm);
+                    JobExperenceDbManager.instance().add(jobForm);
                 }
-                validJobs.add(jForm.getId());
+                validJobIds.add(jobForm.getId());
 
-                for (JobPositionForm jpForm : jForm.getJobPositionForms()) {
-                    jpForm.setJobId(jForm.getId());
-                    if (isExistingId(jpForm.getId())) {
-                        JobPositionDbManager.instance().update(jpForm);
+                for (JobPositionForm posForm : jobForm.getJobPositionForms()) {
+                    posForm.setJobId(jobForm.getId());
+                    if (isExistingId(posForm.getId())) {
+                        JobPositionDbManager.instance().update(posForm);
                     } else {
-                        JobPositionDbManager.instance().add(jpForm);
+                        JobPositionDbManager.instance().add(posForm);
                     }
-                    validJPs.add(jpForm.getId());
+                    validPosIds.add(posForm.getId());
                 }
             }
 
-            List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pForm.getId());
-            for (JobExperence job : jobs) {
-                List<JobPosition> jps = JobPositionDbManager.instance().find("jobId", job.getId());
-                for (JobPosition jp : jps) {
-                    if (!validJPs.contains(jp.getId())) {
-                        JobPositionDbManager.instance().remove(jp);
+            List<JobExperence> jobList = JobExperenceDbManager.instance().find("personId", pForm.getId());
+            for (JobExperence job : jobList) {
+                List<JobPosition> posList = JobPositionDbManager.instance().find("jobId", job.getId());
+                for (JobPosition pos : posList) {
+                    if (!validPosIds.contains(pos.getId())) {
+                        JobPositionDbManager.instance().remove(pos);
                     }
                 }
-                if (!validJobs.contains(job.getId())) {
+                if (!validJobIds.contains(job.getId())) {
                     JobExperenceDbManager.instance().remove(job);
                 }
             }

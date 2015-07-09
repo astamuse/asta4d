@@ -4,143 +4,163 @@
 </head>
 <body>
 <afd:extension parent="/layout/common.html">
-	<afd:block override="global-message">
-		<!-- @ShowCode:showMessageBarStart -->
-		<afd:embed target="/templates/form/cascade/customGlobalMessageBar.html"/>
-		<!-- @ShowCode:showMessageBarEnd -->
-	</afd:block>
-	<afd:block override="content-title">
-		Cascade form
-	</afd:block>
-	<afd:block append="footer-resource">
-		<script>
-		function addEducation(){
-			var personId = $("[name=id]").val();
-			if(!personId){
-				personId = "-1";
-			}
-			
-			var educationLengthElem = $("[name='education-length']");
-			var educationLength = parseInt(educationLengthElem.val());
-			
-			var templateElem = $("[cascade-ref='education-row-@']");
-			templateElem = templateElem.clone();
-			templateElem.css("display", "");
-			
-			templateElem.find("[name='education-person-id-@']").val(personId);
-			
-			var templateStr = $("<div>").append(templateElem).html();
-			templateStr = templateStr.replace(/@/g, educationLength);
-		
-			$("#education").append(templateStr);
-			
-			educationLength++;
-			educationLengthElem.val(educationLength);
-		}
-		function removeEducation(targetBtn){
-			var targetRef = $(targetBtn).attr("cascade-ref-target");
-			$("[cascade-ref='" + targetRef+"']").remove();
-			return false;
-		}
-		</script>
-	</afd:block>
-	<afd:block override="content-detail">
-		<div class="panel panel-warning">
-			<div class="panel-heading">
-				<h3>
-					<afd:block id="form-step-name"/>
-				</h3>
-			</div>
-			<div class="panel-body">
-				<div class="block-main">
-				<!-- @ShowCode:showFormStart -->
-				<section>
-					<article>
-						<form method="post">
-							<afd:snippet render="form.CascadeFormSnippet">
-								<table border=0 class="form-input-table">
-									<tr>
-										<td>name *:</td>
-										<td class="name">
-											<input name="name" type="text"/><span id="input-comment">(length &lt;=6)</span>
-										</td>
-									</tr>
-									<tr>
-										<td>age *:</td>
-										<td class="age">
-											<input name="age" type="text"/><span id="input-comment">(&lt;=45)</span>
-										</td>
-									</tr>
-									<tr>
-										<td>gender *:</td>
-										<td class="sex">
-											<input id="sex" name="sex" type="radio"/><label for="sex">M</label>
-										</td>
-									</tr>
-									<tr>
-										<td>bloodtype *:</td>
-										<td class="bloodtype">
-											<select id="bloodtype" name="bloodtype">
-												<option value="A">A</option>
-												<option value="R" afd:clear>R</option>
-											</select>
-										</td>
-									</tr>
-									<tr>
-										<td>language *:</td>
-										<td class="language">
-											<input id="language" name="language" type="checkbox"/><label for="language">M</label>
-										</td>
-									</tr>
-									<tr>
-										<td>memo:</td>
-										<td class="memo">
-											<textarea name="memo"></textarea>
-										</td>
-									</tr>
-									<tr>
-										<td>educations *:</td>
-										<td>
-											<div id="education-err-msg" style="color: red"></div>
-											<!--  
-												The following "@" contained attributes will be rewritten to array index by default:
-													id
-													name
-													cascade-ref
-													cascade-ref-target
-												further rewriting can be performed by overriding the rewriteXXX methods in snippet. 
-											-->
-											<div id="education">
-												<div cascade-ref="education-row-@">
-													<input type="hidden" name="education-id-@">
-													<input type="hidden" name="education-person-id-@">
-													year:<select name="education-year-@">
-															<option value="1980">1980</option>
-														</select>
-													desc:<input type="text" name="education-description-@">
-													<a id="education-remove-btn" href="javascript:void(0)" onclick="removeEducation(this)" cascade-ref-target="education-row-@" class="glyphicon glyphicon-minus"></a>
-												</div>
-											</div>
-											<input type="hidden" name="education-length" value="0">
-											<a id="education-add-btn" href="javascript:void(0)" onclick="addEducation()" class="glyphicon glyphicon-plus"></a>
-										</td>
-									</tr>
-								</table>
-								<input type="hidden" id="id" name="id">
-							</afd:snippet>
-							<afd:block id="form-btns"></afd:block>
-						</form>
-					</article>
-				</section>
-				<!-- @ShowCode:showFormEnd -->
-				</div>
-				<div class="block-side-comment">
-					<afd:embed target="/templates/form/cascade/comment.html" />
-				</div>
-			</div>
-		</div>
-		<afd:block id="source-block"></afd:block>
-	</afd:block>
+    <afd:block override="global-message">
+        <!-- @ShowCode:showMessageBarStart -->
+        <afd:embed target="/templates/form/cascade/customGlobalMessageBar.html"/>
+        <!-- @ShowCode:showMessageBarEnd -->
+    </afd:block>
+    <afd:block override="content-title">
+        Cascade form
+    </afd:block>
+    <afd:block append="footer-resource">
+        <script>
+        function addEducation(){
+            var personId = $("[name=id]").val();
+            if(!personId){
+                personId = "-1";
+            }
+            
+            var educationLengthElem = $("[name='education-length']");
+            var educationLength = parseInt(educationLengthElem.val());
+            
+            var templateElem = $("[cascade-ref='education-row-@']");
+            templateElem = templateElem.clone();
+            templateElem.css("display", "");
+            
+            templateElem.find("[name='education-person-id-@']").val(personId);
+            
+            var templateStr = $("<div>").append(templateElem).html();
+            templateStr = templateStr.replace(/@/g, educationLength);
+        
+            $("#education").append(templateStr);
+            
+            educationLength++;
+            educationLengthElem.val(educationLength);
+        }
+        function removeEducation(targetBtn){
+            var targetRef = $(targetBtn).attr("cascade-ref-target");
+            $("[cascade-ref='" + targetRef+"']").remove();
+            return false;
+        }
+        </script>
+    </afd:block>
+    <afd:block override="content-detail">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3>
+                    <afd:block id="form-step-name"/>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="block-main">
+                <!-- @ShowCode:showFormStart -->
+                <section>
+                    <article>
+                        <form method="post">
+                            <afd:snippet render="form.CascadeFormSnippet">
+                                <table border=0 class="form-input-table">
+                                    <tr>
+                                        <td>name *:</td>
+                                        <td class="name">
+                                            <input name="name" type="text"/><span id="input-comment">(length &lt;=6)</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>age *:</td>
+                                        <td class="age">
+                                            <input name="age" type="text"/><span id="input-comment">(&lt;=45)</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>gender *:</td>
+                                        <td class="sex">
+                                            <input id="sex" name="sex" type="radio"/><label for="sex">M</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>bloodtype *:</td>
+                                        <td class="bloodtype">
+                                            <select id="bloodtype" name="bloodtype">
+                                                <option value="A">A</option>
+                                                <option value="R" afd:clear>R</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>language *:</td>
+                                        <td class="language">
+                                            <input id="language" name="language" type="checkbox"/><label for="language">M</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>memo:</td>
+                                        <td class="memo">
+                                            <textarea name="memo"></textarea>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>educations *:</td>
+                                        <td>
+                                            <div id="education-err-msg" style="color: red"></div>
+                                            <!--  
+                                                The following "@" contained attributes will be rewritten to array index by default:
+                                                    id
+                                                    name
+                                                    cascade-ref
+                                                    cascade-ref-target,
+                                                    cascade-ref-info-1,
+                                                    cascade-ref-info-2,
+                                                    cascade-ref-info-3,
+                                                    cascade-ref-info-4,
+                                                    cascade-ref-info-5,
+                                                    cascade-ref-info-6,
+                                                    cascade-ref-info-7,
+                                                    cascade-ref-info-8,
+                                                    cascade-ref-info-9,
+                                                further rewriting can be performed by overriding the rewriteXXX methods in snippet. 
+                                            -->
+                                            <div id="education">
+                                                <input type="hidden" name="education-length" value="0">
+                                                <a id="education-add-btn" class="glyphicon glyphicon-plus" 
+                                                    href="javascript:void(0)"
+                                                    onclick="$acu.addRow.apply(this)",
+                                                    cascade-ref-info-1="#education",
+                                                    cascade-ref-info-2="[name=education-length]",
+                                                    cascade-ref-info-3="[cascade-ref='education-row-@']",
+                                                ></a>
+                                                <div cascade-ref="education-row-@">
+                                                    <input type="hidden" name="education-id-@">
+                                                    <input type="hidden" name="education-person-id-@">
+                                                    year:<select name="education-year-@">
+                                                            <option value="1980">1980</option>
+                                                        </select>
+                                                    desc:<input type="text" name="education-description-@">
+                                                    <a id="education-remove-btn" class="glyphicon glyphicon-minus" 
+                                                        href="javascript:void(0)" 
+                                                        onclick="$acu.removeRow.apply(this)"
+                                                        cascade-ref-info-1="[cascade-ref='education-row-@']"
+                                                    ></a>
+                                                </div>
+                                            </div>
+                                            
+                                        </td>
+                                    </tr>
+                                </table>
+                                <input type="hidden" id="id" name="id">
+                            </afd:snippet>
+                            <afd:block id="form-btns"></afd:block>
+                        </form>
+                    </article>
+                </section>
+                <!-- @ShowCode:showFormEnd -->
+                </div>
+                <div class="block-side-comment">
+                    <afd:embed target="/templates/form/cascade/comment.html" />
+                </div>
+            </div>
+        </div>
+        <afd:block id="source-block"></afd:block>
+    </afd:block>
 </afd:extension>
 </body>
 </html>
