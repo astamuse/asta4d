@@ -17,24 +17,28 @@
 package com.astamuse.asta4d.web.form;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class CascadeFormUtil {
 
-    public static final Integer[] ROOT_OF_INDEXES = new Integer[0];
+    public static final int[] EMPTY_INDEXES = new int[0];
 
-    public static final String rewriteArrayIndexPlaceHolder(String s, Integer[] indexes) {
-        if (indexes != null) {
-            String prefix = "(?<=-)";
-            String target = "@";
-            String suffix = "(?!@)";
-            for (int i = 0; i < indexes.length; i++, target += "@") {
-                s = s.replaceFirst(prefix + target + suffix, indexes[i].toString());
-            }
+    private static final String[] PlaceHolderSearchKey = new String[100];
+    static {
+        for (int i = 0; i < PlaceHolderSearchKey.length; i++) {
+            PlaceHolderSearchKey[i] = StringUtils.repeat("@", i + 1);
         }
-        return s;
     }
 
-    public static final Integer[] addIndex(Integer[] indexes, int index) {
+    public static final String rewriteArrayIndexPlaceHolder(String s, int[] indexes) {
+        String ret = s;
+        for (int i = indexes.length - 1; i >= 0; i--) {
+            ret = StringUtils.replace(ret, PlaceHolderSearchKey[i], String.valueOf(indexes[i]));
+        }
+        return ret;
+    }
+
+    public static final int[] addIndex(int[] indexes, int index) {
         return ArrayUtils.add(indexes, Integer.valueOf(index));
     }
 }

@@ -111,9 +111,9 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
     protected static class ValidationPropertyInfo {
         Path path;
         AnnotatedPropertyInfo field;
-        Integer[] indexes;
+        int[] indexes;
 
-        public ValidationPropertyInfo(Path path, AnnotatedPropertyInfo field, Integer[] indexes) {
+        public ValidationPropertyInfo(Path path, AnnotatedPropertyInfo field, int[] indexes) {
             super();
             this.path = path;
             this.field = field;
@@ -195,7 +195,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
     protected ValidationPropertyInfo retrieveValidationPropertyInfo(Class<?> formCls, Path path) {
         Iterator<Node> it = path.iterator();
         Class<?> cls = formCls;
-        Integer[] indexes = CascadeFormUtil.ROOT_OF_INDEXES;
+        int[] indexes = CascadeFormUtil.EMPTY_INDEXES;
         try {
             while (it.hasNext()) {
                 Node node = it.next();

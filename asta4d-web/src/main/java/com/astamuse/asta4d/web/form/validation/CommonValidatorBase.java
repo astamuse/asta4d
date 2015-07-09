@@ -44,11 +44,11 @@ public abstract class CommonValidatorBase {
         }
     }
 
-    protected String retrieveFieldName(AnnotatedPropertyInfo field, Integer[] indexes) {
+    protected String retrieveFieldName(AnnotatedPropertyInfo field, int[] indexes) {
         return CascadeFormUtil.rewriteArrayIndexPlaceHolder(field.getName(), indexes);
     }
 
-    protected String retrieveFieldLabel(AnnotatedPropertyInfo field, Integer[] indexes) {
+    protected String retrieveFieldLabel(AnnotatedPropertyInfo field, int[] indexes) {
         FormField ff = field.getAnnotation(FormField.class);
         if (ff == null) {
             // impossible but

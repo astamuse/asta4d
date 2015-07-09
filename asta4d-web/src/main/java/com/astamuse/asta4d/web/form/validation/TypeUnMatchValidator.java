@@ -46,12 +46,12 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
     @Override
     public List<FormValidationMessage> validate(Object form) {
         List<FormValidationMessage> msgList = new LinkedList<>();
-        addMessage(msgList, form, CascadeFormUtil.ROOT_OF_INDEXES);
+        addMessage(msgList, form, CascadeFormUtil.EMPTY_INDEXES);
         return msgList;
     }
 
     @SuppressWarnings("rawtypes")
-    private void addMessage(List<FormValidationMessage> msgList, Object form, Integer[] indexes) {
+    private void addMessage(List<FormValidationMessage> msgList, Object form, int[] indexes) {
         List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
 
         try {
@@ -90,7 +90,7 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
 
     @SuppressWarnings("rawtypes")
     protected FormValidationMessage createTypeUnMatchMessage(Class formCls, AnnotatedPropertyInfo field, ContextDataHolder valueHolder,
-            Integer[] indexes) {
+            int[] indexes) {
         String fieldName = retrieveFieldName(field, indexes);
         String fieldLabel = retrieveFieldLabel(field, indexes);
         String annotatedMsg = retrieveFieldAnnotatedMessage(field);

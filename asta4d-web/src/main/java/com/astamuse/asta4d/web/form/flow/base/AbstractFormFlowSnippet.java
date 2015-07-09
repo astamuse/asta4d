@@ -53,7 +53,7 @@ public abstract class AbstractFormFlowSnippet {
         String displaySelector;
         FormFieldValueRenderer valueRenderer;
 
-        FieldRenderingInfo replaceArrayIndex(Integer[] indexes) {
+        FieldRenderingInfo replaceArrayIndex(int[] indexes) {
             FieldRenderingInfo newInfo = new FieldRenderingInfo();
             newInfo.editSelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(editSelector, indexes);
             newInfo.displaySelector = CascadeFormUtil.rewriteArrayIndexPlaceHolder(displaySelector, indexes);
@@ -79,7 +79,7 @@ public abstract class AbstractFormFlowSnippet {
         return true;
     }
 
-    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, Integer[] indexes) {
+    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int[] indexes) {
         FieldRenderingInfo info = FieldRenderingInfoMap.get(f);
         if (info == null) {
 
@@ -129,7 +129,7 @@ public abstract class AbstractFormFlowSnippet {
     public Renderer render(FormRenderingData renderingData) throws Exception {
         Renderer renderer = renderTraceMapData(renderingData);
         Object form = retrieveRenderTargetForm(renderingData);
-        renderer.add(renderForm(renderingData.getRenderTargetStep(), form, CascadeFormUtil.ROOT_OF_INDEXES));
+        renderer.add(renderForm(renderingData.getRenderTargetStep(), form, CascadeFormUtil.EMPTY_INDEXES));
         Element clientJs = retrieveClientCascadeUtilJsContent();
         if (clientJs != null) {
             renderer.add(":root", (Element elem) -> {
@@ -176,7 +176,7 @@ public abstract class AbstractFormFlowSnippet {
      * @return
      * @throws Exception
      */
-    protected Renderer renderForm(String renderTargetStep, Object form, Integer[] indexes) throws Exception {
+    protected Renderer renderForm(String renderTargetStep, Object form, int[] indexes) throws Exception {
         Renderer render = Renderer.create();
         if (form == null) {
             return render;
@@ -212,7 +212,7 @@ public abstract class AbstractFormFlowSnippet {
      * @return
      * @throws Exception
      */
-    private Renderer renderValueOfFields(String renderTargetStep, Object form, Integer[] indexes) throws Exception {
+    private Renderer renderValueOfFields(String renderTargetStep, Object form, int[] indexes) throws Exception {
         Renderer render = Renderer.create();
         List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
 
@@ -235,7 +235,7 @@ public abstract class AbstractFormFlowSnippet {
                     Class<?> subFormType = field.getType().getComponentType();
                     Object subForm;
                     for (int i = loopStart; i < len; i++) {
-                        Integer[] newIndex = indexes.clone();
+                        int[] newIndex = indexes.clone();
 
                         // retrieve the form instance
                         if (i >= 0) {
@@ -342,7 +342,7 @@ public abstract class AbstractFormFlowSnippet {
      * @param indexes
      * @return
      */
-    protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final Integer[] indexes) {
+    protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final int[] indexes) {
 
         final String[] targetAttrs = rewriteCascadeFormFieldArrayRefTargetAttrs();
         String[] attrSelectors = new String[targetAttrs.length];
@@ -401,7 +401,7 @@ public abstract class AbstractFormFlowSnippet {
      * @return
      * @see AbstractFormFlowHandler#rewriteArrayIndexPlaceHolder(String, int)
      */
-    protected String rewriteArrayIndexPlaceHolder(String s, Integer[] indexes) {
+    protected String rewriteArrayIndexPlaceHolder(String s, int[] indexes) {
         return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, indexes);
     }
 
@@ -444,11 +444,9 @@ public abstract class AbstractFormFlowSnippet {
             return null;
         }
 
-        /*
         if (ClientCascadeJsContentCache != null) {
             return ClientCascadeJsContentCache.clone();
         }
-        */
 
         StringBuilder jsContent = new StringBuilder(300);
         jsContent.append("<script>\n");

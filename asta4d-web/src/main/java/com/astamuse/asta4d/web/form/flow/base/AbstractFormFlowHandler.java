@@ -217,7 +217,7 @@ public abstract class AbstractFormFlowHandler<T> {
             final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
             Context currentContext = Context.getCurrentThreadContext();
 
-            return assignArrayValueFromContext(formCls, form, currentContext, CascadeFormUtil.ROOT_OF_INDEXES);
+            return assignArrayValueFromContext(formCls, form, currentContext, CascadeFormUtil.EMPTY_INDEXES);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -233,7 +233,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * @return
      * @throws Exception
      */
-    private T assignArrayValueFromContext(Class formCls, T form, Context currentContext, Integer[] indexes) throws Exception {
+    private T assignArrayValueFromContext(Class formCls, T form, Context currentContext, int[] indexes) throws Exception {
         List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
         for (final AnnotatedPropertyInfo field : list) {
             CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
@@ -260,7 +260,7 @@ public abstract class AbstractFormFlowHandler<T> {
                     final Object[] array = (Object[]) Array.newInstance(field.getType().getComponentType(), len);
                     for (int i = 0; i < len; i++) {
                         final int seq = i;
-                        final Integer[] newIndex = CascadeFormUtil.addIndex(indexes, seq);
+                        final int[] newIndex = CascadeFormUtil.addIndex(indexes, seq);
                         Context.with(new DelatedContext(currentContext) {
                             protected String convertKey(String scope, String key) {
                                 if (scope.equals(WebApplicationContext.SCOPE_QUERYPARAM)) {
@@ -303,7 +303,7 @@ public abstract class AbstractFormFlowHandler<T> {
      * @return
      * @see AbstractFormFlowSnippet#rewriteArrayIndexPlaceHolder(String, Integer[])
      */
-    protected String rewriteArrayIndexPlaceHolder(String s, Integer[] indexes) {
+    protected String rewriteArrayIndexPlaceHolder(String s, int[] indexes) {
         return CascadeFormUtil.rewriteArrayIndexPlaceHolder(s, indexes);
     }
 
