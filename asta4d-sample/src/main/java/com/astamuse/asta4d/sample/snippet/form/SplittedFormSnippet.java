@@ -25,6 +25,7 @@ import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.sample.handler.form.JobForm;
+import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.handler.form.SplittedForm;
 import com.astamuse.asta4d.sample.handler.form.SplittedFormStepInfo;
@@ -92,5 +93,17 @@ public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements Spl
         }
         return new OptionValueMap(optionList);
     }
+
+    @Override
+    protected Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
+        Object form = super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
+        if (subFormType.equals(JobForm.class)) {
+            ((JobForm) form).setPersonId(-1);
+        } else if (subFormType.equals(JobPositionForm.class)) {
+            ((JobPositionForm) form).setJobId(-1);
+        }
+        return form;
+    }
+
 }
 // @ShowCode:showSplittedFormSnippetEnd

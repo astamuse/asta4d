@@ -18,7 +18,6 @@ package com.astamuse.asta4d.web.form.flow.base;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -352,8 +351,23 @@ public abstract class AbstractFormFlowSnippet {
         });
     }
 
-    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { "id", "name", "cascade-ref", "cascade-ref-target",
-            "cascade-parent-indexes" };
+    //@formatter:off
+    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { 
+        "id", 
+        "name", 
+        "cascade-ref",
+        "cascade-ref-target",
+        "cascade-ref-info-1",
+        "cascade-ref-info-2",
+        "cascade-ref-info-3",
+        "cascade-ref-info-4",
+        "cascade-ref-info-5",
+        "cascade-ref-info-6",
+        "cascade-ref-info-7",
+        "cascade-ref-info-8",
+        "cascade-ref-info-9",
+    };
+    //@formatter:on
 
     /**
      * The attributes returned by this method will be rewritten for array index.

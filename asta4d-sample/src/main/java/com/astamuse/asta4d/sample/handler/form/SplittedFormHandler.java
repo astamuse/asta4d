@@ -105,6 +105,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
             List<JobForm> rewriteJobList = new LinkedList<>();
             for (JobForm jform : cjForm.getJobForms()) {
                 List<JobPositionForm> rewritePosList = new LinkedList<>();
+                // remove rows without job id specified
                 for (JobPositionForm jpform : jform.getJobPositionForms()) {
                     if (jpform.getJobId() != null) {
                         rewritePosList.add(jpform);
@@ -113,6 +114,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
                 jform.setJobPositionForms(rewritePosList.toArray(new JobPositionForm[rewritePosList.size()]));
                 jform.setJobPositionLength(jform.getJobPositionForms().length);
 
+                // remove rows without person id specified
                 if (jform.getPersonId() != null) {
                     rewriteJobList.add(jform);
                 }
@@ -218,6 +220,14 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
             return form;
         }
 
+        private final boolean isExistingId(Integer id) {
+            if (id == null) {
+                return false;
+            } else {
+                return id > 0;
+            }
+        }
+
         @Override
         protected void updateForm(SplittedForm form) {
             PersonForm pForm = form.getPersonForm();
@@ -227,7 +237,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
             List<Integer> validJPs = new LinkedList<Integer>();
             for (JobForm jForm : form.getCascadeJobForm().getJobForms()) {
                 jForm.setPersonId(pForm.getId());
-                if (jForm.getId() > 0) {
+                if (isExistingId(jForm.getId())) {
                     JobExperenceDbManager.instance().update(jForm);
                 } else {
                     JobExperenceDbManager.instance().add(jForm);
@@ -236,7 +246,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
 
                 for (JobPositionForm jpForm : jForm.getJobPositionForms()) {
                     jpForm.setJobId(jForm.getId());
-                    if (jpForm.getId() > 0) {
+                    if (isExistingId(jpForm.getId())) {
                         JobPositionDbManager.instance().update(jpForm);
                     } else {
                         JobPositionDbManager.instance().add(jpForm);
