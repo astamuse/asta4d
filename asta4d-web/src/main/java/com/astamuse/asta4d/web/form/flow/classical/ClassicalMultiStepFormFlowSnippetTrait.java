@@ -14,15 +14,20 @@
  * limitations under the License.
  * 
  */
-package com.astamuse.asta4d.sample.snippet.form.common;
+package com.astamuse.asta4d.web.form.flow.classical;
 
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
+import org.apache.commons.lang3.StringUtils;
 
-//@ShowCode:showCommonFormSnippetStart
-/**
- * This class is used to configure the common action of snippet rendering. For most cases, it could be an empty class body.
- */
-public abstract class CommonFormSnippet extends MultiStepFormFlowSnippet {
+import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowSnippetTrait;
 
+public interface ClassicalMultiStepFormFlowSnippetTrait extends BasicFormFlowSnippetTrait {
+
+    @Override
+    default boolean renderForEdit(String step, Object form, String fieldName) {
+        if (StringUtils.isEmpty(step)) {
+            return true;
+        } else {
+            return !ClassicalMultiStepFormFlowHelper.NonEditSteps.contains(step.toLowerCase());
+        }
+    }
 }
-// @ShowCode:showCommonFormSnippetEnd

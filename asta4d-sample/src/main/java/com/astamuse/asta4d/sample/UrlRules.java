@@ -34,7 +34,7 @@ import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -109,16 +109,26 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         // @ShowCode:showSingleInputStart
         rules.add((HttpMethod)null, "/form/singleInput")
-             //specify the target template file of input page by constructor
-             .handler(new SingleInputFormHandler("/templates/form/singleInput/edit.html"))
+             //specify the target template file of input page by overriding
+             .handler(new SingleInputFormHandler(){
+                 @Override
+                 public String getTemplateBasePath() {
+                     return "/templates/form/singleInput/edit.html";
+                 }
+             })
              //specify the exit target
              .redirect("/form?type=single-input");
         // @ShowCode:showSingleInputEnd
              
         // @ShowCode:showMultiStepStart
         rules.add((HttpMethod)null, "/form/multistep")
-             //specify the base path of target template file by constructor
-             .handler(new MultiStepFormHandler("/templates/form/multistep/"))
+             //specify the base path of target template file by overriding
+             .handler(new MultiStepFormHandler(){
+                @Override
+                public String getTemplateBasePath() {
+                    return "/templates/form/multistep/";
+                }
+             })
              //specify the exit target
              .redirect("/form?type=multi-step");
         // @ShowCode:showMultiStepEnd
@@ -126,14 +136,14 @@ public class UrlRules implements UrlMappingRuleInitializer {
         // @ShowCode:showCascadeStart
         rules.add((HttpMethod)null, "/form/cascade/add")
              //specify the base path of target template file by path var
-             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
              .handler(CascadeFormHandler.Add.class)
              //specify the exit target
              .redirect("/form?type=cascade");
 
         rules.add((HttpMethod)null, "/form/cascade/edit")
              //specify the base path of target template file by path var
-             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
              .handler(CascadeFormHandler.Edit.class)
              //specify the exit target
              .redirect("/form?type=cascade");
@@ -142,14 +152,14 @@ public class UrlRules implements UrlMappingRuleInitializer {
         // @ShowCode:showSplittedStart
         rules.add((HttpMethod)null, "/form/splitted/add")
              //specify the base path of target template file by path var
-             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
              .handler(SplittedFormHandler.Add.class)
              //specify the exit target
              .redirect("/form?type=splitted");
 
         rules.add((HttpMethod)null, "/form/splitted/edit")
              //specify the base path of target template file by path var
-             .var(MultiStepFormFlowHandler.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
              .handler(SplittedFormHandler.Edit.class)
              //specify the exit target
              .redirect("/form?type=splitted");

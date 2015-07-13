@@ -39,8 +39,8 @@ import org.testng.annotations.Test;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowSnippetTrait;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.test.WebTestBase;
 
@@ -52,21 +52,27 @@ public class MultiStepFormTest extends WebTestBase {
 
     private static TestForm savedForm = null;
 
-    public static class TestHandler extends MultiStepFormFlowHandler<TestForm> {
+    public static class TestHandler implements ClassicalMultiStepFormFlowHandlerTrait<TestForm> {
 
         private List<FormValidationMessage> msgList = new LinkedList<>();
 
-        public TestHandler() {
-            super(TestForm.class, "/testform/");
+        @Override
+        public Class<TestForm> getFormCls() {
+            return TestForm.class;
         }
 
         @Override
-        protected void updateForm(TestForm form) {
+        public String getTemplateBasePath() {
+            return "/testform/";
+        }
+
+        @Override
+        public void updateForm(TestForm form) {
             savedForm = form;
         }
 
         @Override
-        protected TestForm createInitForm() {
+        public TestForm createInitForm() {
             TestForm form = new TestForm();
             form.subForm = new SubForm();
             form.subArray = new SubArray[0];
@@ -77,23 +83,23 @@ public class MultiStepFormTest extends WebTestBase {
         }
 
         @Override
-        protected String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+        public String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
             savedTraceMap = traceMap;
             return FAKE_TRACE_MAP_ID;
         }
 
         @Override
-        protected Map<String, Object> restoreTraceMap(String data) {
+        public Map<String, Object> restoreTraceMap(String data) {
             return savedTraceMap;
         }
 
         @Override
-        protected void clearSavedTraceMap(String traceData) {
+        public void clearSavedTraceMap(String traceData) {
             savedTraceMap = null;
         }
 
         @Override
-        protected void outputValidationMessage(FormValidationMessage msg) {
+        public void outputValidationMessage(FormValidationMessage msg) {
             msgList.add(msg);
         }
 
@@ -126,7 +132,7 @@ public class MultiStepFormTest extends WebTestBase {
         }
     }
 
-    public static class TestSnippet extends MultiStepFormFlowSnippet {
+    public static class TestSnippet implements ClassicalMultiStepFormFlowSnippetTrait {
         private static Map<String, Integer> formCounterMap = new HashMap<>();
 
         public TestSnippet() {
@@ -146,7 +152,7 @@ public class MultiStepFormTest extends WebTestBase {
         }
 
         @Override
-        protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+        public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
             Integer count = formCounterMap.get(form.getClass().getName());
             if (count == null) {
                 count = 1;
@@ -154,7 +160,7 @@ public class MultiStepFormTest extends WebTestBase {
                 count = count + 1;
             }
             formCounterMap.put(form.getClass().getName(), count);
-            return super.retrieveFieldPrepareRenderers(renderTargetStep, form);
+            return ClassicalMultiStepFormFlowSnippetTrait.super.retrieveFieldPrepareRenderers(renderTargetStep, form);
         }
     }
 

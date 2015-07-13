@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.astamuse.asta4d.sample.handler.form.SplittedForm.CascadeJobForm;
+import com.astamuse.asta4d.sample.handler.form.common.Asta4DSamplePrjCommonFormHandler;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
 import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
 import com.astamuse.asta4d.sample.util.persondb.JobPosition;
@@ -34,29 +35,22 @@ import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showSplittedFormHandlerStart
-public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<SplittedForm> implements SplittedFormStepInfo {
+public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandler<SplittedForm> implements SplittedFormStepInfo {
 
-    public SplittedFormHandler() {
-        super(SplittedForm.class);
+    public Class<SplittedForm> getFormCls() {
+        return SplittedForm.class;
     }
 
     @Override
-    protected String firstStepName() {
+    public String firstStepName() {
         return inputStep1Name();
     }
 
     @Override
-    protected boolean treatCompleteStepAsExit() {
-        // exit immediately after update without displaying complete page
-        return true;
-    }
-
-    @Override
-    protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    public boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         // we will always save trace map when we go to the first step because we need to retrieve the init form later.
         if (inputStep1Name().equalsIgnoreCase(renderTargetStep)) {
             return false;
@@ -66,7 +60,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     }
 
     @Override
-    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    public void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         if (inputStep2Name().equalsIgnoreCase(renderTargetStep)) {
             /* 
              * for the first input step, the initial form will be used by default, but for the second input step, we must store the initial 
@@ -97,7 +91,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     }
 
     @Override
-    protected SplittedForm generateFormInstanceFromContext(String currentStep) {
+    public SplittedForm generateFormInstanceFromContext(String currentStep) {
         SplittedForm form = super.generateFormInstanceFromContext(currentStep);
 
         if (inputStep2Name().equalsIgnoreCase(currentStep)) {
@@ -130,7 +124,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     }
 
     @Override
-    protected CommonFormResult processValidation(FormProcessData processData, Object form) {
+    public CommonFormResult processValidation(FormProcessData processData, Object form) {
         String currentStep = processData.getStepCurrent();
 
         Object validateObj;
@@ -154,14 +148,14 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     public static class Add extends SplittedFormHandler {
 
         @Override
-        protected SplittedForm createInitForm() {
+        public SplittedForm createInitForm() {
             SplittedForm form = new SplittedForm();
 
             return form;
         }
 
         @Override
-        protected void updateForm(SplittedForm form) {
+        public void updateForm(SplittedForm form) {
             PersonForm pForm = form.getPersonForm();
             PersonDbManager.instance().add(pForm);
             for (JobForm jobForm : form.getCascadeJobForm().getJobForms()) {
@@ -184,7 +178,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
     public static class Edit extends SplittedFormHandler {
 
         @Override
-        protected SplittedForm createInitForm() throws Exception {
+        public SplittedForm createInitForm() throws Exception {
             SplittedForm superform = super.createInitForm();
 
             PersonForm pForm = PersonForm.buildFromPerson(PersonDbManager.instance().find(superform.getPersonForm().getId()));
@@ -231,7 +225,7 @@ public abstract class SplittedFormHandler extends MultiStepFormFlowHandler<Split
         }
 
         @Override
-        protected void updateForm(SplittedForm form) {
+        public void updateForm(SplittedForm form) {
             PersonForm pForm = form.getPersonForm();
             PersonDbManager.instance().update(pForm);
 

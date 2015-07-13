@@ -18,33 +18,22 @@ package com.astamuse.asta4d.web.form.flow.classical;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
-import com.astamuse.asta4d.web.form.flow.base.AbstractFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 
-public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandler<T> {
+public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlowHandlerTrait<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(MultiStepFormFlowHandler.class);
+    public static final String VAR_TEMPLATE_BASE_PATH = "TEMPLATE_BASE_PATH#" + ClassicalMultiStepFormFlowHandlerTrait.class;
 
-    public static final String VAR_TEMPLATE_BASE_PATH = "TEMPLATE_BASE_PATH#" + MultiStepFormFlowHandler.class;
-
-    private String templateBasePath;
-
-    public MultiStepFormFlowHandler(Class<T> formCls, String templateBasePath) {
-        super(formCls);
-        this.templateBasePath = templateBasePath;
-    }
-
-    public MultiStepFormFlowHandler(Class<T> formCls) {
-        super(formCls);
-        this.templateBasePath = null;
+    default String getTemplateBasePath() {
+        return Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_TEMPLATE_BASE_PATH);
     }
 
     /**
@@ -52,24 +41,24 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * 
      * @param form
      */
-    protected abstract void updateForm(T form);
+    public void updateForm(T form);
 
     @Override
-    protected String firstStepName() {
+    default String firstStepName() {
         return ClassicalFormFlowConstant.STEP_INPUT;
     }
 
     @Override
-    protected String completeStepName() {
+    default String completeStepName() {
         return ClassicalFormFlowConstant.STEP_COMPLETE;
     }
 
-    protected String confirmStepName() {
+    default String confirmStepName() {
         return ClassicalFormFlowConstant.STEP_CONFIRM;
     }
 
     @Override
-    protected boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
+    default boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
         // remove saved confirm step data when back from confirm step
         return confirmStepName().equalsIgnoreCase(currentStep);
     }
@@ -93,7 +82,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * @return
      */
     @Override
-    protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    default boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
             // when the form flow start
             return true;
@@ -117,7 +106,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * 
      * @return
      */
-    protected boolean skipSaveTraceMapWhenBackedFromOtherStep() {
+    default boolean skipSaveTraceMapWhenBackedFromOtherStep() {
         return true;
     }
 
@@ -128,13 +117,13 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * 
      * @return
      */
-    protected boolean treatCompleteStepAsExit() {
+    default boolean treatCompleteStepAsExit() {
         return false;
     }
 
     @RequestHandler
-    public String handle() throws Exception {
-        return createTemplateFilePathForStep(super.handle());
+    default String handle() throws Exception {
+        return createTemplateFilePathForStep(BasicFormFlowHandlerTrait.super.handle());
     }
 
     /**
@@ -143,24 +132,17 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * @param step
      * @return
      */
-    protected String createTemplateFilePathForStep(String step) {
+    default String createTemplateFilePathForStep(String step) {
         if (step == null) {// exit flow
             return null;
         }
-
         if (completeStepName().equalsIgnoreCase(step) && treatCompleteStepAsExit()) {
             return null;
         }
-
-        if (templateBasePath == null) {
-            String varPath = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_TEMPLATE_BASE_PATH);
-            return createTemplateFilePath(varPath, step);
-        } else {
-            return createTemplateFilePath(templateBasePath, step);
-        }
+        return createTemplateFilePath(getTemplateBasePath(), step);
     }
 
-    protected String createTemplateFilePath(String templateBasePath, String step) {
+    default String createTemplateFilePath(String templateBasePath, String step) {
         return templateBasePath + step + ".html";
     }
 
@@ -170,20 +152,20 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * @param processData
      * @return
      */
-    protected boolean doUpdateOnValidationSuccess(FormProcessData processData) {
+    default boolean doUpdateOnValidationSuccess(FormProcessData processData) {
         return confirmStepName().equalsIgnoreCase(processData.getStepCurrent()) &&
                 completeStepName().equalsIgnoreCase(processData.getStepSuccess());
     }
 
     @Override
-    protected CommonFormResult process(FormProcessData processData, T form) {
+    default CommonFormResult process(FormProcessData processData, T form) {
         CommonFormResult result = processValidation(processData, form);
         if (result == CommonFormResult.SUCCESS && doUpdateOnValidationSuccess(processData)) {
             try {
                 updateForm(form);
                 return CommonFormResult.SUCCESS;
             } catch (Exception ex) {
-                logger.error("error occured on step:" + processData.getStepCurrent(), ex);
+                LoggerFactory.getLogger(this.getClass()).error("error occured on step:" + processData.getStepCurrent(), ex);
                 return CommonFormResult.FAILED;
             }
         } else {
@@ -193,12 +175,12 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
 
     @SuppressWarnings("unchecked")
     @Override
-    protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
+    default T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         // for confirm and complete step, the form saved at last step would be used.
         if (confirmStepName().equalsIgnoreCase(currentStep) || completeStepName().equalsIgnoreCase(currentStep)) {
             return (T) traceMap.get(currentStep);
         } else {
-            return super.retrieveFormInstance(traceMap, currentStep);
+            return BasicFormFlowHandlerTrait.super.retrieveFormInstance(traceMap, currentStep);
         }
     }
 
@@ -210,8 +192,7 @@ public abstract class MultiStepFormFlowHandler<T> extends AbstractFormFlowHandle
      * @return true when step is complete and {@link #treatCompleteStepAsExit()} returns true
      */
     @Override
-    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
+    default boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
         return completeStepName().equals(renderTargetStep) && treatCompleteStepAsExit();
     }
-
 }

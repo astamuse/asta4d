@@ -26,26 +26,27 @@ import com.astamuse.asta4d.sample.util.persondb.EducationDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showCascadeFormHandlerStart
-public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<PersonFormIncludingCascadeForm> {
+public abstract class CascadeFormHandler implements ClassicalMultiStepFormFlowHandlerTrait<PersonFormIncludingCascadeForm> {
 
-    public CascadeFormHandler() {
-        super(PersonFormIncludingCascadeForm.class);
+    @Override
+    public Class<PersonFormIncludingCascadeForm> getFormCls() {
+        return PersonFormIncludingCascadeForm.class;
     }
 
     @Override
-    protected boolean treatCompleteStepAsExit() {
+    public boolean treatCompleteStepAsExit() {
         // exit immediately after update without displaying complete page
         return true;
     }
 
     // intercept the form date construction to rewrite the form data
     @Override
-    protected PersonFormIncludingCascadeForm generateFormInstanceFromContext(String currentStep) {
-        PersonFormIncludingCascadeForm form = super.generateFormInstanceFromContext(currentStep);
+    public PersonFormIncludingCascadeForm generateFormInstanceFromContext(String currentStep) {
+        PersonFormIncludingCascadeForm form = ClassicalMultiStepFormFlowHandlerTrait.super.generateFormInstanceFromContext(currentStep);
         if (firstStepName().equals(currentStep)) {
             // for the submitting of input step, we need to rewrite the education list to handle deleted items.
             List<EducationForm> rewriteList = new LinkedList<>();
@@ -66,7 +67,7 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Person
      */
     public static class Add extends CascadeFormHandler {
         @Override
-        protected PersonFormIncludingCascadeForm createInitForm() {
+        public PersonFormIncludingCascadeForm createInitForm() {
             PersonFormIncludingCascadeForm form = new PersonFormIncludingCascadeForm();
 
             EducationForm[] eForms = new EducationForm[0];
@@ -77,7 +78,7 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Person
         }
 
         @Override
-        protected void updateForm(PersonFormIncludingCascadeForm form) {
+        public void updateForm(PersonFormIncludingCascadeForm form) {
             EducationForm[] eForms = form.getEducationForms();
             PersonDbManager.instance().add(form);
             for (EducationForm e : eForms) {
@@ -95,7 +96,7 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Person
     public static class Edit extends CascadeFormHandler {
 
         @Override
-        protected PersonFormIncludingCascadeForm createInitForm() throws Exception {
+        public PersonFormIncludingCascadeForm createInitForm() throws Exception {
             PersonFormIncludingCascadeForm superform = super.createInitForm();
 
             PersonFormIncludingCascadeForm form = PersonFormIncludingCascadeForm.buildFromPerson(PersonDbManager.instance().find(
@@ -116,7 +117,7 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Person
         }
 
         @Override
-        protected void updateForm(PersonFormIncludingCascadeForm form) {
+        public void updateForm(PersonFormIncludingCascadeForm form) {
             EducationForm[] eForms = form.getEducationForms();
 
             PersonDbManager.instance().update(form);

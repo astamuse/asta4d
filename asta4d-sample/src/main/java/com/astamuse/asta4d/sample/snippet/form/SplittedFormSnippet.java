@@ -29,6 +29,7 @@ import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.handler.form.SplittedForm;
 import com.astamuse.asta4d.sample.handler.form.SplittedFormStepInfo;
+import com.astamuse.asta4d.sample.snippet.form.common.Asta4DSamplePrjCommonFormSnippet;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
 import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
@@ -39,10 +40,9 @@ import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.base.FormRenderingData;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
 
 //@ShowCode:showSplittedFormSnippetStart
-public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements SplittedFormStepInfo {
+public class SplittedFormSnippet extends Asta4DSamplePrjCommonFormSnippet implements SplittedFormStepInfo {
 
     @ContextDataSet
     public static class SplittedFormRenderingData extends FormRenderingData {
@@ -56,7 +56,7 @@ public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements Spl
     }
 
     @Override
-    protected Object retrieveRenderTargetForm(FormRenderingData renderingData) {
+    public Object retrieveRenderTargetForm(FormRenderingData renderingData) {
         SplittedForm form = (SplittedForm) super.retrieveRenderTargetForm(renderingData);
 
         String formStep = ((SplittedFormRenderingData) renderingData).formStep;
@@ -71,7 +71,7 @@ public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements Spl
     }
 
     @Override
-    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+    public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         List<FormFieldPrepareRenderer> list = new LinkedList<>();
 
         // since there are cascade forms, so we have to differentiate the option data rendering for different forms
@@ -95,7 +95,7 @@ public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements Spl
     }
 
     @Override
-    protected Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
+    public Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
         Object form = super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
         if (subFormType.equals(JobForm.class)) {
             ((JobForm) form).setPersonId(-1);
@@ -106,7 +106,7 @@ public class SplittedFormSnippet extends MultiStepFormFlowSnippet implements Spl
     }
 
     @Override
-    protected String clientCascadeUtilJsExportName() {
+    public String clientCascadeUtilJsExportName() {
         return "$acu";
     }
 

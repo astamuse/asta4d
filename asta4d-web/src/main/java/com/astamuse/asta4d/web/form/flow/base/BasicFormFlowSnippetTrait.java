@@ -21,11 +21,8 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -33,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 
-import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.data.ContextDataHolder;
 import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.render.ElementSetter;
@@ -41,34 +37,11 @@ import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.ElementUtil;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
-import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
-import com.astamuse.asta4d.web.form.annotation.FormField;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
-import com.astamuse.asta4d.web.form.field.FormFieldValueRenderer;
 
-public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
-
-    private class FieldRenderingInfo {
-        String editSelector;
-        String displaySelector;
-        FormFieldValueRenderer valueRenderer;
-
-        FieldRenderingInfo replaceArrayIndex(int[] indexes) {
-            FieldRenderingInfo newInfo = new FieldRenderingInfo();
-            newInfo.editSelector = rewriteArrayIndexPlaceHolder(editSelector, indexes);
-            newInfo.displaySelector = rewriteArrayIndexPlaceHolder(displaySelector, indexes);
-            newInfo.valueRenderer = valueRenderer;
-            return newInfo;
-        }
-    }
-
-    private static final Map<AnnotatedPropertyInfo, FieldRenderingInfo> FieldRenderingInfoMap = new ConcurrentHashMap<>();
-
-    private static final Map<String, List<AnnotatedPropertyInfo>> RenderingTargetFieldsMap = new ConcurrentHashMap<>();
-
-    private static Element ClientCascadeJsContentCache = null;
+public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
 
     /**
      * Sub class should tell us the current rendering mode. Since we have no any information about the concrete cases, we always return true
@@ -79,65 +52,8 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @param fieldName
      * @return
      */
-    protected boolean renderForEdit(String step, Object form, String fieldName) {
+    default boolean renderForEdit(String step, Object form, String fieldName) {
         return true;
-    }
-
-    private List<AnnotatedPropertyInfo> retrieveRenderTargetFieldList(Object form) {
-        List<AnnotatedPropertyInfo> list = RenderingTargetFieldsMap.get(form.getClass().getName());
-        if (list == null) {
-            list = new LinkedList<AnnotatedPropertyInfo>(AnnotatedPropertyUtil.retrieveProperties(form.getClass()));
-            Iterator<AnnotatedPropertyInfo> it = list.iterator();
-            while (it.hasNext()) {
-                // remove all the non form field properties
-                if (it.next().getAnnotation(FormField.class) == null) {
-                    it.remove();
-                }
-            }
-            RenderingTargetFieldsMap.put(form.getClass().getName(), list);
-        }
-        return list;
-    }
-
-    private FieldRenderingInfo getRenderingInfo(AnnotatedPropertyInfo f, int[] indexes) {
-        FieldRenderingInfo info = FieldRenderingInfoMap.get(f);
-        if (info == null) {
-
-            info = new FieldRenderingInfo();
-
-            FormField ffAnno = f.getAnnotation(FormField.class);
-
-            String fieldName = f.getName();
-
-            String editSelector = ffAnno.editSelector();
-            if (StringUtils.isEmpty(editSelector)) {
-                editSelector = defaultEditElementSelectorForField(fieldName);
-            }
-
-            info.editSelector = editSelector;
-
-            String displaySelector = ffAnno.displaySelector();
-            if (StringUtils.isEmpty(displaySelector)) {
-                displaySelector = defaultDisplayElementSelectorForField(fieldName);
-            }
-
-            info.displaySelector = displaySelector;
-
-            try {
-                info.valueRenderer = ffAnno.fieldValueRenderer().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (Configuration.getConfiguration().isCacheEnable()) {
-                FieldRenderingInfoMap.put(f, info);
-            }
-        }
-        if (indexes.length > 0) {
-            return info.replaceArrayIndex(indexes);
-        } else {
-            return info;
-        }
     }
 
     /**
@@ -146,7 +62,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @return
      * @throws Exception
      */
-    public Renderer render(FormRenderingData renderingData) throws Exception {
+    default Renderer render(FormRenderingData renderingData) throws Exception {
         Renderer renderer = renderTraceMapData(renderingData);
         Object form = retrieveRenderTargetForm(renderingData);
         renderer.add(renderForm(renderingData.getRenderTargetStep(), form, EMPTY_INDEXES));
@@ -164,7 +80,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * 
      * @return
      */
-    protected Renderer renderTraceMapData(FormRenderingData renderingData) {
+    default Renderer renderTraceMapData(FormRenderingData renderingData) {
         String formTraceMapStr = renderingData.getTraceMapStr();
         if (StringUtils.isEmpty(formTraceMapStr)) {
             return Renderer.create();
@@ -182,7 +98,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
         }
     }
 
-    protected Object retrieveRenderTargetForm(FormRenderingData renderingData) {
+    default Object retrieveRenderTargetForm(FormRenderingData renderingData) {
         return renderingData.getTraceMap().get(renderingData.getRenderTargetStep());
     }
 
@@ -196,7 +112,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @return
      * @throws Exception
      */
-    protected Renderer renderForm(String renderTargetStep, Object form, int[] indexes) throws Exception {
+    default Renderer renderForm(String renderTargetStep, Object form, int[] indexes) throws Exception {
         Renderer render = Renderer.create();
         if (form == null) {
             return render;
@@ -207,14 +123,16 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
         List<FormFieldPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldPrepareRenderers(renderTargetStep, form);
 
         for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), indexes);
+            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this, formFieldDataPrepareRenderer.targetField(),
+                    indexes);
             render.add(formFieldDataPrepareRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
         render.add(renderValueOfFields(renderTargetStep, form, indexes));
 
         for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            FieldRenderingInfo renderingInfo = getRenderingInfo(formFieldDataPrepareRenderer.targetField(), indexes);
+            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this, formFieldDataPrepareRenderer.targetField(),
+                    indexes);
             render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
@@ -232,9 +150,9 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @return
      * @throws Exception
      */
-    private Renderer renderValueOfFields(String renderTargetStep, Object form, int[] indexes) throws Exception {
+    default Renderer renderValueOfFields(String renderTargetStep, Object form, int[] indexes) throws Exception {
         Renderer render = Renderer.create();
-        List<AnnotatedPropertyInfo> fieldList = retrieveRenderTargetFieldList(form);
+        List<AnnotatedPropertyInfo> fieldList = BasicFormFlowTraitHelper.retrieveRenderTargetFieldList(form);
 
         for (AnnotatedPropertyInfo field : fieldList) {
 
@@ -310,7 +228,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
                 }
             }
 
-            FieldRenderingInfo renderingInfo = getRenderingInfo(field, indexes);
+            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this, field, indexes);
 
             // render.addDebugger("whole form before: " + field.getName());
 
@@ -323,15 +241,15 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
         return render;
     }
 
-    protected String defaultDisplayElementSelectorForField(String fieldName) {
+    default String defaultDisplayElementSelectorForField(String fieldName) {
         return SelectorUtil.id(fieldName + "-display");
     }
 
-    protected String defaultEditElementSelectorForField(String fieldName) {
+    default String defaultEditElementSelectorForField(String fieldName) {
         return SelectorUtil.attr("name", fieldName);
     }
 
-    protected Renderer hideCascadeFormTemplateDOM(Class<?> subFormType) {
+    default Renderer hideCascadeFormTemplateDOM(Class<?> subFormType) {
         return Renderer.create(":root", new ElementSetter() {
             @Override
             public void set(Element elem) {
@@ -350,7 +268,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
     }
 
     @SuppressWarnings("rawtypes")
-    protected Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
+    default Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
         return subFormType.newInstance();
     }
 
@@ -362,7 +280,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @param indexes
      * @return
      */
-    protected Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final int[] indexes) {
+    default Renderer rewriteCascadeFormFieldArrayRef(final String renderTargetStep, final Object form, final int[] indexes) {
 
         final String[] targetAttrs = rewriteCascadeFormFieldArrayRefTargetAttrs();
         String[] attrSelectors = new String[targetAttrs.length];
@@ -384,33 +302,15 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
         });
     }
 
-    //@formatter:off
-    private static final String[] _rewriteCascadeFormFieldArrayRefTargetAttrs = { 
-        "id", 
-        "name", 
-        "cascade-ref",
-        "cascade-ref-target",
-        "cascade-ref-info-1",
-        "cascade-ref-info-2",
-        "cascade-ref-info-3",
-        "cascade-ref-info-4",
-        "cascade-ref-info-5",
-        "cascade-ref-info-6",
-        "cascade-ref-info-7",
-        "cascade-ref-info-8",
-        "cascade-ref-info-9",
-    };
-    //@formatter:on
-
     /**
      * The attributes returned by this method will be rewritten for array index.
      * <p>
-     * The default is {"id", "name", "cascade-ref", "cascade-ref-target"}.
+     * The default is {"id", "name", "cascade-ref", "cascade-ref-target", "cascade-ref-info-1", ..., "cascade-ref-info-9"}.
      * 
      * @return
      */
-    protected String[] rewriteCascadeFormFieldArrayRefTargetAttrs() {
-        return _rewriteCascadeFormFieldArrayRefTargetAttrs;
+    default String[] rewriteCascadeFormFieldArrayRefTargetAttrs() {
+        return BasicFormFlowTraitHelper.DefaultCascadeFormFieldArrayRefTargetAttrs;
     }
 
     /**
@@ -419,7 +319,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @return
      * @throws Exception
      */
-    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+    default List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         return new LinkedList<>();
     }
 
@@ -431,7 +331,7 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
      * @param rawTraceData
      * @return
      */
-    protected Object convertRawInjectionTraceDataToRenderingData(String fieldName, Class<?> fieldDataType, Object rawTraceData) {
+    default Object convertRawInjectionTraceDataToRenderingData(String fieldName, Class<?> fieldDataType, Object rawTraceData) {
         if (fieldDataType.isArray() && rawTraceData.getClass().isArray()) {
             return rawTraceData;
         } else if (rawTraceData.getClass().isArray()) {// but field data type is
@@ -446,14 +346,14 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
         }
     }
 
-    protected Element retrieveClientCascadeUtilJsContent() {
+    default Element retrieveClientCascadeUtilJsContent() {
         String exportName = clientCascadeUtilJsExportName();
         if (exportName == null) {
             return null;
         }
 
-        if (ClientCascadeJsContentCache != null) {
-            return ClientCascadeJsContentCache.clone();
+        if (BasicFormFlowTraitHelper.ClientCascadeJsContentCache != null) {
+            return BasicFormFlowTraitHelper.ClientCascadeJsContentCache.clone();
         }
 
         StringBuilder jsContent = new StringBuilder(300);
@@ -469,18 +369,17 @@ public abstract class AbstractFormFlowSnippet implements CascadeArrayFunctions {
         jsContent.append(")();\n");
         jsContent.append("</script>");
 
-        ClientCascadeJsContentCache = ElementUtil.parseAsSingle(jsContent.toString());
+        BasicFormFlowTraitHelper.ClientCascadeJsContentCache = ElementUtil.parseAsSingle(jsContent.toString());
 
-        return ClientCascadeJsContentCache.clone();
+        return BasicFormFlowTraitHelper.ClientCascadeJsContentCache.clone();
     }
 
-    protected String clientCascadeUtilJsExportName() {
+    default String clientCascadeUtilJsExportName() {
         return null;
     }
 
-    protected InputStream clientCascadeUtilJsInputStream() {
+    default InputStream clientCascadeUtilJsInputStream() {
         String jsPath = "/com/astamuse/asta4d/web/form/js/ClientCascadeUtil.js";
         return this.getClass().getClassLoader().getResourceAsStream(jsPath);
     }
-
 }

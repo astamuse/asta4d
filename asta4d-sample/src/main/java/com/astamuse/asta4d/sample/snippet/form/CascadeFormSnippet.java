@@ -31,12 +31,12 @@ import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowSnippet;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowSnippetTrait;
 
 //@ShowCode:showCascadeFormSnippetStart
-public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
+public class CascadeFormSnippet implements ClassicalMultiStepFormFlowSnippetTrait {
     @Override
-    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+    public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         List<FormFieldPrepareRenderer> list = new LinkedList<>();
 
         // since there are cascade forms, so we have to differentiate the option data rendering for different forms
@@ -60,14 +60,14 @@ public class CascadeFormSnippet extends MultiStepFormFlowSnippet {
     }
 
     @Override
-    protected Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
-        Object form = super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
+    public Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
+        Object form = ClassicalMultiStepFormFlowSnippetTrait.super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
         ((EducationForm) form).setPersonId(-1);
         return form;
     }
 
     @Override
-    protected String clientCascadeUtilJsExportName() {
+    public String clientCascadeUtilJsExportName() {
         return "$acu";
     }
 }

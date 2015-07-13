@@ -18,19 +18,19 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
-import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 // @ShowCode:showSingleInputFormHandlerStart
-public class SingleInputFormHandler extends OneStepFormHandler<PersonForm> {
+public class SingleInputFormHandler implements OneStepFormHandlerTrait<PersonForm> {
 
-    public SingleInputFormHandler(String inputTemplate) {
-        super(PersonForm.class, inputTemplate);
+    public Class<PersonForm> getFormCls() {
+        return PersonForm.class;
     }
 
     @Override
-    protected PersonForm createInitForm() throws Exception {
-        PersonForm form = super.createInitForm();
+    public PersonForm createInitForm() throws Exception {
+        PersonForm form = OneStepFormHandlerTrait.super.createInitForm();
         if (form.getId() == null) {// add
             return form;
         } else {// update
@@ -40,7 +40,7 @@ public class SingleInputFormHandler extends OneStepFormHandler<PersonForm> {
     }
 
     @Override
-    protected void updateForm(PersonForm form) {
+    public void updateForm(PersonForm form) {
         if (form.getId() == null) {// add
             PersonDbManager.instance().add(Person.createByForm(form));
             // the success message will be shown at the default global message bar

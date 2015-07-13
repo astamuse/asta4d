@@ -38,7 +38,6 @@ import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.form.validation.FormValidator;
 import com.astamuse.asta4d.web.form.validation.JsrValidator;
@@ -47,24 +46,18 @@ import com.astamuse.asta4d.web.util.SecureIdGenerator;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunctions {
+public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
 
-    private static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#" + AbstractFormFlowHandler.class.getName();
+    public static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#" + BasicFormFlowHandlerTrait.class.getName();
 
-    private static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#" + AbstractFormFlowHandler.class.getName();
+    public static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#" + BasicFormFlowHandlerTrait.class.getName();
 
-    public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#" + AbstractFormFlowHandler.class.getName();
+    public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#" + BasicFormFlowHandlerTrait.class.getName();
 
-    private Class<? extends FormProcessData> formProcessDataCls;
-    private Class formCls;
+    public Class<T> getFormCls();
 
-    public AbstractFormFlowHandler(Class<T> formCls) {
-        this(formCls, SimpleFormProcessData.class);
-    }
-
-    public AbstractFormFlowHandler(Class<T> formCls, Class<? extends FormProcessData> formProcessDataCls) {
-        this.formCls = formCls;
-        this.formProcessDataCls = formProcessDataCls;
+    default Class<? extends FormProcessData> getFormProcessDataCls() {
+        return SimpleFormProcessData.class;
     }
 
     /**
@@ -73,7 +66,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param step
      * @return
      */
-    protected abstract String firstStepName();
+    public String firstStepName();
 
     /**
      * Sub classes must tell us whether the name of complete step which means to finish current flow
@@ -81,7 +74,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param step
      * @return
      */
-    protected abstract String completeStepName();
+    public String completeStepName();
 
     /**
      * Sub classes could override this method to create the initial form data(eg. query from db)
@@ -89,8 +82,8 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @return
      * @throws Exception
      */
-    protected T createInitForm() throws Exception {
-        return (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
+    default T createInitForm() throws Exception {
+        return (T) InjectUtil.retrieveContextDataSetInstance(getFormCls(), FORM_PRE_DEFINED, "");
     }
 
     /**
@@ -99,7 +92,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param actionInfo
      * @see #getExtraDataFromContext()
      */
-    protected <D> void saveExtraDataToContext(D actionInfo) {
+    default <D> void saveExtraDataToContext(D actionInfo) {
         Context.getCurrentThreadContext().setData(FORM_EXTRA_DATA, actionInfo);
     }
 
@@ -109,12 +102,8 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param actionInfo
      * @see #saveExtraDataToContext(Object)
      */
-    protected <D> D getExtraDataFromContext() {
+    default <D> D getExtraDataFromContext() {
         return Context.getCurrentThreadContext().getData(FORM_EXTRA_DATA);
-    }
-
-    private void savePreDefinedForm(T form) {
-        Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, form);
     }
 
     /**
@@ -123,8 +112,8 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @return the render target step name
      * @throws Exception
      */
-    protected String handle() throws Exception {
-        FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(formProcessDataCls,
+    default String handle() throws Exception {
+        FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(getFormProcessDataCls(),
                 "not-exist-IntelligentFormProcessData", "");
 
         String traceData = processData.getStepTraceData();
@@ -149,7 +138,8 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
         // the first time access without existing input data or saved tracemap could not be retrieved(usually due to timeout)
         if (currentStep == null) {
             currentStep = FormFlowConstants.FORM_STEP_BEFORE_FIRST;
-            savePreDefinedForm(createInitForm());
+            // save init form as predefined form
+            Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, createInitForm());
         }
 
         T form = retrieveFormInstance(traceMap, currentStep);
@@ -198,7 +188,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param currentStep
      * @return
      */
-    protected T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
+    default T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
         // The subclass may override this method to retrieving form instance by various ways but we will always generate an instance from
         // the context since we have no idea about the concrete logic of sub classes.
         return generateFormInstanceFromContext(currentStep);
@@ -213,12 +203,12 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param currentStep
      * @return
      */
-    protected T generateFormInstanceFromContext(String currentStep) {
+    default T generateFormInstanceFromContext(String currentStep) {
         try {
-            final T form = (T) InjectUtil.retrieveContextDataSetInstance(formCls, FORM_PRE_DEFINED, "");
+            final T form = (T) InjectUtil.retrieveContextDataSetInstance(getFormCls(), FORM_PRE_DEFINED, "");
             Context currentContext = Context.getCurrentThreadContext();
 
-            return assignArrayValueFromContext(formCls, form, currentContext, EMPTY_INDEXES);
+            return assignArrayValueFromContext(getFormCls(), form, currentContext, EMPTY_INDEXES);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -234,7 +224,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @return
      * @throws Exception
      */
-    private T assignArrayValueFromContext(Class formCls, T form, Context currentContext, int[] indexes) throws Exception {
+    default T assignArrayValueFromContext(Class formCls, T form, Context currentContext, int[] indexes) throws Exception {
         List<AnnotatedPropertyInfo> list = AnnotatedPropertyUtil.retrieveProperties(formCls);
         for (final AnnotatedPropertyInfo field : list) {
             CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
@@ -308,7 +298,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param traceMap
      * @return
      */
-    protected String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    default String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         if (skipSaveTraceMap(currentStep, renderTargetStep, traceMap)) {
             return "";
         } else {
@@ -327,7 +317,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param renderTargetStep
      * @return
      */
-    protected boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
+    default boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
         return true;
     }
 
@@ -338,7 +328,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @see MultiStepFormFlowHandler#skipSaveTraceMap(String, String, Map)
      * 
      */
-    protected boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    default boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
             return true;
         } else {
@@ -354,7 +344,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @return
      * @see #saveTraceMap(String, String, Map)
      */
-    protected Map<String, Object> restoreTraceMap(String traceData) {
+    default Map<String, Object> restoreTraceMap(String traceData) {
         return WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().get(traceData);
     }
 
@@ -365,7 +355,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param traceData
      * @see #saveTraceMap(String, String, Map)
      */
-    protected void clearSavedTraceMap(String traceData) {
+    default void clearSavedTraceMap(String traceData) {
         if (StringUtils.isNotEmpty(traceData)) {
             WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().get(traceData);
         }
@@ -378,7 +368,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * 
      * @return
      */
-    protected long cachedTraceMapLivingTimeInMilliSeconds() {
+    default long cachedTraceMapLivingTimeInMilliSeconds() {
         // 30 minutes
         return 30 * 60 * 1000L;
     }
@@ -394,7 +384,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param renderTargetStep
      * @param traceMap
      */
-    protected void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    default void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
         T form = (T) traceMap.get(renderTargetStep);
         if (form == null) {
             form = (T) traceMap.get(currentStep);
@@ -432,7 +422,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
         }
     }
 
-    private void passData(WebApplicationContext context, boolean byFlash, String key, Object data) {
+    default void passData(WebApplicationContext context, boolean byFlash, String key, Object data) {
         if (byFlash) {
             RedirectUtil.addFlashScopeData(key, data);
         } else {
@@ -449,7 +439,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param result
      * @return
      */
-    protected boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
+    default boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
         return false;
     }
 
@@ -461,7 +451,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param form
      * @return
      */
-    protected CommonFormResult process(FormProcessData processData, T form) {
+    default CommonFormResult process(FormProcessData processData, T form) {
         return processValidation(processData, form);
     }
 
@@ -471,7 +461,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param form
      * @return
      */
-    protected CommonFormResult processValidation(FormProcessData processData, Object form) {
+    default CommonFormResult processValidation(FormProcessData processData, Object form) {
         List<FormValidationMessage> validationMesssages = validate(form);
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;
@@ -488,7 +478,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * 
      * @param msg
      */
-    protected void outputValidationMessage(FormValidationMessage msg) {
+    default void outputValidationMessage(FormValidationMessage msg) {
         DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + msg.getFieldName() + "-err-msg", msg.getMessage());
     }
 
@@ -499,7 +489,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * @param form
      * @return
      */
-    protected List<FormValidationMessage> validate(Object form) {
+    default List<FormValidationMessage> validate(Object form) {
         List<FormValidationMessage> validationMessages = new LinkedList<>();
 
         Set<String> fieldNameSet = new HashSet<String>();
@@ -529,7 +519,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * 
      * @return
      */
-    protected FormValidator getTypeUnMatchValidator() {
+    default FormValidator getTypeUnMatchValidator() {
         return new TypeUnMatchValidator();
     }
 
@@ -538,8 +528,7 @@ public abstract class AbstractFormFlowHandler<T> implements CascadeArrayFunction
      * 
      * @return
      */
-    protected FormValidator getValueValidator() {
+    default FormValidator getValueValidator() {
         return new JsrValidator();
     }
-
 }
