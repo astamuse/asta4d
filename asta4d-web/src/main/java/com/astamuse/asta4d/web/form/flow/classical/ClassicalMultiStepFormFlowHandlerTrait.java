@@ -28,13 +28,33 @@ import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 
+/**
+ * This trait represents a classical flow that contains input/confirm/complete steps.
+ * 
+ * <p>
+ * 
+ * By default, this trait can handle a page with classical 3 steps: input, confirm and complete. If there are more than one input step, the
+ * following methods can (for most cases, should) be overridden to customize the multiple steps:
+ * <ul>
+ * <li>{@link #firstStepName()}
+ * <li>{@link #skipSaveTraceMap(String, String, Map)}
+ * <li>{@link #passDataToSnippet(String, String, Map)}
+ * <li>{@link #generateFormInstanceFromContext(String)}
+ * <li>{@link #processValidation(FormProcessData, Object)}
+ * </ul>
+ * 
+ * Further methods can be overridden for more flexible flow definition. See details of the description of each method.
+ * 
+ * @author e-ryu
+ *
+ * @param <T>
+ */
 public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlowHandlerTrait<T> {
 
+    /**
+     * The default path var name of template files base path
+     */
     public static final String VAR_TEMPLATE_BASE_PATH = "TEMPLATE_BASE_PATH#" + ClassicalMultiStepFormFlowHandlerTrait.class;
-
-    default String getTemplateBasePath() {
-        return Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_TEMPLATE_BASE_PATH);
-    }
 
     /**
      * Sub classes must override this method to implement update logic.
@@ -43,20 +63,39 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      */
     public void updateForm(T form);
 
+    /**
+     * @see ClassicalFormFlowConstant#STEP_INPUT
+     */
     @Override
     default String firstStepName() {
         return ClassicalFormFlowConstant.STEP_INPUT;
     }
 
+    /**
+     * @see ClassicalFormFlowConstant#STEP_COMPLETE
+     */
     @Override
     default String completeStepName() {
         return ClassicalFormFlowConstant.STEP_COMPLETE;
     }
 
+    /**
+     * @see ClassicalFormFlowConstant#STEP_CONFIRM
+     */
     default String confirmStepName() {
         return ClassicalFormFlowConstant.STEP_CONFIRM;
     }
 
+    /**
+     * Default to remove saved confirm step data when back from confirm step
+     * 
+     * <p>
+     * 
+     * From parent:
+     * <p>
+     * {@inheritDoc}
+     * 
+     */
     @Override
     default boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
         // remove saved confirm step data when back from confirm step
@@ -64,7 +103,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
     }
 
     /**
-     * In the parent class {@link AbstractFormFlowHandler}'s implementation of saveTraceMap, it says that the sub class have the
+     * In the parent class {@link BasicFormFlowHandlerTrait}'s implementation of saveTraceMap, it says that the sub class have the
      * responsibility to make sure save the trace map well, thus we override it to perform the obligation.
      * 
      * The trace map will not be saved when the flowing cases:
@@ -75,6 +114,10 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      * true
      * <li>The form flow has finished and is moving to the finish step.
      * </ul>
+     * 
+     * From parent:
+     * <p>
+     * {@inheritDoc}
      * 
      * @param currentStep
      * @param renderTargetStep
@@ -91,7 +134,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
             return true;
         } else if (firstStepName().equalsIgnoreCase(renderTargetStep)) {
             // the form flow is returned to the first step
-            return skipSaveTraceMapWhenBackedFromOtherStep();
+            return skipSaveTraceMapWhenBackedToFirstStep(currentStep);
         } else if (completeStepName().equalsIgnoreCase(renderTargetStep)) {
             // the form flow finished
             return true;
@@ -104,9 +147,10 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      * For most cases, we return true by default to tell the form flow skip saving trace map when we returned to the first step in spite of
      * any other concerns.
      * 
+     * @param currentStep
      * @return
      */
-    default boolean skipSaveTraceMapWhenBackedFromOtherStep() {
+    default boolean skipSaveTraceMapWhenBackedToFirstStep(String currentStep) {
         return true;
     }
 
@@ -121,6 +165,21 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
         return false;
     }
 
+    /**
+     * By default, the returned result from parent's handle will be translated to a target template file path.
+     * 
+     * <p>
+     * 
+     * From parent:
+     * <p>
+     * {@inheritDoc}
+     * 
+     * @see #createTemplateFilePathForStep(String)
+     * @see #getTemplateBasePath()
+     * @see #createTemplateFilePath(String, String)
+     * 
+     */
+    @Override
     @RequestHandler
     default String handle() throws Exception {
         return createTemplateFilePathForStep(BasicFormFlowHandlerTrait.super.handle());
@@ -142,6 +201,24 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
         return createTemplateFilePath(getTemplateBasePath(), step);
     }
 
+    /**
+     * Sub class can override this method to return the base path of target template files. By default, it retrieves the value from pathvar
+     * scope of context by key {@link #VAR_TEMPLATE_BASE_PATH}.
+     * 
+     * @return
+     */
+    default String getTemplateBasePath() {
+        return Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR, VAR_TEMPLATE_BASE_PATH);
+    }
+
+    /**
+     * Sub class can override this method to customize how to create target template file path by given base path and step.
+     * 
+     * 
+     * @param templateBasePath
+     * @param step
+     * @return
+     */
     default String createTemplateFilePath(String templateBasePath, String step) {
         return templateBasePath + step + ".html";
     }
@@ -157,6 +234,18 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
                 completeStepName().equalsIgnoreCase(processData.getStepSuccess());
     }
 
+    /**
+     * 
+     * This method will call {@link #updateForm(Object)} when the validation is success and the
+     * {@link #doUpdateOnValidationSuccess(FormProcessData)} returns true.
+     * 
+     * <p>
+     * 
+     * From parent:
+     * <p>
+     * {@inheritDoc}
+     * 
+     */
     @Override
     default CommonFormResult process(FormProcessData processData, T form) {
         CommonFormResult result = processValidation(processData, form);
@@ -173,6 +262,17 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
         }
     }
 
+    /**
+     * This method defines the default policy of how to retrieve the form instance for current step. For confirm/complete step, we will
+     * always retrieve the form instance from the traceMap which have stored the form instance for current step at last step (when
+     * {@link #passDataToSnippet(String, String, Map)} was invoked), for other steps, the parent's implementation will be invoked.
+     * 
+     * <p>
+     * From parent:
+     * <p>
+     * {@inheritDoc}
+     * 
+     */
     @SuppressWarnings("unchecked")
     @Override
     default T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
@@ -188,6 +288,11 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      * When the form flow finished, if the complete page rendering is skipped({@link #treatCompleteStepAsExit()} returns true), we have to
      * pass data to snippet via flash scope since we have to exit the current flow and the current request will be redirect by a 302
      * response.
+     * 
+     * <p>
+     * From parent:
+     * <p>
+     * {@inheritDoc}
      * 
      * @return true when step is complete and {@link #treatCompleteStepAsExit()} returns true
      */

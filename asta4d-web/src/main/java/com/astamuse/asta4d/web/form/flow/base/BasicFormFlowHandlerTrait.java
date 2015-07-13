@@ -182,7 +182,8 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
     }
 
     /**
-     * Sub classes can override this method to customize how to retrieve the form instance by step information.
+     * Sub classes can override this method to customize how to retrieve the form instance by step information. By default, a form instance
+     * will be retrieved from context by calling {@link #generateFormInstanceFromContext(String)}.
      * 
      * @param traceMap
      * @param currentStep

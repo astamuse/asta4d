@@ -16,6 +16,13 @@
  */
 package com.astamuse.asta4d.web.form.flow.classical;
 
+/**
+ * 
+ * This trait represents the rendering way of a classical one step form flow which contains only one input step.
+ * 
+ * @author e-ryu
+ *
+ */
 public interface OneStepFormSnippetTrait extends ClassicalMultiStepFormFlowSnippetTrait {
 
 }

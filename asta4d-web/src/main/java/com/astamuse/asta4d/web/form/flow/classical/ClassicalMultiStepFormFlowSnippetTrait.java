@@ -20,8 +20,26 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowSnippetTrait;
 
+/**
+ * This trait represents the rendering way of a classical flow that contains input/confirm/complete steps.
+ * 
+ * @author e-ryu
+ *
+ */
 public interface ClassicalMultiStepFormFlowSnippetTrait extends BasicFormFlowSnippetTrait {
 
+    /**
+     * 
+     * We will treat confirm and complete step as non edit step by default.
+     * 
+     * <p>
+     * From parent:
+     * <p>
+     * {@inheritDoc}
+     * 
+     * @return true when the step is confirm/complete by default
+     * @see ClassicalMultiStepFormFlowHelper#NonEditSteps
+     */
     @Override
     default boolean renderForEdit(String step, Object form, String fieldName) {
         if (StringUtils.isEmpty(step)) {
