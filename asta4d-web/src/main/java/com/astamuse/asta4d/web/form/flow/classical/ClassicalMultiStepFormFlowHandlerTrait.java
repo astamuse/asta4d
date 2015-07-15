@@ -37,11 +37,10 @@ import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
  * By default, this trait can handle a page with classical 3 steps: input, confirm and complete. If there are more than one input step, the
  * following methods can (for most cases, should) be overridden to customize the multiple steps:
  * <ul>
- * <li>{@link #firstStepName()}
- * <li>{@link #skipSaveTraceMap(String, String, Map)}
- * <li>{@link #passDataToSnippet(String, String, Map)}
  * <li>{@link #generateFormInstanceFromContext(String)}
  * <li>{@link #processValidation(FormProcessData, Object)}
+ * <li>{@link #rewriteTraceDataBeforeGoSnippet(String, String, FormFlowTraceData)}
+ * <li>{@link #skipStoreTraceData(String, String, FormFlowTraceData)}
  * </ul>
  * 
  * Further methods can be overridden for more flexible flow definition. See details of the description of each method.
