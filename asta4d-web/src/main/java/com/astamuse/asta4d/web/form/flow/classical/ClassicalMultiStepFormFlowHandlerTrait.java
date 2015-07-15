@@ -73,18 +73,28 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
     }
 
     /**
+     * @see ClassicalFormFlowConstant#STEP_CONFIRM
+     */
+    default String confirmStepName() {
+        return ClassicalFormFlowConstant.STEP_CONFIRM;
+    }
+
+    /**
      * @see ClassicalFormFlowConstant#STEP_COMPLETE
      */
-    @Override
     default String completeStepName() {
         return ClassicalFormFlowConstant.STEP_COMPLETE;
     }
 
     /**
-     * @see ClassicalFormFlowConstant#STEP_CONFIRM
+     * Sub classes should decide whether they want to show a complete page or simply exit current flow.
+     * <p>
+     * The default is false, which means the complete page will be shown always.
+     * 
+     * @return
      */
-    default String confirmStepName() {
-        return ClassicalFormFlowConstant.STEP_CONFIRM;
+    default boolean treatCompleteStepAsExit() {
+        return false;
     }
 
     /**
@@ -96,16 +106,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      */
     default void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
-        if (confirmStepName().equals(renderTargetStep) || completeStepName().equals(renderTargetStep)) {
-            formMap.put(renderTargetStep, formMap.get(currentStep));
-        } else {
-            if (formMap.containsKey(renderTargetStep)) {
-                // do nothing
-            } else {
-                formMap.put(renderTargetStep, formMap.get(currentStep));
-            }
-        }
-
+        formMap.put(renderTargetStep, formMap.get(currentStep));
     }
 
     /**
@@ -132,43 +133,20 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      */
     @Override
     default boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
-        if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
+        if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {// init -> first
             // when the form flow start
             return true;
-        } else if (firstStepName().equalsIgnoreCase(currentStep) && currentStep.equalsIgnoreCase(renderTargetStep)) {
+        } else if (firstStepName().equalsIgnoreCase(currentStep) && currentStep.equalsIgnoreCase(renderTargetStep)) {// first -> first
             // the form flow is stopped at the first step
             return true;
-        } else if (firstStepName().equalsIgnoreCase(renderTargetStep)) {
-            // the form flow is returned to the first step
-            return skipSaveTraceMapWhenBackedToFirstStep(currentStep);
-        } else if (completeStepName().equalsIgnoreCase(renderTargetStep)) {
+        } else if (firstStepName().equalsIgnoreCase(renderTargetStep)) { // first <- ?
+            return true;
+        } else if (completeStepName().equalsIgnoreCase(renderTargetStep)) {// ? -> complete
             // the form flow finished
             return true;
         } else {
             return false;
         }
-    }
-
-    /**
-     * For most cases, we return true by default to tell the form flow skip saving trace map when we returned to the first step in spite of
-     * any other concerns.
-     * 
-     * @param currentStep
-     * @return
-     */
-    default boolean skipSaveTraceMapWhenBackedToFirstStep(String currentStep) {
-        return true;
-    }
-
-    /**
-     * Sub classes should decide whether they want to show a complete page or simply exit current flow.
-     * <p>
-     * The default is false, which means the complete page will be shown always.
-     * 
-     * @return
-     */
-    default boolean treatCompleteStepAsExit() {
-        return false;
     }
 
     /**

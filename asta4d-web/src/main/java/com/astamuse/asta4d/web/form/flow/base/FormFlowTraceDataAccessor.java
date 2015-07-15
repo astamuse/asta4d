@@ -8,6 +8,12 @@ import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.util.SecureIdGenerator;
 
+/**
+ * This interface holds the functionalities about trace data persisting.
+ * 
+ * @author e-ryu
+ *
+ */
 public interface FormFlowTraceDataAccessor {
 
     default FormFlowTraceData createEmptyTraceData() {

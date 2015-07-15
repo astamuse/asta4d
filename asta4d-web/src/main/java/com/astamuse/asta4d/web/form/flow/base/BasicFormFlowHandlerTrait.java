@@ -66,14 +66,6 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
     public String firstStepName();
 
     /**
-     * Sub classes must tell us whether the name of complete step which means to finish current flow
-     * 
-     * @param step
-     * @return
-     */
-    public String completeStepName();
-
-    /**
      * Sub classes could override this method to create the initial form data(eg. query from db)
      * 
      * @return
@@ -110,10 +102,16 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
      * <li>retrieve instance of {@link FormProcessData} from context.
      * <li>restore the trace data map which contains all the data in each step
      * <li>retrieve instance of target form data which type is specified by {@link #getFormCls()}
-     * <li>if the target step is not back to previous, call {@link #process(FormProcessData, Object)} method to process the retrieved form
-     * data, currently in the process method, only {@link #processValidation(FormProcessData, Object)} is invoked to perform validation.
+     * <li>if the current step is before first, set the render target step by {@link #firstStepName()}
+     * <li>if the back step is not empty, then set the back step name to render target step
+     * <li>else call {@link #process(FormProcessData, Object)} method to process the retrieved form data, currently in the process method,
+     * only {@link #processValidation(FormProcessData, Object)} is invoked to perform validation.
+     * <li>call {@link #rewriteTraceDataBeforeGoSnippet(String, String, FormFlowTraceData)} to rewrite trace data
+     * <li>if {@link #skipStoreTraceData(String, String, FormFlowTraceData)} returns true, call {@link #clearStoredTraceData(String)} to
+     * clear stored trace data, or call {@link #storeTraceData(String, String, String, FormFlowTraceData)} to store the trace data for next
+     * step process
      * <li>call {@link #passDataToSnippet(String, String, Map)} to store all the retrieved and processed data for page rendering
-     * <li>
+     * <li>return the render target step name
      * </ol>
      * 
      * Sub classes could override this method to translate the returned target step to the actual render target template file path.
@@ -180,7 +178,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
         }
 
         rewriteTraceDataBeforeGoSnippet(currentStep, renderTargetStep, traceData);
-        if (completeStepName().equalsIgnoreCase(renderTargetStep) || skipStoreTraceData(currentStep, renderTargetStep, traceData)) {
+        if (skipStoreTraceData(currentStep, renderTargetStep, traceData)) {
             clearStoredTraceData(traceId);
             traceId = "";
         } else {
@@ -192,6 +190,11 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
 
     }
 
+    /**
+     * Whether the form flow should be exit when the target trace data is not found. The default is true.
+     * 
+     * @return
+     */
     default boolean exitWhenTraceDataMissing() {
         return true;
     }

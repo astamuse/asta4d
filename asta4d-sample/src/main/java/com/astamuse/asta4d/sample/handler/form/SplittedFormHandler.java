@@ -51,23 +51,20 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
 
     @Override
     public boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
-        // we will always save trace map when we go to the first step because we need to retrieve the init form later.
-        if (inputStep1Name().equalsIgnoreCase(renderTargetStep)) {
-            return false;
-        } else {
-            return super.skipStoreTraceData(currentStep, renderTargetStep, traceData);
-        }
+        // we will always save trace data when we start the flow because we need to retrieve the init form later.
+        return completeStepName().equalsIgnoreCase(renderTargetStep);
     }
 
     @Override
     public void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
-        if (inputStep2Name().equalsIgnoreCase(renderTargetStep)) {
-            /* 
-            * for the first input step, the initial form will be used by default, but for the second input step, we must store the initial 
-            * data by ourselves, which is why we force to save trace map data when we go to the first step(from the before first step at 
-            * when we retrieved the initial form from db)
-            */
+        if (inputStep1Name().equalsIgnoreCase(renderTargetStep) || inputStep2Name().equalsIgnoreCase(renderTargetStep)) {
+            /*
+             * we need to set the form data by the stored before first step data for each step when the form data is not set, 
+             * otherwise we use the existing form data.
+             * 
+             * we forced to store the before first step data by return false at the method of skipStoreTraceData.
+             */
             SplittedForm savedForm = (SplittedForm) formMap.get(renderTargetStep);
             if (savedForm == null) {
                 SplittedForm initForm = (SplittedForm) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
@@ -87,7 +84,7 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
 
             formMap.put(confirmStepName(), confirmForm);
         } else {
-            super.rewriteTraceDataBeforeGoSnippet(currentStep, renderTargetStep, traceData);
+            formMap.put(renderTargetStep, formMap.get(currentStep));
         }
 
     }

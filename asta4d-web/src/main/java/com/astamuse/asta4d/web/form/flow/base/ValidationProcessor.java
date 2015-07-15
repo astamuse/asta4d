@@ -11,6 +11,12 @@ import com.astamuse.asta4d.web.form.validation.JsrValidator;
 import com.astamuse.asta4d.web.form.validation.TypeUnMatchValidator;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
+/**
+ * This interface holds the functionalities of how to perform validation.
+ * 
+ * @author e-ryu
+ *
+ */
 public interface ValidationProcessor {
     /**
      * Sub classes can override this method to customize how to handle the validation result
