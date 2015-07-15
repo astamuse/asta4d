@@ -32,9 +32,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.web.WebApplicationContext;
 
-public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager {
+public class DefaultSessionAwareExpirableDataManager implements ExpirableDataManager {
 
-    private static final String CheckSessionIdKey = DefaultSessionAwareTimeoutDataManager.class + "#CheckSessionIdKey";
+    private static final String CheckSessionIdKey = DefaultSessionAwareExpirableDataManager.class + "#CheckSessionIdKey";
 
     private ConcurrentHashMap<String, DataHolder> dataMap = null;
 
@@ -56,7 +56,7 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
 
     private String checkThreadName = this.getClass().getSimpleName() + "-check-thread";
 
-    public DefaultSessionAwareTimeoutDataManager() {
+    public DefaultSessionAwareExpirableDataManager() {
 
     }
 
@@ -124,15 +124,32 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T get(String dataId) {
-        DataHolder holder = dataMap.remove(dataId);
+    public <T> T get(String dataId, boolean remove) {
+        DataHolder holder;
+        if (remove) {
+            holder = dataMap.remove(dataId);
+            if (holder != null) {
+                dataCounter.decrementAndGet();
+                if (holder.isExpired(System.currentTimeMillis())) {
+                    holder = null;
+                }
+            }
+        } else {
+            holder = dataMap.get(dataId);
+            if (holder != null) {
+                if (holder.isExpired(System.currentTimeMillis())) {
+                    holder = dataMap.remove(dataId);
+                    if (holder != null) {
+                        dataCounter.decrementAndGet();
+                        holder = null;
+                    }
+                }
+            }
+        }
         if (holder == null) {
             return null;
         } else {
-            dataCounter.decrementAndGet();
-            if (holder.isExpired(System.currentTimeMillis())) {
-                return null;
-            } else if (StringUtils.equals(retrieveSessionId(false), holder.sessionId)) {
+            if (StringUtils.equals(retrieveSessionId(false), holder.sessionId)) {
                 return (T) holder.getData();
             } else {
                 return null;
@@ -158,7 +175,7 @@ public class DefaultSessionAwareTimeoutDataManager implements TimeoutDataManager
                 throw new RuntimeException(e);
             }
         }
-        Object existing = dataMap.putIfAbsent(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
+        Object existing = dataMap.put(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
         if (existing == null) {
             dataCounter.incrementAndGet();
         }

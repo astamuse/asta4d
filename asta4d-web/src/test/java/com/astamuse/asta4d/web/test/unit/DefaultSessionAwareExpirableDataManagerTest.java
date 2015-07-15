@@ -19,13 +19,13 @@ package com.astamuse.asta4d.web.test.unit;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareTimeoutDataManager;
+import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareExpirableDataManager;
 import com.astamuse.asta4d.web.util.timeout.TooManyDataException;
 
 @Test
-public class DefaultSessionAwaretimeoutDataManagerTest {
+public class DefaultSessionAwareExpirableDataManagerTest {
 
-    private static class MockedSessionIdManager extends DefaultSessionAwareTimeoutDataManager {
+    private static class MockedSessionIdManager extends DefaultSessionAwareExpirableDataManager {
 
         String mockedSessionId = null;
 
@@ -44,9 +44,9 @@ public class DefaultSessionAwaretimeoutDataManagerTest {
         Object data = new Object();
         manager.put("d1", data, 1000 * 1000);// would never timeout in this test
 
-        Assert.assertSame(manager.get("d1"), data);
+        Assert.assertSame(manager.get("d1", true), data);
         // could not retrieve it any more
-        Assert.assertNull(manager.get("d1"));
+        Assert.assertNull(manager.get("d1", true));
 
         manager.stop();
 
@@ -62,11 +62,11 @@ public class DefaultSessionAwaretimeoutDataManagerTest {
 
         manager.mockedSessionId = "s2";
         // could not retrieve it
-        Assert.assertNull(manager.get("d1"));
+        Assert.assertNull(manager.get("d1", true));
 
         manager.mockedSessionId = "s1";
         // since the data has been retrieved once by wrong session id, the data would not exist anymore
-        Assert.assertNull(manager.get("d1"));
+        Assert.assertNull(manager.get("d1", true));
 
         manager.stop();
 
@@ -84,7 +84,7 @@ public class DefaultSessionAwaretimeoutDataManagerTest {
 
         // could not retrieve it any more after 200 ms sleep
         Thread.sleep(200);
-        Assert.assertNull(manager.get("d1"));
+        Assert.assertNull(manager.get("d1", true));
 
         manager.stop();
 
@@ -123,7 +123,10 @@ public class DefaultSessionAwaretimeoutDataManagerTest {
             manager.put("d1", data, 100);// would be timeout
             manager.put("d2", data2, 1000 * 1000);// would never be timeout in this test
 
-            Assert.assertSame(manager.get("d2"), data2);
+            Assert.assertSame(manager.get("d2", false), data2);
+            Assert.assertSame(manager.get("d2", false), data2);
+            Assert.assertSame(manager.get("d2", true), data2);
+            Assert.assertNull(manager.get("d2", true));
         } finally {
             manager.stop();
         }

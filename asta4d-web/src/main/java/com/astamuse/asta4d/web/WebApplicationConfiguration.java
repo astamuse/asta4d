@@ -32,14 +32,14 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
-import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareTimeoutDataManager;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManager;
+import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareExpirableDataManager;
+import com.astamuse.asta4d.web.util.timeout.ExpirableDataManager;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
 
-    private TimeoutDataManager timeoutDataManager = new DefaultSessionAwareTimeoutDataManager();
+    private ExpirableDataManager expirableDataManager = new DefaultSessionAwareExpirableDataManager();
 
     private MessageRenderingHelper messageRenderingHelper = new DefaultMessageRenderingHelper();
 
@@ -100,12 +100,12 @@ public class WebApplicationConfiguration extends Configuration {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
     }
 
-    public TimeoutDataManager getTimeoutDataManager() {
-        return timeoutDataManager;
+    public ExpirableDataManager getExpirableDataManager() {
+        return expirableDataManager;
     }
 
-    public void setTimeoutDataManager(TimeoutDataManager timeoutDataManager) {
-        this.timeoutDataManager = timeoutDataManager;
+    public void setExpirableDataManager(ExpirableDataManager expirableDataManager) {
+        this.expirableDataManager = expirableDataManager;
     }
 
     public MessageRenderingHelper getMessageRenderingHelper() {

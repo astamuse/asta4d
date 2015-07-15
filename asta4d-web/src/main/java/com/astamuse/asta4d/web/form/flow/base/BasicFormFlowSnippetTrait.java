@@ -63,7 +63,7 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
      * @throws Exception
      */
     default Renderer render(FormRenderingData renderingData) throws Exception {
-        Renderer renderer = renderTraceMapData(renderingData);
+        Renderer renderer = renderTraceId(renderingData.getTraceId());
         Object form = retrieveRenderTargetForm(renderingData);
         renderer.add(renderForm(renderingData.getRenderTargetStep(), form, EMPTY_INDEXES));
         Element clientJs = retrieveClientCascadeUtilJsContent();
@@ -80,18 +80,17 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
      * 
      * @return
      */
-    default Renderer renderTraceMapData(FormRenderingData renderingData) {
-        String formTraceMapStr = renderingData.getTraceMapStr();
-        if (StringUtils.isEmpty(formTraceMapStr)) {
+    default Renderer renderTraceId(String traceId) {
+        if (StringUtils.isEmpty(traceId)) {
             return Renderer.create();
         } else {
             return Renderer.create(":root", new ElementSetter() {
                 @Override
                 public void set(Element elem) {
                     Element hide = new Element(Tag.valueOf("input"), "");
-                    hide.attr("name", FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
+                    hide.attr("name", FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM);
                     hide.attr("type", "hidden");
-                    hide.attr("value", formTraceMapStr);
+                    hide.attr("value", traceId);
                     elem.appendChild(hide);
                 }
             });
@@ -99,7 +98,7 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
     }
 
     default Object retrieveRenderTargetForm(FormRenderingData renderingData) {
-        return renderingData.getTraceMap().get(renderingData.getRenderTargetStep());
+        return renderingData.getTraceData().getStepFormMap().get(renderingData.getRenderTargetStep());
     }
 
     /**
@@ -123,16 +122,16 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
         List<FormFieldPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldPrepareRenderers(renderTargetStep, form);
 
         for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this, formFieldDataPrepareRenderer.targetField(),
-                    indexes);
+            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this,
+                    formFieldDataPrepareRenderer.targetField(), indexes);
             render.add(formFieldDataPrepareRenderer.preRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
         render.add(renderValueOfFields(renderTargetStep, form, indexes));
 
         for (FormFieldPrepareRenderer formFieldDataPrepareRenderer : fieldDataPrepareRendererList) {
-            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this, formFieldDataPrepareRenderer.targetField(),
-                    indexes);
+            BasicFormFlowTraitHelper.FieldRenderingInfo renderingInfo = BasicFormFlowTraitHelper.getRenderingInfo(this,
+                    formFieldDataPrepareRenderer.targetField(), indexes);
             render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 

@@ -38,14 +38,14 @@ public interface ClassicalMultiStepFormFlowSnippetTrait extends BasicFormFlowSni
      * {@inheritDoc}
      * 
      * @return true when the step is confirm/complete by default
-     * @see ClassicalMultiStepFormFlowHelper#NonEditSteps
+     * @see ClassicalMultiStepFormFlowTraitHelper#NonEditSteps
      */
     @Override
     default boolean renderForEdit(String step, Object form, String fieldName) {
         if (StringUtils.isEmpty(step)) {
             return true;
         } else {
-            return !ClassicalMultiStepFormFlowHelper.NonEditSteps.contains(step.toLowerCase());
+            return !ClassicalMultiStepFormFlowTraitHelper.NonEditSteps.contains(step.toLowerCase());
         }
     }
 }

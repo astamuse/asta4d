@@ -16,6 +16,9 @@
  */
 package com.astamuse.asta4d.web.form.flow.classical;
 
+import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
+
 /**
  * 
  * This trait represents the rendering way of a classical one step form flow which contains only one input step.
@@ -24,5 +27,9 @@ package com.astamuse.asta4d.web.form.flow.classical;
  *
  */
 public interface OneStepFormSnippetTrait extends ClassicalMultiStepFormFlowSnippetTrait {
+
+    default Renderer renderTraceData(FormFlowTraceData traceData) {
+        return Renderer.create();
+    }
 
 }

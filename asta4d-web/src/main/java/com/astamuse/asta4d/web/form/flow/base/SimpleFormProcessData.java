@@ -37,8 +37,8 @@ public class SimpleFormProcessData implements FormProcessData {
     @QueryParam(name = "step-back")
     private String stepBack;
 
-    @QueryParam(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR)
-    private String stepTraceData;
+    @QueryParam(name = FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM)
+    private String flowTraceId;
 
     public SimpleFormProcessData() {
     }
@@ -59,8 +59,8 @@ public class SimpleFormProcessData implements FormProcessData {
         return stepBack;
     }
 
-    public String getStepTraceData() {
-        return stepTraceData;
+    public String getFlowTraceId() {
+        return flowTraceId;
     }
 
     @Override

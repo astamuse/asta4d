@@ -17,12 +17,8 @@
 package com.astamuse.asta4d.web.form.flow.base;
 
 import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,21 +28,22 @@ import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
-import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
-import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
-import com.astamuse.asta4d.web.form.validation.FormValidator;
-import com.astamuse.asta4d.web.form.validation.JsrValidator;
-import com.astamuse.asta4d.web.form.validation.TypeUnMatchValidator;
-import com.astamuse.asta4d.web.util.SecureIdGenerator;
-import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
+/**
+ * The basic mechanism of form flow. This interface is implemented as a template which allows developer to override any method for
+ * customization. See details at {@link #handle()}.
+ * 
+ * @author e-ryu
+ *
+ * @param <T>
+ */
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
+public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, FormFlowTraceDataAccessor, ValidationProcessor {
 
     public static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#" + BasicFormFlowHandlerTrait.class.getName();
 
@@ -107,6 +104,18 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
     }
 
     /**
+     * 
+     * This method implement the basic mechanism which performs following things:
+     * <ol>
+     * <li>retrieve instance of {@link FormProcessData} from context.
+     * <li>restore the trace data map which contains all the data in each step
+     * <li>retrieve instance of target form data which type is specified by {@link #getFormCls()}
+     * <li>if the target step is not back to previous, call {@link #process(FormProcessData, Object)} method to process the retrieved form
+     * data, currently in the process method, only {@link #processValidation(FormProcessData, Object)} is invoked to perform validation.
+     * <li>call {@link #passDataToSnippet(String, String, Map)} to store all the retrieved and processed data for page rendering
+     * <li>
+     * </ol>
+     * 
      * Sub classes could override this method to translate the returned target step to the actual render target template file path.
      * 
      * @return the render target step name
@@ -114,27 +123,34 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
      */
     default String handle() throws Exception {
         FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(getFormProcessDataCls(),
-                "not-exist-IntelligentFormProcessData", "");
+                "not-exist-formProcessData", "");
 
-        String traceData = processData.getStepTraceData();
+        String traceId = processData.getFlowTraceId();
 
+        // clear trace data when exit
         if (processData.getStepExit() != null) {
-            clearSavedTraceMap(traceData);
+            clearStoredTraceData(traceId);
             return null;
         }
 
-        Map<String, Object> traceMap;
+        String currentStep = processData.getStepCurrent();
 
-        if (StringUtils.isEmpty(traceData)) {
-            traceMap = new HashMap<>();
+        FormFlowTraceData traceData;
+        if (StringUtils.isEmpty(traceId)) {
+            traceData = createEmptyTraceData();
         } else {
-            traceMap = restoreTraceMap(traceData);
-            if (traceMap == null) {
-                traceMap = new HashMap<>();
+            traceData = retrieveTraceData(traceId);
+            if (traceData == null) {
+                if (exitWhenTraceDataMissing()) {
+                    return null;
+                } else {
+                    traceId = "";
+                    traceData = createEmptyTraceData();
+                    currentStep = null;
+                }
             }
         }
 
-        String currentStep = processData.getStepCurrent();
         // the first time access without existing input data or saved tracemap could not be retrieved(usually due to timeout)
         if (currentStep == null) {
             currentStep = FormFlowConstants.FORM_STEP_BEFORE_FIRST;
@@ -142,43 +158,54 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
             Context.getCurrentThreadContext().setData(FORM_PRE_DEFINED, createInitForm());
         }
 
-        T form = retrieveFormInstance(traceMap, currentStep);
-
-        traceMap.put(currentStep, form);
+        T form = retrieveFormInstance(traceData, currentStep);
+        traceData.getStepFormMap().put(currentStep, form);
 
         String renderTargetStep = null;
         CommonFormResult formResult = null;
 
-        if (processData.getStepBack() != null) {
+        if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
+            renderTargetStep = firstStepName();
+        } else if (processData.getStepBack() != null) {
             renderTargetStep = processData.getStepBack();
-            if (removeCurrentStepDataFromTraceMapWhenStepBack(currentStep, renderTargetStep)) {
-                traceMap.remove(currentStep);
-            }
-            passDataToSnippet(currentStep, renderTargetStep, traceMap);
         } else {
-            if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
-                renderTargetStep = firstStepName();
+            // since the init step will not enter this branch, so the sub classes which override the process method could retrieve
+            // current step without any concern about null pointer exception.
+            formResult = process(processData, form);
+            if (formResult == CommonFormResult.SUCCESS) {
+                renderTargetStep = processData.getStepSuccess();
             } else {
-                // since the init step will not enter this branch, so the sub classes which override the process method could retrieve
-                // current step without any concern about null pointer exception.
-                formResult = process(processData, form);
-                if (formResult == CommonFormResult.SUCCESS) {
-                    renderTargetStep = processData.getStepSuccess();
-                } else {
-                    renderTargetStep = processData.getStepFailed();
-                }
+                renderTargetStep = processData.getStepFailed();
             }
-            passDataToSnippet(currentStep, renderTargetStep, traceMap);
         }
 
-        if (completeStepName().equalsIgnoreCase(renderTargetStep)) {
-            WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
-            String newTraceData = context.getData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR);
-            clearSavedTraceMap(newTraceData);
+        rewriteTraceDataBeforeGoSnippet(currentStep, renderTargetStep, traceData);
+        if (completeStepName().equalsIgnoreCase(renderTargetStep) || skipStoreTraceData(currentStep, renderTargetStep, traceData)) {
+            clearStoredTraceData(traceId);
+            traceId = "";
+        } else {
+            traceId = storeTraceData(currentStep, renderTargetStep, traceId, traceData);
         }
+        passDataToSnippet(currentStep, renderTargetStep, traceId, traceData);
 
         return renderTargetStep;
 
+    }
+
+    default boolean exitWhenTraceDataMissing() {
+        return true;
+    }
+
+    /**
+     * The default process will only call the {@link #processValidation(Object)} and sub classes can override this method to add extra
+     * process logics such as updating form when validation succeeds.
+     * 
+     * @param processData
+     * @param form
+     * @return
+     */
+    default CommonFormResult process(FormProcessData processData, T form) {
+        return processValidation(processData, form);
     }
 
     /**
@@ -189,7 +216,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
      * @param currentStep
      * @return
      */
-    default T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
+    default T retrieveFormInstance(FormFlowTraceData traceData, String currentStep) {
         // The subclass may override this method to retrieving form instance by various ways but we will always generate an instance from
         // the context since we have no idea about the concrete logic of sub classes.
         return generateFormInstanceFromContext(currentStep);
@@ -288,90 +315,15 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
     }
 
     /**
-     * <b>Note</b>: In fact, we should not save the trace map when some steps such as init step to avoid unnecessary memory usage, thus we
-     * call the {@link #skipSaveTraceMap(String, String, Map)} to decide save or not.
-     * 
-     * In other words ,the sub class have the responsibility to tell us save or not by overriding the method
-     * {@link #skipSaveTraceMap(String, String, Map)}.
+     * Always override render target step form data by current step form data
      * 
      * @param currentStep
      * @param renderTargetStep
-     * @param traceMap
-     * @return
-     */
-    default String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        if (skipSaveTraceMap(currentStep, renderTargetStep, traceMap)) {
-            return "";
-        } else {
-            String id = SecureIdGenerator.createEncryptedURLSafeId();
-            WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
-                    .put(id, traceMap, cachedTraceMapLivingTimeInMilliSeconds());
-            return id;
-        }
-    }
-
-    /**
-     * The sub classes could tell us whether we should remove the current step data from trace map when we back to the previous step. By
-     * default, it returns true always.
-     * 
-     * @param currentStep
-     * @param renderTargetStep
-     * @return
-     */
-    default boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
-        return true;
-    }
-
-    /**
-     * Since we are lacking of necessary step information to judge if we should save or not, we only do the basic judgment for the init
-     * step. The sub class have the responsibility to handle other cases.
-     * 
-     * @see MultiStepFormFlowHandler#skipSaveTraceMap(String, String, Map)
-     * 
-     */
-    default boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * 
-     * retrieve the stored trace map.
-     * 
      * @param traceData
-     * @return
-     * @see #saveTraceMap(String, String, Map)
      */
-    default Map<String, Object> restoreTraceMap(String traceData) {
-        return WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().get(traceData);
-    }
-
-    /**
-     * 
-     * clear the stored trace map.
-     * 
-     * @param traceData
-     * @see #saveTraceMap(String, String, Map)
-     */
-    default void clearSavedTraceMap(String traceData) {
-        if (StringUtils.isNotEmpty(traceData)) {
-            WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager().get(traceData);
-        }
-    }
-
-    /**
-     * Sub classes can override this method to customize how long the form flow trace data will keep alive.
-     * <p>
-     * The default value is 30 minutes.
-     * 
-     * @return
-     */
-    default long cachedTraceMapLivingTimeInMilliSeconds() {
-        // 30 minutes
-        return 30 * 60 * 1000L;
+    default void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
+        Map<String, Object> formMap = traceData.getStepFormMap();
+        formMap.put(renderTargetStep, formMap.get(currentStep));
     }
 
     /**
@@ -385,20 +337,13 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
      * @param renderTargetStep
      * @param traceMap
      */
-    default void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-        T form = (T) traceMap.get(renderTargetStep);
-        if (form == null) {
-            form = (T) traceMap.get(currentStep);
-            traceMap.put(renderTargetStep, form);
-        }
+    default void passDataToSnippet(String currentStep, String renderTargetStep, String traceId, FormFlowTraceData traceData) {
         WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
 
-        boolean byFlash = passDataToSnippetByFlash(currentStep, renderTargetStep, form);
+        boolean byFlash = passDataToSnippetByFlash(currentStep, renderTargetStep, traceData);
 
-        String traceData = saveTraceMap(currentStep, renderTargetStep, traceMap);
-
-        passData(context, byFlash, FormFlowConstants.FORM_STEP_TRACE_MAP, traceMap);
-        passData(context, byFlash, FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
+        passData(context, byFlash, FormFlowConstants.FORM_FLOW_TRACE_ID, traceId);
+        passData(context, byFlash, FormFlowConstants.FORM_FLOW_TRACE_DATA, traceData);
         passData(context, byFlash, FormFlowConstants.FORM_STEP_RENDER_TARGET, renderTargetStep);
 
         if (byFlash) {
@@ -417,9 +362,6 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
 
                 }
             });
-
-            // used by clearSavedTraceMap
-            context.setData(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, traceData);
         }
     }
 
@@ -440,96 +382,8 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions {
      * @param result
      * @return
      */
-    default boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
+    default boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         return false;
     }
 
-    /**
-     * The default process will only call the {@link #processValidation(Object)} and sub classes can override this method to add extra
-     * process logics such as updating form when validation succeeds.
-     * 
-     * @param processData
-     * @param form
-     * @return
-     */
-    default CommonFormResult process(FormProcessData processData, T form) {
-        return processValidation(processData, form);
-    }
-
-    /**
-     * Sub classes can override this method to customize how to handle the validation result
-     * 
-     * @param form
-     * @return
-     */
-    default CommonFormResult processValidation(FormProcessData processData, Object form) {
-        List<FormValidationMessage> validationMesssages = validate(form);
-        if (validationMesssages.isEmpty()) {
-            return CommonFormResult.SUCCESS;
-        } else {
-            for (FormValidationMessage msg : validationMesssages) {
-                outputValidationMessage(msg);
-            }
-            return CommonFormResult.FAILED;
-        }
-    }
-
-    /**
-     * Sub classes can override this method to customize how to output validation messages
-     * 
-     * @param msg
-     */
-    default void outputValidationMessage(FormValidationMessage msg) {
-        DefaultMessageRenderingHelper.getConfiguredInstance().err("#" + msg.getFieldName() + "-err-msg", msg.getMessage());
-    }
-
-    /**
-     * 
-     * Sub classes can override this method to supply customized validation mechanism.
-     * 
-     * @param form
-     * @return
-     */
-    default List<FormValidationMessage> validate(Object form) {
-        List<FormValidationMessage> validationMessages = new LinkedList<>();
-
-        Set<String> fieldNameSet = new HashSet<String>();
-
-        List<FormValidationMessage> typeMessages = getTypeUnMatchValidator().validate(form);
-        for (FormValidationMessage message : typeMessages) {
-            validationMessages.add(message);
-            fieldNameSet.add(message.getFieldName());
-        }
-
-        List<FormValidationMessage> valueMessages = getValueValidator().validate(form);
-
-        // there may be a not null/empty value validation error for the fields which has been validated as type unmatch, we simply remove
-        // them.
-
-        for (FormValidationMessage message : valueMessages) {
-            if (!fieldNameSet.contains(message.getFieldName())) {
-                validationMessages.add(message);
-            }
-        }
-
-        return validationMessages;
-    }
-
-    /**
-     * Sub classes can override this method to supply a customized type unmatch validator
-     * 
-     * @return
-     */
-    default FormValidator getTypeUnMatchValidator() {
-        return new TypeUnMatchValidator();
-    }
-
-    /**
-     * Sub classes can override this method to supply a customized value validator
-     * 
-     * @return
-     */
-    default FormValidator getValueValidator() {
-        return new JsrValidator();
-    }
 }

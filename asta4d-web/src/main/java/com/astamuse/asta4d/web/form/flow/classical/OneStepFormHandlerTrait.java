@@ -16,9 +16,8 @@
  */
 package com.astamuse.asta4d.web.form.flow.classical;
 
-import java.util.Map;
-
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowHandlerTrait;
+import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 
 /**
@@ -65,8 +64,18 @@ public interface OneStepFormHandlerTrait<T> extends ClassicalMultiStepFormFlowHa
      * @param traceMap
      * @return
      */
-    default boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    default boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         return true;
+    }
+
+    @Override
+    default void clearStoredTraceData(String traceId) {
+        // do nothing
+    }
+
+    @Override
+    default FormFlowTraceData retrieveTraceData(String traceId) {
+        return null;
     }
 
     /**

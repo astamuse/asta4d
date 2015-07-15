@@ -26,6 +26,7 @@ import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
+import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 
 /**
@@ -87,19 +88,24 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
     }
 
     /**
-     * Default to remove saved confirm step data when back from confirm step
+     * Always override render target step form data by current step form data
      * 
-     * <p>
-     * 
-     * From parent:
-     * <p>
-     * {@inheritDoc}
-     * 
+     * @param currentStep
+     * @param renderTargetStep
+     * @param traceData
      */
-    @Override
-    default boolean removeCurrentStepDataFromTraceMapWhenStepBack(String currentStep, String renderTargetStep) {
-        // remove saved confirm step data when back from confirm step
-        return confirmStepName().equalsIgnoreCase(currentStep);
+    default void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
+        Map<String, Object> formMap = traceData.getStepFormMap();
+        if (confirmStepName().equals(renderTargetStep) || completeStepName().equals(renderTargetStep)) {
+            formMap.put(renderTargetStep, formMap.get(currentStep));
+        } else {
+            if (formMap.containsKey(renderTargetStep)) {
+                // do nothing
+            } else {
+                formMap.put(renderTargetStep, formMap.get(currentStep));
+            }
+        }
+
     }
 
     /**
@@ -125,7 +131,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      * @return
      */
     @Override
-    default boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    default boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         if (FormFlowConstants.FORM_STEP_BEFORE_FIRST.equals(currentStep)) {
             // when the form flow start
             return true;
@@ -275,12 +281,12 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      */
     @SuppressWarnings("unchecked")
     @Override
-    default T retrieveFormInstance(Map<String, Object> traceMap, String currentStep) {
+    default T retrieveFormInstance(FormFlowTraceData traceData, String currentStep) {
         // for confirm and complete step, the form saved at last step would be used.
         if (confirmStepName().equalsIgnoreCase(currentStep) || completeStepName().equalsIgnoreCase(currentStep)) {
-            return (T) traceMap.get(currentStep);
+            return (T) traceData.getStepFormMap().get(currentStep);
         } else {
-            return BasicFormFlowHandlerTrait.super.retrieveFormInstance(traceMap, currentStep);
+            return BasicFormFlowHandlerTrait.super.retrieveFormInstance(traceData, currentStep);
         }
     }
 
@@ -297,7 +303,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      * @return true when step is complete and {@link #treatCompleteStepAsExit()} returns true
      */
     @Override
-    default boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, T form) {
+    default boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         return completeStepName().equals(renderTargetStep) && treatCompleteStepAsExit();
     }
 }

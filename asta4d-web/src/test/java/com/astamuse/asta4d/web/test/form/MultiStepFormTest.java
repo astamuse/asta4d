@@ -39,6 +39,7 @@ import org.testng.annotations.Test;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
+import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowSnippetTrait;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
@@ -48,7 +49,7 @@ public class MultiStepFormTest extends WebTestBase {
 
     private static final String FAKE_TRACE_MAP_ID = "FAKE_TRACE_MAP_ID";
 
-    private static Map<String, Object> savedTraceMap = null;
+    private static FormFlowTraceData savedTraceData = null;
 
     private static TestForm savedForm = null;
 
@@ -83,19 +84,19 @@ public class MultiStepFormTest extends WebTestBase {
         }
 
         @Override
-        public String saveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
-            savedTraceMap = traceMap;
+        public String storeTraceData(String currentStep, String renderTargetStep, String traceId, FormFlowTraceData traceData) {
+            savedTraceData = traceData;
             return FAKE_TRACE_MAP_ID;
         }
 
         @Override
-        public Map<String, Object> restoreTraceMap(String data) {
-            return savedTraceMap;
+        public FormFlowTraceData retrieveTraceData(String traceId) {
+            return savedTraceData;
         }
 
         @Override
-        public void clearSavedTraceMap(String traceData) {
-            savedTraceMap = null;
+        public void clearStoredTraceData(String traceId) {
+            savedTraceData = null;
         }
 
         @Override
@@ -265,7 +266,6 @@ public class MultiStepFormTest extends WebTestBase {
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "confirm" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -309,7 +309,6 @@ public class MultiStepFormTest extends WebTestBase {
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "confirm" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -360,7 +359,6 @@ public class MultiStepFormTest extends WebTestBase {
             put("step-current", new String[] { "input" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "confirm" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -411,7 +409,7 @@ public class MultiStepFormTest extends WebTestBase {
 
         Assert.assertNull(handler.handle());
         Assert.assertNull(savedForm);
-        Assert.assertNull(savedTraceMap);
+        Assert.assertNull(savedTraceData);
         handler.assertMessageSize(0);
     }
 
@@ -430,7 +428,7 @@ public class MultiStepFormTest extends WebTestBase {
             put("step-current", new String[] { "confirm" });
             put("step-failed", new String[] { "input" });
             put("step-back", new String[] { "input" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
+            put(FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -465,7 +463,7 @@ public class MultiStepFormTest extends WebTestBase {
             put("step-current", new String[] { "confirm" });
             put("step-failed", new String[] { "input" });
             put("step-success", new String[] { "complete" });
-            put(FormFlowConstants.FORM_STEP_TRACE_MAP_STR, new String[] { FAKE_TRACE_MAP_ID });
+            put(FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM, new String[] { FAKE_TRACE_MAP_ID });
         }
     };
 
@@ -478,7 +476,7 @@ public class MultiStepFormTest extends WebTestBase {
 
         Assert.assertEquals(handler.handle(), "/testform/complete.html");
 
-        Assert.assertNull(savedTraceMap);
+        Assert.assertNull(savedTraceData);
 
         handler.assertMessageSize(0);
 
@@ -492,8 +490,8 @@ public class MultiStepFormTest extends WebTestBase {
         Assert.assertEquals(savedForm.subArray2[0].age.intValue(), 88);
 
         // should be same as confirm
-        new FormRenderCase("MultiStepForm_goToConfirm.html");
+        new FormRenderCase("MultiStepForm_complete.html");
 
-        new FormRenderCase("MultiStepForm_goToConfirm_withDisplay.html");
+        new FormRenderCase("MultiStepForm_complete_withDisplay.html");
     }
 }

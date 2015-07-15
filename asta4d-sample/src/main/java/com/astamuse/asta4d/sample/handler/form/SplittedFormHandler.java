@@ -33,8 +33,8 @@ import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
+import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
-import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showSplittedFormHandlerStart
@@ -50,44 +50,46 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
     }
 
     @Override
-    public boolean skipSaveTraceMap(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    public boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         // we will always save trace map when we go to the first step because we need to retrieve the init form later.
         if (inputStep1Name().equalsIgnoreCase(renderTargetStep)) {
             return false;
         } else {
-            return super.skipSaveTraceMap(currentStep, renderTargetStep, traceMap);
+            return super.skipStoreTraceData(currentStep, renderTargetStep, traceData);
         }
     }
 
     @Override
-    public void passDataToSnippet(String currentStep, String renderTargetStep, Map<String, Object> traceMap) {
+    public void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
+        Map<String, Object> formMap = traceData.getStepFormMap();
         if (inputStep2Name().equalsIgnoreCase(renderTargetStep)) {
             /* 
-             * for the first input step, the initial form will be used by default, but for the second input step, we must store the initial 
-             * data by ourselves, which is why we force to save trace map data when we go to the first step(from the before first step at 
-             * when we retrieved the initial form from db)
-             */
-            SplittedForm savedForm = (SplittedForm) traceMap.get(renderTargetStep);
+            * for the first input step, the initial form will be used by default, but for the second input step, we must store the initial 
+            * data by ourselves, which is why we force to save trace map data when we go to the first step(from the before first step at 
+            * when we retrieved the initial form from db)
+            */
+            SplittedForm savedForm = (SplittedForm) formMap.get(renderTargetStep);
             if (savedForm == null) {
-                SplittedForm initForm = (SplittedForm) traceMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
-                traceMap.put(renderTargetStep, initForm);
+                SplittedForm initForm = (SplittedForm) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
+                formMap.put(renderTargetStep, initForm);
             }
         } else if (confirmStepName().equalsIgnoreCase(renderTargetStep)) {
             /* 
              * for the complete step, we should combine the saved data of first step and second step
              */
-            SplittedForm form1 = (SplittedForm) traceMap.get(inputStep1Name());
-            SplittedForm form2 = (SplittedForm) traceMap.get(inputStep2Name());
+            SplittedForm form1 = (SplittedForm) formMap.get(inputStep1Name());
+            SplittedForm form2 = (SplittedForm) formMap.get(inputStep2Name());
 
             // we can clone it or not, not matter
             SplittedForm confirmForm = (SplittedForm) form1;
 
             confirmForm.setCascadeJobForm(form2.getCascadeJobForm());
 
-            traceMap.put(ClassicalFormFlowConstant.STEP_CONFIRM, confirmForm);
+            formMap.put(confirmStepName(), confirmForm);
+        } else {
+            super.rewriteTraceDataBeforeGoSnippet(currentStep, renderTargetStep, traceData);
         }
 
-        super.passDataToSnippet(currentStep, renderTargetStep, traceMap);
     }
 
     @Override
