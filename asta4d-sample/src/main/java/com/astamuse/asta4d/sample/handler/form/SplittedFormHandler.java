@@ -123,7 +123,7 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
     }
 
     @Override
-    public CommonFormResult processValidation(FormProcessData processData, Object form) {
+    public CommonFormResult validateForm(FormProcessData processData, Object form) {
         String currentStep = processData.getStepCurrent();
 
         Object validateObj;
@@ -137,7 +137,7 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
             validateObj = form;
         }
 
-        return super.processValidation(processData, validateObj);
+        return super.validateForm(processData, validateObj);
     }
 
     /**

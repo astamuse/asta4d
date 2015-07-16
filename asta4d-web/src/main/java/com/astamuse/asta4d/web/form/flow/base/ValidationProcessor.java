@@ -24,7 +24,7 @@ public interface ValidationProcessor {
      * @param form
      * @return
      */
-    default CommonFormResult processValidation(FormProcessData processData, Object form) {
+    default CommonFormResult validateForm(FormProcessData processData, Object form) {
         List<FormValidationMessage> validationMesssages = validate(form);
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;

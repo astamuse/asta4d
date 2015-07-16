@@ -20,7 +20,6 @@ import java.util.Map;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
@@ -55,7 +54,7 @@ import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
  * steps:
  * <ul>
  * <li>{@link #generateFormInstanceFromContext(String)}
- * <li>{@link #processValidation(FormProcessData, Object)}
+ * <li>{@link #validateForm(FormProcessData, Object)}
  * <li>{@link #rewriteTraceDataBeforeGoSnippet(String, String, FormFlowTraceData)}
  * <li>{@link #skipStoreTraceData(String, String, FormFlowTraceData)}
  * </ul>
@@ -153,30 +152,13 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends UpdatableForm
     }
 
     /**
-     * By default, the returned result from parent's handle will be translated to a target template file path.
-     * 
-     * <p>
-     * 
-     * From parent:
-     * <p>
-     * {@inheritDoc}
-     * 
-     * @see #createTemplateFilePathForStep(String)
-     * @see #getTemplateBasePath()
-     * @see #createTemplateFilePath(String, String)
-     * 
-     */
-    @Override
-    @RequestHandler
-    default String handle() throws Exception {
-        return createTemplateFilePathForStep(UpdatableFormFlowHandlerTrait.super.handle());
-    }
-
-    /**
      * Sub classes can override this method to customize how to translate a step to a target template file path.
      * 
      * @param step
      * @return
+     * 
+     * @see #getTemplateBasePath()
+     * @see #createTemplateFilePath(String, String)
      */
     default String createTemplateFilePathForStep(String step) {
         if (step == null) {// exit flow

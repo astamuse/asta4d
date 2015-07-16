@@ -31,22 +31,88 @@ import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
+import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
 
 /**
  * The basic mechanism of form flow. This interface is implemented as a template which allows developer to override any method for
- * customization. See details at {@link #handle()}.
+ * customization.
  * <p>
  * To define a form flow, we need to plan a flow graph which describes how the flow flows.
  * <p>
- * (before first) -> step 1 -> step2 -> step3 -> ...
+ * (before first) <-> step 1 <-> step2 <-> step3 <-> ...
  * <p>
- * Assume we have a flow as above,
+ * Assume we have a flow as above, note that there can be cycles or branches, which means you can go any step from any other step in the
+ * flow graph, what you need to do is to define how the step should be transfered.
+ * 
+ * <p>
+ * 
+ * The {@link FormProcessData} interface defined the basic step information and the default implementation {@link SimpleFormProcessData}
+ * retrieves the step information from the submitted http query parameters which can be put into the HTML template files as a part of the
+ * submitting form. However you can always decide how to retrieve the step information by implement your own {@link FormProcessData}.
+ * 
+ * <p>
+ * 
+ * The retrieved {@link FormProcessData} will suggest the following things:
+ * <ul>
+ * <li>step to exit
+ * <li>step to back
+ * <li>current step
+ * <li>step for failing
+ * <li>step for success
+ * <li>flow trace id
+ * </ul>
+ * 
+ * The default implementation of {@link #process()} will decide where the flow goes to by following sequence:
+ * <ol>
+ * <li>if step to exit does not empty, then exit the current flow by decide the render target step to be null
+ * <li>if the current step is empty, then treat the current step as "before first" step
+ * <li>if the current step "before first", then decide the render target step by {@link #firstStepName()}
+ * <li>if the step to back is not empty, then decide the render target step to be the step to back.
+ * <li>then calling {@link #processForm(FormProcessData, Object)} to process the submitted form data
+ * <li>if the result of process is success, then decide the render target step to be the step for success, otherwise to be the step of
+ * failing
+ * </ol>
+ * 
+ * <i>See {@link #process()} for more details of what will be done.</i>
+ * 
+ * <p>
+ * 
+ * Then the following things is left for developers to decide as a rule of the flow:
+ * <ul>
+ * <li>override {@link #createTemplateFilePathForStep(String)()} to decide how to convert a step to the corresponding target template file
+ * path.
+ * <li>override {@link #skipStoreTraceData(String, String, FormFlowTraceData)} to decide whether the flow trace data should be stored
+ * <li>override {@link #passDataToSnippetByFlash(String, String, FormFlowTraceData)} to decide how to pass the form data for rendering to
+ * snippet
+ * </ul>
+ * 
+ * For most common situations, all the above things can be decided as general rules in the user project, so that a common parent class can
+ * be utilized to perform the common assumption. There are two built-in flows representing the classical situations:
+ * {@link OneStepFormHandlerTrait} and {@link ClassicalMultiStepFormFlowHandlerTrait}. Those two built-in interfaces can also be considered
+ * as reference implementation of how to design and decide a form flow. User project is always recommended to extend from those two built-in
+ * flows rather than this basic trait.
+ * 
+ * <p>
+ * 
+ * In user project, a common parent class is always recommended. A project specified common parent class can be used to decide the special
+ * rules of the project and the following two method is strongly recommended to be overridden to return a configured validator.
+ * <ul>
+ * <li> {@link #getTypeUnMatchValidator()}
+ * <li> {@link #getValueValidator()}
+ * </ul>
+ * 
  * 
  * @author e-ryu
  *
  * @param <T>
+ * 
+ * @see BasicFormFlowSnippetTrait
+ * @see OneStepFormHandlerTrait
+ * @see ClassicalMultiStepFormFlowHandlerTrait
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, FormFlowTraceDataAccessor, ValidationProcessor {
@@ -57,12 +123,6 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
 
     public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#" + BasicFormFlowHandlerTrait.class.getName();
 
-    public Class<T> getFormCls();
-
-    default Class<? extends FormProcessData> getFormProcessDataCls() {
-        return SimpleFormProcessData.class;
-    }
-
     /**
      * Sub classes must tell us the name of first step
      * 
@@ -70,6 +130,30 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
      * @return
      */
     public String firstStepName();
+
+    /**
+     * translate a step to a target template file path
+     * 
+     * @param step
+     * @return target template file path
+     */
+    public String createTemplateFilePathForStep(String step);
+
+    /**
+     * Tells the form type of current flow.
+     * 
+     * @return
+     */
+    public Class<T> getFormCls();
+
+    /**
+     * Tells the concrete type of {@link FormProcessData}, default is {@link SimpleFormProcessData}.
+     * 
+     * @return
+     */
+    default Class<? extends FormProcessData> getFormProcessDataCls() {
+        return SimpleFormProcessData.class;
+    }
 
     /**
      * Sub classes could override this method to create the initial form data(eg. query from db)
@@ -102,16 +186,29 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
     }
 
     /**
+     * The default implementation as request handler which retrieve the process data and return converted the process result as target
+     * template file path.
+     * 
+     * @return
+     * @throws Exception
+     */
+    @RequestHandler
+    default String handle() throws Exception {
+        FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(getFormProcessDataCls(),
+                "not-exist-formProcessData", "");
+        return createTemplateFilePathForStep(process(processData));
+    }
+
+    /**
      * 
      * This method implement the basic mechanism which performs following things:
      * <ol>
-     * <li>retrieve instance of {@link FormProcessData} from context.
      * <li>restore the trace data map which contains all the data in each step
      * <li>retrieve instance of target form data which type is specified by {@link #getFormCls()}
      * <li>if the current step is before first, set the render target step by {@link #firstStepName()}
      * <li>if the back step is not empty, then set the back step name to render target step
-     * <li>else call {@link #process(FormProcessData, Object)} method to process the retrieved form data, currently in the process method,
-     * only {@link #processValidation(FormProcessData, Object)} is invoked to perform validation.
+     * <li>else call {@link #processForm(FormProcessData, Object)} method to process the retrieved form data, currently in the process
+     * method, only {@link #validateForm(FormProcessData, Object)} is invoked to perform validation.
      * <li>call {@link #rewriteTraceDataBeforeGoSnippet(String, String, FormFlowTraceData)} to rewrite trace data
      * <li>if {@link #skipStoreTraceData(String, String, FormFlowTraceData)} returns true, call {@link #clearStoredTraceData(String)} to
      * clear stored trace data, or call {@link #storeTraceData(String, String, String, FormFlowTraceData)} to store the trace data for next
@@ -125,9 +222,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
      * @return the render target step name
      * @throws Exception
      */
-    default String handle() throws Exception {
-        FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(getFormProcessDataCls(),
-                "not-exist-formProcessData", "");
+    default String process(FormProcessData processData) throws Exception {
 
         String traceId = processData.getFlowTraceId();
 
@@ -175,7 +270,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
         } else {
             // since the init step will not enter this branch, so the sub classes which override the process method could retrieve
             // current step without any concern about null pointer exception.
-            formResult = process(processData, form);
+            formResult = processForm(processData, form);
             if (formResult == CommonFormResult.SUCCESS) {
                 renderTargetStep = processData.getStepSuccess();
             } else {
@@ -206,15 +301,15 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
     }
 
     /**
-     * The default process will only call the {@link #processValidation(Object)} and sub classes can override this method to add extra
-     * process logics such as updating form when validation succeeds.
+     * The default process will only call the {@link #validateForm(Object)} and sub classes can override this method to add extra process
+     * logics such as updating form when validation succeeds.
      * 
      * @param processData
      * @param form
      * @return
      */
-    default CommonFormResult process(FormProcessData processData, T form) {
-        return processValidation(processData, form);
+    default CommonFormResult processForm(FormProcessData processData, T form) {
+        return validateForm(processData, form);
     }
 
     /**

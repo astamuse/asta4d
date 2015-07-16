@@ -18,7 +18,6 @@ package com.astamuse.asta4d.web.form.flow.classical;
 
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 
@@ -91,24 +90,6 @@ public interface OneStepFormHandlerTrait<T> extends UpdatableFormFlowHandlerTrai
     @Override
     default FormFlowTraceData retrieveTraceData(String traceId) {
         return null;
-    }
-
-    /**
-     * By default, the returned result from parent's handle will be translated to the given input template file path.
-     * 
-     * <p>
-     * 
-     * From parent:
-     * <p>
-     * {@inheritDoc}
-     * 
-     * @see #createTemplateFilePathForStep(String)
-     * 
-     */
-    @Override
-    @RequestHandler
-    default String handle() throws Exception {
-        return createTemplateFilePathForStep(UpdatableFormFlowHandlerTrait.super.handle());
     }
 
     /**
