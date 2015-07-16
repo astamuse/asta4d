@@ -18,13 +18,10 @@ package com.astamuse.asta4d.web.form.flow.classical;
 
 import java.util.Map;
 
-import org.slf4j.LoggerFactory;
-
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowHandlerTrait;
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
@@ -34,22 +31,41 @@ import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
  * 
  * <p>
  * 
- * By default, this trait can handle a page with classical 3 steps: input, confirm and complete. If there are more than one input step, the
- * following methods can (for most cases, should) be overridden to customize the multiple steps:
+ * By default, this trait can handle a page with classical 3 steps: input, confirm and complete. The developers are required to at least
+ * implement the following methods:
+ * <ul>
+ * <li>{@link #getFormCls()}
+ * <li>{@link #createInitForm()}
+ * <li>{@link #updateForm(Object)}
+ * </ul>
+ * 
+ * The base folder of template files for each step could be specified in the URL rule by the fixed name of {@link #VAR_TEMPLATE_BASE_PATH}.
+ * 
+ * <p>
+ * 
+ * Also, {@link #getTypeUnMatchValidator()} and {@link #getValueValidator()} are recommended to be overridden by a common parent class to
+ * perform validator configuration.
+ * 
+ * <p>
+ * 
+ * Further methods can be overridden for more flexible flow definition. See details of the description of each method.
+ * 
+ * <p>
+ * <i>If there are more than one input step, the following methods can (for most cases, should) be overridden to customize the multiple
+ * steps:
  * <ul>
  * <li>{@link #generateFormInstanceFromContext(String)}
  * <li>{@link #processValidation(FormProcessData, Object)}
  * <li>{@link #rewriteTraceDataBeforeGoSnippet(String, String, FormFlowTraceData)}
  * <li>{@link #skipStoreTraceData(String, String, FormFlowTraceData)}
  * </ul>
- * 
- * Further methods can be overridden for more flexible flow definition. See details of the description of each method.
+ * </i>
  * 
  * @author e-ryu
  *
  * @param <T>
  */
-public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlowHandlerTrait<T> {
+public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends UpdatableFormFlowHandlerTrait<T> {
 
     /**
      * The default path var name of template files base path
@@ -94,18 +110,6 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      */
     default boolean treatCompleteStepAsExit() {
         return false;
-    }
-
-    /**
-     * Always override render target step form data by current step form data
-     * 
-     * @param currentStep
-     * @param renderTargetStep
-     * @param traceData
-     */
-    default void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
-        Map<String, Object> formMap = traceData.getStepFormMap();
-        formMap.put(renderTargetStep, formMap.get(currentStep));
     }
 
     /**
@@ -165,7 +169,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
     @Override
     @RequestHandler
     default String handle() throws Exception {
-        return createTemplateFilePathForStep(BasicFormFlowHandlerTrait.super.handle());
+        return createTemplateFilePathForStep(UpdatableFormFlowHandlerTrait.super.handle());
     }
 
     /**
@@ -212,37 +216,10 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
      * @param processData
      * @return
      */
+    @Override
     default boolean doUpdateOnValidationSuccess(FormProcessData processData) {
         return confirmStepName().equalsIgnoreCase(processData.getStepCurrent()) &&
                 completeStepName().equalsIgnoreCase(processData.getStepSuccess());
-    }
-
-    /**
-     * 
-     * This method will call {@link #updateForm(Object)} when the validation is success and the
-     * {@link #doUpdateOnValidationSuccess(FormProcessData)} returns true.
-     * 
-     * <p>
-     * 
-     * From parent:
-     * <p>
-     * {@inheritDoc}
-     * 
-     */
-    @Override
-    default CommonFormResult process(FormProcessData processData, T form) {
-        CommonFormResult result = processValidation(processData, form);
-        if (result == CommonFormResult.SUCCESS && doUpdateOnValidationSuccess(processData)) {
-            try {
-                updateForm(form);
-                return CommonFormResult.SUCCESS;
-            } catch (Exception ex) {
-                LoggerFactory.getLogger(this.getClass()).error("error occured on step:" + processData.getStepCurrent(), ex);
-                return CommonFormResult.FAILED;
-            }
-        } else {
-            return result;
-        }
     }
 
     /**
@@ -263,7 +240,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends BasicFormFlow
         if (confirmStepName().equalsIgnoreCase(currentStep) || completeStepName().equalsIgnoreCase(currentStep)) {
             return (T) traceData.getStepFormMap().get(currentStep);
         } else {
-            return BasicFormFlowHandlerTrait.super.retrieveFormInstance(traceData, currentStep);
+            return UpdatableFormFlowHandlerTrait.super.retrieveFormInstance(traceData, currentStep);
         }
     }
 

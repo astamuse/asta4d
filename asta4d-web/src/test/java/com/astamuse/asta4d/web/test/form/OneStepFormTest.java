@@ -61,7 +61,7 @@ public class OneStepFormTest extends WebTestBase {
         }
 
         @Override
-        public String createTemplateFilePath(String templateBasePath, String step) {
+        public String getInputTemplateFilePath() {
             return "/edit.html";
         }
 

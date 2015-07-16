@@ -17,6 +17,7 @@
 package com.astamuse.asta4d.web.form.flow.classical;
 
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowSnippetTrait;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 
 /**
@@ -26,7 +27,11 @@ import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
  * @author e-ryu
  *
  */
-public interface OneStepFormSnippetTrait extends ClassicalMultiStepFormFlowSnippetTrait {
+public interface OneStepFormSnippetTrait extends BasicFormFlowSnippetTrait {
+
+    default boolean renderForEdit(String step, Object form, String fieldName) {
+        return true;
+    }
 
     default Renderer renderTraceData(FormFlowTraceData traceData) {
         return Renderer.create();

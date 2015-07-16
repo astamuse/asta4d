@@ -35,6 +35,7 @@ import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
 
 public class UrlRules implements UrlMappingRuleInitializer {
 
@@ -109,35 +110,33 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         // @ShowCode:showSingleInputStart
         rules.add((HttpMethod)null, "/form/singleInput")
-             //specify the target template file of input page by overriding
-             .handler(new SingleInputFormHandler(){
-                 @Override
-                 public String getTemplateBasePath() {
-                     return "/templates/form/singleInput/edit.html";
-                 }
-             })
+             //specify the target template file of input page by path var
+             .var(OneStepFormHandlerTrait.VAR_INPUT_TEMPLATE_FILE, "/templates/form/singleInput/edit.html")
+             .handler(SingleInputFormHandler.class)
              //specify the exit target
              .redirect("/form?type=single-input");
         // @ShowCode:showSingleInputEnd
              
         // @ShowCode:showMultiStepStart
         rules.add((HttpMethod)null, "/form/multistep")
-             //specify the base path of target template file by overriding
-             .handler(new MultiStepFormHandler(){
-                @Override
-                public String getTemplateBasePath() {
-                    return "/templates/form/multistep/";
-                }
-             })
+             //specify the base path of target template file by path var
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/multistep/")
+             .handler(MultiStepFormHandler.class)
              //specify the exit target
              .redirect("/form?type=multi-step");
         // @ShowCode:showMultiStepEnd
         
         // @ShowCode:showCascadeStart
         rules.add((HttpMethod)null, "/form/cascade/add")
-             //specify the base path of target template file by path var
-             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/cascade/")
-             .handler(CascadeFormHandler.Add.class)
+             //specify the base path of target template file by overriding
+             .handler(new CascadeFormHandler.Add(){
+                @Override
+                public String getTemplateBasePath() {
+                    // TODO Auto-generated method stub
+                    return "/templates/form/cascade/";
+                }
+                 
+             })
              //specify the exit target
              .redirect("/form?type=cascade");
 

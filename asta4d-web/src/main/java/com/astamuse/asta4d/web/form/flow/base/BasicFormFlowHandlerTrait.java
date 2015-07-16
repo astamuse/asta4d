@@ -37,6 +37,12 @@ import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 /**
  * The basic mechanism of form flow. This interface is implemented as a template which allows developer to override any method for
  * customization. See details at {@link #handle()}.
+ * <p>
+ * To define a form flow, we need to plan a flow graph which describes how the flow flows.
+ * <p>
+ * (before first) -> step 1 -> step2 -> step3 -> ...
+ * <p>
+ * Assume we have a flow as above,
  * 
  * @author e-ryu
  *
