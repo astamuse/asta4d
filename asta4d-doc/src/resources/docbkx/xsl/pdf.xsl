@@ -146,7 +146,7 @@ under the License.
 					<xsl:value-of select="//productname"/><xsl:text> </xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:text>please define productname in your docbook file!</xsl:text>
+					<xsl:text>Asta4D User Guide</xsl:text>
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>

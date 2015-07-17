@@ -25,6 +25,9 @@ public class SimpleFormProcessData implements FormProcessData {
     @QueryParam(name = "step-exit")
     private String stepExit;
 
+    @QueryParam(name = "step-back")
+    private String stepBack;
+
     @QueryParam(name = "step-current")
     private String stepCurrent;
 
@@ -33,9 +36,6 @@ public class SimpleFormProcessData implements FormProcessData {
 
     @QueryParam(name = "step-success")
     private String stepSuccess;
-
-    @QueryParam(name = "step-back")
-    private String stepBack;
 
     @QueryParam(name = FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM)
     private String flowTraceId;

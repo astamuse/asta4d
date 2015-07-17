@@ -49,15 +49,16 @@ public class MultiStepFormHandler extends Asta4DSamplePrjCommonFormHandler<Perso
 
     @Override
     public void updateForm(PersonFormForMultiStep form) {
-        if (form.getId() == null) {
+        DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
+        if (form.getId() == null) {// add
             PersonDbManager.instance().add(Person.createByForm(form));
-            // output the success message to specified DOM rather than the global message bar
-            DefaultMessageRenderingHelper.getConfiguredInstance().info(".x-success-msg", "data inserted");
-        } else {
+            // output the success message to the global message bar
+            msgHelper.info("data inserted");
+        } else {// update
             Person p = Person.createByForm(form);
             PersonDbManager.instance().update(p);
             // output the success message to specified DOM rather than the global message bar
-            DefaultMessageRenderingHelper.getConfiguredInstance().info(".x-success-msg", "update succeed");
+            msgHelper.info(".x-success-msg", "update succeed");
         }
     }
 

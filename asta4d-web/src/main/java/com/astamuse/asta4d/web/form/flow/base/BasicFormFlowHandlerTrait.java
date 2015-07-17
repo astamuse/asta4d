@@ -43,7 +43,7 @@ import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
  * <p>
  * To define a form flow, we need to plan a flow graph which describes how the flow flows.
  * <p>
- * (before first) <-> step 1 <-> step2 <-> step3 <-> ...
+ * (before first) --> step 1 <--> step2 <--> step3 <--> ... --> (exit)
  * <p>
  * Assume we have a flow as above, note that there can be cycles or branches, which means you can go any step from any other step in the
  * flow graph, what you need to do is to define how the step should be transfered.
@@ -83,7 +83,7 @@ import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
  * 
  * Then the following things is left for developers to decide as a rule of the flow:
  * <ul>
- * <li>override {@link #createTemplateFilePathForStep(String)()} to decide how to convert a step to the corresponding target template file
+ * <li>override {@link #createTemplateFilePathForStep(String)} to decide how to convert a step to the corresponding target template file
  * path.
  * <li>override {@link #skipStoreTraceData(String, String, FormFlowTraceData)} to decide whether the flow trace data should be stored
  * <li>override {@link #passDataToSnippetByFlash(String, String, FormFlowTraceData)} to decide how to pass the form data for rendering to
@@ -98,7 +98,7 @@ import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
  * 
  * <p>
  * 
- * In user project, a common parent class is always recommended. A project specified common parent class can be used to decide the special
+ * In user project, a common parent class is always recommended. A project limited common parent class can be used to decide the special
  * rules of the project and the following two method is strongly recommended to be overridden to return a configured validator.
  * <ul>
  * <li> {@link #getTypeUnMatchValidator()}
