@@ -30,7 +30,6 @@ import com.astamuse.asta4d.sample.util.persondb.JobPositionDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
@@ -44,20 +43,14 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
 
     @Override
     public String[] getInputSteps() {
-        return new String[] { SplittedFormStepInfo.inputStep1, SplittedFormStepInfo.inputStep2 };
-    }
-
-    @Override
-    public boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
-        // we will always save trace data when we start the flow because we need to retrieve the init form later.
-        return completeStepName().equalsIgnoreCase(renderTargetStep);
+        return new String[] { SplittedForm.inputStep1, SplittedForm.inputStep2 };
     }
 
     @Override
     public SplittedForm generateFormInstanceFromContext(String currentStep) {
         SplittedForm form = super.generateFormInstanceFromContext(currentStep);
 
-        if (SplittedFormStepInfo.inputStep2.equalsIgnoreCase(currentStep)) {
+        if (SplittedForm.inputStep2.equalsIgnoreCase(currentStep)) {
             // rewrite the array to handle deleted items
             CascadeJobForm cjForm = form.getCascadeJobForm();
 

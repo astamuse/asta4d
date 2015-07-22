@@ -11,9 +11,10 @@ import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHan
 /**
  * For a form flow with multiple input steps, there are something different from the classical single input step form flow:
  * <ul>
- * <li>We have to store the trace data from the first step for later using
- * <li>We need to set the initial form data for each input step by copy the initial step(before first) form data
- * <li>We need to combine the form data of each step to one single instance for confirm page rendering and later process
+ * <li>We store the trace data from the first step for later using
+ * <li>We set the initial form data for each input step by copying the initial step(before first) form data
+ * <li>We combine the form data of each step to one single instance for confirm page rendering and later process
+ * <li>We validate the corresponding sub form instance of each input step rather than the parent form instance
  * </ul>
  * 
  * @author e-ryu

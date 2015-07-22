@@ -84,6 +84,10 @@ public class SplittedForm implements MultiInputStepForm {
     @Valid
     private CascadeJobForm cascadeJobForm;
 
+    public static final String inputStep2 = "input-2";
+
+    public static final String inputStep1 = "input-1";
+
     public SplittedForm() {
         personForm = new PersonForm();
         cascadeJobForm = new CascadeJobForm();
@@ -108,9 +112,9 @@ public class SplittedForm implements MultiInputStepForm {
 
     @Override
     public Object getSubInputFormByStep(String step) {
-        if (SplittedFormStepInfo.inputStep1.equalsIgnoreCase(step)) {
+        if (inputStep1.equalsIgnoreCase(step)) {
             return this.getPersonForm();
-        } else if (SplittedFormStepInfo.inputStep2.equalsIgnoreCase(step)) {
+        } else if (inputStep2.equalsIgnoreCase(step)) {
             return this.getCascadeJobForm();
         } else {
             return null;
@@ -119,9 +123,9 @@ public class SplittedForm implements MultiInputStepForm {
 
     @Override
     public void setSubInputFormForStep(String step, Object subForm) {
-        if (SplittedFormStepInfo.inputStep1.equalsIgnoreCase(step)) {
+        if (inputStep1.equalsIgnoreCase(step)) {
             this.setPersonForm((PersonForm) subForm);
-        } else if (SplittedFormStepInfo.inputStep2.equalsIgnoreCase(step)) {
+        } else if (inputStep2.equalsIgnoreCase(step)) {
             this.setCascadeJobForm((CascadeJobForm) subForm);
         } else {
             throw new IllegalArgumentException("Not recorgnized step:" + step);
