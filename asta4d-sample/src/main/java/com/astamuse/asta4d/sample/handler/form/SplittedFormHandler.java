@@ -19,7 +19,6 @@ package com.astamuse.asta4d.sample.handler.form;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.astamuse.asta4d.sample.handler.form.SplittedForm.CascadeJobForm;
@@ -31,22 +30,21 @@ import com.astamuse.asta4d.sample.util.persondb.JobPositionDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
-import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
-import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
+import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showSplittedFormHandlerStart
-public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandler<SplittedForm> implements SplittedFormStepInfo {
+public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandler<SplittedForm> implements
+        MultiInputStepFormFlowHandlerTrait<SplittedForm> {
 
     public Class<SplittedForm> getFormCls() {
         return SplittedForm.class;
     }
 
     @Override
-    public String firstStepName() {
-        return inputStep1Name();
+    public String[] getInputSteps() {
+        return new String[] { SplittedFormStepInfo.inputStep1, SplittedFormStepInfo.inputStep2 };
     }
 
     @Override
@@ -56,44 +54,10 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
     }
 
     @Override
-    public void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
-        Map<String, Object> formMap = traceData.getStepFormMap();
-        if (inputStep1Name().equalsIgnoreCase(renderTargetStep) || inputStep2Name().equalsIgnoreCase(renderTargetStep)) {
-            /*
-             * we need to set the form data by the stored before first step data for each step when the form data is not set, 
-             * otherwise we use the existing form data.
-             * 
-             * we forced to store the before first step data by return false at the method of skipStoreTraceData.
-             */
-            SplittedForm savedForm = (SplittedForm) formMap.get(renderTargetStep);
-            if (savedForm == null) {
-                SplittedForm initForm = (SplittedForm) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
-                formMap.put(renderTargetStep, initForm);
-            }
-        } else if (confirmStepName().equalsIgnoreCase(renderTargetStep)) {
-            /* 
-             * for the complete step, we should combine the saved data of first step and second step
-             */
-            SplittedForm form1 = (SplittedForm) formMap.get(inputStep1Name());
-            SplittedForm form2 = (SplittedForm) formMap.get(inputStep2Name());
-
-            // we can clone it or not, not matter
-            SplittedForm confirmForm = (SplittedForm) form1;
-
-            confirmForm.setCascadeJobForm(form2.getCascadeJobForm());
-
-            formMap.put(confirmStepName(), confirmForm);
-        } else {
-            formMap.put(renderTargetStep, formMap.get(currentStep));
-        }
-
-    }
-
-    @Override
     public SplittedForm generateFormInstanceFromContext(String currentStep) {
         SplittedForm form = super.generateFormInstanceFromContext(currentStep);
 
-        if (inputStep2Name().equalsIgnoreCase(currentStep)) {
+        if (SplittedFormStepInfo.inputStep2.equalsIgnoreCase(currentStep)) {
             // rewrite the array to handle deleted items
             CascadeJobForm cjForm = form.getCascadeJobForm();
 
@@ -120,24 +84,6 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
         }
 
         return form;
-    }
-
-    @Override
-    public CommonFormResult validateForm(FormProcessData processData, Object form) {
-        String currentStep = processData.getStepCurrent();
-
-        Object validateObj;
-
-        // at the end of first input step, we will only validate the content of first step
-        if (inputStep1Name().equalsIgnoreCase(currentStep)) {
-            validateObj = ((SplittedForm) form).getPersonForm();
-        } else if (inputStep2Name().equalsIgnoreCase(currentStep)) {
-            validateObj = ((SplittedForm) form).getCascadeJobForm();
-        } else {
-            validateObj = form;
-        }
-
-        return super.validateForm(processData, validateObj);
     }
 
     /**

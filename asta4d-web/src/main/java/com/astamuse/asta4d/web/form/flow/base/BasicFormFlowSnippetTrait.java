@@ -103,7 +103,7 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
 
     /**
      * 
-     * Render the whole given form instance. All the {@link FormFieldPrepareRenderer}s would be invoked here too.
+     * PriorRenderMethod the whole given form instance. All the {@link FormFieldPrepareRenderer}s would be invoked here too.
      * 
      * @param renderTargetStep
      * @param form
@@ -140,7 +140,7 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
 
     /**
      * 
-     * Render the value of all the given form's fields.The rendering of cascade forms will be done here as well(recursively call the
+     * PriorRenderMethod the value of all the given form's fields.The rendering of cascade forms will be done here as well(recursively call the
      * {@link #renderForm(String, Object, int)}).
      * 
      * @param renderTargetStep

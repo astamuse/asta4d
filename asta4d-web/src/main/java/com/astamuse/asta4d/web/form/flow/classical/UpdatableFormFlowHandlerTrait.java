@@ -21,7 +21,7 @@ public interface UpdatableFormFlowHandlerTrait<T> extends BasicFormFlowHandlerTr
      */
     @Override
     default CommonFormResult processForm(FormProcessData processData, T form) {
-        CommonFormResult result = validateForm(processData, form);
+        CommonFormResult result = processValidation(processData, form);
         if (result == CommonFormResult.SUCCESS && doUpdateOnValidationSuccess(processData)) {
             try {
                 updateForm(form);

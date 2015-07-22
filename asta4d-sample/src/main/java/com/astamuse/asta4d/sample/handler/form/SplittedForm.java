@@ -24,10 +24,11 @@ import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
+import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
 
 //@ShowCode:showSplittedFormStart
 @Form
-public class SplittedForm {
+public class SplittedForm implements MultiInputStepForm {
 
     @Form
     public static class CascadeJobForm {
@@ -103,6 +104,28 @@ public class SplittedForm {
 
     public void setCascadeJobForm(CascadeJobForm cascadeJobForm) {
         this.cascadeJobForm = cascadeJobForm;
+    }
+
+    @Override
+    public Object getSubInputFormByStep(String step) {
+        if (SplittedFormStepInfo.inputStep1.equalsIgnoreCase(step)) {
+            return this.getPersonForm();
+        } else if (SplittedFormStepInfo.inputStep2.equalsIgnoreCase(step)) {
+            return this.getCascadeJobForm();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setSubInputFormForStep(String step, Object subForm) {
+        if (SplittedFormStepInfo.inputStep1.equalsIgnoreCase(step)) {
+            this.setPersonForm((PersonForm) subForm);
+        } else if (SplittedFormStepInfo.inputStep2.equalsIgnoreCase(step)) {
+            this.setCascadeJobForm((CascadeJobForm) subForm);
+        } else {
+            throw new IllegalArgumentException("Not recorgnized step:" + step);
+        }
     }
 
 }

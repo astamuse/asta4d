@@ -309,7 +309,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
      * @return
      */
     default CommonFormResult processForm(FormProcessData processData, T form) {
-        return validateForm(processData, form);
+        return processValidation(processData, form);
     }
 
     /**

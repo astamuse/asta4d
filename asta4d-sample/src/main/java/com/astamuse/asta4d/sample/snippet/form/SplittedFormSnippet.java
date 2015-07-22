@@ -20,15 +20,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.annotation.ContextData;
-import com.astamuse.asta4d.data.annotation.ContextDataSet;
-import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.sample.handler.form.JobForm;
 import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
-import com.astamuse.asta4d.sample.handler.form.SplittedForm;
-import com.astamuse.asta4d.sample.handler.form.SplittedFormStepInfo;
 import com.astamuse.asta4d.sample.snippet.form.common.Asta4DSamplePrjCommonFormSnippet;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
@@ -39,36 +33,10 @@ import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.base.FormRenderingData;
+import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowSnippetTrait;
 
 //@ShowCode:showSplittedFormSnippetStart
-public class SplittedFormSnippet extends Asta4DSamplePrjCommonFormSnippet implements SplittedFormStepInfo {
-
-    @ContextDataSet
-    public static class SplittedFormRenderingData extends FormRenderingData {
-
-        @ContextData(scope = Context.SCOPE_ATTR, name = "form-step")
-        private String formStep;
-    }
-
-    public Renderer render(SplittedFormRenderingData renderingData) throws Exception {
-        return super.render(renderingData);
-    }
-
-    @Override
-    public Object retrieveRenderTargetForm(FormRenderingData renderingData) {
-        SplittedForm form = (SplittedForm) super.retrieveRenderTargetForm(renderingData);
-
-        String formStep = ((SplittedFormRenderingData) renderingData).formStep;
-
-        if (inputStep1Name().equalsIgnoreCase(formStep)) {
-            return form.getPersonForm();
-        } else if (inputStep2Name().equalsIgnoreCase(formStep)) {
-            return form.getCascadeJobForm();
-        } else {
-            throw new IllegalArgumentException("form-step must be specified on snippet declaration");
-        }
-    }
+public class SplittedFormSnippet extends Asta4DSamplePrjCommonFormSnippet implements MultiInputStepFormFlowSnippetTrait {
 
     @Override
     public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
