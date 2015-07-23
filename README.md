@@ -15,7 +15,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 mvn archetype:generate                       \
     -DarchetypeGroupId=com.astamuse          \
     -DarchetypeArtifactId=asta4d-archetype   \
-    -DarchetypeVersion=1.0-Valentines        \
+    -DarchetypeVersion=1.1-b1        \
     -DgroupId=<your.groupid>                 \
     -DartifactId=<your-artifactId>
 ```
@@ -23,10 +23,10 @@ mvn archetype:generate                       \
 or simply follow the wizard by filtered list:
 
 ```batch
-mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-Valentines
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.1-b1
 ```
 
-*There are still some issues in our archetype project, we will make the archetype workable in the next release.*
+*The 1.1-b1 with better Java 8 support is recommended for new projects, if you cannot use Java 8, use 1.0-Valentines instead.*
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
 
