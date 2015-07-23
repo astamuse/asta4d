@@ -31,6 +31,7 @@ import javax.validation.Path.Node;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.hibernate.validator.spi.resourceloading.ResourceBundleLocator;
@@ -110,13 +111,13 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
     protected static class ValidationPropertyInfo {
         Path path;
         AnnotatedPropertyInfo field;
-        int arrayIndex;
+        int[] indexes;
 
-        public ValidationPropertyInfo(Path path, AnnotatedPropertyInfo field, int arrayIndex) {
+        public ValidationPropertyInfo(Path path, AnnotatedPropertyInfo field, int[] indexes) {
             super();
             this.path = path;
             this.field = field;
-            this.arrayIndex = arrayIndex;
+            this.indexes = indexes;
         }
 
     }
@@ -165,8 +166,8 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
                     fieldName = vp.path.toString();
                     msg = cv.getMessage();
                 } else {
-                    fieldName = retrieveFieldName(vp.field, vp.arrayIndex);
-                    String fieldLabel = retrieveFieldLabel(vp.field, vp.arrayIndex);
+                    fieldName = retrieveFieldName(vp.field, vp.indexes);
+                    String fieldLabel = retrieveFieldLabel(vp.field, vp.indexes);
                     String annotatedMsg = retrieveFieldAnnotatedMessage(vp.field);
 
                     if (StringUtils.isNotEmpty(annotatedMsg)) {
@@ -191,15 +192,16 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
         }
     }
 
-    protected ValidationPropertyInfo retrieveValidationPropertyInfo(Class formCls, Path path) {
+    protected ValidationPropertyInfo retrieveValidationPropertyInfo(Class<?> formCls, Path path) {
         Iterator<Node> it = path.iterator();
-        Class cls = formCls;
+        Class<?> cls = formCls;
+        int[] indexes = EMPTY_INDEXES;
         try {
             while (it.hasNext()) {
                 Node node = it.next();
                 if (node.getKind() != ElementKind.PROPERTY) {
                     // we cannot handle this case
-                    return new ValidationPropertyInfo(path, null, -1);
+                    return new ValidationPropertyInfo(path, null, indexes);
                 }
                 String name = node.getName();
                 if (it.hasNext()) {// not the last
@@ -214,6 +216,9 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
                     } else {
                         // array cascading
                         cls = field.getType().getComponentType();
+                        if (node.getIndex() != null) {
+                            indexes = ArrayUtils.add(indexes, node.getIndex().intValue());
+                        }
                     }
 
                     continue;
@@ -221,19 +226,19 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
                     AnnotatedPropertyInfo field = AnnotatedPropertyUtil.retrievePropertyByBeanPropertyName(cls, name);
                     if (field == null) {
                         // it seems we got a unexpected error
-                        return new ValidationPropertyInfo(path, null, -1);
+                        return new ValidationPropertyInfo(path, null, indexes);
                     } else {
                         if (node.getIndex() == null) {
                             // regular fields or simple cascading
-                            return new ValidationPropertyInfo(path, field, -1);
+                            return new ValidationPropertyInfo(path, field, indexes);
                         } else {
-                            return new ValidationPropertyInfo(path, field, node.getIndex());
+                            return new ValidationPropertyInfo(path, field, ArrayUtils.add(indexes, node.getIndex().intValue()));
                         }
                     }
                 }
             }
             // it seems impossible
-            return new ValidationPropertyInfo(path, null, -1);
+            return new ValidationPropertyInfo(path, null, indexes);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

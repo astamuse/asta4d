@@ -19,6 +19,14 @@ package com.astamuse.asta4d.util.collection;
 
 import com.astamuse.asta4d.render.Renderer;
 
+/**
+ * Use lambda instead.
+ * 
+ * @author e-ryu
+ *
+ * @param <S>
+ */
+@Deprecated
 public interface RowRenderer<S> extends RowConvertor<S, Renderer> {
     public Renderer convert(int rowIndex, S row);
 }

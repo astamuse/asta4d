@@ -27,16 +27,16 @@ import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippet;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippetTrait;
 
 //@ShowCode:showSingleInputFormSnippetStart
-public class SingleInputFormSnippet extends OneStepFormSnippet {
+public class SingleInputFormSnippet implements OneStepFormSnippetTrait {
 
     /**
      * override this method to supply the option data for select, radio and checkbox.
      */
     @Override
-    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+    public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         List<FormFieldPrepareRenderer> list = new LinkedList<>();
 
         list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));

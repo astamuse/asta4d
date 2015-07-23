@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
@@ -37,6 +40,7 @@ import com.astamuse.asta4d.render.transformer.TransformerFactory;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
 import com.astamuse.asta4d.util.collection.RowConvertor;
+import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 
 /**
  * A renderer is for describing rendering actions.
@@ -49,22 +53,6 @@ import com.astamuse.asta4d.util.collection.RowConvertor;
  * 
  */
 public class Renderer {
-
-    /**
-     * This value is for old source compatibility.set it to false will return to the old style action which require a ClearNode to remove
-     * node and will also throw NullPointerException if the specified value is null.
-     * 
-     * We will remove this flag at sometime after we migrated all of our existing sources.
-     */
-    private final static boolean treatNullAsRemoveNode;
-    static {
-        String treat = System.getProperty("com.astamuse.asta4d.render.treatNullAsRemoveNode");
-        if (treat == null) {
-            treatNullAsRemoveNode = true;
-        } else {
-            treatNullAsRemoveNode = Boolean.parseBoolean(treat);
-        }
-    }
 
     private final static boolean saveCallstackInfo;
     static {
@@ -412,7 +400,20 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, List)}.
+     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, Stream)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param stream
+     *            a list that can contain all the types that supported by the non-list add methods of Renderer.
+     * @return the created renderer for chain calling
+     */
+    public Renderer add(String selector, Stream<?> stream) {
+        return add(create(selector, stream));
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, Iterable)}.
      * 
      * @param selector
      *            a css selector
@@ -426,7 +427,7 @@ public class Renderer {
 
     /**
      * Create a renderer for list rendering by given parameter with given {@link RowConvertor} and add it to the current renderer. See
-     * {@link #create(String, List)}.
+     * {@link #create(String, Iterable, RowConvertor)}.
      * 
      * @param selector
      * @param list
@@ -438,14 +439,29 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for list rendering by given parameter with given {@link RowConvertor} and add it to the current renderer. See
+     * {@link #create(String, Iterable, Function )}.
+     * 
+     * @param selector
+     * @param list
+     * @param mapper
+     * @return
+     */
+    public <S, T> Renderer add(String selector, Iterable<S> list, Function<S, T> mapper) {
+        return add(create(selector, list, mapper));
+    }
+
+    /**
      * Create a renderer for list rendering by given parameter with given {@link ParallelRowConvertor} and add it to the current renderer.
-     * See {@link #create(String, Iterable, ParallelRowConvertor)}.
+     * <p>
+     * Being deprecated. See {@link #create(String, Iterable, ParallelRowConvertor)}.
      * 
      * @param selector
      * @param list
      * @param convertor
      * @return the created renderer for chain calling
      */
+    @Deprecated
     public <S, T> Renderer add(String selector, Iterable<S> list, ParallelRowConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
@@ -524,7 +540,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Long value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -541,7 +557,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Integer value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -558,7 +574,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Boolean value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -578,7 +594,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, String value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -598,7 +614,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, TransformerFactory.generateTransformer(value));
@@ -615,7 +631,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, SpecialRenderer specialRenderer) {
-        if (treatNullAsRemoveNode && specialRenderer == null) {
+        if (specialRenderer == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, specialRenderer.getTransformer());
@@ -726,7 +742,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Element elem) {
-        if (treatNullAsRemoveNode && elem == null) {
+        if (elem == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementTransformer(elem));
@@ -745,7 +761,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Component component) {
-        if (treatNullAsRemoveNode && component == null) {
+        if (component == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementTransformer(component.toElement()));
@@ -765,7 +781,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, ElementSetter setter) {
-        if (treatNullAsRemoveNode && setter == null) {
+        if (setter == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementSetterTransformer(setter));
@@ -785,7 +801,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Renderable renderable) {
-        if (treatNullAsRemoveNode && renderable == null) {
+        if (renderable == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new RenderableTransformer(renderable));
@@ -804,7 +820,7 @@ public class Renderer {
      * @return the created renderer for chain calling
      */
     public final static Renderer create(String selector, Renderer renderer) {
-        if (treatNullAsRemoveNode && renderer == null) {
+        if (renderer == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new RendererTransformer(renderer));
@@ -821,6 +837,43 @@ public class Renderer {
     }
 
     /**
+     * Create a renderer for list rendering by given parameter with given {@link Stream}. See {@link #create(String, List)}.
+     * <p>
+     * 
+     * <b>Note:</b> Parallel stream is supported but there is limitation that the current thread will be blocked to terminate current stream
+     * even {@link Configuration#isBlockParallelListRendering()} was set to false. In other words, all the stream operation will still be
+     * performed in multi-thread by the default JVM mechanism but the current thread will wait for all the operations to finish before
+     * perform other rendering. Use the combination of {@link #create(String, Iterable, RowConvertor)} and
+     * {@link RowConvertorBuilder#parallel(Function)}/ {@link RowConvertorBuilder#parallel(RowConvertor)} instead if you do not want the
+     * current thread to be blocked.
+     * 
+     * @param selector
+     *            a css selector
+     * @param stream
+     *            a stream with arbitrary type data
+     * @return the created renderer
+     */
+    public final static Renderer create(String selector, Stream<?> stream) {
+        if (stream == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            if (stream.isParallel()) {
+                List<Transformer<?>> list = new LinkedList<Transformer<?>>();
+                stream.forEachOrdered(obj -> {
+                    list.add(TransformerFactory.generateTransformer(obj));
+                });
+                return new Renderer(selector, list);
+            } else {
+                List<Transformer<?>> list = stream.map(obj -> {
+                    return TransformerFactory.generateTransformer(obj);
+                }).collect(Collectors.toList());
+
+                return new Renderer(selector, list);
+            }
+        }
+    }
+
+    /**
      * Create a renderer for list rendering by given parameter.
      * <p>
      * The target Element specified by the given selector will be duplicated times as the count of the given list and the contents of the
@@ -833,7 +886,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Iterable<?> list) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             List<Transformer<?>> transformerList = new LinkedList<>();
@@ -857,10 +910,34 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, RowConvertor<S, T> convertor) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            return create(selector, ListConvertUtil.transform(list, convertor));
+            if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListRendering()) {
+                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
+            } else {
+                return create(selector, ListConvertUtil.transform(list, convertor));
+            }
+        }
+    }
+
+    /**
+     * Create a renderer for list rendering by given parameter with given mapper. See {@link #create(String, List)}.
+     * 
+     * @param selector
+     *            a css selector
+     * @param list
+     *            a list with arbitrary type data
+     * @param Function
+     *            a mapper that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
+     *            Renderer
+     * @return the created renderer
+     */
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, Function<S, T> mapper) {
+        if (list == null) {
+            return new Renderer(selector, new ElementRemover());
+        } else {
+            return create(selector, list, RowConvertorBuilder.map(mapper));
         }
     }
 
@@ -869,6 +946,13 @@ public class Renderer {
      * current thread and will return immediately.
      * 
      * See {@link #create(String, List)}.
+     * 
+     * <p>
+     * Being deprecated. use the combination of {@link #create(String, Iterable, RowConvertor)} and
+     * {@link RowConvertorBuilder#parallel(Function)}/ {@link RowConvertorBuilder#parallel(RowConvertor)} instead.
+     * 
+     * <p>
+     * See {@link ParallelRowConvertor} for more details.
      * 
      * @param selector
      *            a css selector
@@ -879,15 +963,12 @@ public class Renderer {
      *            Renderer
      * @return the created renderer
      */
+    @Deprecated
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            if (Configuration.getConfiguration().isBlockParallelListRendering()) {
-                return create(selector, ListConvertUtil.transform(list, convertor));
-            } else {
-                return create(selector, ListConvertUtil.transformToFuture(list, convertor));
-            }
+            return create(selector, list, (RowConvertor<S, T>) convertor);
         }
     }
 

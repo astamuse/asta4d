@@ -54,29 +54,20 @@ public class PersonForm extends Person{
     <sect2>
       <title>Form handler</title>
       <sect3>
-          <title>AbstractFormFlowHandler and FormProcessData</title>
-          <para>After we defined our form POJO, we need to declare a request handler to handle the form request. There is an AbstractFormFlowHandler which affords most
+          <title>Brief of BasicFormFlowHandlerTrait and FormProcessData</title>
+          <para>After we defined our form POJO, we need to declare a request handler to handle the form request. There is an BasicFormFlowHandlerTrait which affords most
                 necessary common operations of form process.</para>
-          <example>
-            <title>AbstractFormFlowHandler</title>
-            <programlisting language="java">
-<![CDATA[
-public abstract class AbstractFormFlowHandler<T> {
-
-    public AbstractFormFlowHandler(Class<T> formCls) {
-        this(formCls, SimpleFormProcessData.class);
-    }
-
-    public AbstractFormFlowHandler(Class<T> formCls, Class&lt;? extends FormProcessData> formProcessDataCls) {
-        this.formCls = formCls;
-        this.formProcessDataCls = formProcessDataCls;
-    }
-}
-]]>
-            </programlisting>
-          </example>
-          <para>As the above source suggests, the AbstractFormFlowHandler has two constructors which requires the type of form POJO and also the type of a sub class of
-          "FormProcessData" in addition. In fact, FormProcessData is an interface as following:</para>
+          <para>The BasicFormFlowHandlerTrait is implemented as an interface with various default methods which afford a template that allows developer to override any 
+          method for customization.</para>
+          <para>To define a form flow, we need to plan a flow graph which describes how the flow flows.</para>
+          <para>(before first) &lt;--&gt; step 1 &lt;--&gt; step2 &lt;--&gt; step3 &lt;--&gt; ...</para>
+          <para>Assume we have a flow as above, note that there can be cycles or branches, which means you can go any step from any other step in the flow graph, 
+          what you need to do is to define how the step should be transfered. For example, the following flow graph is possible:</para>
+          <para>(before first) --&gt; step 1 &lt;--&gt; step2 &lt;--&gt; step3 --&gt; (finish)</para>
+          <para>(before first) --&gt; step 1 &lt;--&gt; step4 &lt;--&gt; step5 --&gt; (finish)</para>
+          <para>step 1 &lt;-- step3</para>
+          <para>step 1 &lt;-- step5</para>
+          <para>To describe the step transfer, there is an interface called FormProcessData which defined the basic step information:</para>
           <example>
             <title>FormProcessData</title>
             <programlisting language="java">
@@ -84,6 +75,8 @@ public abstract class AbstractFormFlowHandler<T> {
 public interface FormProcessData {
 
     public abstract String getStepExit();
+    
+    public abstract String getStepBack();
 
     public abstract String getStepCurrent();
 
@@ -91,19 +84,18 @@ public interface FormProcessData {
 
     public abstract String getStepSuccess();
 
-    public abstract String getStepBack();
-
-    public abstract String getStepTraceData();
+    public abstract String getFlowTraceId();
 
 }
 ]]>
             </programlisting>
           </example>
           <para>The FormProcessData requires the developer to tell how to handle a form submit, the name of current step, the target step for success and the target for
-                failing, also want to know where to go if user want to go back to the previous step or exit. The getStepTraceData will return a data reference which holds
+                failing, also want to know where to go if user want to go back to the previous step or exit. The getFlowTraceId will return a id which represents
                 all the state of current flow(can be considered as a "session" id for the current in-progress form flow).</para>
-          <para>All the process data need to be submit every time so that the request handler can retrieve them from posted data and handle the data as expected. There is
-                also a predefined implementation of FormProcessData: SimpleFormProcessData, which is used as the default FormProcessData holder when not being specified.</para>
+          <para>The default implementation of FormProcessData is SimpleFormProcessData which retrieves the step information from the submitted http query parameters 
+                which can be put into the HTML template files as a part of the submitting form. However developers can always decide how to retrieve the step information by 
+                implement their own FormProcessData.</para>
           <example>
             <title>SimpleFormProcessData</title>
             <programlisting language="java">
@@ -114,6 +106,9 @@ public class SimpleFormProcessData implements FormProcessData {
     @QueryParam(name = "step-exit")
     private String stepExit;
 
+    @QueryParam(name = "step-back")
+    private String stepBack;
+
     @QueryParam(name = "step-current")
     private String stepCurrent;
 
@@ -123,20 +118,16 @@ public class SimpleFormProcessData implements FormProcessData {
     @QueryParam(name = "step-success")
     private String stepSuccess;
 
-    @QueryParam(name = "step-back")
-    private String stepBack;
-
-    @QueryParam(name = FormFlowConstants.FORM_STEP_TRACE_MAP_STR)
-    private String stepTraceData;
+    @QueryParam(name = FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM)
+    private String flowTraceId;
 }
 ]]>
             </programlisting>
           </example>
-          <para>As the source suggests in the above source, the request parameter names have been decided so the developers have to comply with the convention of SimpleFormProcessData
-                if you do not want to implement your own FormProcessData. Thus, we will include the following HTML in our template file side commonly:</para>
+          <para>If we use the default SimpleFormProcessData, we will usually include the following HTML in our template file side:</para>
           <example>
-            <title>HTML for FormProcessData</title>
-            <programlisting language="xml">                                                                         
+            <title>HTML for SimpleFormProcessData</title>
+            <programlisting language="xml">
 <![CDATA[
 <input type="hidden" name="step-current" value="confirm">
 <input type="hidden" name="step-failed" value="input">
@@ -146,16 +137,38 @@ public class SimpleFormProcessData implements FormProcessData {
 ]]>
             </programlisting>
           </example>
+          <para>The details of how the BasicFormFlowHandlerTrait process the submitted form data and transfer the step can be found at the JavaDoc of BasicFormFlowHandlerTrait.
+                Here we will introduce the points that what the developers have to do to decide the rule of a form flow. There are 3 methods should be overridden for a certain
+                flow rule:</para>
+          <itemizedlist>
+            <listitem>
+              <para>String createTemplateFilePathForStep(String step)</para>
+              <para>decide how to convert a step to the corresponding target template file path</para>
+            </listitem>
+            <listitem>
+              <para>boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData)</para>
+              <para>decide whether the flow trace data should be stored</para>
+            </listitem>
+            <listitem>
+              <para>boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, FormFlowTraceData traceData)</para>
+              <para>decide how to pass the form data for rendering to snippet, by flash scope or not.</para>
+            </listitem>
+          </itemizedlist>
+          <para>For most common situations, all the above things can be decided as general rules in the user project, so that a common parent class can be utilized to perform 
+                the common assumption. There are two built-in flows representing the classical situations: OneStepFormHandlerTrait and ClassicalMultiStepFormFlowHandlerTrait. 
+                Those two built-in interfaces will be introduced in the next section and can be considered as reference implementation of how to design and decide a form flow. 
+                User project is always recommended to extend from those two built-in flows rather than the basic mechanism trait BasicFormFlowHandlerTrait.
+          </para>
       </sect3>
       <sect3>
-          <title>Built-in classical handlers: OneStepFormHandler and MultiStepFormFlowHandler</title>
-          <para>Let us back to the AbstractFormFlowHandler, although AbstractFormFlowHandler has afforded most common operations, it is not convenient to use AbstractFormFlowHandler
-                directly. AbstractFormFlowHandler is designed as high layer abstraction of form flow and much concrete design is required for concrete cases. There are two built-in
-                out-of-box implementation for classical situations: OneStepFormHandler and MultiStepFormFlowHandler.</para>
-          <para>The OneStepFormHandler represents a most simple form process: there is a single input page, after submit, the submitted data will be handled and then return to a 
-                before-input page which is usually a list page of items. To use OneStepFormHandler, you have to put the following HTML in your form template files:</para>
+          <title>built-in flows</title>
+          <para>There are two built-in handler traits to handle the most common situations of the form flow, which are OneStepFormHandlerTrait and 
+                ClassicalMultiStepFormFlowHandlerTrait.</para>
+          <para>The OneStepFormHandlerTrait represents a most simple form process: there is a single input page, after submit, the submitted data will be handled and then return to a 
+                before-input page which is usually a list page of items. To use OneStepFormHandlerTrait, you need to put the following HTML in your form template files if you are using
+                the default SimpleFormProcessData:</para>
           <example>
-            <title>FormProcessData HTML for OneStepFormHandler</title>
+            <title>SimpleFormProcessData HTML for OneStepFormHandlerTrait</title>
             <programlisting language="xml">
 <![CDATA[
 <input type="hidden" name="step-current" value="input">
@@ -164,15 +177,15 @@ public class SimpleFormProcessData implements FormProcessData {
 <button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
 ]]>
             </programlisting>
-            <remark>By OneStepFormHandler, the "step-current" and "step-failed" must be "input", the "step-success" must be "complete", the "step-exit" can be any non empty value
-                    (usually "exit" is good enough).</remark>
+            <remark>By OneStepFormHandlerTrait's default implementation, the "step-current" and "step-failed" must be "input", the "step-success" and the "step-exit" can be any non empty value
+                    (usually "complete" and "exit" is good enough).</remark>
           </example>
-          <para>The MultiStepFormFlowHandler represents a little bit complicated situations: there are multiple steps in the flow. MultiStepFormFlowHandler assumes that there is 
-                at least one input page and one confirm page with a possible complete page. For the single input page case, MultiStepFormFlowHandler can be used directly, but if
-                there are multiple splitted input pages, the developer need to do more customization which will be introduced later.</para>
-          <para>For a classical 3-step form flow(input, confirm, complete), the following HTML must be put into the form template files:</para>
+          <para>The ClassicalMultiStepFormFlowHandlerTrait represents a little bit complicated situations: there are multiple steps in the flow. ClassicalMultiStepFormFlowHandlerTrait
+                assumes that there is at least one input page and one confirm page with a possible complete page. For the single input page case, ClassicalMultiStepFormFlowHandlerTrait
+                can be used directly, but if there are multiple splitted input pages, the developer need to do more customization.</para>
+          <para>For a classical 3-step form flow(input, confirm, complete), the following HTML need to be put into the form template files:</para>
           <example>
-            <title>FormProcessData HTML for MultiStepFormFlowHandler - buttons of input page</title>
+            <title>SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of input page</title>
             <programlisting language="xml">
 <![CDATA[
 <input type="hidden" name="step-current" value="input">
@@ -185,7 +198,7 @@ public class SimpleFormProcessData implements FormProcessData {
                     (usually "exit" is good enough).</remark>
           </example>
           <example>
-            <title>FormProcessData HTML for MultiStepFormFlowHandler - buttons of confirm page</title>
+            <title>SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of confirm page</title>
             <programlisting language="xml">
 <![CDATA[
 <input type="hidden" name="step-current" value="confirm">
@@ -199,7 +212,7 @@ public class SimpleFormProcessData implements FormProcessData {
                     "input", the "step-exit" can be any non empty value (usually "exit" is good enough).</remark>
           </example>
           <example>
-            <title>FormProcessData HTML for MultiStepFormFlowHandler - buttons of complete page</title>
+            <title>SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of complete page</title>
             <programlisting language="xml">
 <![CDATA[
 <button type="submit" name="step-exit" value="exit">return</button>
@@ -207,17 +220,72 @@ public class SimpleFormProcessData implements FormProcessData {
             </programlisting>
             <remark>At complete page, a non empty value of "step-exit" is enough.</remark>
           </example>
-          <remark>Note that the value of steps' name are not fixed and you can always define your own names by implement your own FormProcessData.</remark>
+          <remark>Note that the value of steps' name are not fixed and you can always define your own names by overriding the corresponding methods about step names at
+                  ClassicalMultiStepFormFlowHandlerTrait.</remark>
       </sect3>
       <sect3>
-          <title>Implement the handler</title>
-          <para>In both OneStepFormHandler and MultiStepFormFlowHandler, there are two methods which are required to be implemented by developers. </para>
-          <para>The first one is createInitForm() which has been implemented as creating the form instance from current request context. For a handler of adding, 
-          it is not necessary to override it, for a handler of updating or a handler mixing with adding and updating, this method should be overridden to 
-          supply a initial form instance:</para>
+          <title>Implement a real form flow handler</title>
+          <para>As introduced in previous sections, we should always extend our own handler from the built-in classical traits, before which we also have to decide what our flow
+                should be: one step or multiple steps?</para>
+          <para>Further, In user project, a common parent class is always recommended. A project limited common parent class can be used to decide the special rules of the 
+                user project and the following two method is strongly recommended to be overridden to return a configured and validator.</para>
+          <itemizedlist>
+            <listitem>
+              <para>getTypeUnMatchValidator()</para>
+            </listitem>
+            <listitem>
+              <para>getValueValidator()</para>
+            </listitem>
+          </itemizedlist>
           <example>
-            <title>query updating target data from db</title>
-            <programlisting language="java">                                                                 
+            <title>A common parent handler in project:</title>
+            <programlisting language="java">
+<![CDATA[
+/**
+ * A common parent handler to configure the common actions of form flow process in application. <br>
+ * For quick start, an empty class body would be good enough. You only need to do the customization when you really need to do it!!!
+ * 
+ */
+public abstract class Asta4DSamplePrjCommonFormHandler<T> implements ClassicalMultiStepFormFlowHandlerTrait<T> {
+
+    // we use a field to store a pre generated instance rather than create it at every time
+    private SamplePrjTypeUnMatchValidator typeValidator = new SamplePrjTypeUnMatchValidator(false);
+
+    // as the same as type validator, we cache the value validator instance here
+    private SamplePrjValueValidator valueValidator = new SamplePrjValueValidator(false);
+
+    @Override
+    public FormValidator getTypeUnMatchValidator() {
+        return typeValidator;
+    }
+
+    @Override
+    public FormValidator getValueValidator() {
+        return valueValidator;
+    }
+
+}
+]]>
+            </programlisting>
+            <remark>At confirm page, the "step-current" must be "confirm","the step-failed" must be "input", the "step-success" must be "complete", the "step-back" must be
+                    "input", the "step-exit" can be any non empty value (usually "exit" is good enough).</remark>
+          </example>
+          <para>More details about validator can be found at later section.</para>
+          <para>In both OneStepFormHandlerTrait and ClassicalMultiStepFormFlowHandlerTrait, there are 3 methods which are required to be implemented by developers.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Class&lt;T&gt; getFormCls()</para>
+              <para>Which specify the form type of current </para>
+            </listitem>
+            <listitem>
+              <para>T createInitForm()</para>
+              <para>To create form instance from the current request context. By default, this method will build a form instance from context by the given type returned by
+                    getFormCls(). A handler which need to retrieve the initial form data from storage should override this method to afford a initial form instance. For 
+                    common cases, a handler for adding is not necessary to override this method but a handler for updating should override this method to query database 
+                    and build the corresponding form instance.</para>
+                <example>
+                    <title>query updating target data from db in createInitForm()</title>
+                    <programlisting language="java">                                                                 
 <![CDATA[
     @Override
     protected PersonFormForMultiStep createInitForm() throws Exception {
@@ -230,31 +298,37 @@ public class SimpleFormProcessData implements FormProcessData {
         }
     }
 ]]>
-            </programlisting>
-          </example>
-          <para>The second method you have to override is updateForm() which is supposed to perform the final update logic of current form flow.</para>
-          <example>
-            <title>update form data</title>
-            <programlisting language="java">                                                                 
+                    </programlisting>
+                </example>
+            </listitem>
+            <listitem>
+              <para>void updateForm(T form)</para>
+              <para>Which is supposed to perform the final update logic of current form flow.</para>
+              <example>
+                <title>update form data</title>
+                <programlisting language="java">                                                                 
 <![CDATA[
     @Override
     protected void updateForm(PersonFormForMultiStep form) {
-        if (form.getId() == null) {
+        DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
+        if (form.getId() == null) {// add
             PersonDbManager.instance().add(Person.createByForm(form));
-            // output the success message to specified DOM rather than the global message bar
-            DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
-        } else {
+            // output the success message to the global message bar
+            msgHelper.info("data inserted");
+        } else {// update
             Person p = Person.createByForm(form);
             PersonDbManager.instance().update(p);
             // output the success message to specified DOM rather than the global message bar
-            DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
+            msgHelper.info(".x-success-msg", "update succeed");
         }
     }
 ]]>
-            </programlisting>
-            <remark>Note that there is a built-in message rendering mechanism to help developer supply a responsive interaction more easily. The 
-            details will be introduced later, simply remember that you can output message by info/warn/error levels.</remark>
-          </example>
+                </programlisting>
+                <remark>Note that there is a built-in message rendering mechanism to help developer supply a responsive interaction more easily. The 
+                        details will be introduced later, simply remember that you can output message by info/warn/error levels.</remark>
+              </example>
+            </listitem>
+          </itemizedlist>
       </sect3>
     </sect2>
     <sect2>
@@ -332,13 +406,14 @@ public class PersonForm {
     <sect2>
       <title>Form snippet</title>
       <para>To render the form values to template, we have to declare a snippet which extends from the AbstractFormFlowSnippet. As the same
-        as the built-in two classical handler, there are two corresponding snippet class: OneStepFormSnippet and MultiStepFormFlowSnippet.
+        as the built-in two classical handler traits, there are two corresponding snippet traits: OneStepFormSnippetTrait and ClassicalMultiStepFormFlowSnippetTrait.
       </para>
+      <para>Also as the same as handlers, a project common parent snippet is recommended to perform common customization.</para>
       <example>
         <title>Form snippet implementation</title>
-        <programlisting language="java">                                                                 
+        <programlisting language="java">
 <![CDATA[
-public class SingleInputFormSnippet extends OneStepFormSnippet {
+public class SingleInputFormSnippet extends Asta4DSamplePrjCommonFormSnippet {
 
     /**
      * override this method to supply the option data for select, radio and checkbox.
@@ -359,7 +434,7 @@ public class SingleInputFormSnippet extends OneStepFormSnippet {
 ]]>
         </programlisting>
       </example>
-      <para>Developers are required to override the retrieveFieldPrepareRenderers method to supply extra data for field rendering, 
+      <para>Developers are usually asked to override the retrieveFieldPrepareRenderers method to supply extra data for field rendering, 
             commonly the list of option data is required.</para>
       <para>SelectPrepareRenderer can be used to afford option list for select element, RadioPrepareRenderer and CheckboxPrepareRenderer
             can be used for radio and checbox input element.</para>
@@ -376,6 +451,12 @@ public class SingleInputFormSnippet extends OneStepFormSnippet {
       <para>Basically, until now we have gotten a workable form flow implementation. There is only one thing left that is validation which
             will be described in the next section.</para>
     </sect2>
+    <sect2>
+      <title>Cascade form POJO and array field</title>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Advanced</title>
     <sect2>
       <title>Validation</title>
       <para>Asta4D allows any validation mechanism to be integrated and supports Bean Validation 1.1(JSR349 and JSR303) by default. We will explain
@@ -409,27 +490,19 @@ public Integer getAge() {
       <para>The validation will be invoked before the calling of method updateForm, if there is any validation error, the page will be
             forwarded to the step specified by "step-failed" which is usually the input page, and the validation error message will be
             rendered to page too. More details about validation message rendering will be introduced in later sections.</para>
-    </sect2>
-  </sect1>
-  <sect1>
-    <title>Customize behaviours</title>
-    <sect2>
-      <title>Cascade form POJO and array field</title>
+      <para>As recommended before, a project common parent class is recommended to afford a configured validator or any other customized
+            validator implementation.</para>
     </sect2>
     <sect2>
-      <title>Customize form flow definition</title>
-      <para>(Include about how to implement multiple input steps)</para>
+      <title>Message rendering</title>
     </sect2>
     <sect2>
       <title>Customize form field annotation</title>
     </sect2>
     <sect2>
-      <title>Customize validation</title>
+      <title>A sample of defining a new flow rule</title>
+      <para>(Include about how to implement multiple input steps)</para>
     </sect2>
-    <sect2>
-      <title>Customize message rendering</title>
-    </sect2>
-
   </sect1>
   
 </chapter>

@@ -17,11 +17,14 @@
 package com.astamuse.asta4d.web.form.flow.base;
 
 public class FormFlowConstants {
-    public static final String FORM_STEP_TRACE_MAP = "FORM_STEP_TRACE_MAP#FlowFormConstants";
 
-    public static final String FORM_STEP_TRACE_MAP_STR = "FORM_STEP_TRACE_MAP_STR#FlowFormConstants";
+    public static final String FORM_FLOW_TRACE_ID_QUERY_PARAM = "FlowFormConstants_FORM_FLOW_TRACE_ID_QP";
 
-    public static final String FORM_STEP_BEFORE_FIRST = "FORM_STEP_BEFORE_FIRST#FlowFormConstants";
+    public static final String FORM_FLOW_TRACE_ID = "FlowFormConstants_FORM_FLOW_TRACE_ID";
 
-    public static final String FORM_STEP_RENDER_TARGET = "FORM_STEP_RENDER_TARGET#FlowFormConstants";
+    public static final String FORM_FLOW_TRACE_DATA = "FlowFormConstants_FORM_FLOW_TRACE_DATA";
+
+    public static final String FORM_STEP_BEFORE_FIRST = "FlowFormConstants_FORM_STEP_BEFORE_FIRST";
+
+    public static final String FORM_STEP_RENDER_TARGET = "FlowFormConstants_FORM_STEP_RENDER_TARGET";
 }

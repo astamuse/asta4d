@@ -49,9 +49,18 @@ cp -ar ./target/apidocs $copyTo
 
 echo copying user guide
 
-cp -ar ./asta4d-doc/target/docbkx/html-singlepage ./asta4d-doc/target/docbkx/userguide
-cp -ar ./asta4d-doc/target/docbkx/userguide $copyTo
+cp -ar ./asta4d-doc/target/docbkx ./asta4d-doc/target/userguide
+
+mv ./asta4d-doc/target/userguide/pdf/index.pdf ./asta4d-doc/target/userguide/pdf/userguide.$version.pdf
+
+cp -ar ./asta4d-doc/target/userguide $copyTo
+
+cp userguide_index.html $copyTo/userguide/index.html
+
+sed -i "s/@version/$version/g" $copyTo/userguide/index.html
 
 echo copying page_index
 
 cp page_index.html $copyTo/index.html
+
+sed -i "s/@version/$version/g" $copyTo/index.html

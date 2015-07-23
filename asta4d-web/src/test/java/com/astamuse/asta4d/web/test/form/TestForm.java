@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.astamuse.asta4d.web.annotation.QueryParam;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
@@ -30,6 +31,9 @@ import com.astamuse.asta4d.web.form.annotation.renderable.Input;
 
 @Form
 public class TestForm {
+
+    @QueryParam
+    Integer pdas;
 
     @Hidden
     @Max(30)

@@ -17,6 +17,9 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +39,7 @@ import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformerUtil;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.util.bean.AnnotationMethodHelper;
+import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
 
 public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
 
@@ -115,7 +119,7 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
             for (Object handler : requestHandlerList) {
                 try {
                     context.setData(TRACE_VAR_CURRENT_HANDLER, handler);
-                    result = AnnotationMethodHelper.invokeMethodForAnnotation(handler, RequestHandler.class);
+                    result = invokeMethodForAnnotation(handler, RequestHandler.class);
                 } catch (Throwable t) {
                     logger.error(t.getMessage(), t);
                     result = t;
@@ -134,6 +138,26 @@ public class DefaultRequestHandlerInvoker implements RequestHandlerInvoker {
                 cpList.add(ResultTransformerUtil.transform(null, resultTransformerList));
             }
             holder.setContentProviderList(cpList);
+        }
+
+        private Object invokeMethodForAnnotation(Object obj, Class<? extends Annotation> annotation) throws Exception {
+            Object targetObj = DeclareInstanceUtil.retrieveInovkeTargetObject(obj);
+            Method m = AnnotationMethodHelper.findMethod(targetObj, annotation);
+            if (m == null) {
+                // TODO maybe we can return a null?
+                String msg = String.format("Method not found for annotation %s at class %s:", annotation.toString(), targetObj.getClass()
+                        .getName());
+                throw new InvocationTargetException(new RuntimeException(msg));
+            }
+            try {
+                return DeclareInstanceUtil.invokeMethod(targetObj, m);
+            } catch (Exception e) {
+                String msg = "Error occured when invoke method for annotiona %s on %s";
+                msg = String.format(msg, annotation.getName(), targetObj.getClass().getName());
+                logger.error(msg, e);
+                throw e;
+            }
+
         }
 
     }

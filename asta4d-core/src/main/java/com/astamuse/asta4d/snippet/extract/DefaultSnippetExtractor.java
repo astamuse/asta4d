@@ -22,10 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.astamuse.asta4d.snippet.SnippetDeclarationInfo;
 
 /**
- * Extract snippet declaration as the format of "xxx.yyy:zzz", if "zzz" is not
- * specified, "render" will be used. "xxx.yyy" which is before colon will be
- * treated as snippet name (usually as class name or a id of a certain class)
- * and the part after colon will be treated as method name.
+ * Extract snippet declaration as the format of "xxx.yyy:zzz", if "zzz" is not specified, "render" will be used. "xxx.yyy" which is before
+ * colon will be treated as snippet name (usually as class name or a id of a certain class) and the part after colon will be treated as
+ * method name.
+ * 
+ * Additionally, "::" can be used as separator of method from version 1.1 to keep homogeneous grammar with Java 8's method reference.
  * 
  * @author e-ryu
  * 
@@ -46,7 +47,7 @@ public class DefaultSnippetExtractor implements SnippetExtractor {
 
     private SnippetDeclarationInfo _extract(String renderDeclaration) {
         String snippetClass, snippetMethod;
-        String[] sa = renderDeclaration.split(":");
+        String[] sa = renderDeclaration.split("::|:");
         if (sa.length < 2) {
             snippetClass = sa[0];
             snippetMethod = "render";

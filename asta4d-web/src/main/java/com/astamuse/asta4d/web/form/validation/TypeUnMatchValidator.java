@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.data.ContextDataHolder;
@@ -45,12 +46,12 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
     @Override
     public List<FormValidationMessage> validate(Object form) {
         List<FormValidationMessage> msgList = new LinkedList<>();
-        addMessage(msgList, form, -1);
+        addMessage(msgList, form, EMPTY_INDEXES);
         return msgList;
     }
 
     @SuppressWarnings("rawtypes")
-    private void addMessage(List<FormValidationMessage> msgList, Object form, int arrayIndex) {
+    private void addMessage(List<FormValidationMessage> msgList, Object form, int[] indexes) {
         List<AnnotatedPropertyInfo> fieldList = AnnotatedPropertyUtil.retrieveProperties(form.getClass());
 
         try {
@@ -61,12 +62,12 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
                     Object subform = field.retrieveValue(form);
                     if (StringUtils.isEmpty(cff.arrayLengthField())) {
                         // simple cascade form
-                        addMessage(msgList, subform, -1);
+                        addMessage(msgList, subform, indexes);
                     } else {
                         // array cascade form
                         int len = Array.getLength(subform);
                         for (int i = 0; i < len; i++) {
-                            addMessage(msgList, Array.get(subform, i), i);
+                            addMessage(msgList, Array.get(subform, i), ArrayUtils.add(indexes, i));
                         }
                     }
                     continue;
@@ -79,7 +80,7 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
                     valueHolder = InjectTrace.getInstanceInjectionTraceInfo(form, field.getSetter());
                 }
                 if (valueHolder != null) {
-                    msgList.add(createTypeUnMatchMessage(form.getClass(), field, valueHolder, arrayIndex));
+                    msgList.add(createTypeUnMatchMessage(form.getClass(), field, valueHolder, indexes));
                 }
             }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -89,9 +90,9 @@ public class TypeUnMatchValidator extends CommonValidatorBase implements FormVal
 
     @SuppressWarnings("rawtypes")
     protected FormValidationMessage createTypeUnMatchMessage(Class formCls, AnnotatedPropertyInfo field, ContextDataHolder valueHolder,
-            int arrayIndex) {
-        String fieldName = retrieveFieldName(field, arrayIndex);
-        String fieldLabel = retrieveFieldLabel(field, arrayIndex);
+            int[] indexes) {
+        String fieldName = retrieveFieldName(field, indexes);
+        String fieldLabel = retrieveFieldLabel(field, indexes);
         String annotatedMsg = retrieveFieldAnnotatedMessage(field);
 
         String msg;

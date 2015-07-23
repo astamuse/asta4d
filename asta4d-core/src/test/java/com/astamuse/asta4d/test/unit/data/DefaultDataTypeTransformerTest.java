@@ -17,6 +17,9 @@
 
 package com.astamuse.asta4d.test.unit.data;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -177,6 +180,17 @@ public class DefaultDataTypeTransformerTest extends BaseTest {
             {String[].class, Integer[].class, new String[]{"123", "456"}, new Integer[]{123, 456}},
             {String[].class, Integer.class, new String[]{"123", "456"}, 123},
             {String[].class, Date.class, new String[]{"2014-11-10"}, new Date(2014-1900, 11-1, 10)},
+            
+            {String[].class, Instant.class, new String[]{"2014-11-10"}, 
+                                                    ZonedDateTime.of(java.time.LocalDateTime.of(2014, 11,10,0,0), ZoneId.systemDefault()).toInstant()},
+            
+            
+            {String[].class, java.time.LocalDate.class, new String[]{"2014-11-10"}, java.time.LocalDate.of(2014, 11, 10)},
+            
+            {String[].class, java.time.LocalDateTime.class, new String[]{"2014-11-10T12:00:00"}, java.time.LocalDateTime.of(2014, 11, 10, 12,0,0)},
+            {String[].class, java.time.LocalTime.class, new String[]{"12:00:00"}, java.time.LocalTime.of(12,0,0)},
+            {String[].class, java.time.YearMonth.class, new String[]{"2014-11"}, java.time.YearMonth.of( 2014,11)},
+            
             {String[].class, DateTime.class, new String[]{"2014-11-10"}, new DateTime(2014, 11, 10, 0,0)},
             {String[].class, LocalDate.class, new String[]{"2014-11-10"}, new LocalDate(2014, 11, 10)},
             {String[].class, LocalDateTime.class, new String[]{"2014-11-10T12:00:00"}, new LocalDateTime(2014, 11, 10, 12,0,0)},

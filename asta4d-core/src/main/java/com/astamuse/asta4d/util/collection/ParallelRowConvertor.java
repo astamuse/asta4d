@@ -17,27 +17,17 @@
 
 package com.astamuse.asta4d.util.collection;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-
-import com.astamuse.asta4d.Context;
-
+/**
+ * Use {@link RowConvertorBuilder#parallel(RowConvertor)} or {@link RowConvertorBuilder#parallel(java.util.function.Function)} instead.
+ * 
+ * @author e-ryu
+ *
+ * @param <S>
+ * @param <T>
+ */
+@Deprecated
 public abstract class ParallelRowConvertor<S, T> implements RowConvertor<S, T> {
-
-    public Future<T> invoke(ExecutorService es, final int rowIndex, final S data) {
-        final Context context = Context.getCurrentThreadContext().clone();
-        return es.submit(new Callable<T>() {
-            @Override
-            public T call() throws Exception {
-                return Context.with(context, new Callable<T>() {
-                    @Override
-                    public T call() throws Exception {
-                        return convert(rowIndex, data);
-                    }
-                });
-            }
-        });
+    public boolean isParallel() {
+        return true;
     }
-
 }

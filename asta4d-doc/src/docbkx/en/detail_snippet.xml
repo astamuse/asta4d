@@ -168,12 +168,12 @@ Renderer renderer = Renderer.create();
           <entry>div.header[title]</entry>
         </row>
         <row>
-          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Combinators</emphasis></entry>
+          <entry></entry>
+          <entry></entry>
+          <entry></entry>
         </row>
         <row>
-          <entry></entry>
-          <entry></entry>
-          <entry></entry>
+          <entry namest="c1" nameend="c3" align='center' valign='bottom'><emphasis>Combinators</emphasis></entry>
         </row>
         <row>
           <entry>E F</entry>
@@ -201,12 +201,12 @@ Renderer renderer = Renderer.create();
           <entry>a[href], div, h3</entry>
         </row>
         <row>
-          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Pseudo selectors</emphasis></entry>
+          <entry></entry>
+          <entry></entry>
+          <entry></entry>
         </row>
         <row>
-          <entry></entry>
-          <entry></entry>
-          <entry></entry>
+          <entry namest="c1" nameend="c3" align='center' valign='bottom'><emphasis>Pseudo selectors</emphasis></entry>
         </row>
         <row>
           <entry>:lt(n)</entry>
@@ -267,12 +267,7 @@ Renderer renderer = Renderer.create();
           <entry></entry>
         </row>
         <row>
-          <entry namest="c1" nameend="c3" align='center' morerows='1' valign='bottom'><emphasis>Structural pseudo selectors</emphasis></entry>
-        </row>
-        <row>
-          <entry></entry>
-          <entry></entry>
-          <entry></entry>
+          <entry namest="c1" nameend="c3" align='center' valign='bottom'><emphasis>Structural pseudo selectors</emphasis></entry>
         </row>
         <row>
           <entry>:root</entry>
@@ -320,7 +315,6 @@ Renderer renderer = Renderer.create();
           <entry>elements that are the last sibling of its type in the list of children of its parent element</entry>
           <entry>tr > td:last-of-type</entry>
         </row>
-        
         <row>
           <entry>:only-child</entry>
           <entry>elements that have a parent element and whose parent element hasve no other element children</entry>
@@ -334,6 +328,11 @@ Renderer renderer = Renderer.create();
         <row>
           <entry>:empty</entry>
           <entry>elements that have no children at all</entry>
+          <entry></entry>
+        </row>
+        <row>
+          <entry></entry>
+          <entry></entry>
           <entry></entry>
         </row>
       </tbody>

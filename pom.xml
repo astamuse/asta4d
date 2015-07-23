@@ -10,12 +10,12 @@
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>1.0-Valentines</version>
+  <version>1.1-b1</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
   <description>asta4d framework is a view first web framework</description>
-
+  
   <url>http://github.com/astamuse/asta4d</url>
   <licenses>
     <license>
@@ -48,6 +48,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <prjDocRoot>./asta4d-doc</prjDocRoot>
   </properties>
 
   <modules>
@@ -82,10 +83,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>3.3</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+            <source>1.8</source>
+            <target>1.8</target>
+            <compilerArgs>
+                <arg>-parameters</arg>
+            </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
@@ -99,6 +103,7 @@
         <configuration>
           <locale>en_US</locale>
           <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
+            <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
         <version>2.9</version>
         <executions>
