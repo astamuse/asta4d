@@ -1,12 +1,11 @@
 ## News
 
+- 2015-07-23, the 1.1-b1 with better Java 8 support is released.
 - 2015-02-14, the first official release "1.0-Valentines" is released at the Valentine's day!
 
 ## Quick start
 
-[User Guide](http://astamuse.github.io/asta4d/1.0-Valentines/userguide/index.html)(being updated at irregular intervals)
-
-[JavaDoc](http://astamuse.github.io/asta4d/1.0-Valentines/apidocs/)
+[documents](http://astamuse.github.io/asta4d/1.1-b1/)(being updated at irregular intervals)
 
 [Online Sample](http://asta4dsample-xzer.rhcloud.com/)
 
@@ -16,7 +15,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 mvn archetype:generate                       \
     -DarchetypeGroupId=com.astamuse          \
     -DarchetypeArtifactId=asta4d-archetype   \
-    -DarchetypeVersion=1.0-Valentines        \
+    -DarchetypeVersion=1.1-b1        \
     -DgroupId=<your.groupid>                 \
     -DartifactId=<your-artifactId>
 ```
@@ -24,8 +23,10 @@ mvn archetype:generate                       \
 or simply follow the wizard by filtered list:
 
 ```batch
-mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-Valentines
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.1-b1
 ```
+
+*The 1.1-b1 with better Java 8 support is recommended for new projects, if you cannot use Java 8, use 1.0-Valentines instead.*
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
 
@@ -37,7 +38,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Reading the [Best Practice](http://astamuse.github.io/asta4d/1.0-Valentines/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
+Reading the [Best Practice](http://astamuse.github.io/asta4d/1.1-b1/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
 
 ## What is Asta4D
 
@@ -216,9 +217,9 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
 -	bug fix
 
-1.1 (current develop branch)
+1.1 (current developing branch)
 
-plain to officially release at March or April, snapshot will keep release(snapshot last release at 2015-02-14 12:21GMT+0).
+plain to officially release before the end of 2015, snapshot will keep release(b1 has been released at 2015.7.23).
 
 -	java 8 support(lambda, etc.)
 -	minor funcationalities enhancement

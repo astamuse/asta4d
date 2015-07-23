@@ -1,5 +1,23 @@
 ## Release Notes
 
+-   1.1-b1 (2015.7.23)
+    
+    This release is mainly for supporting Java 8 better with some functionality enhancemants.
+    
+    ADD
+    - better Java 8 lamdba support
+    
+    FIX
+    - NPE occurs when there are non form fields in a form POJO
+    - some incompatibility with Java 8 
+    
+    ENHANCE
+    - better form flow support
+        - now the cascade layer of form is not limited
+        - built-in multiple input step support
+        - implement all the functionalities by interface rather than abstract class to afford more flexibilities to user project
+        - built-in client util javascript as reference implementation 
+
 -   1.0-Valentines (2015.2.14)
 
 	The first official release version.
