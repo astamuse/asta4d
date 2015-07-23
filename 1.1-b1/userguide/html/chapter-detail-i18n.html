@@ -1,0 +1,199 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>15.&nbsp;i18n</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="prev" href="chapter-detail-form-flow.html" title="14.&nbsp;details of form flow"><link rel="next" href="overview.html" title="16.&nbsp;Asta4dServlet and configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">15.&nbsp;i18n</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-detail-form-flow.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;III.&nbsp;Reference</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="overview.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-i18n"></a>15.&nbsp;i18n</h2></div></div></div>
+  
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="i18n-message"></a>15.1.&nbsp;message stringization</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-i18n.html#i18n-I18nMessageHelper">15.1.1. I18nMessageHelper</a></span></dt><dt><span class="sect2"><a href="chapter-detail-i18n.html#i18n-MessagePatternRetriever">15.1.2. MessagePatternRetriever</a></span></dt><dt><span class="sect2"><a href="chapter-detail-i18n.html#i18n-default-locale-decision">15.1.3. Default locale</a></span></dt><dt><span class="sect2"><a href="chapter-detail-i18n.html#i18n-afd-msg">15.1.4. afd:msg</a></span></dt></dl></div>
+    
+    <p>Asta4D affords basic i18n support by a built-in I18nMessageHelper. I18nMessageHelper requires a MessagePatternRetriever implementation 
+      to retrieve message by key. There is also a default implementation JDKResourceBundleMessagePatternRetriever which uses the JDK's built-in 
+      resource bundle mechanism. 
+    </p>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-I18nMessageHelper"></a>15.1.1.&nbsp;I18nMessageHelper</h3></div></div></div>
+      
+      <p>I18nMessageHelper is an abstract classes which affords the basic interface for handling messages:</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            <p>getMessage(String key)</p>
+            <br>
+        </li><li class="listitem">
+            <p>getMessage(Locale locale, String key);</p>
+            <br>
+        </li><li class="listitem">
+            <p>getMessageWithDefault(String key, Object defaultPattern)</p>
+            <p>return defaultPattern#toString() if message not found</p>
+            <br>
+        </li><li class="listitem">
+            <p>getMessageWithDefault(Locale locale, String key, Object defaultPattern)</p>
+            <p>return defaultPattern#toString() if message not found</p>
+            <br>
+        </li></ul></div>
+
+      <p>There are also two extended classes from I18nMessageHelper, which afford more flexible message functionalities especially about formatting message by given parameters. 
+            Configuration#setI18nMessageHelper can be used to customized which helper you want to use. The default is OrderedParamI18nMessageHelper.
+            (<em><span class="remark">I18nMessageHelperTypeAssistant#getConfiguredMappedHelper and I18nMessageHelperTypeAssistant#getConfiguredOrderedHelper can be used to retrieve a type safe 
+              configured helper.</span></em>)
+      </p>
+
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            <p>MappedParamI18nMessageHelper</p>
+            <p>Allow format message by a given parameter map, A MappedValueFormatter is required to supply concrete formatting style and the default is
+                  ApacheStrSubstitutorFormatter which uses StrSubstitutor from Apache Common lang3.</p>
+            <br>
+        </li><li class="listitem">
+            <p>OrderedParamI18nMessageHelper(default)</p>
+            <p> Allow format message by a given parameter array. A OrderedValueFormatter is required to supply concrete formatting style and the default is 
+                   JDKMessageFormatFormatter which uses JDK's MessageFormat to format message string.</p>
+            <br>
+        </li></ul></div>
+      
+      <p>There are several value formatter can be used by the above helpers. Notice that The MappedParamI18nMessageHelper requires implementation of MappedValueFormatter and the 
+            OrderedParamI18nMessageHelper requires implementation of OrderedValueFormatter.
+      </p>
+      
+      <div class="table"><a name="d5e1622"></a><p class="title"><b>Table&nbsp;15.1.&nbsp;Built-in value formatters</b></p><div class="table-contents">
+      <table summary="Built-in value formatters" style="border-collapse: collapse;border-top: 0.5pt solid ; border-bottom: 0.5pt solid ; border-left: 0.5pt solid ; border-right: 0.5pt solid ; "><colgroup><col align="left" class="c1"><col align="left" class="c2"><col align="left" class="c3"><col align="left" class="c4"></colgroup><thead><tr><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">formatter</th><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">interface</th><th style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Description</th><th style="border-bottom: 0.5pt solid ; " align="left">Example</th></tr></thead><tbody><tr><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">ApacheStrSubstitutorFormatter(default)</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">MappedValueFormatter</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Use Apache Commons Lang's <a class="ulink" href="http://commons.apache.org/proper/commons-lang/javadocs/api-release/org/apache/commons/lang3/text/StrSubstitutor.html#replace(java.lang.CharSequence)" target="_top">
+          StrSubstitutor#replace</a> to format messages. Use "{" and "}" to represent variables place holder.</td><td style="border-bottom: 0.5pt solid ; " align="left">"There are {count} items in the {item-name} list."</td></tr><tr><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">JDKMessageFormatFormatter(default)</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">OrderedValueFormatter</td><td style="border-right: 0.5pt solid ; border-bottom: 0.5pt solid ; " align="left">Use JDK's <a class="ulink" href="http://docs.oracle.com/javase/7/docs/api/java/text/MessageFormat.html#format(java.lang.String, java.lang.Object...)" target="_top">
+          MessageFormat#format</a> to format messages.</td><td style="border-bottom: 0.5pt solid ; " align="left">"There are {1} items in the {2} list."</td></tr><tr><td style="border-right: 0.5pt solid ; " align="left">SymbolPlaceholderFormatter</td><td style="border-right: 0.5pt solid ; " align="left">OrderedValueFormatter</td><td style="border-right: 0.5pt solid ; " align="left">Use JDK's <a class="ulink" href="http://docs.oracle.com/javase/7/docs/api/java/lang/String.html#format(java.lang.String, java.lang.Object...)" target="_top">
+          String#format</a> to format messages.</td><td style="" align="left">"There are %d items in the %s list."</td></tr></tbody></table>
+      </div></div><br class="table-break">
+
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-MessagePatternRetriever"></a>15.1.2.&nbsp;MessagePatternRetriever</h3></div></div></div>
+      
+      <p>The I18nMessageHelper requires a MessagePatternRetriever implementation to retrieve message by key. There is a default implementation 
+            JDKResourceBundleMessagePatternRetriever which uses the JDK's built-in resource bundle mechanism. The base name of resource bundle
+            files can be specified by JDKResourceBundleMessagePatternRetriever#setResourceNames which accepts a list of base name. The configured resource bundles will be passed to JDK's
+            <a class="ulink" href="http://docs.oracle.com/javase/7/docs/api/java/util/ResourceBundle.html#getBundle(java.lang.String, java.util.Locale, java.lang.ClassLoader)" target="_top">
+            ResourceBundle#getBundle(String baseName, Locale locale, ClassLoader loader)</a> to retrieve messages.
+      </p>
+
+      <p>As the implementation of JDKResourceBundleMessagePatternRetriever, if the given locale is null, the default locale decision mechanism will be performed. 
+            See <a class="xref" href="chapter-detail-i18n.html#i18n-default-locale-decision" title="15.1.3.&nbsp;Default locale">Section&nbsp;15.1.3, &#8220;Default locale&#8221;</a>.</p>
+
+      <p>Further, the JDKResourceBundleMessagePatternRetriever accepts ResourceBundleFactory to allow customize how to retrieve a resource bundle. The default is        
+            CharsetResourceBundleFactory which allows specify the encoding of message bundle files. Another built-in implementation is the LatinEscapingResourceBundleFactory,
+            as the name suggests, the message files must be escaped by JDK's standard mechanism(via native2ascii).
+      </p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-default-locale-decision"></a>15.1.3.&nbsp;Default locale</h3></div></div></div>
+      
+      <p>The default locale will be decided by the following order and stop at the first non-null returned value.</p>
+      <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+            <p>Context.getCurrentThreadContext().getCurrentLocale()</p>
+        </li><li class="listitem">
+            <p>Locale.getDefault()</p>
+        </li><li class="listitem">
+            <p>Locale.ROOT</p>
+        </li></ol></div>
+      <p class="remark"><em><span class="remark">Since the Locale.getDefault() will return the local machine's locale by default, you may need to override the default locale to ROOT at the staring of 
+              your web application.</span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="i18n-afd-msg"></a>15.1.4.&nbsp;afd:msg</h3></div></div></div>
+      
+      <p>"afd:msg" tag can be used to declare an i18n aware message in a template file. The basic usage is as following:</p>
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;section&gt;</span>
+    <span class="hl-tag">&lt;article&gt;</span>
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- the inner html will be treated as default message if the key is not found in message bundle --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"notexistingkey"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.notexistingkey"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"parameter works as well."</span><span class="hl-tag">&gt;</span>text here to be treated as default message.{0}<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- simply specify parameters on tag --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"4"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"7"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- the parameter can be rendered by snippet too --&gt;</span>
+            <span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"ComplicatedSnippet:setMsgParam"</span><span class="hl-tag">&gt;</span>
+                <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"4"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+                <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"peoplecount"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.peoplecount"</span> <span class="hl-attribute">p0</span>=<span class="hl-value">"7"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;/afd:snippet&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- attribute started with "@" will be treated as a key --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">@p0</span>=<span class="hl-value">"sample.weatherreport.sunny"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">@p0</span>=<span class="hl-value">"sample.weatherreport.sunny"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- attribute started with "#" will be treated as a sub key of current key, thus sample.weatherreport.sunny will be searched --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">#p0</span>=<span class="hl-value">"rain"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">id</span>=<span class="hl-value">"weatherreport"</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.weatherreport"</span> <span class="hl-attribute">#p0</span>=<span class="hl-value">"rain"</span> <span class="hl-attribute">locale</span>=<span class="hl-value">"ja_JP"</span><span class="hl-tag">&gt;</span>&#22825;&#27671;<span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+        
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel panel-default"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"panel-body"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-comment">&lt;!-- treat message as text --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.textUrl"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            
+            <span class="hl-comment">&lt;!-- treat message as html --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.htmlUrl"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+            
+            <span class="hl-comment">&lt;!-- treat message as text even it begins with html: --&gt;</span>
+            <span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"sample.escapedUrl"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:msg&gt;</span><span class="hl-tag">&lt;br/&gt;</span>
+        <span class="hl-tag">&lt;/div&gt;</span><span class="hl-tag">&lt;/div&gt;</span>
+    <span class="hl-tag">&lt;/article&gt;</span>
+<span class="hl-tag">&lt;/section&gt;</span>
+
+      </pre>
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> Renderer setMsgParam() {
+    Renderer render = Renderer.create();
+    render.add(<span class="hl-string">"#peoplecount"</span>, <span class="hl-string">"p0"</span>, <span class="hl-number">15</span>);
+    <span class="hl-keyword">return</span> render;
+}
+
+    </pre>
+    <p>There are something need to be explained:</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            <p>default message</p>
+            <p>As commented in the source, the inner content of "afd:msg" will be treated as default message in case of the message of specified key cannot be found. 
+                  Note that the default message will be formatted by specified parameters too.</p>
+            <p>This mechanism can also be used as a simple text replacing mechanism in the html template file in case of necessity.</p>
+            <br>
+        </li><li class="listitem">
+            <p>parameter name</p>
+            <p>If the configured I18nMessageHelper is MappedParamI18nMessageHelper, the attribute names of current "afd:msg" element will be treated as parameter names directly.
+                  And if the configured I18nMessageHelper is OrderedParamI18nMessageHelper which is the default one, the attribute names started with single "p" and following with
+                  0-started numbers will be treated as the values of parameter value array.</p>
+            <br>
+        </li><li class="listitem">
+            <p>recursive parameter</p>
+            <p>The attributes which name started with "@" or "#" will be treated as recursive message's key. The different between "@" and "#" is that the "@" will be treated as a
+                  complete key but the "#" will be treated as a sub key of current message key.</p>
+            <br>
+        </li><li class="listitem">
+            <p>parameter value</p>
+            <p>The value of attributes can be specified directly in the html template file, also can be rendered by a snippet as in the above example.</p>
+            <br>
+        </li><li class="listitem">
+            <p>locale</p>
+            <p>Locale can be specified explicitly by ISO 639 locale string, if not, the default locale decision mechanism will be performed. 
+                 See <a class="xref" href="chapter-detail-i18n.html#i18n-default-locale-decision" title="15.1.3.&nbsp;Default locale">Section&nbsp;15.1.3, &#8220;Default locale&#8221;</a>.</p>
+            <br>
+        </li></ul></div>
+    </div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="i18n-file-search"></a>15.2.&nbsp;file search order</h2></div></div></div>
+    
+    <p>The built-in template resolver and static resource handler can match the target file name with awareness of locale. The match locale will be decided by the default locale
+          decision mechanism(See <a class="xref" href="chapter-detail-i18n.html#i18n-default-locale-decision" title="15.1.3.&nbsp;Default locale">Section&nbsp;15.1.3, &#8220;Default locale&#8221;</a>). After the locale is decided, for example, for a locale as Locale("fr", "CA", "UNIX") to search a 
+          html template file "index.html", the target file will be searched by following order:</p>
+    <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+            <p>index_fr_CA_UNIX.html</p>
+        </li><li class="listitem">
+            <p>index_fr_CA.html</p>
+        </li><li class="listitem">
+            <p>index_fr.html</p>
+        </li><li class="listitem">
+            <p>index.html</p>
+        </li></ol></div>
+    <p>For the static resource files such as js, css, jpg, etc. will be searched by the same order as well.</p>
+  </div>
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-detail-form-flow.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-reference.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="overview.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">14.&nbsp;details of form flow&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;16.&nbsp;Asta4dServlet and configuration</td></tr></table></div></body></html>
