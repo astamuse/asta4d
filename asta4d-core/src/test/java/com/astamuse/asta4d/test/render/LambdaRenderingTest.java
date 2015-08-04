@@ -167,6 +167,13 @@ public class LambdaRenderingTest extends BaseTest {
         new SimpleCase("LambdaRendering_listRecursiveRendering.html");
     }
 
+    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*not supported.*")
+    public void testParallelStreamRenderingException() throws Throwable {
+        new SimpleCase("LambdaRendering_parallelStreamRenderingCorrectness.html");
+    }
+
+    /* The following parallel stream related tests are disabled because we change our action to always throw exception for parallel stream */
+    @Test(enabled = false)
     public void testParallelStreamRenderingCorrectness() throws Throwable {
         // we want to confirm it 10 times
         for (int i = 0; i < 10; i++) {
@@ -174,6 +181,7 @@ public class LambdaRenderingTest extends BaseTest {
         }
     }
 
+    @Test(enabled = false)
     public void testParallelStreamRenderingTimeConsuming() throws Throwable {
         // we do not know how many threads will be started for parallel stream by the jvm, so if we render a list with too many elements, we
         // will have no idea about what is the appropriate execution time for multi-thread rendering. Thus we limit the size of target list

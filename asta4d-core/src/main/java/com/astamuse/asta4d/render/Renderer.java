@@ -400,13 +400,20 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, Stream)}.
+     * Create a renderer for list rendering by given {@link Stream} and add it to the current renderer. See {@link #create(String, Stream)}.
+     * 
+     * <p>
+     * 
+     * <b>Note:Parallel stream is not supported due to the potential thread dead lock(https://bugs.openjdk.java.net/browse/JDK-8042758)
+     * which is commented as not a bug by Oracle. For parallel rendering ,use {@link RowConvertorBuilder#parallel(Function)}/
+     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead. </b>
      * 
      * @param selector
      *            a css selector
      * @param stream
-     *            a list that can contain all the types that supported by the non-list add methods of Renderer.
+     *            a non-parallel stream with arbitrary type data
      * @return the created renderer for chain calling
+     * 
      */
     public Renderer add(String selector, Stream<?> stream) {
         return add(create(selector, stream));
@@ -838,19 +845,17 @@ public class Renderer {
 
     /**
      * Create a renderer for list rendering by given parameter with given {@link Stream}. See {@link #create(String, List)}.
+     * 
      * <p>
      * 
-     * <b>Note:</b> Parallel stream is supported but there is limitation that the current thread will be blocked to terminate current stream
-     * even {@link Configuration#isBlockParallelListRendering()} was set to false. In other words, all the stream operation will still be
-     * performed in multi-thread by the default JVM mechanism but the current thread will wait for all the operations to finish before
-     * perform other rendering. Use the combination of {@link #create(String, Iterable, RowConvertor)} and
-     * {@link RowConvertorBuilder#parallel(Function)}/ {@link RowConvertorBuilder#parallel(RowConvertor)} instead if you do not want the
-     * current thread to be blocked.
+     * <b>Note:Parallel stream is not supported due to the potential thread dead lock(https://bugs.openjdk.java.net/browse/JDK-8042758)
+     * which is commented as not a bug by Oracle. For parallel rendering ,use {@link RowConvertorBuilder#parallel(Function)}/
+     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead. </b>
      * 
      * @param selector
      *            a css selector
      * @param stream
-     *            a stream with arbitrary type data
+     *            a non-parallel stream with arbitrary type data
      * @return the created renderer
      */
     public final static Renderer create(String selector, Stream<?> stream) {
@@ -858,11 +863,10 @@ public class Renderer {
             return new Renderer(selector, new ElementRemover());
         } else {
             if (stream.isParallel()) {
-                List<Transformer<?>> list = new LinkedList<Transformer<?>>();
-                stream.forEachOrdered(obj -> {
-                    list.add(TransformerFactory.generateTransformer(obj));
-                });
-                return new Renderer(selector, list);
+                String msg = "Parallel stream is not supported due to the potential thread dead lock"
+                        + "(https://bugs.openjdk.java.net/browse/JDK-8042758) which is commented as not a bug by Oracle. For parallel "
+                        + "rendering ,use RowConvertorBuilder#parallel(Function)/RowConvertorBuilder#parallel(RowConvertor) instead.";
+                throw new IllegalArgumentException(msg);
             } else {
                 List<Transformer<?>> list = stream.map(obj -> {
                     return TransformerFactory.generateTransformer(obj);
