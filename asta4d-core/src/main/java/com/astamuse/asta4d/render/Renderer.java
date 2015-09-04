@@ -55,6 +55,7 @@ import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 public class Renderer {
 
     private final static boolean saveCallstackInfo;
+
     static {
         saveCallstackInfo = Configuration.getConfiguration().isSaveCallstackInfoOnRendererCreation();
     }
@@ -863,9 +864,9 @@ public class Renderer {
             return new Renderer(selector, new ElementRemover());
         } else {
             if (stream.isParallel()) {
-                String msg = "Parallel stream is not supported due to the potential thread dead lock"
-                        + "(https://bugs.openjdk.java.net/browse/JDK-8042758) which is commented as not a bug by Oracle. For parallel "
-                        + "rendering ,use RowConvertorBuilder#parallel(Function)/RowConvertorBuilder#parallel(RowConvertor) instead.";
+                String msg = "Parallel stream is not supported due to the potential thread dead lock" +
+                        "(https://bugs.openjdk.java.net/browse/JDK-8042758) which is commented as not a bug by Oracle. For parallel " +
+                        "rendering ,use RowConvertorBuilder#parallel(Function)/RowConvertorBuilder#parallel(RowConvertor) instead.";
                 throw new IllegalArgumentException(msg);
             } else {
                 List<Transformer<?>> list = stream.map(obj -> {
@@ -917,7 +918,7 @@ public class Renderer {
         if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListRendering()) {
+            if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListConverting()) {
                 return create(selector, ListConvertUtil.transformToFuture(list, convertor));
             } else {
                 return create(selector, ListConvertUtil.transform(list, convertor));

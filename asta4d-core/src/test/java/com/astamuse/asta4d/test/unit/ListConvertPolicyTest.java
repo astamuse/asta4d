@@ -55,7 +55,7 @@ public class ListConvertPolicyTest extends BaseTest {
     }
 
     private void tryConvert(final ParallelRecursivePolicy policy) {
-        Configuration.getConfiguration().setParallelRecursivePolicyForListRendering(policy);
+        Configuration.getConfiguration().setRecursivePolicyForParallelListConverting(policy);
 
         List<Integer> list = new ArrayList<>();
         list.add(1);

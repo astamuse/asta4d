@@ -76,7 +76,7 @@ public class ListConvertUtil {
 
         // for non-parallel converting, we will force to current thread converting.
         boolean doParallel = convertor.isParallel();
-        ParallelRecursivePolicy policy = doParallel ? conf.getParallelRecursivePolicyForListRendering()
+        ParallelRecursivePolicy policy = doParallel ? conf.getRecursivePolicyForParallelConverting()
                 : ParallelRecursivePolicy.CURRENT_THREAD;
 
         if (isInParallelConverting != null || !doParallel) {// recursive converting or non-parallel
