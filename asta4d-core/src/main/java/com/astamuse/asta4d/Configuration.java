@@ -71,6 +71,8 @@ public class Configuration {
 
     private ParallelRecursivePolicy recursivePolicyForParallelListConverting = ParallelRecursivePolicy.EXCEPTION;
 
+    private int numberLimitOfParallelListConverting = 50;
+
     private List<String> clearNodeClasses = new ArrayList<>();
 
     private String tagNameSpace = "afd";
@@ -229,6 +231,14 @@ public class Configuration {
 
     public void setSaveCallstackInfoOnRendererCreation(boolean saveCallstackInfoOnRendererCreation) {
         this.saveCallstackInfoOnRendererCreation = saveCallstackInfoOnRendererCreation;
+    }
+
+    public int getNumberLimitOfParallelListConverting() {
+        return numberLimitOfParallelListConverting;
+    }
+
+    public void setNumberLimitOfParallelListConverting(int numberLimitOfParallelListConverting) {
+        this.numberLimitOfParallelListConverting = numberLimitOfParallelListConverting;
     }
 
 }
