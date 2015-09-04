@@ -18,6 +18,7 @@
 package com.astamuse.asta4d.extnode;
 
 import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 
 public class ExtNodeConstants {
@@ -27,6 +28,11 @@ public class ExtNodeConstants {
     private final static String addNS(String name) {
         return ID_PREFIX + ":" + name;
     }
+
+    /* We add non-conflict prefix to non-exposed attributes to avoid conflict with client source.
+     * We do not need to add the prefix the exposed attributes which are treated as api convention.
+     */
+    private final static String UniqAttrPrefix = IdGenerator.createId() + "-";
 
     public final static String BLOCK_NODE_NAME = "block";
     public final static String BLOCK_NODE_TAG = addNS(BLOCK_NODE_NAME);
@@ -45,8 +51,9 @@ public class ExtNodeConstants {
     public final static String EMBED_NODE_TAG_SELECTOR = SelectorUtil.tag(EMBED_NODE_TAG);
 
     public final static String EMBED_NODE_ATTR_TARGET = "target";
-    public final static String EMBED_NODE_ATTR_BLOCK = "block";
     public final static String EMBED_NODE_ATTR_STATIC = "static";
+
+    public final static String EMBED_NODE_ATTR_BLOCK = UniqAttrPrefix + "block";
 
     public final static String SNIPPET_NODE_NAME = "snippet";
     public final static String SNIPPET_NODE_TAG = addNS(SNIPPET_NODE_NAME);
@@ -58,22 +65,22 @@ public class ExtNodeConstants {
     public final static String SNIPPET_NODE_ATTR_PARALLEL = "parallel";
     public final static String SNIPPET_NODE_ATTR_PARALLEL_WITH_NS = addNS(SNIPPET_NODE_ATTR_PARALLEL);
 
-    public final static String SNIPPET_NODE_ATTR_TYPE = "type";
+    public final static String SNIPPET_NODE_ATTR_TYPE = UniqAttrPrefix + "type";
     public final static String SNIPPET_NODE_ATTR_TYPE_USERDEFINE = "userdefine";
     public final static String SNIPPET_NODE_ATTR_TYPE_FAKE = "fake";
 
-    public final static String SNIPPET_NODE_ATTR_STATUS = "status";
+    public final static String SNIPPET_NODE_ATTR_STATUS = UniqAttrPrefix + "status";
     public final static String SNIPPET_NODE_ATTR_STATUS_READY = "ready";
     public final static String SNIPPET_NODE_ATTR_STATUS_WAITING = "waiting";
     public final static String SNIPPET_NODE_ATTR_STATUS_FINISHED = "finished";
 
-    public final static String SNIPPET_NODE_ATTR_BLOCK = "block";
+    public final static String SNIPPET_NODE_ATTR_BLOCK = UniqAttrPrefix + "block";
 
     public final static String GROUP_NODE_NAME = "group";
     public final static String GROUP_NODE_TAG = addNS(GROUP_NODE_NAME);
     public final static String GROUP_NODE_TAG_SELECTOR = SelectorUtil.tag(GROUP_NODE_TAG);
 
-    public final static String GROUP_NODE_ATTR_TYPE = "type";
+    public final static String GROUP_NODE_ATTR_TYPE = UniqAttrPrefix + "type";
     public final static String GROUP_NODE_ATTR_TYPE_USERDEFINE = "userdefine";
     public final static String GROUP_NODE_ATTR_TYPE_FAKE = "fake";
     public final static String GROUP_NODE_ATTR_TYPE_EMBED_WRAPPER = "embed_wrapper";
