@@ -6,7 +6,7 @@
 
 ## Quick start
 
-[documents](http://astamuse.github.io/asta4d/1.1-b1/)(being updated at irregular intervals)
+[documents](http://astamuse.github.io/asta4d/1.1-b2/)(being updated at irregular intervals)
 
 [Online Sample](http://asta4dsample-xzer.rhcloud.com/)
 
@@ -16,7 +16,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 mvn archetype:generate                       \
     -DarchetypeGroupId=com.astamuse          \
     -DarchetypeArtifactId=asta4d-archetype   \
-    -DarchetypeVersion=1.1-b1        \
+    -DarchetypeVersion=1.1-b2        \
     -DgroupId=<your.groupid>                 \
     -DartifactId=<your-artifactId>
 ```
@@ -24,10 +24,10 @@ mvn archetype:generate                       \
 or simply follow the wizard by filtered list:
 
 ```batch
-mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.1-b1
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.1-b2
 ```
 
-*The 1.1-b1 with better Java 8 support is recommended for new projects, if you cannot use Java 8, use 1.0-Valentines instead.*
+*The 1.1-x with better Java 8 support is recommended for new projects, if you cannot use Java 8, use 1.0-Valentines instead.*
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
 
@@ -39,7 +39,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Reading the [Best Practice](http://astamuse.github.io/asta4d/1.1-b1/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
+Reading the [Best Practice](http://astamuse.github.io/asta4d/1.1-b2/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
 
 ## What is Asta4D
 
