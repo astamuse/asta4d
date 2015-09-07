@@ -23,9 +23,10 @@ import com.astamuse.asta4d.Configuration;
 public class ListExecutorServiceUtil {
 
     private final static ExecutorService listExecutorService;
+
     static {
         Configuration conf = Configuration.getConfiguration();
-        listExecutorService = conf.getListExecutorFactory().createExecutorService();
+        listExecutorService = conf.getParallelListConvertingExecutorFactory().createExecutorService();
     }
 
     public final static ExecutorService getExecutorService() {

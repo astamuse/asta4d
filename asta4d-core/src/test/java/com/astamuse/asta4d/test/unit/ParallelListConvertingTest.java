@@ -18,6 +18,7 @@
 package com.astamuse.asta4d.test.unit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,14 +33,14 @@ import com.astamuse.asta4d.util.collection.ParallelRecursivePolicy;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 
-public class ListConvertPolicyTest extends BaseTest {
+public class ParallelListConvertingTest extends BaseTest {
 
     @BeforeClass
     public void setDefaultLocale() {
         Locale.setDefault(Locale.ROOT);
     }
 
-    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ".*Parallel list converting is forbidden.*")
+    @Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = ".*Recursive parallel list converting is forbidden.*")
     public void testForException() {
         tryConvert(ParallelRecursivePolicy.EXCEPTION);
     }
@@ -55,7 +56,7 @@ public class ListConvertPolicyTest extends BaseTest {
     }
 
     private void tryConvert(final ParallelRecursivePolicy policy) {
-        Configuration.getConfiguration().setParallelRecursivePolicyForListRendering(policy);
+        Configuration.getConfiguration().setRecursivePolicyForParallelListConverting(policy);
 
         List<Integer> list = new ArrayList<>();
         list.add(1);
@@ -81,6 +82,29 @@ public class ListConvertPolicyTest extends BaseTest {
                 }));
             }
         });
+    }
+
+    public void testNumberLimitOfParallel() {
+        Configuration.getConfiguration().setNumberLimitOfParallelListConverting(3);
+        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        long start = System.currentTimeMillis();
+        List<Integer> rList = ListConvertUtil.transform(list, RowConvertorBuilder.parallel((i) -> {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            return i;
+        }));
+        long end = System.currentTimeMillis();
+        long timeUsed = end - start;
+        if (timeUsed < 200) {
+            throw new AssertionError("Time used is less than 200 milliseconds with only " + timeUsed + " milliseconds.");
+        }
+        if (timeUsed > 350) {
+            throw new AssertionError("Time used is over than 350 milliseconds and it takes " + timeUsed + " milliseconds.");
+        }
+        Assert.assertEquals(rList, list);
     }
 
 }

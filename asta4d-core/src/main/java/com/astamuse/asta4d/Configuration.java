@@ -63,13 +63,15 @@ public class Configuration {
 
     private boolean outputAsPrettyPrint = false;
 
-    private boolean blockParallelListRendering = false;
-
     private ExecutorServiceFactory snippetExecutorFactory = new DefaultExecutorServiceFactory("asta4d-snippet", 200);
 
-    private ExecutorServiceFactory listExecutorFactory = new DefaultExecutorServiceFactory("asta4d-list", 600);
+    private ExecutorServiceFactory parallelListConvertingExecutorFactory = new DefaultExecutorServiceFactory("asta4d-parallel-list", 600);
 
-    private ParallelRecursivePolicy parallelRecursivePolicyForListRendering = ParallelRecursivePolicy.EXCEPTION;
+    private boolean blockParallelListConverting = false;
+
+    private ParallelRecursivePolicy recursivePolicyForParallelListConverting = ParallelRecursivePolicy.EXCEPTION;
+
+    private int numberLimitOfParallelListConverting = 50;
 
     private List<String> clearNodeClasses = new ArrayList<>();
 
@@ -175,20 +177,20 @@ public class Configuration {
         this.snippetExecutorFactory = snippetExecutorFactory;
     }
 
-    public ExecutorServiceFactory getListExecutorFactory() {
-        return listExecutorFactory;
+    public ExecutorServiceFactory getParallelListConvertingExecutorFactory() {
+        return parallelListConvertingExecutorFactory;
     }
 
-    public void setListExecutorFactory(ExecutorServiceFactory listExecutorFactory) {
-        this.listExecutorFactory = listExecutorFactory;
+    public void setParallelListConvertingExecutorFactory(ExecutorServiceFactory parallelListConvertingExecutorFactory) {
+        this.parallelListConvertingExecutorFactory = parallelListConvertingExecutorFactory;
     }
 
-    public ParallelRecursivePolicy getParallelRecursivePolicyForListRendering() {
-        return parallelRecursivePolicyForListRendering;
+    public ParallelRecursivePolicy getRecursivePolicyForParallelConverting() {
+        return recursivePolicyForParallelListConverting;
     }
 
-    public void setParallelRecursivePolicyForListRendering(ParallelRecursivePolicy parallelRecursivePolicyForListRendering) {
-        this.parallelRecursivePolicyForListRendering = parallelRecursivePolicyForListRendering;
+    public void setRecursivePolicyForParallelListConverting(ParallelRecursivePolicy recursivePolicyForParallelListConverting) {
+        this.recursivePolicyForParallelListConverting = recursivePolicyForParallelListConverting;
     }
 
     public boolean isOutputAsPrettyPrint() {
@@ -199,12 +201,12 @@ public class Configuration {
         this.outputAsPrettyPrint = outputAsPrettyPrint;
     }
 
-    public boolean isBlockParallelListRendering() {
-        return blockParallelListRendering;
+    public boolean isBlockParallelListConverting() {
+        return blockParallelListConverting;
     }
 
-    public void setBlockParallelListRendering(boolean blockParallelListRendering) {
-        this.blockParallelListRendering = blockParallelListRendering;
+    public void setBlockParallelListConverting(boolean blockParallelListConverting) {
+        this.blockParallelListConverting = blockParallelListConverting;
     }
 
     public List<String> getClearNodeClasses() {
@@ -229,6 +231,14 @@ public class Configuration {
 
     public void setSaveCallstackInfoOnRendererCreation(boolean saveCallstackInfoOnRendererCreation) {
         this.saveCallstackInfoOnRendererCreation = saveCallstackInfoOnRendererCreation;
+    }
+
+    public int getNumberLimitOfParallelListConverting() {
+        return numberLimitOfParallelListConverting;
+    }
+
+    public void setNumberLimitOfParallelListConverting(int numberLimitOfParallelListConverting) {
+        this.numberLimitOfParallelListConverting = numberLimitOfParallelListConverting;
     }
 
 }

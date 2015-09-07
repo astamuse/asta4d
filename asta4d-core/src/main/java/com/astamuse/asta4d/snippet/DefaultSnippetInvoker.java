@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.snippet;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,9 +78,13 @@ public class DefaultSnippetInvoker implements SnippetInvoker {
         } catch (SnippetInvokeException ex) {
             throw ex;
         } catch (Exception ex) {
-            Object[] params = execution.getParams();
+            String rawMsg = ex instanceof InvocationTargetException ? ((InvocationTargetException) ex).getTargetException().getMessage()
+                    : ex.getMessage();
 
-            String msg = "execute with params:" + (params == null ? null : Arrays.asList(params));
+            Object[] params = execution.getParams();
+            String msg = "execute with params:" + (params == null ? null : Arrays.asList(params)) + ".";
+            msg += " The raw exception message is:" + rawMsg;
+
             throw new SnippetInvokeException(declaration, msg, ex);
         } finally {
             context.setData(RenderUtil.TRACE_VAR_SNIPPET, null);

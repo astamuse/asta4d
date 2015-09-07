@@ -78,6 +78,17 @@ public class SimpleSnippetRenderingTest extends BaseTest {
         }
     }
 
+    public static class AttrConflict {
+
+        public Renderer outer() {
+            return Renderer.create("afd|snippet", "status", 5);
+        }
+
+        public Renderer inner(int status) {
+            return Renderer.create("#x-status", status);
+        }
+    }
+
     public void testTagEmbed() throws Throwable {
         new SimpleCase("SimpleSnippet_TagEmbed.html");
     }
@@ -98,6 +109,10 @@ public class SimpleSnippetRenderingTest extends BaseTest {
     public void testSnippetInit() throws Throwable {
         Context.getCurrentThreadContext().setData("value", "fire");
         new SimpleCase("SimpleSnippet_SnippetInit.html");
+    }
+
+    public void testAttrConflict() throws Throwable {
+        new SimpleCase("SimpleSnippet_AttrConflict.html");
     }
 
 }
