@@ -1,6 +1,15 @@
 ## Release Notes
 
--   1.1-b1 (2015.7.23)
+-   1.1-b2 (2015.09.07)
+    
+    FIX
+    - (BREAKING)source refactoring, unified all the parallel list converting related configuration items name
+    - disable paralle stream rendering
+    - add non-conflict suffix to the non-exposed attributes of snippet/embed/groupnode, etc.(#6)
+    - limit parallel thread number per invoking to avoid huge lists drain all the usable threads in pool(#7)
+    
+
+-   1.1-b1 (2015.07.23)
     
     This release is mainly for supporting Java 8 better with some functionality enhancemants.
     
@@ -18,7 +27,7 @@
         - implement all the functionalities by interface rather than abstract class to afford more flexibilities to user project
         - built-in client util javascript as reference implementation 
 
--   1.0-Valentines (2015.2.14)
+-   1.0-Valentines (2015.02.14)
 
 	The first official release version.
 
