@@ -1,0 +1,233 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>4.&nbsp;View first URL mapping and variable injection</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="renderer.html" title="3.&nbsp;Renderer: easy to use, secure, testable"><link rel="next" href="chapter-side-effect.html" title="5.&nbsp;Side effect and request handler"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">4.&nbsp;View first URL mapping and variable injection</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="renderer.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-side-effect.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="url-mapping"></a>4.&nbsp;View first URL mapping and variable injection</h2></div></div></div>
+  
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="view-first-mechanism"></a>4.1&nbsp;View first</h2></div></div></div>
+    
+
+    <p>
+    In Asta4D, we follow the principle of view first rather than the tradition MVC architecture. The declaration of URL rules
+    does not need to include a controller and one url can be mapped to one template file directly, which is called as View First.
+    </p>
+    
+    <p>
+    In Asta4D, URL mapping rules are not managed in a configuration file. The Framework provides a sort of DSL by a set of convinient
+    APIs, which means the declaration of Asta4D's URL mapping rule is programmable and it affords much flexibility than the way with a
+    static configuration file.    
+    </p>
+    
+    <p>
+    Users declare their own URL rules via implementing the interface UrlMappingRuleInitializer of Asta4D:
+    </p>
+    
+    <div class="example"><a name="d5e186"></a><p class="title"><b>Example&nbsp;4.1.&nbsp;Sample of declaring url rules:</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> UrlRules <span class="hl-keyword">implements</span> UrlMappingRuleInitializer {    
+    
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>    
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> initUrlMappingRules(UrlMappingRuleHelper rules) {    
+        <span class="hl-comment">//@formatter:off    </span>
+        rules.add(GET, <span class="hl-string">"/"</span>)    
+             .redirect(<span class="hl-string">"/app/index"</span>);    
+            
+        rules.add(GET, <span class="hl-string">"/redirect-to-index"</span>)    
+             .redirect(<span class="hl-string">"p:/app/index"</span>);    
+            
+        rules.add(<span class="hl-string">"/app/"</span>, <span class="hl-string">"/templates/index.html"</span>);    
+        rules.add(<span class="hl-string">"/app/index"</span>, <span class="hl-string">"/templates/index.html"</span>);    
+        rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-string">"/templates/variableinjection.html"</span>)&#65307;    
+        ...    
+    
+        <span class="hl-comment">//@formatter:on    </span>
+    }
+}
+
+    </pre>
+    </div></div><br class="example-break">
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="url-rule-grammer"></a>4.2&nbsp;The grammer of URL rule and path variable</h2></div></div></div>
+    
+    <p>
+    The grammer of Asta4D's URL rule is almost the same as Spring MVC's URL mapping rule and the parts surrounded by braces are 
+    treated as path variables which can be retrieved in following process(in snippet classes or request handlers).
+    </p>
+    
+    <p>
+    Further, extra path variables can be declared in a url rule by calling the method of "var" as following:
+    </p>
+    <div class="example"><a name="d5e193"></a><p class="title"><b>Example&nbsp;4.2.&nbsp;Sample of declaring extra path variable:</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/{name}/{age}"</span>, <span class="hl-string">"/templates/variableinjection.html"</span>)  
+     .var(<span class="hl-string">"extraVar"</span>, <span class="hl-number">1234</span>);  
+
+    </pre>
+    </div></div><br class="example-break">
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="variable-injection"></a>4.3&nbsp;Variable Injection</h2></div></div></div>
+    
+    <p>
+    Asta4D implements a variable injection mechanism which is very closed to Spring MVC, all of the instance fields 
+    and method parameters in the implementation of snippet classes can be injected automatically by framework.
+    </p>
+    
+    <p>
+    Further, all the snippet classes are singleton in request scope.In other words, there will be only one istance of any 
+    snippet class in a single request scope regardless of how many times the snippet class is called. Let us see some samples
+    of variable injection in the snippet class.
+    </p>
+    
+    <div class="example"><a name="d5e200"></a><p class="title"><b>Example&nbsp;4.3.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+    
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>    
+    <span class="hl-keyword">private</span> String value; <span class="hl-comment">// (1)    </span>
+    <span class="hl-keyword">private</span> <span class="hl-keyword">long</span> id;    
+    <span class="hl-keyword">private</span> String resolvedValue;    
+    <span class="hl-keyword">private</span> <span class="hl-keyword">int</span> count = <span class="hl-number">0</span>;    
+
+}    
+
+    </pre>
+    <p>
+    @ContextData indicates that the instance field "value" need to be injected after the instance of InitSnippet is created. 
+    Since the snippet instance is singeleton in the current request scope, the instance field "value" will be injected and 
+    initialized only once in the current request scope. The framework will search a variable named "value" in all the available
+    variable scopes and inject the found value. The name of "value" is decided by the field name by default and can be
+    sepcified by extra declaration(see the following samples).
+    </p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e203"></a><p class="title"><b>Example&nbsp;4.4.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>    
+    <span class="hl-keyword">private</span> <span class="hl-keyword">void</span> setId(<span class="hl-keyword">long</span> id) {&#12288;<span class="hl-comment">//(3)    </span>
+        <span class="hl-keyword">this</span>.id = id;    
+    }    
+
+}    
+
+    </pre>
+    <p>Instance field can be injected via setter methods too.</p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e206"></a><p class="title"><b>Example&nbsp;4.5.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+    
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>    
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> init() <span class="hl-keyword">throws</span> SnippetInvokeException { <span class="hl-comment">//(2)    </span>
+        resolvedValue = value + <span class="hl-string">"-resolved"</span>;    
+        count++;    
+    }  
+
+}    
+
+    </pre>
+    <p>
+    The init method of InitializableSnippet is being implemented. This is not necessary but if a snippet class implements 
+    the interface of InitializableSnippet, the init method will be called once after all the instance fields are injected,
+    by which customized snippet initial logic can be performed.
+    </p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e209"></a><p class="title"><b>Example&nbsp;4.6.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <span class="hl-comment">// (4)    </span>
+    <span class="hl-keyword">public</span> Renderer getPathVarName(    
+    <em><span class="hl-annotation" style="color: gray">@ContextData(scope = WebApplicationContext.SCOPE_PATHVAR)</span></em>    
+    <span class="hl-keyword">int</span> count) {    
+    }
+
+}    
+
+    </pre>
+    <p>
+    Variable injection on snippet method. In this sample the extra search scope are delcared, which cause framework searches
+    a variable named "count" in the path variable scope. As the same as the injection on instance field, the searching variable
+    name is decided by the parameter name by default.
+    </p>
+    </div></div><br class="example-break">
+    
+    <div class="example"><a name="d5e212"></a><p class="title"><b>Example&nbsp;4.7.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <span class="hl-comment">// (5)    </span>
+    <span class="hl-keyword">public</span> Renderer getQueryParamName(    
+    <em><span class="hl-annotation" style="color: gray">@ContextData(name = "var", scope = WebApplicationContext.SCOPE_QUERYPARAM)</span></em>    
+    String name) {    
+    }    
+
+}    
+
+    </pre>
+    <p>
+    In this sample, an extra variable name and search scope are declared, the framework will search a variable named "var" in the
+    request parameters.
+    </p>
+    </div></div><br class="example-break">    
+
+    <div class="example"><a name="d5e215"></a><p class="title"><b>Example&nbsp;4.8.&nbsp;</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {    
+
+    <span class="hl-comment">// (6)    </span>
+    <span class="hl-keyword">public</span> Renderer getDefaultName(String name) {    
+    } 
+
+}    
+
+    </pre>
+    <p>
+    There is a difference between instance field injection and method parameter injection. A instance field without @ContextData
+    annotation will not be injected, but for method paramters, all the paramters will be injected compulsorily. In this sample,
+    the framework will search a variable named "name" in all the available scopes as following order:
+    </p>
+    <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+        <p>HTML tag attribution(SCOPE_ATTR)</p>
+        <p>Trace back to the top tag of the current HTML document recursively. This scope is only available to the snippet method.</p>
+      </li><li class="listitem">
+        <p>path variable(SCOPE_PATHVAR)</p>
+      </li><li class="listitem">
+        <p>request parameter(SCOPE_QUERYPARAM)</p>
+      </li><li class="listitem">
+        <p>flash variable(SCOPE_FLASH)</p>
+        <p>The variables passed from one request to another request, usually acrross a redirect.</p>
+      </li><li class="listitem">
+        <p>cookie(SCOPE_COOKIE)</p>
+      </li><li class="listitem">
+        <p>request hearder(SCOPE_HEADER)</p>
+      </li><li class="listitem">
+        <p>request attribute(SCOPE_REQUEST)</p>
+      </li><li class="listitem">
+        <p>session(SCOPE_SESSION)</p>
+      </li><li class="listitem">
+        <p>global(SCOPE_GLOBAL)</p>
+        <p>A global static variable pool</p>
+      </li></ol></div>
+    <p>
+      This search order is applied to the instance field injection too except that the first scope of HTML tag attribution is not available.
+    </p>
+    </div></div><br class="example-break">
+
+
+    
+  </div>
+
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="renderer.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-side-effect.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">3.&nbsp;Renderer: easy to use, secure, testable&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;5.&nbsp;Side effect and request handler</td></tr></table></div></body></html>

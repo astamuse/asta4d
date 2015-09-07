@@ -1,0 +1,342 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>10.&nbsp;Details of Template</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="prev" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="next" href="chapter-detail-snippet.html" title="11.&nbsp;Details of snippet class"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">10.&nbsp;Details of Template</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="asta4d-reference.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;III.&nbsp;Reference</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-snippet.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-template"></a>10.&nbsp;Details of Template</h2></div></div></div>
+  
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e718"></a>10.1.&nbsp;Supported tags</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-template.html#d5e721">10.1.1. afd:extension</a></span></dt><dt><span class="sect2"><a href="chapter-detail-template.html#d5e733">10.1.2. afd:block</a></span></dt><dt><span class="sect2"><a href="chapter-detail-template.html#d5e762">10.1.3. afd:embed</a></span></dt><dt><span class="sect2"><a href="chapter-detail-template.html#d5e776">10.1.4. afd:snippet</a></span></dt><dt><span class="sect2"><a href="chapter-detail-template.html#d5e799">10.1.5. afd:group</a></span></dt><dt><span class="sect2"><a href="chapter-detail-template.html#d5e807">10.1.6. afd:comment</a></span></dt><dt><span class="sect2"><a href="chapter-detail-template.html#d5e815">10.1.7. afd:msg</a></span></dt></dl></div>
+    
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e721"></a>10.1.1.&nbsp;afd:extension</h3></div></div></div>
+      
+      <p>A "afd:extension" tag declares the relationship of inheritance between child template and parent template.</p>
+      <div class="example"><a name="d5e724"></a><p class="title"><b>Example&nbsp;10.1.&nbsp;child.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
+
+...
+
+<span class="hl-tag">&lt;/afd:extension&gt;</span>   
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><dl class="variablelist"><dt><span class="term">parent</span></dt><dd>
+            <p>Identifies the parent template file of the current template.</p>
+          </dd></dl></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e733"></a>10.1.2.&nbsp;afd:block</h3></div></div></div>
+      
+      <p>A "afd:block" tag declares a referenceable block in the template file. Child template file can reference the
+      blocks in parent template by the same tag "afd:block" with extra action declaration: append, insert, override.
+      </p>
+      <div class="example"><a name="d5e736"></a><p class="title"><b>Example&nbsp;10.2.&nbsp;parent.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;html&gt;</span>   
+    <span class="hl-tag">&lt;head&gt;</span>   
+        <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">id</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
+            <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+        <span class="hl-tag">&lt;/afd:block&gt;</span>   
+           
+        <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">id</span>=<span class="hl-value">"block2"</span><span class="hl-tag">&gt;</span>   
+            <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+        <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+        <span class="hl-tag">&lt;title&gt;</span>extension sample<span class="hl-tag">&lt;/title&gt;</span>   
+    <span class="hl-tag">&lt;/head&gt;</span>   
+    <span class="hl-tag">&lt;body&gt;</span>   
+        <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">id</span>=<span class="hl-value">"content"</span><span class="hl-tag">&gt;</span>content<span class="hl-tag">&lt;/afd:block&gt;</span>   
+    <span class="hl-tag">&lt;/body&gt;</span>   
+<span class="hl-tag">&lt;/html&gt;</span> 
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="example"><a name="d5e739"></a><p class="title"><b>Example&nbsp;10.3.&nbsp;child.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
+
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">append</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">insert</span>=<span class="hl-value">"block2"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">override</span>=<span class="hl-value">"content"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;div&gt;</span>hello<span class="hl-tag">&lt;/div&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+<span class="hl-tag">&lt;/afd:extension&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><dl class="variablelist"><dt><span class="term">id</span></dt><dd>
+            <p>The referenceable id of a block.</p>
+          </dd><dt><span class="term">append</span></dt><dd>
+            <p>
+            Append all the children of current tag to the tail of the parent's block which id equals the declared
+            value of the append attribute.
+            </p>
+          </dd><dt><span class="term">insert</span></dt><dd>
+            <p>
+            Insert all the children of current tag to the head of the parent's block which id equals the declared
+            value of the insert attribute.
+            </p>
+          </dd><dt><span class="term">override</span></dt><dd>
+            <p>
+            Override the parent's block which id equals the declared value of the override attribute by all the
+            children of current tag.
+            </p>
+          </dd></dl></div>
+      <p class="remark"><em><span class="remark">The result of merging the above two files by Asta4D's template engine can be found at <a class="xref" href="chapter-Inheritable-template.html" title="2.&nbsp;Flexible template">Chapter&nbsp;2, <i>Flexible template</i></a>.</span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e762"></a>10.1.3.&nbsp;afd:embed</h3></div></div></div>
+      
+      <p>A "afd:embed" tag declares an action of extracting and inserting an external file's content to the site where
+      the "afd:embed" tag is declared.</p>
+      <div class="example"><a name="d5e765"></a><p class="title"><b>Example&nbsp;10.4.&nbsp;child.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">override</span>=<span class="hl-value">"content "</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;div&gt;</span>hello<span class="hl-tag">&lt;/div&gt;</span>   
+        <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/templates/embed.html"</span><span class="hl-tag"> &gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+<span class="hl-tag">&lt;/afd:extension&gt;</span>  
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><dl class="variablelist"><dt><span class="term">target</span></dt><dd>
+            <p>The path of which file should be included at the declaration site.</p>
+          </dd></dl></div>
+      <p class="remark"><em><span class="remark">In the embed target file, afd:block can also be used to append/insert/override the blocks in source template.
+      Samples and the merging result can be found at <a class="xref" href="chapter-Inheritable-template.html" title="2.&nbsp;Flexible template">Chapter&nbsp;2, <i>Flexible template</i></a>.
+      </span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e776"></a>10.1.4.&nbsp;afd:snippet</h3></div></div></div>
+      
+      <p>A "afd:snippet" tag declares an Java class which assumes the duty of rendering data to the html snippet contained
+      by the declaring tag.</p>
+      <div class="example"><a name="d5e779"></a><p class="title"><b>Example&nbsp;10.5.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"SimpleSnippet:setProfile"</span><span class="hl-tag">&gt;</span>  
+    <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>dummy name<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+    <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>0<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+<span class="hl-tag">&lt;/afd:snippet&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><dl class="variablelist"><dt><span class="term">render</span></dt><dd>
+            <p>The snippet class name and render method name by format:&lt;class name&gt;:&lt;method name&gt;, the class name
+            and the method name are split by colon. If the method name is omitted, the default method name "render" will be used.
+            </p>
+          </dd><dt><span class="term">parallel</span></dt><dd>
+            <p>A snippet tag with "parallel" attribute will be executed in a separated thread from the main thread of current
+            http request. It is not necessary to assign a value to this attribute.
+            </p>
+          </dd><dt><span class="term">clear</span></dt><dd>
+            <p>A snippet tag with "clear" attribute will not be executed and will be removed from the final output page. This
+            is useful for disabling certain contents temporarily in certain situations such as debug. It is not necessary to assign
+            a value to this attribute.
+            </p>
+          </dd></dl></div>
+      <p>
+      There is an alternative way to declare a snippet by "afd:render" attribute.
+      </p>
+      <div class="example"><a name="d5e796"></a><p class="title"><b>Example&nbsp;10.6.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"SimpleSnippet:setProfile"</span><span class="hl-tag">&gt;</span>  
+    <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>dummy name<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+    <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>0<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+<span class="hl-tag">&lt;/div&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+      <p>By the same way, "afd:paralell" and "afd:clear" can be used on arbitrary html tags which will be treated as the same as
+      a "afd:snippet" tag. Note that "afd:paralell" will not be available except the "afd:render" is declared too, but the 
+      "afd:clear" will be always available even there is no declaration of "afd:render" on the html tag.
+      </p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e799"></a>10.1.5.&nbsp;afd:group</h3></div></div></div>
+      
+      <p>A "afd:group" tag declares a referenceable DOM element for back-end Java snippet class. It is useful to reference certain
+      text without wrapping html tag or combine a group of coordinate html tags as a single node.</p>
+      <div class="example"><a name="d5e802"></a><p class="title"><b>Example&nbsp;10.7.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+
+<span class="hl-tag">&lt;p&gt;</span>We found <span class="hl-tag">&lt;afd:group</span> <span class="hl-attribute">id</span>=<span class="hl-value">"item-count"</span><span class="hl-tag">&gt;</span>3<span class="hl-tag">&lt;/afd:group&gt;</span> matched items in our database.<span class="hl-tag">&lt;/p&gt;</span> 
+
+<span class="hl-tag">&lt;afd:group</span> <span class="hl-attribute">id</span>=<span class="hl-value">"list-item"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attribute">id</span>=<span class="hl-value">"title"</span><span class="hl-tag">&gt;</span>the title<span class="hl-tag">&lt;/div&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attribute">id</span>=<span class="hl-value">"content"</span><span class="hl-tag">&gt;</span>the content<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/afd:group&gt;</span>
+
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><em><span class="remark">None.</span></em><dl class="variablelist"></dl></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e807"></a>10.1.6.&nbsp;afd:comment</h3></div></div></div>
+      
+      <p>A "afd:comment" tag declares a comment block in the template files and it will be removed after rendering.</p>
+      <div class="example"><a name="d5e810"></a><p class="title"><b>Example&nbsp;10.8.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+
+<span class="hl-tag">&lt;afd:comment&gt;</span>This is comment<span class="hl-tag">&lt;/afd:comment&gt;</span>
+
+<span class="hl-tag">&lt;afd:comment&gt;</span>
+  <span class="hl-tag">&lt;div&gt;</span>This is comment too.<span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/afd:comment&gt;</span>
+
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><em><span class="remark">None.</span></em><dl class="variablelist"></dl></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e815"></a>10.1.7.&nbsp;afd:msg</h3></div></div></div>
+      
+      <p>A "afd:msg" tag declares a message managed in external files. This tag is mainly designed for i18n support, but
+      it also can be used as a simple string replacer. Please see <a class="xref" href="chapter-detail-i18n.html" title="15.&nbsp;i18n">Chapter&nbsp;15, <i>i18n</i></a> for more details.</p>
+      <div class="example"><a name="d5e819"></a><p class="title"><b>Example&nbsp;10.9.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:msg</span> <span class="hl-attribute">key</span>=<span class="hl-value">"search.result.count"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:message&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="variablelist"><p class="title"><b>Attributes:</b></p><dl class="variablelist"><dt><span class="term">key</span></dt><dd>
+            <p>The message key which should can be found in the configured message file.</p>
+          </dd></dl></div>
+    </div>
+  </div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e827"></a>10.2.&nbsp;Additional</h2></div></div></div>
+    
+    <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+        <p>HTML5 convention</p>
+        <p>
+        Asta4D's template engine does only support html5, which relies on the underline library <a class="ulink" href="http://jsoup.org" target="_top">jsoup(verion 1.6.3)</a>.
+        jsoup implements the <a class="ulink" href="http://whatwg.org/html" target="_top">WHATWG HTML5</a> specification and requires compliance from the target file.
+        jsoup can fix some cases of breaking specification but you would still get unexpected result for certain cases. Basically, you should take care
+        of the following things:
+        </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>All tags and attributes are converted to lower case.</p></li><li class="listitem"><p>Self closed tags such as &lt;div /&gt; or &lt;afd:embed target="embed.html" /&gt; is not legal.</p></li><li class="listitem"><p>There are some tags that the parser "ensures".For example a &lt;tbody&gt; tag must be the first tag inside &lt;table&gt;, which
+          breas the following example:</p>
+            <div class="example"><a name="d5e842"></a><p class="title"><b>Example&nbsp;10.10.&nbsp;</b></p><div class="example-contents">
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;table&gt;</span>
+<span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"ListSnippet"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;tr&gt;</span><span class="hl-tag">&lt;td&gt;</span><span class="hl-tag">&lt;/td&gt;</span><span class="hl-tag">&lt;/tr&gt;</span>
+<span class="hl-tag">&lt;/afd:snippet&gt;</span>
+<span class="hl-tag">&lt;/table&gt;</span> 
+
+            </pre>
+            </div></div><br class="example-break">
+            <p>But it can be replaced by the following:</p>
+            <div class="example"><a name="d5e845"></a><p class="title"><b>Example&nbsp;10.11.&nbsp;</b></p><div class="example-contents">
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;table&gt;</span>
+<span class="hl-tag">&lt;tr</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"ListSnippet"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;td&gt;</span><span class="hl-tag">&lt;/td&gt;</span><span class="hl-tag">&lt;/tr&gt;</span>
+<span class="hl-tag">&lt;/table&gt;</span> 
+
+            </pre>
+            </div></div><br class="example-break">
+          </li></ul></div><p>
+        </p>
+      </li><li class="listitem">
+        <p>body convention</p>
+        <p>When a child template file uses "afd:extension" to declare its parent template, only the body part(all the 
+        children of the body except the body tag itself) of the child template will be processed by the template engine 
+        and the parts out of body will be ignored simply. The same convention is applied to the embed target file. The 
+        following two sample will not cause different results by Asta4D.</p>
+        <div class="example"><a name="d5e850"></a><p class="title"><b>Example&nbsp;10.12.&nbsp;child.html without body tag:</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">override</span>=<span class="hl-value">"content "</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;div&gt;</span>hello<span class="hl-tag">&lt;/div&gt;</span>   
+        <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/templates/embed.html"</span><span class="hl-tag"> &gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+<span class="hl-tag">&lt;/afd:extension&gt;</span>  
+
+        </pre>
+        </div></div><br class="example-break">
+        <div class="example"><a name="child-with-body-tag"></a><p class="title"><b>Example&nbsp;10.13.&nbsp;child.html with body tag:</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-tag">&lt;html&gt;</span>
+<span class="hl-tag">&lt;head&gt;</span>
+<span class="hl-tag">&lt;meta</span> <span class="hl-attribute">charset</span>=<span class="hl-value">"UTF-8"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;/head&gt;</span>
+<span class="hl-tag">&lt;body&gt;</span>
+<span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">override</span>=<span class="hl-value">"content "</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;div&gt;</span>hello<span class="hl-tag">&lt;/div&gt;</span>   
+        <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/templates/embed.html"</span><span class="hl-tag"> &gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+<span class="hl-tag">&lt;/afd:extension&gt;</span>
+<span class="hl-tag">&lt;/body&gt;</span>
+<span class="hl-tag">&lt;/html&gt;</span>  
+
+        </pre>
+        </div></div><br class="example-break">
+        <p>
+        This convention can be used for editor compatibility in case of your prefer html editor requires correct meta information
+        (We add charset="UTF-8" to all of our template files for this reason). Note that this convention is only available on extended
+        child template file or embedded target file, the parts out of body tag will be processed normally in the parent template file
+        which is as a root template without further parent.
+        </p>
+        <p>
+        Further, explicit parameter information can be commented at body tag in parameterizable embed target file for better source
+        readability.
+        </p>
+        <div class="example"><a name="embed-with-parameter-declaring"></a><p class="title"><b>Example&nbsp;10.14.&nbsp;embed.html</b></p><div class="example-contents">
+          <pre class="programlisting">
+
+<span class="hl-tag">&lt;html&gt;</span>
+<span class="hl-tag">&lt;head&gt;</span><span class="hl-tag">&lt;meta</span> <span class="hl-attribute">charset</span>=<span class="hl-value">"UTF-8"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/head&gt;</span>
+<span class="hl-tag">&lt;body</span> <span class="hl-attribute">itemsize</span>=<span class="hl-value">"{Integer}"</span> <span class="hl-attribute">itemlist</span>=<span class="hl-value">"{List}"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">append</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"embed.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+    <span class="hl-tag">&lt;div&gt;</span>good embed<span class="hl-tag">&lt;/div&gt;</span>   
+<span class="hl-tag">&lt;/body&gt;</span>
+<span class="hl-tag">&lt;/html&gt;</span>
+
+          </pre>
+          <p>
+            In <a class="xref" href="chapter-detail-template.html#embed-with-parameter-declaring" title="Example&nbsp;10.14.&nbsp;embed.html">Example&nbsp;10.14, &#8220;embed.html&#8221;</a>, we put some "strange" information in the body tag, which suggests that
+            when this file is embedded, it requires an Integer parameter named "itemsize" and a List parameter named "itemlist". Note
+            that such declaration can only be regarded as a hint for source reader and there is no warranty about any parameter check.
+            You should consider it as a sample of how you can make interesting use of the body convention.
+          </p>
+        </div></div><br class="example-break">
+        <br>
+      </li><li class="listitem">
+        <p>"afd" name space</p>
+        <p>The "afd" name space is configured as the default name space of Asta4D's special tags. This name space can be
+        changed by Configuration#setTagNameSpace.</p>
+        <br>
+      </li><li class="listitem">
+        <p>TemplateResolver</p>
+        <p>Asta4D searches certain template file by configured TemplateResolver. There are three pre-implemented TemplateResolver:
+        FileTemplateResolver, ClasspathTemplateResolver and WebApplicationTemplateResolver. The default configured WebApplicationTemplateResolver
+        will search template files with awareness of servlet container. The FileTemplateResolver and ClasspathTemplateResolver
+        can be used for test purpose, you can also provide your own TemplateResolver for special search mechanism.
+        </p>
+      </li></ul></div>
+  </div>
+
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="asta4d-reference.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-reference.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-snippet.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Part&nbsp;III.&nbsp;Reference&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;11.&nbsp;Details of snippet class</td></tr></table></div></body></html>
