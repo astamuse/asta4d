@@ -20,7 +20,6 @@ package com.astamuse.asta4d.web;
 import javax.servlet.ServletContext;
 
 import com.astamuse.asta4d.template.AbstractTemplateResolver;
-import com.astamuse.asta4d.template.AbstractTemplateResolver.TemplateInfo;
 
 public class WebApplicationTemplateResolver extends AbstractTemplateResolver {
 

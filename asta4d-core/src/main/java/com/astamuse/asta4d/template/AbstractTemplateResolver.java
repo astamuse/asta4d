@@ -122,12 +122,16 @@ public abstract class AbstractTemplateResolver extends MultiSearchPathResourceLo
 
     protected Template createTemplate(TemplateInfo templateInfo) throws TemplateException, TemplateNotFoundException {
         try {
-            Document doc = Jsoup.parse(templateInfo.getInput(), "UTF-8", "", new Parser(new Asta4DTagSupportHtmlTreeBuilder()));
+            Document doc = parse(templateInfo.getInput());
             return new Template(templateInfo.getActualPath(), doc);
         } catch (IOException e) {
             String msg = String.format("Template %s parsing failed.", templateInfo.getActualPath());
             throw new TemplateException(msg, e);
         }
+    }
+
+    protected Document parse(InputStream input) throws IOException {
+        return Jsoup.parse(input, "UTF-8", "", new Parser(new Asta4DTagSupportHtmlTreeBuilder()));
     }
 
     protected TemplateInfo createTemplateInfo(String path, InputStream input) {

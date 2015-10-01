@@ -52,7 +52,6 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.template.AbstractTemplateResolver;
-import com.astamuse.asta4d.template.AbstractTemplateResolver.TemplateInfo;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
