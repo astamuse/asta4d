@@ -19,17 +19,18 @@ package com.astamuse.asta4d.test.unit;
 
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.template.AbstractTemplateResolver;
+import com.astamuse.asta4d.template.AbstractTemplateResolver.TemplateInfo;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
-import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 
 public class TemplateResolverTest extends BaseTest {
 
     @Test(expectedExceptions = TemplateNotFoundException.class)
     public void templateNotFoundTest() throws TemplateException, TemplateNotFoundException {
-        TemplateResolver resolver = new TemplateResolver() {
+        AbstractTemplateResolver resolver = new AbstractTemplateResolver() {
             @Override
             protected TemplateInfo loadResource(String name) {
                 return null;

@@ -17,21 +17,26 @@
 
 package com.astamuse.asta4d.template;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.parser.Asta4DTagSupportHtmlTreeBuilder;
+import org.jsoup.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.template.TemplateResolver.TemplateInfo;
+import com.astamuse.asta4d.template.AbstractTemplateResolver.TemplateInfo;
 import com.astamuse.asta4d.util.MemorySafeResourceCache;
 import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 import com.astamuse.asta4d.util.MultiSearchPathResourceLoader;
 import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 
-public abstract class TemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo> {
+public abstract class AbstractTemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo>implements TemplateResolver {
 
     private final static MemorySafeResourceCache<String, Template> defaultTemplateCache = new MemorySafeResourceCache<String, Template>();
 
@@ -96,8 +101,7 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
             }
 
             try {
-                Template t;
-                t = new Template(info.getActualPath(), input);
+                Template t = createTemplate(info);
                 templateCache.put(cacheKey, t);
                 return t;
             } finally {
@@ -113,6 +117,16 @@ public abstract class TemplateResolver extends MultiSearchPathResourceLoader<Tem
             throw e;
         } catch (Exception e) {
             throw new TemplateException(path + " resolve error", e);
+        }
+    }
+
+    protected Template createTemplate(TemplateInfo templateInfo) throws TemplateException, TemplateNotFoundException {
+        try {
+            Document doc = Jsoup.parse(templateInfo.getInput(), "UTF-8", "", new Parser(new Asta4DTagSupportHtmlTreeBuilder()));
+            return new Template(templateInfo.getActualPath(), doc);
+        } catch (IOException e) {
+            String msg = String.format("Template %s parsing failed.", templateInfo.getActualPath());
+            throw new TemplateException(msg, e);
         }
     }
 
