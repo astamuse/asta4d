@@ -69,10 +69,16 @@ public class LambdaRenderingTest extends BaseTest {
 
             List<String> textList = Arrays.asList("a", "b", "c");
             renderer.add("div#test-text", textList.stream());
+            renderer.add("div#test-text-1", textList, (int index, String obj) -> {
+                return obj;
+            });
 
             List<Long> longList = Arrays.asList(10L, 20L, 30L);
-            renderer.add("div#test-long", longList, (index, obj) -> {
+            renderer.add("div#test-long", longList, (int index, Long obj) -> {
                 return obj / 10;
+            });
+            renderer.add("div#test-long-2", longList, (Long obj, int index) -> {
+                return obj / 2;
             });
 
             List<Integer> integerList = Arrays.asList(100, 200, 300);
@@ -192,7 +198,7 @@ public class LambdaRenderingTest extends BaseTest {
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-        }, 2000);
+        } , 2000);
 
     }
 }

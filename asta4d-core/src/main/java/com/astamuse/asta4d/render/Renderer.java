@@ -37,6 +37,7 @@ import com.astamuse.asta4d.render.transformer.RenderableTransformer;
 import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.render.transformer.TransformerFactory;
+import com.astamuse.asta4d.util.collection.AlternativeRowConvertor;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
 import com.astamuse.asta4d.util.collection.RowConvertor;
@@ -443,6 +444,10 @@ public class Renderer {
      * @return the created renderer for chain calling
      */
     public <S, T> Renderer add(String selector, Iterable<S> list, RowConvertor<S, T> convertor) {
+        return add(create(selector, list, convertor));
+    }
+
+    public <S, T> Renderer add(String selector, Iterable<S> list, AlternativeRowConvertor<S, T> convertor) {
         return add(create(selector, list, convertor));
     }
 
@@ -924,6 +929,10 @@ public class Renderer {
                 return create(selector, ListConvertUtil.transform(list, convertor));
             }
         }
+    }
+
+    public final static <S, T> Renderer create(String selector, Iterable<S> list, AlternativeRowConvertor<S, T> convertor) {
+        return create(selector, list, convertor.toRowConvertor());
     }
 
     /**
