@@ -101,8 +101,8 @@ import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
  * In user project, a common parent class is always recommended. A project limited common parent class can be used to decide the special
  * rules of the project and the following two method is strongly recommended to be overridden to return a configured validator.
  * <ul>
- * <li> {@link #getTypeUnMatchValidator()}
- * <li> {@link #getValueValidator()}
+ * <li>{@link #getTypeUnMatchValidator()}
+ * <li>{@link #getValueValidator()}
  * </ul>
  * 
  * 
@@ -132,12 +132,12 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
     public String firstStepName();
 
     /**
-     * translate a step to a target template file path
+     * translate a step to a target which may be a template file path usually, but a redirect target URL could be possible
      * 
      * @param step
      * @return target template file path
      */
-    public String createTemplateFilePathForStep(String step);
+    public String createMoveTargetForStep(String step);
 
     /**
      * Tells the form type of current flow.
@@ -196,7 +196,8 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
     default String handle() throws Exception {
         FormProcessData processData = (FormProcessData) InjectUtil.retrieveContextDataSetInstance(getFormProcessDataCls(),
                 "not-exist-formProcessData", "");
-        return createTemplateFilePathForStep(process(processData));
+        String targetStep = process(processData);
+        return createMoveTargetForStep(targetStep);
     }
 
     /**
@@ -406,7 +407,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
                         });// end runnable and context.with
 
                         assignArrayValueFromContext(field.getType().getComponentType(), (T) array[seq], currentContext, newIndex);
-                    }// end for loop
+                    } // end for loop
 
                     field.assignValue(form, array);
                 } else {
