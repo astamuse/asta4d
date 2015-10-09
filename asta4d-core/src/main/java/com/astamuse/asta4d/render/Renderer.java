@@ -918,7 +918,7 @@ public class Renderer {
         if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
-            if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListConverting()) {
+            if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListRendering()) {
                 return create(selector, ListConvertUtil.transformToFuture(list, convertor));
             } else {
                 return create(selector, ListConvertUtil.transform(list, convertor));
