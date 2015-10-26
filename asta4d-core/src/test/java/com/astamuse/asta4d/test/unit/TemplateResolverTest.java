@@ -17,10 +17,13 @@
 
 package com.astamuse.asta4d.test.unit;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.template.AbstractTemplateResolver;
-import com.astamuse.asta4d.template.AbstractTemplateResolver.TemplateInfo;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
@@ -38,5 +41,38 @@ public class TemplateResolverTest extends BaseTest {
 
         };
         Template template = resolver.findTemplate("test");
+    }
+
+    private static InputStream createInputStream(String bodyContent) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html><body>").append(bodyContent).append("</body></html>");
+        ByteArrayInputStream bis = new ByteArrayInputStream(sb.toString().getBytes());
+        return bis;
+    }
+
+    public void templateCacheNonStatic() throws TemplateException, TemplateNotFoundException {
+
+        AbstractTemplateResolver resolver1 = new AbstractTemplateResolver() {
+            @Override
+            protected TemplateInfo loadResource(String name) {
+                return new TemplateInfo("p1", createInputStream("p1"));
+            }
+
+        };
+
+        AbstractTemplateResolver resolver2 = new AbstractTemplateResolver() {
+            @Override
+            protected TemplateInfo loadResource(String name) {
+                return new TemplateInfo("p2", createInputStream("p2"));
+            }
+
+        };
+
+        Template template1 = resolver1.findTemplate("pp");
+        Template template2 = resolver2.findTemplate("pp");
+
+        Assert.assertNotSame(template1, template2);
+        Assert.assertNotEquals(template1.getPath(), template2.getPath(), "should be different template path");
+
     }
 }

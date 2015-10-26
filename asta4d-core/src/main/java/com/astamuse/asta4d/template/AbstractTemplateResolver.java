@@ -38,7 +38,7 @@ import com.astamuse.asta4d.util.i18n.LocalizeUtil;
 
 public abstract class AbstractTemplateResolver extends MultiSearchPathResourceLoader<TemplateInfo>implements TemplateResolver {
 
-    private final static MemorySafeResourceCache<String, Template> defaultTemplateCache = new MemorySafeResourceCache<String, Template>();
+    private final MemorySafeResourceCache<String, Template> defaultTemplateCache = new MemorySafeResourceCache<String, Template>();
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -147,16 +147,16 @@ public abstract class AbstractTemplateResolver extends MultiSearchPathResourceLo
 
         private final InputStream input;
 
-        private TemplateInfo(String path, InputStream input) {
+        public TemplateInfo(String path, InputStream input) {
             this.actualPath = path;
             this.input = input;
         }
 
-        private String getActualPath() {
+        public String getActualPath() {
             return actualPath;
         }
 
-        private InputStream getInput() {
+        public InputStream getInput() {
             return input;
         }
 
