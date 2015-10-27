@@ -1,0 +1,491 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>8.&nbsp;Built in form flow</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="chapter-adv-request-handler.html" title="7.&nbsp;Advanced usage of request handler"><link rel="next" href="chapter-best-practice.html" title="9.&nbsp;Best practice"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">8.&nbsp;Built in form flow</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-adv-request-handler.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-best-practice.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-form-flow"></a>8.&nbsp;Built in form flow</h2></div></div></div>
+  
+  <p class="remark"><em><span class="remark">(Being written. See the online sample: <a class="ulink" href="http://asta4dsample-xzer.rhcloud.com/form" target="_top">Form Flow Sample</a>)</span></em></p>
+  <p>Asta4D affords built-in form flow to accelerate development of traditional form process. Asta4D's form flow mechanism supports 
+  various flow style and supplies several classical flow style as built-in. For most cases, the developers only need to implement the init 
+  and update method to complete the entire form related logic.</p>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e415"></a>8.1.&nbsp;Startup</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-form-flow.html#d5e417">8.1.1. Form and form field</a></span></dt><dt><span class="sect2"><a href="chapter-form-flow.html#d5e427">8.1.2. Form handler</a></span></dt><dd><dl><dt><span class="sect3"><a href="chapter-form-flow.html#d5e429">Brief of BasicFormFlowHandlerTrait and FormProcessData</a></span></dt><dt><span class="sect3"><a href="chapter-form-flow.html#d5e465">built-in flows</a></span></dt><dt><span class="sect3"><a href="chapter-form-flow.html#d5e488">Implement a real form flow handler</a></span></dt></dl></dd><dt><span class="sect2"><a href="chapter-form-flow.html#d5e520">8.1.3. HTML template of form</a></span></dt><dt><span class="sect2"><a href="chapter-form-flow.html#d5e532">8.1.4. Form snippet</a></span></dt><dt><span class="sect2"><a href="chapter-form-flow.html#d5e546">8.1.5. Cascade form POJO and array field</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e417"></a>8.1.1.&nbsp;Form and form field</h3></div></div></div>
+      
+      <p>In a form process, the basic conception is a POJO which represents the whole form data. In Asta4D, we use @Form annotation to annotate a
+      POJO as a form object which can be handled by the the form flow.</p>
+      <p>Also, there must be fields to represent the concrete data of a form, which can also be annotated by a set of form field annotations.
+      There are several built-in form field annotations for common cases and you can implement your own form field annotation too(See <a class="xref" href="chapter-detail-form-flow.html" title="14.&nbsp;details of form flow">Chapter&nbsp;14, <i>details of form flow</i></a>
+      for more details about form field annotation).</p>
+      <div class="example"><a name="d5e422"></a><p class="title"><b>Example&nbsp;8.1.&nbsp;annotations on form POJO and form fields</b></p><div class="example-contents">
+        
+        <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@Form</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> PersonForm <span class="hl-keyword">extends</span> Person{
+
+    <em><span class="hl-annotation" style="color: gray">@Hidden</span></em>
+    <span class="hl-keyword">public</span> Integer getId() {
+        <span class="hl-keyword">return</span> <span class="hl-keyword">super</span>.getId();
+    }
+
+    <em><span class="hl-annotation" style="color: gray">@Input</span></em>
+    <span class="hl-keyword">public</span> String getName() {
+        <span class="hl-keyword">return</span> <span class="hl-keyword">super</span>.getName();
+    }
+    
+    <em><span class="hl-annotation" style="color: gray">@Select(name = "bloodtype")</span></em>
+    <span class="hl-keyword">public</span> BloodType getBloodType() {
+        <span class="hl-keyword">return</span> <span class="hl-keyword">super</span>.getBloodType();
+    }
+
+}
+
+        </pre>
+        <em><span class="remark">The @Hidden represents a hidden input of html, @Input represents a traditional common input and @Select is matched to the pull-down element in html. 
+                We also recommend to implement the form POJO by extending from the existing entity POJO, see details at <a class="xref" href="chapter-best-practice.html#common-usage-form-flow" title="9.2.&nbsp;Common usage of form flow">Section&nbsp;9.2, &#8220;Common usage of form flow&#8221;</a>.
+        </span></em>
+      </div></div><br class="example-break">
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e427"></a>8.1.2.&nbsp;Form handler</h3></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect3"><a href="chapter-form-flow.html#d5e429">Brief of BasicFormFlowHandlerTrait and FormProcessData</a></span></dt><dt><span class="sect3"><a href="chapter-form-flow.html#d5e465">built-in flows</a></span></dt><dt><span class="sect3"><a href="chapter-form-flow.html#d5e488">Implement a real form flow handler</a></span></dt></dl></div>
+      
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="d5e429"></a>Brief of BasicFormFlowHandlerTrait and FormProcessData</h4></div></div></div>
+          
+          <p>After we defined our form POJO, we need to declare a request handler to handle the form request. There is an BasicFormFlowHandlerTrait which affords most
+                necessary common operations of form process.</p>
+          <p>The BasicFormFlowHandlerTrait is implemented as an interface with various default methods which afford a template that allows developer to override any 
+          method for customization.</p>
+          <p>To define a form flow, we need to plan a flow graph which describes how the flow flows.</p>
+          <p>(before first) &lt;--&gt; step 1 &lt;--&gt; step2 &lt;--&gt; step3 &lt;--&gt; ...</p>
+          <p>Assume we have a flow as above, note that there can be cycles or branches, which means you can go any step from any other step in the flow graph, 
+          what you need to do is to define how the step should be transfered. For example, the following flow graph is possible:</p>
+          <p>(before first) --&gt; step 1 &lt;--&gt; step2 &lt;--&gt; step3 --&gt; (finish)</p>
+          <p>(before first) --&gt; step 1 &lt;--&gt; step4 &lt;--&gt; step5 --&gt; (finish)</p>
+          <p>step 1 &lt;-- step3</p>
+          <p>step 1 &lt;-- step5</p>
+          <p>To describe the step transfer, there is an interface called FormProcessData which defined the basic step information:</p>
+          <div class="example"><a name="d5e441"></a><p class="title"><b>Example&nbsp;8.2.&nbsp;FormProcessData</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">interface</span> FormProcessData {
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> String getStepExit();
+    
+    <span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> String getStepBack();
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> String getStepCurrent();
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> String getStepFailed();
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> String getStepSuccess();
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> String getFlowTraceId();
+
+}
+
+            </pre>
+          </div></div><br class="example-break">
+          <p>The FormProcessData requires the developer to tell how to handle a form submit, the name of current step, the target step for success and the target for
+                failing, also want to know where to go if user want to go back to the previous step or exit. The getFlowTraceId will return a id which represents
+                all the state of current flow(can be considered as a "session" id for the current in-progress form flow).</p>
+          <p>The default implementation of FormProcessData is SimpleFormProcessData which retrieves the step information from the submitted http query parameters 
+                which can be put into the HTML template files as a part of the submitting form. However developers can always decide how to retrieve the step information by 
+                implement their own FormProcessData.</p>
+          <div class="example"><a name="d5e446"></a><p class="title"><b>Example&nbsp;8.3.&nbsp;SimpleFormProcessData</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@ContextDataSet</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SimpleFormProcessData <span class="hl-keyword">implements</span> FormProcessData {
+
+    <em><span class="hl-annotation" style="color: gray">@QueryParam(name = "step-exit")</span></em>
+    <span class="hl-keyword">private</span> String stepExit;
+
+    <em><span class="hl-annotation" style="color: gray">@QueryParam(name = "step-back")</span></em>
+    <span class="hl-keyword">private</span> String stepBack;
+
+    <em><span class="hl-annotation" style="color: gray">@QueryParam(name = "step-current")</span></em>
+    <span class="hl-keyword">private</span> String stepCurrent;
+
+    <em><span class="hl-annotation" style="color: gray">@QueryParam(name = "step-failed")</span></em>
+    <span class="hl-keyword">private</span> String stepFailed;
+
+    <em><span class="hl-annotation" style="color: gray">@QueryParam(name = "step-success")</span></em>
+    <span class="hl-keyword">private</span> String stepSuccess;
+
+    <em><span class="hl-annotation" style="color: gray">@QueryParam(name = FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM)</span></em>
+    <span class="hl-keyword">private</span> String flowTraceId;
+}
+
+            </pre>
+          </div></div><br class="example-break">
+          <p>If we use the default SimpleFormProcessData, we will usually include the following HTML in our template file side:</p>
+          <div class="example"><a name="d5e450"></a><p class="title"><b>Example&nbsp;8.4.&nbsp;HTML for SimpleFormProcessData</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-current"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"confirm"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-failed"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-success"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"complete"</span><span class="hl-tag">&gt;</span>send<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-back"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>back<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-exit"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"exit"</span><span class="hl-tag">&gt;</span>cancel<span class="hl-tag">&lt;/button&gt;</span>
+
+            </pre>
+          </div></div><br class="example-break">
+          <p>The details of how the BasicFormFlowHandlerTrait process the submitted form data and transfer the step can be found at the JavaDoc of BasicFormFlowHandlerTrait.
+                Here we will introduce the points that what the developers have to do to decide the rule of a form flow. There are 3 methods should be overridden for a certain
+                flow rule:</p>
+          <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>String createTemplateFilePathForStep(String step)</p>
+              <p>decide how to convert a step to the corresponding target template file path</p>
+            </li><li class="listitem">
+              <p>boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData)</p>
+              <p>decide whether the flow trace data should be stored</p>
+            </li><li class="listitem">
+              <p>boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, FormFlowTraceData traceData)</p>
+              <p>decide how to pass the form data for rendering to snippet, by flash scope or not.</p>
+            </li></ul></div>
+          <p>For most common situations, all the above things can be decided as general rules in the user project, so that a common parent class can be utilized to perform 
+                the common assumption. There are two built-in flows representing the classical situations: OneStepFormHandlerTrait and ClassicalMultiStepFormFlowHandlerTrait. 
+                Those two built-in interfaces will be introduced in the next section and can be considered as reference implementation of how to design and decide a form flow. 
+                User project is always recommended to extend from those two built-in flows rather than the basic mechanism trait BasicFormFlowHandlerTrait.
+          </p>
+      </div>
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="d5e465"></a>built-in flows</h4></div></div></div>
+          
+          <p>There are two built-in handler traits to handle the most common situations of the form flow, which are OneStepFormHandlerTrait and 
+                ClassicalMultiStepFormFlowHandlerTrait.</p>
+          <p>The OneStepFormHandlerTrait represents a most simple form process: there is a single input page, after submit, the submitted data will be handled and then return to a 
+                before-input page which is usually a list page of items. To use OneStepFormHandlerTrait, you need to put the following HTML in your form template files if you are using
+                the default SimpleFormProcessData:</p>
+          <div class="example"><a name="d5e469"></a><p class="title"><b>Example&nbsp;8.5.&nbsp;SimpleFormProcessData HTML for OneStepFormHandlerTrait</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-current"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-failed"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-success"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"complete"</span><span class="hl-tag">&gt;</span>save<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-exit"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"exit"</span><span class="hl-tag">&gt;</span>cancel<span class="hl-tag">&lt;/button&gt;</span>
+
+            </pre>
+            <em><span class="remark">By OneStepFormHandlerTrait's default implementation, the "step-current" and "step-failed" must be "input", the "step-success" and the "step-exit" can be any non empty value
+                    (usually "complete" and "exit" is good enough).</span></em>
+          </div></div><br class="example-break">
+          <p>The ClassicalMultiStepFormFlowHandlerTrait represents a little bit complicated situations: there are multiple steps in the flow. ClassicalMultiStepFormFlowHandlerTrait
+                assumes that there is at least one input page and one confirm page with a possible complete page. For the single input page case, ClassicalMultiStepFormFlowHandlerTrait
+                can be used directly, but if there are multiple splitted input pages, the developer need to do more customization.</p>
+          <p>For a classical 3-step form flow(input, confirm, complete), the following HTML need to be put into the form template files:</p>
+          <div class="example"><a name="d5e475"></a><p class="title"><b>Example&nbsp;8.6.&nbsp;SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of input page</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-current"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-failed"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-success"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"confirm"</span><span class="hl-tag">&gt;</span>confirm<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-exit"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"exit"</span><span class="hl-tag">&gt;</span>cancel<span class="hl-tag">&lt;/button&gt;</span>
+
+            </pre>
+            <em><span class="remark">At input page, the "step-current" and "step-failed" must be "input", the "step-success" must be "confirm", the "step-exit" can be any non empty value
+                    (usually "exit" is good enough).</span></em>
+          </div></div><br class="example-break">
+          <div class="example"><a name="d5e479"></a><p class="title"><b>Example&nbsp;8.7.&nbsp;SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of confirm page</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-current"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"confirm"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-failed"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-success"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"complete"</span><span class="hl-tag">&gt;</span>send<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-back"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"input"</span><span class="hl-tag">&gt;</span>back<span class="hl-tag">&lt;/button&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-exit"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"btn btn-sm btn-default"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"exit"</span><span class="hl-tag">&gt;</span>cancel<span class="hl-tag">&lt;/button&gt;</span>
+
+            </pre>
+            <em><span class="remark">At confirm page, the "step-current" must be "confirm","the step-failed" must be "input", the "step-success" must be "complete", the "step-back" must be
+                    "input", the "step-exit" can be any non empty value (usually "exit" is good enough).</span></em>
+          </div></div><br class="example-break">
+          <div class="example"><a name="d5e483"></a><p class="title"><b>Example&nbsp;8.8.&nbsp;SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of complete page</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;button</span> <span class="hl-attribute">type</span>=<span class="hl-value">"submit"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"step-exit"</span> <span class="hl-attribute">value</span>=<span class="hl-value">"exit"</span><span class="hl-tag">&gt;</span>return<span class="hl-tag">&lt;/button&gt;</span>
+
+            </pre>
+            <em><span class="remark">At complete page, a non empty value of "step-exit" is enough.</span></em>
+          </div></div><br class="example-break">
+          <p class="remark"><em><span class="remark">Note that the value of steps' name are not fixed and you can always define your own names by overriding the corresponding methods about step names at
+                  ClassicalMultiStepFormFlowHandlerTrait.</span></em></p>
+      </div>
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="d5e488"></a>Implement a real form flow handler</h4></div></div></div>
+          
+          <p>As introduced in previous sections, we should always extend our own handler from the built-in classical traits, before which we also have to decide what our flow
+                should be: one step or multiple steps?</p>
+          <p>Further, In user project, a common parent class is always recommended. A project limited common parent class can be used to decide the special rules of the 
+                user project and the following two method is strongly recommended to be overridden to return a configured and validator.</p>
+          <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>getTypeUnMatchValidator()</p>
+            </li><li class="listitem">
+              <p>getValueValidator()</p>
+            </li></ul></div>
+          <div class="example"><a name="d5e497"></a><p class="title"><b>Example&nbsp;8.9.&nbsp;A common parent handler in project:</b></p><div class="example-contents">
+            
+            <pre class="programlisting">
+
+<strong class="hl-tag" style="color: blue">/**
+ * A common parent handler to configure the common actions of form flow process in application. &lt;br&gt;
+ * For quick start, an empty class body would be good enough. You only need to do the customization when you really need to do it!!!
+ * 
+ */</strong>
+<span class="hl-keyword">public</span> <span class="hl-keyword">abstract</span> <span class="hl-keyword">class</span> Asta4DSamplePrjCommonFormHandler&lt;T&gt; <span class="hl-keyword">implements</span> ClassicalMultiStepFormFlowHandlerTrait&lt;T&gt; {
+
+    <span class="hl-comment">// we use a field to store a pre generated instance rather than create it at every time</span>
+    <span class="hl-keyword">private</span> SamplePrjTypeUnMatchValidator typeValidator = <span class="hl-keyword">new</span> SamplePrjTypeUnMatchValidator(false);
+
+    <span class="hl-comment">// as the same as type validator, we cache the value validator instance here</span>
+    <span class="hl-keyword">private</span> SamplePrjValueValidator valueValidator = <span class="hl-keyword">new</span> SamplePrjValueValidator(false);
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> FormValidator getTypeUnMatchValidator() {
+        <span class="hl-keyword">return</span> typeValidator;
+    }
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> FormValidator getValueValidator() {
+        <span class="hl-keyword">return</span> valueValidator;
+    }
+
+}
+
+            </pre>
+            <em><span class="remark">At confirm page, the "step-current" must be "confirm","the step-failed" must be "input", the "step-success" must be "complete", the "step-back" must be
+                    "input", the "step-exit" can be any non empty value (usually "exit" is good enough).</span></em>
+          </div></div><br class="example-break">
+          <p>More details about validator can be found at later section.</p>
+          <p>In both OneStepFormHandlerTrait and ClassicalMultiStepFormFlowHandlerTrait, there are 3 methods which are required to be implemented by developers.</p>
+          <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>Class&lt;T&gt; getFormCls()</p>
+              <p>Which specify the form type of current </p>
+            </li><li class="listitem">
+              <p>T createInitForm()</p>
+              <p>To create form instance from the current request context. By default, this method will build a form instance from context by the given type returned by
+                    getFormCls(). A handler which need to retrieve the initial form data from storage should override this method to afford a initial form instance. For 
+                    common cases, a handler for adding is not necessary to override this method but a handler for updating should override this method to query database 
+                    and build the corresponding form instance.</p>
+                <div class="example"><a name="d5e510"></a><p class="title"><b>Example&nbsp;8.10.&nbsp;query updating target data from db in createInitForm()</b></p><div class="example-contents">
+                    
+                    <pre class="programlisting">                                                                 
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> PersonFormForMultiStep createInitForm() <span class="hl-keyword">throws</span> Exception {
+        PersonFormForMultiStep form = <span class="hl-keyword">super</span>.createInitForm();
+        <span class="hl-keyword">if</span> (form.getId() == null) {<span class="hl-comment">// add</span>
+            <span class="hl-keyword">return</span> form;
+        } <span class="hl-keyword">else</span> {<span class="hl-comment">// update</span>
+            <span class="hl-comment">// retrieve the form form db again</span>
+            <span class="hl-keyword">return</span> PersonFormForMultiStep.buildFromPerson(PersonDbManager.instance().find(form.getId()));
+        }
+    }
+
+                    </pre>
+                </div></div><br class="example-break">
+            </li><li class="listitem">
+              <p>void updateForm(T form)</p>
+              <p>Which is supposed to perform the final update logic of current form flow.</p>
+              <div class="example"><a name="d5e516"></a><p class="title"><b>Example&nbsp;8.11.&nbsp;update form data</b></p><div class="example-contents">
+                
+                <pre class="programlisting">                                                                 
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> <span class="hl-keyword">void</span> updateForm(PersonFormForMultiStep form) {
+        DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
+        <span class="hl-keyword">if</span> (form.getId() == null) {<span class="hl-comment">// add</span>
+            PersonDbManager.instance().add(Person.createByForm(form));
+            <span class="hl-comment">// output the success message to the global message bar</span>
+            msgHelper.info(<span class="hl-string">"data inserted"</span>);
+        } <span class="hl-keyword">else</span> {<span class="hl-comment">// update</span>
+            Person p = Person.createByForm(form);
+            PersonDbManager.instance().update(p);
+            <span class="hl-comment">// output the success message to specified DOM rather than the global message bar</span>
+            msgHelper.info(<span class="hl-string">".x-success-msg"</span>, <span class="hl-string">"update succeed"</span>);
+        }
+    }
+
+                </pre>
+                <em><span class="remark">Note that there is a built-in message rendering mechanism to help developer supply a responsive interaction more easily. The 
+                        details will be introduced later, simply remember that you can output message by info/warn/error levels.</span></em>
+              </div></div><br class="example-break">
+            </li></ul></div>
+      </div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e520"></a>8.1.3.&nbsp;HTML template of form</h3></div></div></div>
+      
+      <p>As the common pages of Asta4D, the HTML template of a form is as pure HTML too.</p>
+      <div class="example"><a name="d5e523"></a><p class="title"><b>Example&nbsp;8.12.&nbsp;Form template</b></p><div class="example-contents">
+        
+        <pre class="programlisting">                                                                 
+
+<span class="hl-tag">&lt;form</span> <span class="hl-attribute">method</span>=<span class="hl-value">"post"</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"form.SingleInputFormSnippet"</span><span class="hl-tag">&gt;</span>
+
+  <span class="hl-tag">&lt;input</span> <span class="hl-attribute">name</span>=<span class="hl-value">"name"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text"</span><span class="hl-tag">/&gt;</span>
+
+  <span class="hl-tag">&lt;input</span> <span class="hl-attribute">name</span>=<span class="hl-value">"age"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text"</span><span class="hl-tag">/&gt;</span>
+
+  <span class="hl-tag">&lt;input</span> <span class="hl-attribute">id</span>=<span class="hl-value">"sex"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"sex"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"radio"</span><span class="hl-tag">/&gt;</span><span class="hl-tag">&lt;label</span> <span class="hl-attribute">for</span>=<span class="hl-value">"sex"</span><span class="hl-tag">&gt;</span>M<span class="hl-tag">&lt;/label&gt;</span>
+
+  <span class="hl-tag">&lt;select</span> <span class="hl-attribute">id</span>=<span class="hl-value">"bloodtype"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"bloodtype"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;option</span> <span class="hl-attribute">value</span>=<span class="hl-value">"A"</span><span class="hl-tag">&gt;</span>A<span class="hl-tag">&lt;/option&gt;</span>
+    <span class="hl-tag">&lt;option</span> <span class="hl-attribute">value</span>=<span class="hl-value">"R"</span> <span class="hl-attribute">afd:clear&gt;R&lt;/option&gt;</span>
+  <span class="hl-attribute">&lt;/select&gt;</span>
+
+  <span class="hl-attribute">&lt;input</span> <span class="hl-attribute">id</span>=<span class="hl-value">"language"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"language"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"checkbox"</span><span class="hl-tag">/&gt;</span><span class="hl-tag">&lt;label</span> <span class="hl-attribute">for</span>=<span class="hl-value">"language"</span><span class="hl-tag">&gt;</span>M<span class="hl-tag">&lt;/label&gt;</span>
+
+  <span class="hl-tag">&lt;textarea</span> <span class="hl-attribute">name</span>=<span class="hl-value">"memo"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/textarea&gt;</span>
+  
+  <span class="hl-tag">&lt;input</span> <span class="hl-attribute">type</span>=<span class="hl-value">"hidden"</span> <span class="hl-attribute">name</span>=<span class="hl-value">"id"</span><span class="hl-tag">&gt;</span>
+
+  <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/templates/form/singleInput/btns.html"</span><span class="hl-tag"> /&gt;</span>
+<span class="hl-tag">&lt;/form&gt;</span>
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>As you see in the above example, there is no special declaration in the template, let us see how to declare a form POJO to handle the 
+      various form field types:</p>
+      <div class="example"><a name="d5e527"></a><p class="title"><b>Example&nbsp;8.13.&nbsp;form template</b></p><div class="example-contents">
+        
+        <pre class="programlisting">                                                                 
+
+<span class="hl-comment">//@Form to tell the framework this class can be initialized from context</span>
+<span class="hl-comment">//extend from the entity POJO to annotate form field definitions on getters.</span>
+<em><span class="hl-annotation" style="color: gray">@Form</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> PersonForm {
+    <em><span class="hl-annotation" style="color: gray">@Hidden</span></em>
+    <span class="hl-keyword">private</span> Integer id;
+
+    <em><span class="hl-annotation" style="color: gray">@Input</span></em>
+    <span class="hl-keyword">private</span> String name;
+
+    <em><span class="hl-annotation" style="color: gray">@Input</span></em>
+    <span class="hl-keyword">private</span> Integer age;
+
+    <em><span class="hl-annotation" style="color: gray">@Select(name = "bloodtype")</span></em>
+    <span class="hl-keyword">private</span> BloodType bloodType;
+
+    <span class="hl-comment">// the field name would be displayed as "gender" rather than the original field name "sex" in validation messages</span>
+    <em><span class="hl-annotation" style="color: gray">@Radio(nameLabel = "gender")</span></em>
+    <span class="hl-keyword">private</span> SEX sex;
+
+    <em><span class="hl-annotation" style="color: gray">@Checkbox</span></em>
+    <span class="hl-keyword">private</span> Language[] language;
+
+    <em><span class="hl-annotation" style="color: gray">@Textarea</span></em>
+    <span class="hl-keyword">private</span> String memo;
+
+}
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>The details of annotations will be introduced later, just remember that there is always an annotation which can represent a 
+      certain type of form field.</p>
+      <p>Another point here is that you can always declare all the fields by your business type rather than string type, the framework 
+      will handle the value conversion correctly.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e532"></a>8.1.4.&nbsp;Form snippet</h3></div></div></div>
+      
+      <p>To render the form values to template, we have to declare a snippet which extends from the AbstractFormFlowSnippet. As the same
+        as the built-in two classical handler traits, there are two corresponding snippet traits: OneStepFormSnippetTrait and ClassicalMultiStepFormFlowSnippetTrait.
+      </p>
+      <p>Also as the same as handlers, a project common parent snippet is recommended to perform common customization.</p>
+      <div class="example"><a name="d5e536"></a><p class="title"><b>Example&nbsp;8.14.&nbsp;Form snippet implementation</b></p><div class="example-contents">
+        
+        <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SingleInputFormSnippet <span class="hl-keyword">extends</span> Asta4DSamplePrjCommonFormSnippet {
+
+    <strong class="hl-tag" style="color: blue">/**
+     * override this method to supply the option data for select, radio and checkbox.
+     */</strong>
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> List&lt;FormFieldPrepareRenderer&gt; retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+        List&lt;FormFieldPrepareRenderer&gt; list = <span class="hl-keyword">new</span> LinkedList&lt;&gt;();
+
+        list.add(<span class="hl-keyword">new</span> SelectPrepareRenderer(PersonForm.<span class="hl-keyword">class</span>, <span class="hl-string">"bloodtype"</span>).setOptionData(BloodType.asOptionValueMap));
+
+        list.add(<span class="hl-keyword">new</span> RadioPrepareRenderer(PersonForm.<span class="hl-keyword">class</span>, <span class="hl-string">"sex"</span>).setOptionData(SEX.asOptionValueMap));
+
+        list.add(<span class="hl-keyword">new</span> CheckboxPrepareRenderer(PersonForm.<span class="hl-keyword">class</span>, <span class="hl-string">"language"</span>).setOptionData(Language.asOptionValueMap));
+
+        <span class="hl-keyword">return</span> list;
+    }
+}
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>Developers are usually asked to override the retrieveFieldPrepareRenderers method to supply extra data for field rendering, 
+            commonly the list of option data is required.</p>
+      <p>SelectPrepareRenderer can be used to afford option list for select element, RadioPrepareRenderer and CheckboxPrepareRenderer
+            can be used for radio and checbox input element.</p>
+      <p>Finally, do not forget to put your snippet declaration in your template file.</p>
+      <div class="example"><a name="d5e542"></a><p class="title"><b>Example&nbsp;8.15.&nbsp;Declare snippet in form template</b></p><div class="example-contents">
+        
+        <pre class="programlisting">
+
+<span class="hl-tag">&lt;form</span> <span class="hl-attribute">method</span>=<span class="hl-value">"post"</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"form.SingleInputFormSnippet"</span><span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;/form&gt;</span>
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>Basically, until now we have gotten a workable form flow implementation. There is only one thing left that is validation which
+            will be described in the next section.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e546"></a>8.1.5.&nbsp;Cascade form POJO and array field</h3></div></div></div>
+      
+    </div>
+  </div>
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e548"></a>8.2.&nbsp;Advanced</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-form-flow.html#d5e550">8.2.1. Validation</a></span></dt><dt><span class="sect2"><a href="chapter-form-flow.html#d5e562">8.2.2. Message rendering</a></span></dt><dt><span class="sect2"><a href="chapter-form-flow.html#d5e564">8.2.3. Customize form field annotation</a></span></dt><dt><span class="sect2"><a href="chapter-form-flow.html#d5e566">8.2.4. A sample of defining a new flow rule</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e550"></a>8.2.1.&nbsp;Validation</h3></div></div></div>
+      
+      <p>Asta4D allows any validation mechanism to be integrated and supports Bean Validation 1.1(JSR349 and JSR303) by default. We will explain
+            how to use the built-in Bean Validation mechanism in this section. The later section will introduce how to customize the validation.</p>
+      <p>To use Bean Validation, just simply add validation annotations to your form POJO as following:</p>
+      <div class="example"><a name="d5e554"></a><p class="title"><b>Example&nbsp;8.16.&nbsp;Declare validation annotations</b></p><div class="example-contents">
+        
+        <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@NotBlank</span></em>
+<em><span class="hl-annotation" style="color: gray">@Size(max = 6)</span></em>
+<span class="hl-keyword">public</span> String getName() {
+    <span class="hl-keyword">return</span> name;
+}
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">void</span> setName(String name) {
+    <span class="hl-keyword">this</span>.name = name;
+}
+
+<em><span class="hl-annotation" style="color: gray">@Max(45)</span></em>
+<em><span class="hl-annotation" style="color: gray">@NotNull</span></em>
+<span class="hl-keyword">public</span> Integer getAge() {
+    <span class="hl-keyword">return</span> age;
+}
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>More details of Bean Validation can be found at <a class="ulink" href="http://beanvalidation.org/" target="_top">Bean Validation</a>. 
+            We are also using Hibernate Validator as the implementation(the only existing one in the earth currently). See details at
+            <a class="ulink" href="http://hibernate.org/validator/" target="_top">Hibernate Validator</a>.</p>
+      <p>The validation will be invoked before the calling of method updateForm, if there is any validation error, the page will be
+            forwarded to the step specified by "step-failed" which is usually the input page, and the validation error message will be
+            rendered to page too. More details about validation message rendering will be introduced in later sections.</p>
+      <p>As recommended before, a project common parent class is recommended to afford a configured validator or any other customized
+            validator implementation.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e562"></a>8.2.2.&nbsp;Message rendering</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e564"></a>8.2.3.&nbsp;Customize form field annotation</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e566"></a>8.2.4.&nbsp;A sample of defining a new flow rule</h3></div></div></div>
+      
+      <p>(Include about how to implement multiple input steps)</p>
+    </div>
+  </div>
+  
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-adv-request-handler.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-best-practice.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">7.&nbsp;Advanced usage of request handler&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;9.&nbsp;Best practice</td></tr></table></div></body></html>
