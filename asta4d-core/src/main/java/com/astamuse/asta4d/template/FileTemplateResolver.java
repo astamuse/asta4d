@@ -20,7 +20,7 @@ package com.astamuse.asta4d.template;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-public class FileTemplateResolver extends TemplateResolver {
+public class FileTemplateResolver extends AbstractTemplateResolver {
 
     @Override
     protected TemplateInfo loadResource(String path) {

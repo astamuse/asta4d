@@ -59,36 +59,32 @@ public class SnippetInitializeInterceptor implements SnippetInterceptor {
                     break;
                 }
             }
-            if (!inialized) {
-                // retrieve write lock
-                listHolder.lock.readLock().unlock();
-                listHolder.lock.writeLock().lock();
-                try {
-                    // check again
-                    for (Object initializedSnippet : listHolder.snippetList) {
-                        if (initializedSnippet == target) {
-                            inialized = true;
-                            break;
-                        }
-                    }
-                    // do the initialization
-                    if (!inialized) {
-                        InjectUtil.injectToInstance(target);
-                        if (target instanceof InitializableSnippet) {
-                            ((InitializableSnippet) target).init();
-                        }
-
-                        listHolder.snippetList.add(target);
-
-                    }
-                    // downgrade to read lock since we have updated the list
-                    listHolder.lock.readLock().lock();
-                } finally {
-                    listHolder.lock.writeLock().unlock();
-                }
-            }
         } finally {
             listHolder.lock.readLock().unlock();
+        }
+        if (!inialized) {
+            // retrieve write lock
+            listHolder.lock.writeLock().lock();
+            try {
+                // check again
+                for (Object initializedSnippet : listHolder.snippetList) {
+                    if (initializedSnippet == target) {
+                        inialized = true;
+                        break;
+                    }
+                }
+                // do the initialization
+                if (!inialized) {
+                    InjectUtil.injectToInstance(target);
+                    if (target instanceof InitializableSnippet) {
+                        ((InitializableSnippet) target).init();
+                    }
+
+                    listHolder.snippetList.add(target);
+                }
+            } finally {
+                listHolder.lock.writeLock().unlock();
+            }
         }
 
         return true;

@@ -18,13 +18,13 @@
 package com.astamuse.asta4d.template;
 
 /**
- * This template resolver is mostly used by test. However if you'd like to put
- * your template files in your source folder, you can use this resolver as well.
+ * This template resolver is mostly used by test. However if you'd like to put your template files in your source folder, you can use this
+ * resolver as well.
  * 
  * @author e-ryu
  * 
  */
-public class ClasspathTemplateResolver extends TemplateResolver {
+public class ClasspathTemplateResolver extends AbstractTemplateResolver {
 
     @Override
     public TemplateInfo loadResource(String path) {

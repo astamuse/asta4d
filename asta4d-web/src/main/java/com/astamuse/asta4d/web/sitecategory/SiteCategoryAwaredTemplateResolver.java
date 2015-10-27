@@ -29,7 +29,7 @@ import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.WebApplicationTemplateResolver;
 
-public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
+public class SiteCategoryAwaredTemplateResolver implements TemplateResolver {
 
     private Class<? extends TemplateResolver> underlineTemplateResolverCls = null;
 
@@ -101,11 +101,6 @@ public class SiteCategoryAwaredTemplateResolver extends TemplateResolver {
 
     protected TemplateResolver createUnderlineTemplateResolverInstance(Class<? extends TemplateResolver> cls) throws Exception {
         return cls.newInstance();
-    }
-
-    @Override
-    protected TemplateInfo loadResource(String name) {
-        throw new UnsupportedOperationException();
     }
 
 }

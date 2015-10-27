@@ -67,7 +67,7 @@ public class Configuration {
 
     private ExecutorServiceFactory parallelListConvertingExecutorFactory = new DefaultExecutorServiceFactory("asta4d-parallel-list", 600);
 
-    private boolean blockParallelListConverting = false;
+    private boolean blockParallelListRendering = false;
 
     private ParallelRecursivePolicy recursivePolicyForParallelListConverting = ParallelRecursivePolicy.EXCEPTION;
 
@@ -201,12 +201,12 @@ public class Configuration {
         this.outputAsPrettyPrint = outputAsPrettyPrint;
     }
 
-    public boolean isBlockParallelListConverting() {
-        return blockParallelListConverting;
+    public boolean isBlockParallelListRendering() {
+        return blockParallelListRendering;
     }
 
-    public void setBlockParallelListConverting(boolean blockParallelListConverting) {
-        this.blockParallelListConverting = blockParallelListConverting;
+    public void setBlockParallelListRendering(boolean blockParallelListRendering) {
+        this.blockParallelListRendering = blockParallelListRendering;
     }
 
     public List<String> getClearNodeClasses() {

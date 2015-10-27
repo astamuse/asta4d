@@ -152,7 +152,7 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends UpdatableForm
     }
 
     /**
-     * Sub classes can override this method to customize how to translate a step to a target template file path.
+     * Sub classes can override this method to customize how to translate a step to a target template file path or redirect target URL.
      * 
      * @param step
      * @return
@@ -160,7 +160,8 @@ public interface ClassicalMultiStepFormFlowHandlerTrait<T> extends UpdatableForm
      * @see #getTemplateBasePath()
      * @see #createTemplateFilePath(String, String)
      */
-    default String createTemplateFilePathForStep(String step) {
+    @Override
+    default String createMoveTargetForStep(String step) {
         if (step == null) {// exit flow
             return null;
         }

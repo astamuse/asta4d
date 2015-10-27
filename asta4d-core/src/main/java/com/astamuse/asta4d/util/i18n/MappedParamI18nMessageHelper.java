@@ -176,7 +176,7 @@ public class MappedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(locale, key, defaultPattern, pairToMap(params));
     }
 
-    private String getMessageInternal(Locale locale, String key, Object defaultPattern, Map<String, Object> paramMap) {
+    protected String getMessageInternal(Locale locale, String key, Object defaultPattern, Map<String, Object> paramMap) {
         String pattern = getMessagePatternRetriever().retrieve(locale, key);
 
         if (pattern == null) {

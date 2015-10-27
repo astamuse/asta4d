@@ -119,7 +119,7 @@ public class OrderedParamI18nMessageHelper extends I18nMessageHelper {
         return getMessageInternal(locale, key, defaultPattern, params);
     }
 
-    private String getMessageInternal(Locale locale, String key, Object defaultPattern, Object[] params) {
+    protected String getMessageInternal(Locale locale, String key, Object defaultPattern, Object[] params) {
         String pattern = getMessagePatternRetriever().retrieve(locale, key);
 
         if (pattern == null) {

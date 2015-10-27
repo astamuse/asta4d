@@ -51,8 +51,8 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
+import com.astamuse.asta4d.template.AbstractTemplateResolver;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
-import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.AntPathRuleMatcher;
@@ -84,7 +84,7 @@ public class RequestDispatcherTest {
 
     private static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
-            setTemplateResolver(new TemplateResolver() {
+            setTemplateResolver(new AbstractTemplateResolver() {
                 @Override
                 public TemplateInfo loadResource(String path) {
                     if (path.equals("/template-not-exists")) {
@@ -458,7 +458,7 @@ public class RequestDispatcherTest {
                 throw new UnsupportedOperationException(expected.getClass().toString());
             }
         }
-
+    
         private UrlMappingRule getRule(Object... handlers) {
             UrlMappingRule rule = new UrlMappingRule();
             rule.setHandlerList(Arrays.asList(handlers));
@@ -467,31 +467,31 @@ public class RequestDispatcherTest {
             rule.setForwardDescriptorMap(forwardDescriptors);
             return rule;
         }
-
+    
         private static RequestHandlerInvoker getInvoker() {
             RequestHandlerInvokerFactory factory = new DefaultRequestHandlerInvokerFactory();
             return factory.getInvoker();
         }
-
+    
         private abstract static class ExecutedCheckHandler {
             boolean executed = false;
-
+    
             public void execute() {
                 executed = true;
             }
-
+    
             public boolean isExecuted() {
                 return executed;
             }
         }
-
+    
         private static class VoidHandler extends ExecutedCheckHandler {
             @RequestHandler
             public void handle() {
                 super.execute();
             }
         }
-
+    
         private static class ReturnStringHandler extends ExecutedCheckHandler {
             @RequestHandler
             public String handle() {
@@ -499,7 +499,7 @@ public class RequestDispatcherTest {
                 return "/test1.html";
             }
         }
-
+    
         private static class ReturnDescriptorHandler extends ExecutedCheckHandler {
             @RequestHandler
             public ForwardDescriptor handle() {
@@ -507,7 +507,7 @@ public class RequestDispatcherTest {
                 return new TestDescriptor();
             }
         }
-
+    
         private static class ThrowDescriptorHandler extends ExecutedCheckHandler {
             @RequestHandler
             public void handle() {
@@ -515,36 +515,36 @@ public class RequestDispatcherTest {
                 throw new ForwardableException(new TestDescriptor(), new IllegalArgumentException());
             }
         }
-
+    
         private static class TestDescriptor implements ForwardDescriptor {
-
+    
         }
-
+    
         private static class ViewChangeDescriptor implements ForwardDescriptor {
-
+    
         }
-
+    
         private static class ViewChangeIntercepter implements RequestHandlerInterceptor {
             @Override
             public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
             }
-
+    
             @Override
             public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
                 holder.setForwardDescriptor(new ViewChangeDescriptor());
             }
         }
-
+    
         private static class CancelExceptionIntercepter implements RequestHandlerInterceptor {
             @Override
             public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
             }
-
+    
             @Override
             public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
                 exceptionHandler.setException(null);
             }
-
+    
         }
         */
 }

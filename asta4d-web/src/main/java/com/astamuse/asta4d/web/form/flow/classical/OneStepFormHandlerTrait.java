@@ -93,12 +93,13 @@ public interface OneStepFormHandlerTrait<T> extends UpdatableFormFlowHandlerTrai
     }
 
     /**
-     * Sub classes can override this method to customize how to translate a step to a target template file path.
+     * Sub classes can override this method to customize how to translate a step to a target template file path or redirect target URL.
      * 
      * @param step
      * @return
      */
-    default String createTemplateFilePathForStep(String step) {
+    @Override
+    default String createMoveTargetForStep(String step) {
         // always exit the flow except the target step is the first step
         if (firstStepName().equals(step)) {
             return getInputTemplateFilePath();

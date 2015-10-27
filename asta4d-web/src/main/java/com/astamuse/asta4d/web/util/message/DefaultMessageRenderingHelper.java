@@ -18,7 +18,6 @@ package com.astamuse.asta4d.web.util.message;
 
 import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,9 +37,11 @@ import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.template.ClasspathTemplateResolver;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
+import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
@@ -128,6 +129,8 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         }
 
     }
+
+    private TemplateResolver fallbackMessageContainerResolver = new ClasspathTemplateResolver();
 
     private String messageGlobalContainerParentSelector = "body";
 
@@ -302,7 +305,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                     }
                 });
             }
-        }// end for loop
+        } // end for loop
 
         renderer.enableMissingSelectorWarning();
 
@@ -376,13 +379,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                 template = conf.getTemplateResolver().findTemplate(messageGlobalContainerSnippetFilePath);
             } catch (TemplateNotFoundException e) {
                 // then treat it as classpath resource
-                // TODO use MultiSearchPathResourceLoader instead for i18n
-                InputStream input = this.getClass().getClassLoader().getResourceAsStream(messageGlobalContainerSnippetFilePath);
-                if (input == null) {
-                    throw new NullPointerException("Configured message container snippet file[" + messageGlobalContainerSnippetFilePath +
-                            "] was not found");
-                }
-                template = new Template(messageGlobalContainerSnippetFilePath, input);
+                template = fallbackMessageContainerResolver.findTemplate(messageGlobalContainerSnippetFilePath);
             }
             return template.getDocumentClone().body().children();
         } catch (TemplateException | TemplateNotFoundException e) {
@@ -390,7 +387,8 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         }
     }
 
-    public void outputMessage(final MessageRenderingSelector selector, final MessageRenderingSelector alternativeSelector, final String msg) {
+    public void outputMessage(final MessageRenderingSelector selector, final MessageRenderingSelector alternativeSelector,
+            final String msg) {
         messageList.get().add(new MessageHolder(selector, alternativeSelector, msg));
         RedirectUtil.registerRedirectInterceptor(this.getClass().getName() + "#outputMessage", new RedirectInterceptor() {
             @Override
