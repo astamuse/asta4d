@@ -1,6 +1,6 @@
 ## News
 
-- 2015-09-07, the 1.1-b3 with minor bug fixes is released.
+- 2015-10-27, the 1.1-b3 with minor bug fixes is released.
 - 2015-09-07, the 1.1-b2 with minor bug fixes is released.
 - 2015-07-23, the 1.1-b1 with better Java 8 support is released.
 - 2015-02-14, the first official release "1.0-Valentines" is released at the Valentine's day!
