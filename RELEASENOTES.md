@@ -1,5 +1,18 @@
 ## Release Notes
 
+-   1.1-b3 (2015.10.27)
+    
+    FIX
+    - (BREAKING)reverse wrongly changed configuration item name of blockParallelListRendering
+    - initializing unlock failed when exception occurs on snippet initializing due to wrong lock/unlock order.
+    - SiteCategoryAwaredResourceLoader should respect the configuration of cacheEnable.(#9)
+    - template cache should not be static(#10)
+    
+    ENHANCE
+    - refactoring to make customizing template resolving more easily.
+    - refactoring to allow extend existing message helper more easily
+    - refactoring for better understandable method name of BasicFormFlowHandlerTrait to suggest the extendable points better
+
 -   1.1-b2 (2015.09.07)
     
     FIX
