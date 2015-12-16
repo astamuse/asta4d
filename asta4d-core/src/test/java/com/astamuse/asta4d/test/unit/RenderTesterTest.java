@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.jsoup.nodes.Element;
 import org.testng.Assert;
@@ -29,13 +30,13 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.render.ChildReplacer;
 import com.astamuse.asta4d.render.GoThroughRenderer;
+import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.test.RendererTestException;
 import com.astamuse.asta4d.render.test.RendererTester;
 import com.astamuse.asta4d.render.test.TestableElementWrapper;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.util.ElementUtil;
-import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 
 public class RenderTesterTest extends BaseTest {
@@ -59,6 +60,10 @@ public class RenderTesterTest extends BaseTest {
 
         render.add("#someIdForRenderer", Renderer.create("#value", "value"));
 
+        render.add("#someIdForRendable", () -> {
+            return Renderer.create("#id", "xx");
+        });
+
         // perform test
         RendererTester tester = RendererTester.forRenderer(render);
 
@@ -78,8 +83,10 @@ public class RenderTesterTest extends BaseTest {
 
         Assert.assertEquals(tester.get("#someIdForElement"), TestableElementWrapper.parse("<div>eee</div>"));
 
-        RendererTester recursiveTester = RendererTester.forRenderer((Renderer) tester.get("#someIdForRenderer"));
-        Assert.assertEquals(recursiveTester.get("#value"), "value");
+        RendererTester recursiveTester = RendererTester.forRenderer(((Renderable) tester.get("#someIdForRendable")).render());
+        Assert.assertEquals(recursiveTester.get("#id"), "xx");
+
+        recursiveTester = RendererTester.forRenderer((Renderer) tester.get("#someIdForRenderer"));
 
         // noop test
         tester = RendererTester.forRenderer(Renderer.create());
@@ -148,8 +155,7 @@ public class RenderTesterTest extends BaseTest {
         Assert.assertEquals(tester.getAsList("#someIdForBool"), Arrays.asList(true, true, false));
         Assert.assertEquals(tester.getAsList("#someIdForStr"), Arrays.asList("str1", "str2", "str3"));
 
-        Assert.assertEquals(
-                tester.getAsList("#someIdForElementSetter"),
+        Assert.assertEquals(tester.getAsList("#someIdForElementSetter"),
                 Arrays.asList(new ChildReplacer(ElementUtil.parseAsSingle("<div>1</div>")),
                         new ChildReplacer(ElementUtil.parseAsSingle("<div>2</div>"))));
 
@@ -167,28 +173,30 @@ public class RenderTesterTest extends BaseTest {
                 return Renderer.create("#id", "id-" + obj).add("#otherId", "otherId-" + obj);
             }
         });
+        render.add("#someIdForStream", Arrays.asList(123, 456, 789).stream().map((i) -> {
+            return Renderer.create("#id", "id-" + i).add("#otherId", "otherId-" + i);
+        }));
 
         RendererTester tester = RendererTester.forRenderer(render);
-        List<Renderer> renderList = tester.getAsList("#someIdForRenderer", Renderer.class);
+        for (String selector : Arrays.asList("#someIdForRenderer", "#someIdForStream")) {
+            List<Renderer> renderList = tester.getAsList(selector, Renderer.class);
 
-        Assert.assertEquals(renderList.size(), 3);
+            List<RendererTester> testerList = RendererTester.forRendererList(renderList);
+            List<String> confirmIdList = Arrays.asList("id-123", "id-456", "id-789");
 
-        List<RendererTester> testerList = RendererTester.forRendererList(renderList);
-        List<String> confirmIdList = Arrays.asList("id-123", "id-456", "id-789");
-
-        for (int i = 0; i < testerList.size(); i++) {
-            RendererTester recursiveTester = testerList.get(i);
-            Assert.assertEquals(recursiveTester.get("#id"), confirmIdList.get(i));
-        }
-
-        // we can also write tests in a more functional way
-        List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
-        Assert.assertEquals(confirmOtherIdList, ListConvertUtil.transform(testerList, new RowConvertor<RendererTester, String>() {
-            @Override
-            public String convert(int rowIndex, RendererTester tester) {
-                return (String) tester.get("#otherId");
+            Assert.assertEquals(testerList.size(), 3);
+            for (int i = 0; i < testerList.size(); i++) {
+                RendererTester recursiveTester = testerList.get(i);
+                Assert.assertEquals(recursiveTester.get("#id"), confirmIdList.get(i));
             }
-        }));
+
+            // we can also write tests in a more functional way
+            List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
+            Assert.assertEquals(confirmOtherIdList, testerList.stream().map((recTester) -> {
+                return (String) recTester.get("#otherId");
+            }).collect(Collectors.toList()));
+
+        }
 
     }
 
