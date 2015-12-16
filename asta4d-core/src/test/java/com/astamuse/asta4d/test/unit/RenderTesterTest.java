@@ -29,7 +29,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.render.ChildReplacer;
-import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.test.RendererTestException;
@@ -45,7 +44,7 @@ public class RenderTesterTest extends BaseTest {
     public void testGetSingle() {
 
         // prepare test target
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForInt", 12345);
         render.add("#someIdForLong", 12345L);
         render.add("#someIdForBool", true);
@@ -83,10 +82,11 @@ public class RenderTesterTest extends BaseTest {
 
         Assert.assertEquals(tester.get("#someIdForElement"), TestableElementWrapper.parse("<div>eee</div>"));
 
-        RendererTester recursiveTester = RendererTester.forRenderer(((Renderable) tester.get("#someIdForRendable")).render());
-        Assert.assertEquals(recursiveTester.get("#id"), "xx");
+        RendererTester recursiveTester = RendererTester.forRenderer((Renderer) tester.get("#someIdForRenderer"));
+        Assert.assertEquals(recursiveTester.get("#value"), "value");
 
-        recursiveTester = RendererTester.forRenderer((Renderer) tester.get("#someIdForRenderer"));
+        recursiveTester = RendererTester.forRenderer(((Renderable) tester.get("#someIdForRendable")).render());
+        Assert.assertEquals(recursiveTester.get("#id"), "xx");
 
         // noop test
         tester = RendererTester.forRenderer(Renderer.create());
@@ -96,7 +96,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "There is no value to be rendered for selector(.*)")
     public void testGetSingleNotFound() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someId", 12345);
 
         RendererTester tester = RendererTester.forRenderer(render);
@@ -105,7 +105,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "(.*)as a list(.*)")
     public void testGetSingleFoundMore() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someId", Arrays.asList(123, 345));
 
         RendererTester tester = RendererTester.forRenderer(render);
@@ -114,7 +114,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "(.*)as a empty list(.*)")
     public void testGetSingleFoundMore2() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someId", Collections.emptyList());
 
         RendererTester tester = RendererTester.forRenderer(render);
@@ -123,7 +123,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "(.*)multiple times(.*)")
     public void testGetSingleFoundMore3() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someId", 123);
 
         render.add("#someId", 345);
@@ -135,7 +135,7 @@ public class RenderTesterTest extends BaseTest {
     @Test
     public void testGetList() {
         // prepare test target
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForInt", Arrays.asList(123, 456, 789));
         render.add("#someIdForLong", Arrays.asList(123L, 456L, 789L));
         render.add("#someIdForBool", Arrays.asList(true, true, false));
@@ -166,7 +166,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test
     public void testGetListAsRenderer() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForRenderer", Arrays.asList(123, 456, 789), new RowConvertor<Integer, Renderer>() {
             @Override
             public Renderer convert(int rowIndex, Integer obj) {
@@ -202,27 +202,39 @@ public class RenderTesterTest extends BaseTest {
 
     @Test
     public void testGetAttr() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#id", "+class", "yyy");
         render.add("#id", "-class", "zzz");
 
         render.add("#id", "+class", "xxx");
-
-        render.add("#id", "value", "hg");
+        render.add("#id", "value", new Date(123456L));
         render.add("#id", "href", (Object) null);
 
-        render.add("#X", "value", new Date(123456L));
+        render.add("#idstr", "value", "hg");
+        render.add("#idint", "value", 3);
+        render.add("#idlong", "value", 3L);
+        render.add("#idbool", "value", true);
 
         RendererTester tester = RendererTester.forRenderer(render);
         Assert.assertEquals(tester.getAttrAsList("#id", "+class"), Arrays.asList("yyy", "xxx"));
         Assert.assertEquals(tester.getAttr("#id", "-class"), "zzz");
-        Assert.assertEquals(tester.getAttr("#id", "value"), "hg");
+        Assert.assertEquals(tester.getAttr("#id", "value"), new Date(123456L));
         Assert.assertEquals(tester.getAttr("#id", "href"), null);
-        Assert.assertEquals(tester.getAttr("#X", "value"), new Date(123456L));
+
+        Assert.assertEquals(tester.getAttr("#idstr", "value"), "hg");
+        Assert.assertEquals(tester.getAttr("#idint", "value"), "3");
+        Assert.assertEquals(tester.getAttr("#idlong", "value"), "3");
+        Assert.assertEquals(tester.getAttr("#idbool", "value"), "true");
 
         Assert.assertFalse(tester.noOp("#id", "+class"));
         Assert.assertFalse(tester.noOp("#id", "-class"));
         Assert.assertFalse(tester.noOp("#id", "value"));
+        Assert.assertFalse(tester.noOp("#id", "href"));
+
+        Assert.assertFalse(tester.noOp("#idstr", "value"));
+        Assert.assertFalse(tester.noOp("#idint", "value"));
+        Assert.assertFalse(tester.noOp("#idlong", "value"));
+        Assert.assertFalse(tester.noOp("#idbool", "value"));
 
         Assert.assertTrue(tester.noOp("#id", "+cccc"));
         Assert.assertTrue(tester.noOp("#id", "-cccc"));
@@ -232,7 +244,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "There is no value to be rendered for attr(.*)")
     public void testGetAttrNotFound() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#id", "+class", "yyy");
 
         RendererTester tester = RendererTester.forRenderer(render);
@@ -243,7 +255,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "(.*)more than one values(.*)")
     public void testGetAttrFindMore() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#id", "value", "yyy");
         render.add("#id", "value", "zzz");
 
@@ -255,7 +267,7 @@ public class RenderTesterTest extends BaseTest {
 
     @Test(expectedExceptions = RendererTestException.class, expectedExceptionsMessageRegExp = "This method is only for retrieving rendered value of \"\\+class\" and \"\\-class\" attr action")
     public void testGetAttrFindMore2() {
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#id", "value", "yyy");
         render.add("#id", "value", "zzz");
 
