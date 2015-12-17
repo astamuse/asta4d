@@ -1,5 +1,6 @@
 ## News
 
+- 2015-12-17, the scala extension for asta4d [asta4d-scala](https://github.com/astamuse/asta4d-scala) is released. 
 - 2015-10-27, the 1.1-b3 with minor bug fixes is released.
 - 2015-09-07, the 1.1-b2 with minor bug fixes is released.
 - 2015-07-23, the 1.1-b1 with better Java 8 support is released.
