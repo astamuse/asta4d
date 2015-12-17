@@ -179,22 +179,26 @@ public class RenderTesterTest extends BaseTest {
 
         RendererTester tester = RendererTester.forRenderer(render);
         for (String selector : Arrays.asList("#someIdForRenderer", "#someIdForStream")) {
-            List<Renderer> renderList = tester.getAsList(selector, Renderer.class);
+            // to test by traditional way
+            {
+                List<RendererTester> testerList = tester.getAsRendererTesterList(selector);
+                List<String> confirmIdList = Arrays.asList("id-123", "id-456", "id-789");
 
-            List<RendererTester> testerList = RendererTester.forRendererList(renderList);
-            List<String> confirmIdList = Arrays.asList("id-123", "id-456", "id-789");
-
-            Assert.assertEquals(testerList.size(), 3);
-            for (int i = 0; i < testerList.size(); i++) {
-                RendererTester recursiveTester = testerList.get(i);
-                Assert.assertEquals(recursiveTester.get("#id"), confirmIdList.get(i));
+                Assert.assertEquals(testerList.size(), 3);
+                for (int i = 0; i < testerList.size(); i++) {
+                    RendererTester recursiveTester = testerList.get(i);
+                    Assert.assertEquals(recursiveTester.get("#id"), confirmIdList.get(i));
+                }
             }
 
-            // we can also write tests in a more functional way
-            List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
-            Assert.assertEquals(confirmOtherIdList, testerList.stream().map((recTester) -> {
-                return (String) recTester.get("#otherId");
-            }).collect(Collectors.toList()));
+            // to test by more functional way
+            {
+                List<String> confirmOtherIdList = Arrays.asList("otherId-123", "otherId-456", "otherId-789");
+                List<RendererTester> testerList = tester.getAsRendererTesterList(selector);
+                Assert.assertEquals(testerList.stream().map((t) -> {
+                    return t.get("#otherId");
+                }).collect(Collectors.toList()), confirmOtherIdList);
+            }
 
         }
 
