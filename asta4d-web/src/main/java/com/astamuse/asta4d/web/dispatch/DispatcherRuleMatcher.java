@@ -17,6 +17,7 @@
 
 package com.astamuse.asta4d.web.dispatch;
 
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
@@ -33,6 +34,6 @@ public interface DispatcherRuleMatcher {
      * @param rule
      * @return
      */
-    public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, String uri, String queryString);
+    public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, ExtendHttpMethod extendMethod, String uri, String queryString);
 
 }

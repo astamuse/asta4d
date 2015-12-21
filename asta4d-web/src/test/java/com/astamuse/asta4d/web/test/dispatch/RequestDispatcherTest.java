@@ -58,6 +58,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.AntPathRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
@@ -202,10 +203,10 @@ public class RequestDispatcherTest {
         // custom matcher
         rules.add("/custom_matcher/{var}", "/templates/custom_matcher.html").matcher(new DispatcherRuleMatcher() {
             @Override
-            public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, String uri, String queryString) {
+            public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, ExtendHttpMethod extendMethod, String uri, String queryString) {
                 UrlMappingResult result = null;
                 if(!uri.endsWith("NotFound")){
-                    result = new AntPathRuleMatcher().match(rule, method, uri, queryString);
+                    result = new AntPathRuleMatcher().match(rule, method, extendMethod, uri, queryString);
                 }
                 return result;
             }
@@ -214,6 +215,8 @@ public class RequestDispatcherTest {
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
+        
+        rules.add(ExtendHttpMethod.of("PROPPATCH"), "/index", "/index-proppatch.html");
         
         rules.add("/**/*").forward("/notfound", 404);
       //@formatter:on
@@ -273,6 +276,10 @@ public class RequestDispatcherTest {
 
                 { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
                 { "get", "/throwexception", 500, getExpectedPage("/Exception")},
+                
+                // to handle the extending http methods out of predeinfed methods by the framework
+                { "propfind", "/index", 404, new HeaderInfoProvider(404)},
+                { "proppatch", "/index", 0, getExpectedPage("/index-proppatch.html")},
 
                 };
         //@formatter:on

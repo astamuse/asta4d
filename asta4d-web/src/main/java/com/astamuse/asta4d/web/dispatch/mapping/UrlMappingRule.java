@@ -25,6 +25,7 @@ import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 
@@ -33,6 +34,8 @@ public class UrlMappingRule {
     private int seq;
 
     private HttpMethod method;
+
+    private ExtendHttpMethod extendMethod;
 
     private String sourcePath;
 
@@ -52,12 +55,13 @@ public class UrlMappingRule {
 
     private UrlMappingRule unModifiableDelegator;
 
-    public UrlMappingRule(int seq, HttpMethod method, String sourcePath, List<Object> handlerList,
+    public UrlMappingRule(int seq, HttpMethod method, ExtendHttpMethod extendMethod, String sourcePath, List<Object> handlerList,
             List<RequestHandlerInterceptor> interceptorList, Map<String, Object> extraVarMap, List<String> attributeList,
             List<ResultTransformer> resultTransformerList, int priority, DispatcherRuleMatcher ruleMatcher) {
         super();
         this.seq = seq;
         this.method = method;
+        this.extendMethod = extendMethod;
         this.sourcePath = sourcePath;
         this.handlerList = handlerList;
         this.interceptorList = interceptorList;
@@ -91,6 +95,14 @@ public class UrlMappingRule {
 
     public void setMethod(HttpMethod method) {
         this.method = method;
+    }
+
+    public ExtendHttpMethod getExtendMethod() {
+        return extendMethod;
+    }
+
+    public void setExtendMethod(ExtendHttpMethod extendMethod) {
+        this.extendMethod = extendMethod;
     }
 
     public String getSourcePath() {
@@ -200,6 +212,14 @@ public class UrlMappingRule {
         }
 
         public void setMethod(HttpMethod method) {
+            throw new UnsupportedOperationException();
+        }
+
+        public ExtendHttpMethod getExtendMethod() {
+            return rule.getExtendMethod();
+        }
+
+        public void setExtendMethod(ExtendHttpMethod extendMethod) {
             throw new UnsupportedOperationException();
         }
 

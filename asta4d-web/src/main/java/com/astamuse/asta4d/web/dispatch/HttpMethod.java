@@ -18,5 +18,51 @@
 package com.astamuse.asta4d.web.dispatch;
 
 public enum HttpMethod {
-    GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, CONNECT, PATCH, UNKNOWN
+    GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, CONNECT, PATCH, UNKNOWN;
+    public static HttpMethod getMethod(String m) {
+        try {
+            return HttpMethod.valueOf(m.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return HttpMethod.UNKNOWN;
+        }
+    }
+
+    public static class ExtendHttpMethod {
+        private String method;
+
+        public ExtendHttpMethod(String method) {
+            this.method = method.toUpperCase();
+        }
+
+        public static ExtendHttpMethod of(String method) {
+            return new ExtendHttpMethod(method);
+        }
+
+        public String getMethod() {
+            return this.method;
+        }
+
+        @Override
+        public int hashCode() {
+            return method.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            ExtendHttpMethod other = (ExtendHttpMethod) obj;
+            if (method == null) {
+                if (other.method != null)
+                    return false;
+            } else if (!method.equals(other.method))
+                return false;
+            return true;
+        }
+
+    }
 }

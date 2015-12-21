@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
@@ -46,24 +47,15 @@ public class RequestDispatcher {
 
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void dispatchAndProcess(List<UrlMappingRule> ruleList) throws Exception {
-        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
         WebApplicationContext context = (WebApplicationContext) Context.getCurrentThreadContext();
         HttpServletRequest request = context.getRequest();
         HttpServletResponse response = context.getResponse();
 
         HttpMethod method;
-        try {
-            method = HttpMethod.valueOf(request.getMethod().toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            // the unknown methods
-            if (ex.getMessage().startsWith("No enum constatnt")) {
-                method = HttpMethod.UNKNOWN;
-            } else {
-                throw ex;
-            }
-        }
+        ExtendHttpMethod extendMethod;
+        method = HttpMethod.getMethod(request.getMethod());
+        extendMethod = method == HttpMethod.UNKNOWN ? ExtendHttpMethod.of(request.getMethod()) : null;
         String uri = context.getAccessURI();
         if (uri == null) {
             uri = URLDecoder.decode(request.getRequestURI(), "UTF-8");
@@ -77,7 +69,7 @@ public class RequestDispatcher {
         UrlMappingResult result = null;
 
         for (UrlMappingRule rule : ruleList) {
-            result = rule.getRuleMatcher().match(rule, method, uri, queryString);
+            result = rule.getRuleMatcher().match(rule, method, extendMethod, uri, queryString);
             if (result != null) {
                 break;
             }
@@ -87,7 +79,8 @@ public class RequestDispatcher {
         // defining all match rule
 
         if (result == null) {
-            logger.warn("There is no matched rule found, we will simply return a 404. You should define your own matching all rule for this case.");
+            logger.warn(
+                    "There is no matched rule found, we will simply return a 404. You should define your own matching all rule for this case.");
             response.setStatus(404);
             return;
         }
