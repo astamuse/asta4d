@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.astamuse.asta4d.web.copyleft.SpringAntPathMatcher;
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
@@ -35,10 +36,10 @@ public class AntPathRuleMatcher implements DispatcherRuleMatcher {
     private SpringAntPathMatcher pathMatcher = new SpringAntPathMatcher();
 
     @Override
-    public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, String uri, String queryString) {
+    public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, ExtendHttpMethod extendMethod, String uri, String queryString) {
         UrlMappingResult mappingResult = null;
 
-        if (matchMethod(rule, method)) {
+        if (matchMethod(rule, method, extendMethod)) {
             if (matchPath(rule, uri)) {
                 mappingResult = new UrlMappingResult();
                 mappingResult.setPathVarMap(variables(rule, uri));
@@ -49,16 +50,28 @@ public class AntPathRuleMatcher implements DispatcherRuleMatcher {
         return mappingResult;
     }
 
-    protected boolean matchMethod(UrlMappingRule rule, HttpMethod method) {
+    protected boolean matchMethod(UrlMappingRule rule, HttpMethod method, ExtendHttpMethod extendMethod) {
         HttpMethod ruleMethod = rule.getMethod();
 
-        if (ruleMethod != null) {
-            if (ruleMethod != method) {
-                return false;
-            }
+        if (ruleMethod == null) {
+            return true;// match all
         }
 
-        return true;
+        if (ruleMethod != method) {
+            return false;
+        }
+
+        if (method == HttpMethod.UNKNOWN) {
+            ExtendHttpMethod ruleExtendMethod = rule.getExtendMethod();
+            if (ruleExtendMethod == null) {
+                return true; // match all extend method
+            } else {
+                return ruleExtendMethod.equals(extendMethod);
+            }
+        } else {
+            return true;// method macthed
+        }
+
     }
 
     protected boolean matchPath(UrlMappingRule rule, String uri) {

@@ -1,5 +1,14 @@
 ## Release Notes
 
+-   1.1-Xmas (2015.12.25)
+    
+    ADD
+    - support of http methods that are out of standard ones
+
+    ENHANCE
+    - allow customize validation error message more flexible
+    - make RenderTesterTest more easy to use
+
 -   1.1-b3 (2015.10.27)
     
     FIX

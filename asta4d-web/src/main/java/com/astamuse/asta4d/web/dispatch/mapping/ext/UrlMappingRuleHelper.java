@@ -32,6 +32,7 @@ import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
@@ -340,7 +341,7 @@ public class UrlMappingRuleHelper {
             } else {
                 reOrganizeTemplateTransformers(rule);
             }
-        }// sortedRuleList loop
+        } // sortedRuleList loop
 
         return arrangedRuleList;
     }
@@ -435,11 +436,11 @@ public class UrlMappingRuleHelper {
         rule.setResultTransformerList(transformerList);
     }
 
-    private UrlMappingRule createDefaultRule(HttpMethod method, String sourcePath) {
+    private UrlMappingRule createDefaultRule(HttpMethod method, ExtendHttpMethod extendMethod, String sourcePath) {
         UrlMappingRule rule = new UrlMappingRule();
         ruleList.add(rule);
-
         rule.setMethod(method);
+        rule.setExtendMethod(extendMethod);
         rule.setSourcePath(sourcePath);
         rule.setSeq(Sequencer.incrementAndGet());
         rule.setPriority(DEFAULT_PRIORITY);
@@ -448,24 +449,36 @@ public class UrlMappingRuleHelper {
         return rule;
     }
 
-    public HandyRuleWithRemap add(HttpMethod method, String sourcePath) {
-        HandyRuleWithRemap handyRule = new HandyRuleWithRemap(createDefaultRule(method, sourcePath));
-        return handyRule;
-    }
-
-    public HandyRuleWithAttrOnly add(HttpMethod method, String sourcePath, String targetPath) {
-        UrlMappingRule rule = createDefaultRule(method, sourcePath);
-        HandyRule handyRule = new HandyRule(rule);
-        handyRule.forward(targetPath);
-        return new HandyRuleWithAttrOnly(rule);
-    }
-
     public HandyRuleWithRemap add(String sourcePath) {
         return add(defaultMethod, sourcePath);
     }
 
     public HandyRuleWithAttrOnly add(String sourcePath, String targetPath) {
         return add(defaultMethod, sourcePath, targetPath);
+    }
+
+    public HandyRuleWithRemap add(HttpMethod method, String sourcePath) {
+        HandyRuleWithRemap handyRule = new HandyRuleWithRemap(createDefaultRule(method, null, sourcePath));
+        return handyRule;
+    }
+
+    public HandyRuleWithAttrOnly add(HttpMethod method, String sourcePath, String targetPath) {
+        UrlMappingRule rule = createDefaultRule(method, null, sourcePath);
+        HandyRule handyRule = new HandyRule(rule);
+        handyRule.forward(targetPath);
+        return new HandyRuleWithAttrOnly(rule);
+    }
+
+    public HandyRuleWithRemap add(ExtendHttpMethod extendMethod, String sourcePath) {
+        HandyRuleWithRemap handyRule = new HandyRuleWithRemap(createDefaultRule(HttpMethod.UNKNOWN, extendMethod, sourcePath));
+        return handyRule;
+    }
+
+    public HandyRuleWithAttrOnly add(ExtendHttpMethod extendMethod, String sourcePath, String targetPath) {
+        UrlMappingRule rule = createDefaultRule(HttpMethod.UNKNOWN, extendMethod, sourcePath);
+        HandyRule handyRule = new HandyRule(rule);
+        handyRule.forward(targetPath);
+        return new HandyRuleWithAttrOnly(rule);
     }
 
 }
