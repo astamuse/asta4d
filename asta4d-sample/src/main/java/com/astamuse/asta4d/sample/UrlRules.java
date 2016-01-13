@@ -67,6 +67,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
         //@formatter:off
         
         rules.add("/js/**/*").handler(new StaticResourceHandler());
+        rules.add("/css/**/*").handler(new StaticResourceHandler());
         
         rules.add("/snippet", "/templates/snippet.html");
         

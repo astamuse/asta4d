@@ -23,10 +23,19 @@
 	</servlet>
 	-->
 	
+	<!-- 
+		Disabled this configuration due not to work correctly in wildfly which is our online sample runtime
+		and instead of StaticResourceHanlder in java side.
+		
+		This is still work for jetty/tomcat.
+	 -->
+	<!--  
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
 		<url-pattern>/css/*</url-pattern>
 	</servlet-mapping>
+	-->
+	
 	
 	<servlet-mapping>
 		<servlet-name>Asta4D Servlet</servlet-name>
