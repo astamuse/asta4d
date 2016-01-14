@@ -34,7 +34,7 @@ public class JDKResourceBundleMessagePatternRetriever implements MessagePatternR
 
     private ResourceBundleFactory resourceBundleFactory = new CharsetResourceBundleFactory();
 
-    private String[] resourceNames = new String[0];
+    protected String[] resourceNames = new String[0];
 
     public ResourceBundleFactory getResourceBundleFactory() {
         return resourceBundleFactory;
