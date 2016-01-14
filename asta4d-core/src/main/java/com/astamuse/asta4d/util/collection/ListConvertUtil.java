@@ -27,14 +27,20 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.util.concurrent.ListExecutorServiceUtil;
 
 public class ListConvertUtil {
+
+    private final static Logger logger = LoggerFactory.getLogger(ListConvertUtil.class);
 
     private final static String ParallelListConversionMark = "ParallelListConversionMark##" + ListConvertUtil.class.getName();
 
@@ -76,14 +82,14 @@ public class ListConvertUtil {
 
         // for non-parallel converting, we will force to current thread converting.
         boolean doParallel = convertor.isParallel();
-        ParallelRecursivePolicy policy = doParallel ? conf.getParallelRecursivePolicyForListRendering()
+        ParallelRecursivePolicy policy = doParallel ? conf.getRecursivePolicyForParallelConverting()
                 : ParallelRecursivePolicy.CURRENT_THREAD;
 
         if (isInParallelConverting != null || !doParallel) {// recursive converting or non-parallel
             switch (policy) {
             case EXCEPTION:
                 throw new RuntimeException(
-                        "Parallel list converting is forbidden (by default) to avoid deadlock. You can change this policy by Configuration.setParallelRecursivePolicyForListRendering().");
+                        "Recursive parallel list converting is forbidden (by default) to avoid deadlock. You can change this policy by Configuration.setRecursivePolicyForParallelListConverting().");
             case CURRENT_THREAD:
                 List<T> list = _transform(sourceList, convertor);
                 return transform(list, new RowConvertor<T, Future<T>>() {
@@ -119,12 +125,15 @@ public class ListConvertUtil {
                 });
             case NEW_THREAD:
                 ExecutorService executor = ParallelFallbackExecutor;
+                /*
                 List<Future<T>> futureList = new LinkedList<>();
                 int index = 0;
                 for (S obj : sourceList) {
                     futureList.add(invokeByExecutor(executor, convertor, index, obj));
                     index++;
                 }
+                */
+                List<Future<T>> futureList = invokeByExecutor(executor, sourceList, convertor, 2);
                 return futureList;
             default:
                 return Collections.emptyList();
@@ -134,19 +143,28 @@ public class ListConvertUtil {
             newContext.setData(ParallelListConversionMark, Boolean.TRUE);
             try {
                 return Context.with(newContext, new Callable<List<Future<T>>>() {
+
                     @Override
                     public List<Future<T>> call() throws Exception {
                         ExecutorService executor = ListExecutorServiceUtil.getExecutorService();
+                        /*
                         List<Future<T>> futureList = new LinkedList<>();
                         int index = 0;
                         for (S obj : sourceList) {
                             futureList.add(invokeByExecutor(executor, convertor, index, obj));
                             index++;
                         }
+                        */
+                        List<Future<T>> futureList = invokeByExecutor(executor, sourceList, convertor,
+                                conf.getNumberLimitOfParallelListConverting());
                         return futureList;
                     }
                 });
-            } catch (Exception e) {
+            } catch (
+
+            Exception e)
+
+            {
                 throw new RuntimeException(e);
             }
 
@@ -167,5 +185,43 @@ public class ListConvertUtil {
                 });
             }
         });
+    }
+
+    private static <S, T> List<Future<T>> invokeByExecutor(ExecutorService es, Iterable<S> sourceList, RowConvertor<S, T> convertor,
+            int maxParallelNumber) {
+        try {
+            final Semaphore available = new Semaphore(maxParallelNumber, false);
+            final Context context = Context.getCurrentThreadContext();
+            List<Future<T>> futureList = new LinkedList<>();
+            int index = 0;
+            Future<T> f;
+            for (S obj : sourceList) {
+                final int rowIndex = index;
+                // logger.debug("acquiring:{}", rowIndex);
+                available.acquire();
+                // logger.debug("acquired:{}", rowIndex);
+                f = es.submit(new Callable<T>() {
+                    @Override
+                    public T call() throws Exception {
+                        try {
+                            return Context.with(context, new Callable<T>() {
+                                @Override
+                                public T call() throws Exception {
+                                    return convertor.convert(rowIndex, obj);
+                                }
+                            });
+                        } finally {
+                            // logger.debug("released:{}", rowIndex);
+                            available.release();
+                        }
+                    }
+                });
+                futureList.add(f);
+                index++;
+            }
+            return futureList;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

@@ -54,23 +54,8 @@ import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
  */
 public class Renderer {
 
-    /**
-     * This value is for old source compatibility.set it to false will return to the old style action which require a ClearNode to remove
-     * node and will also throw NullPointerException if the specified value is null.
-     * 
-     * We will remove this flag at sometime after we migrated all of our existing sources.
-     */
-    private final static boolean treatNullAsRemoveNode;
-    static {
-        String treat = System.getProperty("com.astamuse.asta4d.render.treatNullAsRemoveNode");
-        if (treat == null) {
-            treatNullAsRemoveNode = true;
-        } else {
-            treatNullAsRemoveNode = Boolean.parseBoolean(treat);
-        }
-    }
-
     private final static boolean saveCallstackInfo;
+
     static {
         saveCallstackInfo = Configuration.getConfiguration().isSaveCallstackInfoOnRendererCreation();
     }
@@ -416,15 +401,20 @@ public class Renderer {
     }
 
     /**
-     * Create a renderer for list rendering by given parameter and add it to the current renderer. See {@link #create(String, Stream)}.
+     * Create a renderer for list rendering by given {@link Stream} and add it to the current renderer. See {@link #create(String, Stream)}.
+     * 
+     * <p>
+     * 
+     * <b>Note:Parallel stream is not supported due to the potential thread dead lock(https://bugs.openjdk.java.net/browse/JDK-8042758)
+     * which is commented as not a bug by Oracle. For parallel rendering ,use {@link RowConvertorBuilder#parallel(Function)}/
+     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead. </b>
      * 
      * @param selector
      *            a css selector
      * @param stream
-     *            a list that can contain all the types that supported by the non-list add methods of Renderer.
+     *            a non-parallel stream with arbitrary type data
      * @return the created renderer for chain calling
-     * @throws UnsupportedOperationException
-     *             if given stream is parallel
+     * 
      */
     public Renderer add(String selector, Stream<?> stream) {
         return add(create(selector, stream));
@@ -558,7 +548,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Long value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -575,7 +565,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Integer value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -592,7 +582,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Boolean value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -612,7 +602,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, String value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, new TextSetter(value));
@@ -632,7 +622,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Object value) {
-        if (treatNullAsRemoveNode && value == null) {
+        if (value == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, TransformerFactory.generateTransformer(value));
@@ -649,7 +639,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, SpecialRenderer specialRenderer) {
-        if (treatNullAsRemoveNode && specialRenderer == null) {
+        if (specialRenderer == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, specialRenderer.getTransformer());
@@ -760,7 +750,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Element elem) {
-        if (treatNullAsRemoveNode && elem == null) {
+        if (elem == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementTransformer(elem));
@@ -779,7 +769,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Component component) {
-        if (treatNullAsRemoveNode && component == null) {
+        if (component == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementTransformer(component.toElement()));
@@ -799,7 +789,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, ElementSetter setter) {
-        if (treatNullAsRemoveNode && setter == null) {
+        if (setter == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new ElementSetterTransformer(setter));
@@ -819,7 +809,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Renderable renderable) {
-        if (treatNullAsRemoveNode && renderable == null) {
+        if (renderable == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new RenderableTransformer(renderable));
@@ -838,7 +828,7 @@ public class Renderer {
      * @return the created renderer for chain calling
      */
     public final static Renderer create(String selector, Renderer renderer) {
-        if (treatNullAsRemoveNode && renderer == null) {
+        if (renderer == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return new Renderer(selector, new RendererTransformer(renderer));
@@ -856,34 +846,35 @@ public class Renderer {
 
     /**
      * Create a renderer for list rendering by given parameter with given {@link Stream}. See {@link #create(String, List)}.
+     * 
      * <p>
      * 
-     * <b>Note:</b> Parallel stream is not supported because the parallel stream could not keep the original order of given list, thus an
-     * UnsupportedOperationException will be thrown if the given stream is parallel. For parallel rendering, use the combination of
-     * {@link #create(String, Iterable, RowConvertor)} and {@link RowConvertorBuilder#parallel(Function)}/
-     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead.
+     * <b>Note:Parallel stream is not supported due to the potential thread dead lock(https://bugs.openjdk.java.net/browse/JDK-8042758)
+     * which is commented as not a bug by Oracle. For parallel rendering ,use {@link RowConvertorBuilder#parallel(Function)}/
+     * {@link RowConvertorBuilder#parallel(RowConvertor)} instead. </b>
      * 
      * @param selector
      *            a css selector
      * @param stream
-     *            a stream with arbitrary type data
+     *            a non-parallel stream with arbitrary type data
      * @return the created renderer
-     * @throws UnsupportedOperationException
-     *             if the given stream is parallel
      */
     public final static Renderer create(String selector, Stream<?> stream) {
-        if (treatNullAsRemoveNode && stream == null) {
+        if (stream == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             if (stream.isParallel()) {
-                throw new UnsupportedOperationException(
-                        "Cannot rendering by a parallel stream because the parallel stream could not keep the original order of given list.");
-            }
-            List<Transformer<?>> list = stream.map(obj -> {
-                return TransformerFactory.generateTransformer(obj);
-            }).collect(Collectors.toList());
+                String msg = "Parallel stream is not supported due to the potential thread dead lock" +
+                        "(https://bugs.openjdk.java.net/browse/JDK-8042758) which is commented as not a bug by Oracle. For parallel " +
+                        "rendering ,use RowConvertorBuilder#parallel(Function)/RowConvertorBuilder#parallel(RowConvertor) instead.";
+                throw new IllegalArgumentException(msg);
+            } else {
+                List<Transformer<?>> list = stream.map(obj -> {
+                    return TransformerFactory.generateTransformer(obj);
+                }).collect(Collectors.toList());
 
-            return new Renderer(selector, list);
+                return new Renderer(selector, list);
+            }
         }
     }
 
@@ -900,7 +891,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static Renderer create(String selector, Iterable<?> list) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             List<Transformer<?>> transformerList = new LinkedList<>();
@@ -924,7 +915,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, RowConvertor<S, T> convertor) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             if (convertor.isParallel() && !Configuration.getConfiguration().isBlockParallelListRendering()) {
@@ -948,7 +939,7 @@ public class Renderer {
      * @return the created renderer
      */
     public final static <S, T> Renderer create(String selector, Iterable<S> list, Function<S, T> mapper) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, list, RowConvertorBuilder.map(mapper));
@@ -979,7 +970,7 @@ public class Renderer {
      */
     @Deprecated
     public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (treatNullAsRemoveNode && list == null) {
+        if (list == null) {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, list, (RowConvertor<S, T>) convertor);

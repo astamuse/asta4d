@@ -38,8 +38,8 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.form.field.FormFieldPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandler;
-import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippet;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
+import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippetTrait;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 import com.astamuse.asta4d.web.test.WebTestBase;
 
@@ -51,21 +51,27 @@ public class OneStepFormTest extends WebTestBase {
 
     private static TestForm savedForm = null;
 
-    public static class TestHandler extends OneStepFormHandler<TestForm> {
+    public static class TestHandler implements OneStepFormHandlerTrait<TestForm> {
 
         private List<FormValidationMessage> msgList = new LinkedList<>();
 
-        public TestHandler() {
-            super(TestForm.class, "/edit.html");
+        @Override
+        public Class<TestForm> getFormCls() {
+            return TestForm.class;
         }
 
         @Override
-        protected void updateForm(TestForm form) {
+        public String getInputTemplateFilePath() {
+            return "/edit.html";
+        }
+
+        @Override
+        public void updateForm(TestForm form) {
             savedForm = form;
         }
 
         @Override
-        protected TestForm createInitForm() {
+        public TestForm createInitForm() {
             TestForm form = new TestForm();
             form.subForm = new SubForm();
             form.subArray = new SubArray[0];
@@ -76,7 +82,7 @@ public class OneStepFormTest extends WebTestBase {
         }
 
         @Override
-        protected void outputValidationMessage(FormValidationMessage msg) {
+        public void outputValidationMessage(FormValidationMessage msg) {
             msgList.add(msg);
         }
 
@@ -109,7 +115,7 @@ public class OneStepFormTest extends WebTestBase {
         }
     }
 
-    public static class TestSnippet extends OneStepFormSnippet {
+    public static class TestSnippet implements OneStepFormSnippetTrait {
 
         private static Map<String, Integer> formCounterMap = new HashMap<>();
 
@@ -130,7 +136,7 @@ public class OneStepFormTest extends WebTestBase {
         }
 
         @Override
-        protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+        public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
             Integer count = formCounterMap.get(form.getClass().getName());
             if (count == null) {
                 count = 1;
@@ -138,7 +144,7 @@ public class OneStepFormTest extends WebTestBase {
                 count = count + 1;
             }
             formCounterMap.put(form.getClass().getName(), count);
-            return super.retrieveFieldPrepareRenderers(renderTargetStep, form);
+            return OneStepFormSnippetTrait.super.retrieveFieldPrepareRenderers(renderTargetStep, form);
         }
 
     }

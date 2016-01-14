@@ -102,9 +102,9 @@ public class AnnotatedPropertyUtil {
             throw new UnsupportedOperationException();
         }
 
-        public void assginValue(Object instance, Object value) throws IllegalAccessException, IllegalArgumentException,
+        public void assignValue(Object instance, Object value) throws IllegalAccessException, IllegalArgumentException,
                 InvocationTargetException {
-            info.assginValue(instance, value);
+            info.assignValue(instance, value);
         }
 
         public Object retrieveValue(Object instance) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {

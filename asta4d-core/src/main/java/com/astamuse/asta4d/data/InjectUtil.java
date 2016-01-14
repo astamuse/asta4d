@@ -36,12 +36,12 @@ import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.data.annotation.ContextDataSet;
 import com.astamuse.asta4d.util.Java8Paranamer;
+import com.astamuse.asta4d.util.Java8ParanamerBytecodeScanWrapper;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.util.annotation.ConvertableAnnotationRetriever;
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.AnnotationParanamer;
-import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.DefaultParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 
@@ -115,7 +115,7 @@ public class InjectUtil {
 
     private final static ConcurrentHashMap<Method, List<TargetInfo>> MethodTargetCache = new ConcurrentHashMap<>();
 
-    private final static Paranamer paranamer = new AdaptiveParanamer(new DefaultParanamer(), new BytecodeReadingParanamer(),
+    private final static Paranamer paranamer = new AdaptiveParanamer(new DefaultParanamer(), new Java8ParanamerBytecodeScanWrapper(),
             new AnnotationParanamer(), new Java8Paranamer());
 
     public final static Object retrieveContextDataSetInstance(Class cls, String searchName, String searchScope)
@@ -504,7 +504,7 @@ public class InjectUtil {
             cdSet = ConvertableAnnotationRetriever.retrieveAnnotation(ContextDataSet.class, target.type.getAnnotations());
             target.name = cd == null ? "" : cd.name();
             target.scope = cd == null ? "" : cd.scope();
-            target.typeUnMatch = cd == null ? TypeUnMacthPolicy.DEFAULT_VALUE : cd.typeUnMatch();
+            target.typeUnMatch = cd == null ? TypeUnMacthPolicy.EXCEPTION : cd.typeUnMatch();
             if (StringUtils.isEmpty(target.name)) {
                 target.name = parameterNames[i];
             }

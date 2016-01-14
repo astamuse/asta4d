@@ -21,6 +21,8 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import org.testng.annotations.Test;
 
@@ -262,6 +264,19 @@ public class InjectUtilForMethodTest extends BaseTest {
         assertEquals(params[0], new long[] { 10L, 20L });
     }
 
+    /**
+     * There is a bug for lambda inside method
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void lambdaInside() throws Exception {
+        setData(null);
+        Object[] params = InjectUtil.getMethodInjectParams(getMethod("lambdaInside", String.class));
+        assertEquals(params.length, 1);
+        assertEquals(params[0], null);
+    }
+
     @Test(enabled = false)
     public void requireString(String param) {
     }
@@ -292,6 +307,12 @@ public class InjectUtilForMethodTest extends BaseTest {
 
     @Test(enabled = false)
     public void requireLong(long[] param) {
+    }
+
+    @Test(enabled = false)
+    public void lambdaInside(String param) {
+        List<String> names = Arrays.asList("hoge hoge", "foo bar", "naoki", "kishida");
+        names.stream().forEach(s -> System.out.println(s));
     }
 
     private static void setData(Object data) {

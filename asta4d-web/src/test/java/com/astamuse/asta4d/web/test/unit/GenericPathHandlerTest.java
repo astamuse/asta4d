@@ -35,7 +35,7 @@ import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.template.TemplateResolver;
+import com.astamuse.asta4d.template.AbstractTemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.builtin.AbstractGenericPathHandler;
@@ -45,7 +45,7 @@ public class GenericPathHandlerTest {
 
     private static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
-            setTemplateResolver(new TemplateResolver() {
+            setTemplateResolver(new AbstractTemplateResolver() {
                 @Override
                 public TemplateInfo loadResource(String path) {
                     return createTemplateInfo(path, new ByteArrayInputStream(path.getBytes()));

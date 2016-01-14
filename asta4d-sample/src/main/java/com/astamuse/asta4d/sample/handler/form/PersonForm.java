@@ -18,7 +18,10 @@ package com.astamuse.asta4d.sample.handler.form;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.sample.util.persondb.Person;
 import com.astamuse.asta4d.web.form.annotation.Form;
@@ -65,6 +68,7 @@ public class PersonForm extends Person {
 
     @Override
     @Select(name = "bloodtype")
+    @NotNull
     public BloodType getBloodType() {
         return super.getBloodType();
     }
@@ -72,12 +76,14 @@ public class PersonForm extends Person {
     // the field name would be displayed as "gender" rather than the original field name "sex"
     @Override
     @Radio(nameLabel = "gender")
+    @NotNull
     public SEX getSex() {
         return super.getSex();
     }
 
     @Override
     @Checkbox
+    @NotEmpty
     public Language[] getLanguage() {
         return super.getLanguage();
     }

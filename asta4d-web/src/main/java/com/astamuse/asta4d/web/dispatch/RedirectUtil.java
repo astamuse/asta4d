@@ -140,7 +140,7 @@ public class RedirectUtil {
         // save flash data map
         if (!dataMap.isEmpty()) {
             String flashScopeId = SecureIdGenerator.createEncryptedURLSafeId();
-            WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
+            WebApplicationConfiguration.getWebApplicationConfiguration().getExpirableDataManager()
                     .put(flashScopeId, dataMap, DATA_EXPIRE_TIME_MILLI_SECONDS);
 
             // create target url
@@ -161,8 +161,8 @@ public class RedirectUtil {
         if (StringUtils.isEmpty(flashScopeId)) {
             return;
         } else {
-            Map<String, Object> savedMap = WebApplicationConfiguration.getWebApplicationConfiguration().getTimeoutDataManager()
-                    .get(flashScopeId);
+            Map<String, Object> savedMap = WebApplicationConfiguration.getWebApplicationConfiguration().getExpirableDataManager()
+                    .get(flashScopeId, true);
             if (savedMap == null) {
                 return;
             } else {

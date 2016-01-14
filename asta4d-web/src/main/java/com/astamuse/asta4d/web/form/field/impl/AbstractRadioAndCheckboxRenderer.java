@@ -38,6 +38,7 @@ import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldWithOptionValueRenderer;
+import com.astamuse.asta4d.web.util.ClosureVarRef;
 
 public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionValueRenderer {
 
@@ -304,6 +305,7 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
     protected Renderer addDefaultAlternativeDom(final String editTargetSelector, final List<String> valueList) {
         final List<String> duplicatorRefList = new LinkedList<>();
         final List<String> idList = new LinkedList<>();
+        ClosureVarRef<Boolean> editTargetExists = new ClosureVarRef<Boolean>(false);
         Renderer renderer = Renderer.create(editTargetSelector, new ElementSetter() {
             @Override
             public void set(Element elem) {
@@ -312,15 +314,33 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
                     duplicatorRefList.add(duplicatorRef);
                 }
                 idList.add(elem.id());
+                editTargetExists.set(true);
             }
         });
+
+        /*
+        renderer.add(":root", () -> {
+            return Renderer.create().addDebugger("current root for addDefaultAlternativeDom");
+        });
+        */
+
         renderer.add(":root", new Renderable() {
             @Override
             public Renderer render() {
+                // skip create display alternative DOM if edit target does not exist.
+                if (editTargetExists.get()) {
+                    // it is OK
+                } else {
+                    return Renderer.create();
+                }
+
                 String attachTargetSelector;
                 if (duplicatorRefList.size() > 0) {
                     attachTargetSelector = SelectorUtil.attr(RadioPrepareRenderer.DUPLICATOR_REF_ID_ATTR,
                             duplicatorRefList.get(duplicatorRefList.size() - 1));
+                } else if (idList.size() == 0) {
+                    String msg = "The target item[%s] must have id specified.";
+                    throw new IllegalArgumentException(String.format(msg, editTargetSelector));
                 } else {
                     attachTargetSelector = SelectorUtil.id(idList.get(idList.size() - 1));
                 }

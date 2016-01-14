@@ -21,8 +21,10 @@ import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.annotation.ContextData;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.snippet.SnippetInvokeException;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
@@ -80,6 +82,15 @@ public class AdvancedSnippetTest extends BaseTest {
         }
     }
 
+    public static class InitializingFailedSnippet {
+        @ContextData
+        int value;
+
+        public Renderer render() {
+            return Renderer.create();
+        }
+    }
+
     public AdvancedSnippetTest() {
     }
 
@@ -97,6 +108,12 @@ public class AdvancedSnippetTest extends BaseTest {
 
     public void testOverrideRenderMethod() throws Throwable {
         new SimpleCase("AdvancedSnippet_overrideRenderMethod.html");
+    }
+
+    @Test(expectedExceptions = SnippetInvokeException.class, expectedExceptionsMessageRegExp = ".*Found data\\(ads\\) cannot be coverted from \\[class java\\.lang\\.String\\] to \\[class java\\.lang\\.Integer\\].*")
+    public void testInitializingFailedSnippet() throws Throwable {
+        Context.getCurrentThreadContext().setData("value", "ads");
+        new SimpleCase("AdvancedSnippet_initializingFailed.html");
     }
 
 }

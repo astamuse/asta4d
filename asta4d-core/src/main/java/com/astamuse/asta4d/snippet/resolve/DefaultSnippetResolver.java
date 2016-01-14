@@ -18,7 +18,9 @@
 package com.astamuse.asta4d.snippet.resolve;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -99,12 +101,26 @@ public class DefaultSnippetResolver extends MultiSearchPathResourceLoader<Object
     protected Method findSnippetMethod(Object snippetInstance, String methodName) {
         Method[] methodList = snippetInstance.getClass().getMethods();
         Class<?> rendererCls = Renderer.class;
+        List<Method> namedMtdList = new ArrayList<>();
+        List<Method> priorMtdList = new ArrayList<>();
         for (Method method : methodList) {
             if (method.getName().equals(methodName) && rendererCls.isAssignableFrom(method.getReturnType())) {
-                return method;
+                namedMtdList.add(method);
+                if (method.getAnnotation(PriorRenderMethod.class) != null) {
+                    priorMtdList.add(method);
+                }
             }
         }
-        return null;
+
+        if (priorMtdList.isEmpty()) {
+            if (namedMtdList.isEmpty()) {
+                return null;
+            } else {
+                return namedMtdList.get(namedMtdList.size() - 1);
+            }
+        } else {
+            return priorMtdList.get(priorMtdList.size() - 1);
+        }
     }
 
     private Map<String, Object> getCacheMap(String key) {

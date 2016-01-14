@@ -1,20 +1,21 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
   </parent>
-  
+
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1-Xmas</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>
   <description>asta4d framework is a view first web framework</description>
-
+  
   <url>http://github.com/astamuse/asta4d</url>
   <licenses>
     <license>
@@ -32,31 +33,34 @@
 
   <developers>
     <developer>
-      <id>s.otani</id>
-      <name>Shunsuke Otani</name>
-      <email>s.otani@astamuse.co.jp</email>
-    </developer>
-    <developer>
       <id>e.ryu</id>
       <name>Rui Liu</name>
-      <email>e.ryu@astamuse.co.jp</email>
+    </developer>
+    <developer>
+      <id>s.otani</id>
+      <name>Shunsuke Otani</name>
+    </developer>
+    <developer>
+      <id>t.ishima</id>
+      <name>Takayuki Ishima</name>
     </developer>
   </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <prjDocRoot>./asta4d-doc</prjDocRoot>
   </properties>
-  
+
   <modules>
-      <module>asta4d-core</module>
-      <module>asta4d-web</module>
-      <module>asta4d-spring</module>
-      <module>asta4d-sample</module>
-      <module>asta4d-archetype-prototype</module>
-      <module>asta4d-archetype</module>
-      <module>asta4d-doc</module>
+    <module>asta4d-core</module>
+    <module>asta4d-web</module>
+    <module>asta4d-spring</module>
+    <module>asta4d-sample</module>
+    <module>asta4d-archetype-prototype</module>
+    <module>asta4d-archetype</module>
+    <module>asta4d-doc</module>
   </modules>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -71,77 +75,142 @@
       <artifactId>logback-classic</artifactId>
       <version>1.0.6</version>
     </dependency>
+
   </dependencies>
 
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.2</version>
-          <configuration>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
             <source>1.8</source>
             <target>1.8</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.4</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <configuration>
-            <locale>en_US</locale>
-            <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
+            <compilerArgs>
+                <arg>-parameters</arg>
+            </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <locale>en_US</locale>
+          <excludePackageNames>com.astamuse.asta4d.sample;org.jsoup.parser;</excludePackageNames>
             <additionalparam>-Xdoclint:none</additionalparam>
-          </configuration>
-          <version>2.9</version>
-          <executions>
-            <execution>
-              <id>create-java-doc-separated</id>
-              <phase>package</phase>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>          
-        </plugin>  
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.2.1</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>jar-no-fork</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.4</version>
-          <executions>
-            <execution>
-              <id>sign-artifacts</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>sign</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>versions-maven-plugin</artifactId>
-          <version>2.0</version>
-        </plugin>        
-      </plugins>
-    </build>  
-  
+        </configuration>
+        <version>2.9</version>
+        <executions>
+          <execution>
+            <id>create-java-doc-site</id>
+            <phase>site</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>create-java-doc-package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.7</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.ow2.asm</groupId>  
+            <artifactId>asm</artifactId>  
+            <version>5.0.4</version>  
+          </dependency>  
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.7</version>
+        <reportSets>
+          <reportSet>
+            <id>cobertura</id>
+            <reports>
+              <report>cobertura</report>
+            </reports>
+            <configuration>
+              <aggregate>true</aggregate>
+            </configuration>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.18.1</version>
+        <reportSets>
+          <reportSet>
+            <id>surefire-report</id>
+            <reports>
+              <report>report-only</report>
+            </reports>
+            <configuration>
+              <aggregate>true</aggregate>
+            </configuration>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+
 </project>

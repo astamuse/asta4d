@@ -33,6 +33,7 @@ import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
+import com.astamuse.asta4d.test.render.infra.TimeCalculator;
 import com.astamuse.asta4d.util.ElementUtil;
 
 @Test
@@ -115,6 +116,31 @@ public class LambdaRenderingTest extends BaseTest {
             return renderer;
         }
 
+        public Renderer parallelStreamRenderingCorrectness() {
+            Renderer renderer = new GoThroughRenderer();
+
+            List<String> textList = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+            renderer.add("div#test-text", textList.parallelStream().map(t -> {
+                return t;
+            }));
+
+            return renderer;
+        }
+
+        public Renderer parallelStreamRenderingTimeConsuming() {
+            Renderer renderer = new GoThroughRenderer();
+            List<String> textList = Arrays.asList("a", "b", "c");
+            renderer.add("div#test-text", textList.parallelStream().map(t -> {
+                try {
+                    Thread.currentThread().sleep(1000);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return t;
+            }));
+
+            return renderer;
+        }
     }
 
     public void testRemoveClassInListRendering() throws Throwable {
@@ -141,4 +167,32 @@ public class LambdaRenderingTest extends BaseTest {
         new SimpleCase("LambdaRendering_listRecursiveRendering.html");
     }
 
+    @Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = ".*not supported.*")
+    public void testParallelStreamRenderingException() throws Throwable {
+        new SimpleCase("LambdaRendering_parallelStreamRenderingCorrectness.html");
+    }
+
+    /* The following parallel stream related tests are disabled because we change our action to always throw exception for parallel stream */
+    @Test(enabled = false)
+    public void testParallelStreamRenderingCorrectness() throws Throwable {
+        // we want to confirm it 10 times
+        for (int i = 0; i < 10; i++) {
+            new SimpleCase("LambdaRendering_parallelStreamRenderingCorrectness.html");
+        }
+    }
+
+    @Test(enabled = false)
+    public void testParallelStreamRenderingTimeConsuming() throws Throwable {
+        // we do not know how many threads will be started for parallel stream by the jvm, so if we render a list with too many elements, we
+        // will have no idea about what is the appropriate execution time for multi-thread rendering. Thus we limit the size of target list
+        // to 3, which means 2 seconds is a ideal value.
+        TimeCalculator.shouldRunInTime(() -> {
+            try {
+                new SimpleCase("LambdaRendering_parallelStreamRenderingTimeConsuming.html");
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }, 2000);
+
+    }
 }

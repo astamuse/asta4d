@@ -18,6 +18,7 @@ package com.astamuse.asta4d.render.test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jsoup.nodes.Element;
@@ -80,8 +81,8 @@ public class RendererTester {
         if (list.isEmpty()) {
             throw new RendererTestException("There is no value to be rendered for selector:[" + selector + "]");
         } else if (list.size() > 1) {
-            throw new RendererTestException("There are more than one value to be rendered for selector:[" + selector +
-                    "], maybe it is rendered multiple times?");
+            throw new RendererTestException(
+                    "There are more than one value to be rendered for selector:[" + selector + "], maybe it is rendered multiple times?");
         } else {
             return list.get(0);
         }
@@ -92,12 +93,12 @@ public class RendererTester {
         List<Transformer<?>> list = retrieveSingleTransformerListOnSelector(selector);
 
         if (list.isEmpty()) {
-            throw new RendererTestException("There is no value to be rendered for selector:[" + selector +
-                    "], maybe it is rendered as a empty list?");
+            throw new RendererTestException(
+                    "There is no value to be rendered for selector:[" + selector + "], maybe it is rendered as a empty list?");
         } else if (list.size() > 1) {
 
-            throw new RendererTestException("There are more than one value to be rendered for selector:[" + selector +
-                    "], maybe it is rendered as a list?");
+            throw new RendererTestException(
+                    "There are more than one value to be rendered for selector:[" + selector + "], maybe it is rendered as a list?");
         } else {
             return list.get(0);
         }
@@ -158,6 +159,11 @@ public class RendererTester {
     public List<Object> getAsList(String selector) throws RendererTestException {
         return getAsList(selector, Object.class);
     }
+
+    public List<RendererTester> getAsRendererTesterList(String selector) throws RendererTestException {
+        return getAsList(selector, Renderer.class).stream().map(r -> RendererTester.forRenderer(r)).collect(Collectors.toList());
+    }
+
 
     /**
      * 

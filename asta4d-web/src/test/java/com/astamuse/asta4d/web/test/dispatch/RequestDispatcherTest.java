@@ -51,14 +51,18 @@ import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.Page;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
+import com.astamuse.asta4d.template.AbstractTemplateResolver;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
-import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
+import com.astamuse.asta4d.web.dispatch.AntPathRuleMatcher;
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
+import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleRewriter;
@@ -81,7 +85,7 @@ public class RequestDispatcherTest {
 
     private static WebApplicationConfiguration configuration = new WebApplicationConfiguration() {
         {
-            setTemplateResolver(new TemplateResolver() {
+            setTemplateResolver(new AbstractTemplateResolver() {
                 @Override
                 public TemplateInfo loadResource(String path) {
                     if (path.equals("/template-not-exists")) {
@@ -192,9 +196,27 @@ public class RequestDispatcherTest {
         
         rules.add("/json500").handler(new TestJsonHandler(new RuntimeException())).json();
         
+        // variableinjection (default and regex pattern)
+        rules.add("/variableinjection/{var_1}/{var_2}", "/templates/variableinjection.html");
+        rules.add("/variableinjection_regex/{var_1}/{var_2:[0-9]+}", "/templates/variableinjection_regex.html");
+        
+        // custom matcher
+        rules.add("/custom_matcher/{var}", "/templates/custom_matcher.html").matcher(new DispatcherRuleMatcher() {
+            @Override
+            public UrlMappingResult match(UrlMappingRule rule, HttpMethod method, ExtendHttpMethod extendMethod, String uri, String queryString) {
+                UrlMappingResult result = null;
+                if(!uri.endsWith("NotFound")){
+                    result = new AntPathRuleMatcher().match(rule, method, extendMethod, uri, queryString);
+                }
+                return result;
+            }
+        });
+
         rules.add("/template-not-exists","/template-not-exists");
         rules.add("/thrownep").handler(ThrowNEPHandler.class).forward("/thrownep");
         rules.add("/throwexception").handler(ThrowExceptionHandler.class).forward("/throwexception");
+        
+        rules.add(ExtendHttpMethod.of("PROPPATCH"), "/index", "/index-proppatch.html");
         
         rules.add("/**/*").forward("/notfound", 404);
       //@formatter:on
@@ -236,7 +258,17 @@ public class RequestDispatcherTest {
                 
                 //TODO it seems that there is missing the way to declare return status for json transforming when exceptions occur 
                 //{ "get", "/jsonerror", 500, new JsonDataProvider(TestExceptionInstance) },
+
+                // variableinjection (default and regex pattern)
+                { "get", "/variableinjection/foo/25", 0, getExpectedPage("/templates/variableinjection.html")},
+                { "get", "/variableinjection/foo/NaN", 0, getExpectedPage("/templates/variableinjection.html")},
+                { "get", "/variableinjection_regex/foo/25", 0, getExpectedPage("/templates/variableinjection_regex.html")},
+                { "get", "/variableinjection_regex/foo/NaN", 404, getExpectedPage("/notfound")},
                 
+                // custom matcher
+                { "get", "/custom_matcher/NotFound", 404, getExpectedPage("/notfound")},
+                { "get", "/custom_matcher/Found", 0, getExpectedPage("/templates/custom_matcher.html")},
+
                 { "get", "/nofile", 404, getExpectedPage("/notfound")},
                 
                 
@@ -244,6 +276,10 @@ public class RequestDispatcherTest {
 
                 { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
                 { "get", "/throwexception", 500, getExpectedPage("/Exception")},
+                
+                // to handle the extending http methods out of predeinfed methods by the framework
+                { "propfind", "/index", 404, new HeaderInfoProvider(404)},
+                { "proppatch", "/index", 0, getExpectedPage("/index-proppatch.html")},
 
                 };
         //@formatter:on
@@ -429,7 +465,7 @@ public class RequestDispatcherTest {
                 throw new UnsupportedOperationException(expected.getClass().toString());
             }
         }
-
+    
         private UrlMappingRule getRule(Object... handlers) {
             UrlMappingRule rule = new UrlMappingRule();
             rule.setHandlerList(Arrays.asList(handlers));
@@ -438,31 +474,31 @@ public class RequestDispatcherTest {
             rule.setForwardDescriptorMap(forwardDescriptors);
             return rule;
         }
-
+    
         private static RequestHandlerInvoker getInvoker() {
             RequestHandlerInvokerFactory factory = new DefaultRequestHandlerInvokerFactory();
             return factory.getInvoker();
         }
-
+    
         private abstract static class ExecutedCheckHandler {
             boolean executed = false;
-
+    
             public void execute() {
                 executed = true;
             }
-
+    
             public boolean isExecuted() {
                 return executed;
             }
         }
-
+    
         private static class VoidHandler extends ExecutedCheckHandler {
             @RequestHandler
             public void handle() {
                 super.execute();
             }
         }
-
+    
         private static class ReturnStringHandler extends ExecutedCheckHandler {
             @RequestHandler
             public String handle() {
@@ -470,7 +506,7 @@ public class RequestDispatcherTest {
                 return "/test1.html";
             }
         }
-
+    
         private static class ReturnDescriptorHandler extends ExecutedCheckHandler {
             @RequestHandler
             public ForwardDescriptor handle() {
@@ -478,7 +514,7 @@ public class RequestDispatcherTest {
                 return new TestDescriptor();
             }
         }
-
+    
         private static class ThrowDescriptorHandler extends ExecutedCheckHandler {
             @RequestHandler
             public void handle() {
@@ -486,36 +522,36 @@ public class RequestDispatcherTest {
                 throw new ForwardableException(new TestDescriptor(), new IllegalArgumentException());
             }
         }
-
+    
         private static class TestDescriptor implements ForwardDescriptor {
-
+    
         }
-
+    
         private static class ViewChangeDescriptor implements ForwardDescriptor {
-
+    
         }
-
+    
         private static class ViewChangeIntercepter implements RequestHandlerInterceptor {
             @Override
             public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
             }
-
+    
             @Override
             public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
                 holder.setForwardDescriptor(new ViewChangeDescriptor());
             }
         }
-
+    
         private static class CancelExceptionIntercepter implements RequestHandlerInterceptor {
             @Override
             public void preHandle(UrlMappingRule rule, RequestHandlerResultHolder holder) {
             }
-
+    
             @Override
             public void postHandle(UrlMappingRule rule, RequestHandlerResultHolder holder, ExceptionHandler exceptionHandler) {
                 exceptionHandler.setException(null);
             }
-
+    
         }
         */
 }

@@ -1,10 +1,17 @@
+## News
+
+- 2015-12-25, 1.1 official release "1.1-Xmas" is released. 
+- 2015-12-17, the scala extension for asta4d [asta4d-scala](https://github.com/astamuse/asta4d-scala) is released. 
+- 2015-10-27, the 1.1-b3 with minor bug fixes is released.
+- 2015-09-07, the 1.1-b2 with minor bug fixes is released.
+- 2015-07-23, the 1.1-b1 with better Java 8 support is released.
+- 2015-02-14, the first official release "1.0-Valentines" is released at the Valentine's day!
+
 ## Quick start
 
-[User Guide](http://astamuse.github.io/asta4d/userguide/index.html)(English, being updated at irregular intervals)
+[documents](http://astamuse.github.io/asta4d/1.1-Xmas/)
 
-[JavaDoc](http://astamuse.github.io/asta4d/javadoc/)
-
-[Online Sample](http://asta4dsample-xzer.rhcloud.com/)(sometimes slow, be patient)
+[Online Sample](http://asta4dsample-xzer.rhcloud.com/)
 
 There is a maven archetype for asta4d. If you want to start with the archetype, you have to [install Maven 3](http://maven.apache.org/download.cgi) at first. After installed Maven 3, create  the sample project by the following command:
 
@@ -12,7 +19,7 @@ There is a maven archetype for asta4d. If you want to start with the archetype, 
 mvn archetype:generate                       \
     -DarchetypeGroupId=com.astamuse          \
     -DarchetypeArtifactId=asta4d-archetype   \
-    -DarchetypeVersion=1.0-b3                \
+    -DarchetypeVersion=1.1-Xmas        \
     -DgroupId=<your.groupid>                 \
     -DartifactId=<your-artifactId>
 ```
@@ -20,8 +27,10 @@ mvn archetype:generate                       \
 or simply follow the wizard by filtered list:
 
 ```batch
-mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.0-b3
+mvn archetype:generate -DarchetypeGroupId=com.astamuse -DarchetypeArtifactId=asta4d-archetype -DarchetypeVersion=1.1-Xmas
 ```
+
+*The 1.1-Xmas with better Java 8 support is recommended for new projects, if you cannot use Java 8, use 1.0-Valentines instead.*
 
 After the archetype is created, enter the folder which has a "pom.xml" file, run the following command:
 
@@ -33,7 +42,7 @@ Then you can access the sample project by http://localhost:8080, there are sourc
 After you confirm the sample project is OK, you can add your own url mapping rules to /src/main/java/.../.../UrlRules.java,
 and also you can add your own html template files to /src/main/webapp.
 
-Reading the [Best Practice](http://astamuse.github.io/asta4d/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
+Reading the [Best Practice](http://astamuse.github.io/asta4d/1.1-Xmas/userguide/index.html#chapter-best-practice) before writing your own code is recommended.
 
 ## What is Asta4D
 
@@ -101,14 +110,13 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
             if (StringUtils.isEmpty(name)) {
                 name = "Asta4D";
             }
-            Element element = ElementUtil.parseAsSingle("<span>Hello " + name + "!</span>");
-            return Renderer.create("*", element);
+            return Renderer.create("div", name);
         }
     
         public Renderer setProfile() {
-            Renderer render = new GoThroughRenderer();
+            Renderer render = Renderer.create();
             render.add("p#name span", "asta4d");
-            render.add("p#age span", "20");
+            render.add("p#age span", 20);
             return render;
         }
     }
@@ -120,7 +128,7 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
 
     ```java
         // prepare test target
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForInt", 12345);
     
         // perform test
@@ -133,7 +141,7 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     
     ```java
         // prepare test target
-        Renderer render = new GoThroughRenderer();
+        Renderer render = Renderer.create();
         render.add("#someIdForInt", Arrays.asList(123, 456, 789));
     
         // perform test
@@ -209,26 +217,13 @@ Asta4D is our solution to combat those issues. Thanks to lift, from where we lea
     ```
 ## Roadmap
 
-1.0
+- 1.1.x (maintainance)
 
--	refactor the sample project to supply more understable example
--	complete the user guide
+    bugfix
 
-1.1
+- 1.2 (developing)
 
--	java 8 support(lambda, etc.)
-
-Want to do: 
-
--   cachable snippet
-
-    A rendered snippet result should can be cached.
-
--   default value of context data
-    
-    The current @ContextData does not support declaring default value, we need support it and additionally Unified EL([JSR341](https://jcp.org/en/jsr/detail?id=341)) is desired.
-
--   customize data value convertor
+    no plain yet
 
 
 

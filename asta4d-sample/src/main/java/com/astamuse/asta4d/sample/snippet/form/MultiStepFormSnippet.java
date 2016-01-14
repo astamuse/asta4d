@@ -16,10 +16,10 @@
  */
 package com.astamuse.asta4d.sample.snippet.form;
 
-import com.astamuse.asta4d.sample.snippet.form.common.CommonFormSnippet;
+import com.astamuse.asta4d.sample.snippet.form.common.Asta4DSamplePrjCommonFormSnippet;
 
 //@ShowCode:showMultiStepFormSnippetStart
-public class MultiStepFormSnippet extends CommonFormSnippet {
+public class MultiStepFormSnippet extends Asta4DSamplePrjCommonFormSnippet {
 
     // we do not need to do anything here.
 

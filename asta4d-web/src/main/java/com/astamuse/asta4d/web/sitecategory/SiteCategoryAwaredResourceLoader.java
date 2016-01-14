@@ -16,6 +16,7 @@
  */
 package com.astamuse.asta4d.web.sitecategory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.util.MemorySafeResourceCache;
 import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 
@@ -78,11 +79,12 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
     }
 
     public T load(String[] categories, String path, Object extraInfomation) throws Exception {
+        boolean cacheEnable = Configuration.getConfiguration().isCacheEnable();
         ResouceHolder<String> existingPath = null;
         CacheKey key;
         for (String category : categories) {
             key = CacheKey.of(category, path);
-            existingPath = existingPathCache.get(key);
+            existingPath = cacheEnable ? existingPathCache.get(key) : null;
             if (existingPath == null) {// not check yet
                 String tryPath = createCategorySpecialPath(category, path);
                 T res = load(tryPath, extraInfomation);

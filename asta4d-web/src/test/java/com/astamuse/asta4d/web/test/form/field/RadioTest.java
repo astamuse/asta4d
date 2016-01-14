@@ -88,6 +88,15 @@ public class RadioTest extends WebTestBase {
             return builder.toRenderer(true);
         }
 
+        public Renderer displayMissingEditTarget() {
+            FieldRenderBuilder builder = FieldRenderBuilder.of(RadioRenderer.class);
+
+            builder.addPrepare(new RadioPrepareRenderer("xvalue").setOptionData(createMap("x", "y", "z")).setInputIdByValue(true));
+            builder.addValue("xvalue", "x");
+
+            return builder.toRenderer(false);
+        }
+
         public Renderer normalDisplayValue() {
             FieldRenderBuilder builder = FieldRenderBuilder.of(RadioRenderer.class);
 
@@ -282,6 +291,10 @@ public class RadioTest extends WebTestBase {
 
     public void testNormalDisplay() throws Throwable {
         new FormRenderCase("/Radio_normalDisplay.html");
+    }
+
+    public void testDisplayMissingEditTarget() throws Throwable {
+        new FormRenderCase("/Radio_displayMissingEditTarget.html");
     }
 
     public void testStaticOptionEdit() throws Throwable {

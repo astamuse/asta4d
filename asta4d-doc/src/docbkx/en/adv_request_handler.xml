@@ -54,7 +54,7 @@
   
   
   
-  <sect1>
+  <sect1 id="normalize-page-url">
   <title>Normalize page url patterns</title>
   <para>Commonly, we would probably have multiple path patterns for the same template file but we would hope our snippet implementation 
   could deal with a unified pattern, which can be simply achieved by a request handler.</para>
@@ -123,14 +123,14 @@ rules.add("/user/{id}").id("user-page")
 ]]>
     </programlisting>
   </example>
-  
+  <para>See more details at <xref linkend="normalize-page-condition"/></para>
   </sect1>
   
-  <sect1>
+  <sect1 id="rest-ajax">
   <title>Restful and ajax</title>
   <para>For the request which does not require response of html files, such as restful or ajax request, request handler can be used to cope
   with such situation.</para>
-  <para>There is a rest() method which does nothing on the current rule but can be used as a comment to suggest that the current rule will 
+  <para>There is a rest() method which does nothing on the current rule by default but can be used as a hint to suggest that the current rule will 
   response customized contents as a restful api. A request handler can return a ContentProvider to supply customized response content. 
   Details of ContenProvider can be found at later chapters, here we only show examples of how to response customized contents.</para>
   
@@ -210,6 +210,12 @@ public class GetHandler {
 ]]>
     </programlisting>
   </example>
+  
+  <remark>By default, a rest rule will do nothing on the result of handler and a ContentProvider instance is expected, by contrast,
+          there is a built-in json transformer for rules which are declared as json. However, developers can still register a customized
+          result transformer for rest rules or even register a customized json transformer to override the default built-in implementation.
+          See details at <xref linkend="UrlMappingRuleInitializer"/></remark>
+  
   <para>Further, since a request handler can access HttpServletResponse instance directly, developer can do more complex customization
   on HttpServletResponse instance directly.</para>
   
@@ -235,7 +241,7 @@ public class XXXHandler {
 
   </sect1>
 
-  <sect1>
+  <sect1 id="handle-static-resource">
   <title>Handle static resouce files</title>
   <para>The most simple way to handling static resource files is mapping their path in web.xml then they will be serviced by the servlet container.
   But Asta4D still affords a way to handle them at framework level.</para>
@@ -290,7 +296,7 @@ rules.add("/js/**/*").handler(new StaticResourceHandler(){
   
   </sect1>
 
-  <sect1>
+  <sect1 id="handle-generic-path">
   <title>Handle generic path template files</title>
   <para>Basically Asta4D asks developers to declare the matching relationship between url and template file one by one, but it still allows
   to declare a generic path matching for all files in same folder, which can be achieved by GenericPathTemplateHandler.</para>

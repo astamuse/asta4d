@@ -24,22 +24,22 @@ import java.util.List;
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.render.Renderer;
-import com.astamuse.asta4d.web.dispatch.AntPathRuleExtractor;
+import com.astamuse.asta4d.web.dispatch.AntPathRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
-import com.astamuse.asta4d.web.dispatch.DispatcherRuleExtractor;
+import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
-import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareTimeoutDataManager;
-import com.astamuse.asta4d.web.util.timeout.TimeoutDataManager;
+import com.astamuse.asta4d.web.util.timeout.DefaultSessionAwareExpirableDataManager;
+import com.astamuse.asta4d.web.util.timeout.ExpirableDataManager;
 
 public class WebApplicationConfiguration extends Configuration {
 
     private String flashScopeForwardParameterName = "flash_scope_id";
 
-    private TimeoutDataManager timeoutDataManager = new DefaultSessionAwareTimeoutDataManager();
+    private ExpirableDataManager expirableDataManager = new DefaultSessionAwareExpirableDataManager();
 
     private MessageRenderingHelper messageRenderingHelper = new DefaultMessageRenderingHelper();
 
@@ -47,7 +47,7 @@ public class WebApplicationConfiguration extends Configuration {
 
     private List<DeclareInstanceResolver> instanceResolverList = new ArrayList<>();
 
-    private DispatcherRuleExtractor ruleExtractor = new AntPathRuleExtractor();
+    private DispatcherRuleMatcher ruleMatcher = new AntPathRuleMatcher();
 
     private UrlMappingRuleInitializer urlMappingRuleInitializer = null;
 
@@ -100,12 +100,12 @@ public class WebApplicationConfiguration extends Configuration {
         this.flashScopeForwardParameterName = flashScopeForwardParameterName;
     }
 
-    public TimeoutDataManager getTimeoutDataManager() {
-        return timeoutDataManager;
+    public ExpirableDataManager getExpirableDataManager() {
+        return expirableDataManager;
     }
 
-    public void setTimeoutDataManager(TimeoutDataManager timeoutDataManager) {
-        this.timeoutDataManager = timeoutDataManager;
+    public void setExpirableDataManager(ExpirableDataManager expirableDataManager) {
+        this.expirableDataManager = expirableDataManager;
     }
 
     public MessageRenderingHelper getMessageRenderingHelper() {
@@ -132,12 +132,12 @@ public class WebApplicationConfiguration extends Configuration {
         this.instanceResolverList = instanceResolverList;
     }
 
-    public DispatcherRuleExtractor getRuleExtractor() {
-        return ruleExtractor;
+    public DispatcherRuleMatcher getRuleMatcher() {
+        return ruleMatcher;
     }
 
-    public void setRuleExtractor(DispatcherRuleExtractor ruleExtractor) {
-        this.ruleExtractor = ruleExtractor;
+    public void setRuleMatcher(DispatcherRuleMatcher ruleMatcher) {
+        this.ruleMatcher = ruleMatcher;
     }
 
     public UrlMappingRuleInitializer getUrlMappingRuleInitializer() {

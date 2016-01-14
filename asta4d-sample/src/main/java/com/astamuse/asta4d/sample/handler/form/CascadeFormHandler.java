@@ -16,42 +16,48 @@
  */
 package com.astamuse.asta4d.sample.handler.form;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-import com.astamuse.asta4d.sample.util.persondb.JobExperence;
-import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
+import com.astamuse.asta4d.sample.util.persondb.Education;
+import com.astamuse.asta4d.sample.util.persondb.EducationDbManager;
 import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
-import com.astamuse.asta4d.web.form.flow.classical.MultiStepFormFlowHandler;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showCascadeFormHandlerStart
-public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<CascadeForm> {
+public abstract class CascadeFormHandler implements ClassicalMultiStepFormFlowHandlerTrait<PersonFormIncludingCascadeForm> {
 
-    public CascadeFormHandler() {
-        super(CascadeForm.class);
+    @Override
+    public Class<PersonFormIncludingCascadeForm> getFormCls() {
+        return PersonFormIncludingCascadeForm.class;
     }
 
     @Override
-    protected boolean treatCompleteStepAsExit() {
+    public boolean treatCompleteStepAsExit() {
         // exit immediately after update without displaying complete page
         return true;
     }
 
     // intercept the form date construction to rewrite the form data
     @Override
-    protected CascadeForm generateFormInstanceFromContext() {
-        CascadeForm form = super.generateFormInstanceFromContext();
-        List<JobForm> rewriteList = new LinkedList<>();
-        for (JobForm jform : form.getJobForms()) {
-            // we assume all the job forms without person id are removed by client
-            if (jform.getPersonId() != null) {
-                rewriteList.add(jform);
+    public PersonFormIncludingCascadeForm generateFormInstanceFromContext(String currentStep) {
+        PersonFormIncludingCascadeForm form = ClassicalMultiStepFormFlowHandlerTrait.super.generateFormInstanceFromContext(currentStep);
+        if (firstStepName().equals(currentStep)) {
+            // for the submitting of input step, we need to rewrite the education list to handle deleted items.
+            List<EducationForm> rewriteList = new LinkedList<>();
+            for (EducationForm eform : form.getEducationForms()) {
+                // we assume all the job forms without person id are removed by client
+                if (eform.getPersonId() != null) {
+                    rewriteList.add(eform);
+                }
             }
+            form.setEducationForms(rewriteList.toArray(new EducationForm[rewriteList.size()]));
         }
-        form.setJobForms(rewriteList.toArray(new JobForm[rewriteList.size()]));
         return form;
     }
 
@@ -61,26 +67,23 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
      */
     public static class Add extends CascadeFormHandler {
         @Override
-        protected CascadeForm createInitForm() {
-            PersonForm pform = new PersonForm();
-            JobForm[] jforms = new JobForm[0];
+        public PersonFormIncludingCascadeForm createInitForm() {
+            PersonFormIncludingCascadeForm form = new PersonFormIncludingCascadeForm();
 
-            CascadeForm cf = new CascadeForm();
-            cf.setPersonForm(pform);
-            cf.setJobForms(jforms);
-            cf.setJobExperienceLength(jforms.length);
+            EducationForm[] eForms = new EducationForm[0];
+            form.setEducationForms(eForms);
+            form.setEducationLength(eForms.length);
 
-            return cf;
+            return form;
         }
 
         @Override
-        protected void updateForm(CascadeForm form) {
-            PersonForm pform = form.getPersonForm();
-            JobForm[] jobs = form.getJobForms();
-            PersonDbManager.instance().add(pform);
-            for (JobForm job : jobs) {
-                job.setPersonId(pform.getId());
-                JobExperenceDbManager.instance().add(job);
+        public void updateForm(PersonFormIncludingCascadeForm form) {
+            EducationForm[] eForms = form.getEducationForms();
+            PersonDbManager.instance().add(form);
+            for (EducationForm e : eForms) {
+                e.setPersonId(form.getId());
+                EducationDbManager.instance().add(e);
             }
             DefaultMessageRenderingHelper.getConfiguredInstance().info("data inserted");
         }
@@ -93,41 +96,51 @@ public abstract class CascadeFormHandler extends MultiStepFormFlowHandler<Cascad
     public static class Edit extends CascadeFormHandler {
 
         @Override
-        protected CascadeForm createInitForm() throws Exception {
-            CascadeForm superForm = super.createInitForm();
+        public PersonFormIncludingCascadeForm createInitForm() throws Exception {
+            PersonFormIncludingCascadeForm superform = super.createInitForm();
 
-            PersonForm pform = PersonForm.buildFromPerson(PersonDbManager.instance().find(superForm.getPersonForm().getId()));
-            List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pform.getId());
-            List<JobForm> jobFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
+            PersonFormIncludingCascadeForm form = PersonFormIncludingCascadeForm.buildFromPerson(PersonDbManager.instance().find(
+                    superform.getId()));
+
+            List<Education> educations = EducationDbManager.instance().find("personId", form.getId());
+            List<EducationForm> eFormList = ListConvertUtil.transform(educations, new RowConvertor<Education, EducationForm>() {
                 @Override
-                public JobForm convert(int rowIndex, JobExperence job) {
-                    return JobForm.buildFromJob(job);
+                public EducationForm convert(int rowIndex, Education e) {
+                    return EducationForm.buildFromEducation(e);
                 }
             });
-            JobForm[] jforms = jobFormList.toArray(new JobForm[jobFormList.size()]);
+            EducationForm[] eForms = eFormList.toArray(new EducationForm[eFormList.size()]);
+            form.setEducationForms(eForms);
+            form.setEducationLength(eForms.length);
 
-            CascadeForm cf = new CascadeForm();
-            cf.setPersonForm(pform);
-            cf.setJobForms(jforms);
-            cf.setJobExperienceLength(jforms.length);
-
-            return cf;
+            return form;
         }
 
         @Override
-        protected void updateForm(CascadeForm form) {
-            PersonForm pform = form.getPersonForm();
-            JobForm[] jobs = form.getJobForms();
+        public void updateForm(PersonFormIncludingCascadeForm form) {
+            EducationForm[] eForms = form.getEducationForms();
 
-            PersonDbManager.instance().update(pform);
-            for (JobForm job : jobs) {
-                job.setPersonId(pform.getId());
-                if (job.getId() == null) {
-                    JobExperenceDbManager.instance().add(job);
+            PersonDbManager.instance().update(form);
+
+            List<Education> existingEdus = EducationDbManager.instance().find("personId", form.getId());
+
+            Set<Integer> validIds = new HashSet<>();
+            for (EducationForm edu : eForms) {
+                edu.setPersonId(form.getId());
+                if (edu.getId() == null) {
+                    EducationDbManager.instance().add(edu);
                 } else {
-                    JobExperenceDbManager.instance().update(job);
+                    EducationDbManager.instance().update(edu);
+                }
+                validIds.add(edu.getId());
+            }
+
+            for (Education edu : existingEdus) {
+                if (!validIds.contains(edu.getId())) {
+                    EducationDbManager.instance().remove(edu);
                 }
             }
+
             DefaultMessageRenderingHelper.getConfiguredInstance().info("update succeed");
         }
     }

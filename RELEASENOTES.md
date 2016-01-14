@@ -1,5 +1,72 @@
 ## Release Notes
 
+-   1.1-Xmas (2015.12.25)
+    
+    ADD
+    - support of http methods that are out of standard ones
+
+    ENHANCE
+    - allow customize validation error message more flexible
+    - make RenderTesterTest more easy to use
+
+-   1.1-b3 (2015.10.27)
+    
+    FIX
+    - (BREAKING)reverse wrongly changed configuration item name of blockParallelListRendering
+    - initializing unlock failed when exception occurs on snippet initializing due to wrong lock/unlock order.
+    - SiteCategoryAwaredResourceLoader should respect the configuration of cacheEnable.(#9)
+    - template cache should not be static(#10)
+    
+    ENHANCE
+    - refactoring to make customizing template resolving more easily.
+    - refactoring to allow extend existing message helper more easily
+    - refactoring for better understandable method name of BasicFormFlowHandlerTrait to suggest the extendable points better
+
+-   1.1-b2 (2015.09.07)
+    
+    FIX
+    - (BREAKING)source refactoring, unified all the parallel list converting related configuration items name
+    - disable paralle stream rendering
+    - add non-conflict suffix to the non-exposed attributes of snippet/embed/groupnode, etc.(#6)
+    - limit parallel thread number per invoking to avoid huge lists drain all the usable threads in pool(#7)
+    
+
+-   1.1-b1 (2015.07.23)
+    
+    This release is mainly for supporting Java 8 better with some functionality enhancemants.
+    
+    ADD
+    - better Java 8 lamdba support
+    
+    FIX
+    - NPE occurs when there are non form fields in a form POJO
+    - some incompatibility with Java 8 
+    
+    ENHANCE
+    - better form flow support
+        - now the cascade layer of form is not limited
+        - built-in multiple input step support
+        - implement all the functionalities by interface rather than abstract class to afford more flexibilities to user project
+        - built-in client util javascript as reference implementation 
+
+-   1.0-Valentines (2015.02.14)
+
+	The first official release version.
+
+	ADD
+	- convenience annotation for default scope(request scope)
+	- match url by regex(the original implementation was OK and add tests to confirm)
+	- allow customized url matcher
+
+    FIX
+	- exception should be thrown when type unmatched value is injected to a non annotated method parameter(it injects null or 0 currently)
+
+
+-   1.0-b4 (2014.12.26)
+
+    ENHANCE
+    - shutdown all threads by Asta4D at servlet's destroying
+    
 -   1.0-b3 (2014.11.20)
 
     ADD

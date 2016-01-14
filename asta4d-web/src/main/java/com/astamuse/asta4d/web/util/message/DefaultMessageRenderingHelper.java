@@ -18,7 +18,6 @@ package com.astamuse.asta4d.web.util.message;
 
 import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,11 +37,12 @@ import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.template.ClasspathTemplateResolver;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
+import com.astamuse.asta4d.template.TemplateResolver;
 import com.astamuse.asta4d.util.SelectorUtil;
-import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
@@ -128,6 +128,8 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         }
 
     }
+
+    private TemplateResolver fallbackMessageContainerResolver = new ClasspathTemplateResolver();
 
     private String messageGlobalContainerParentSelector = "body";
 
@@ -278,13 +280,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                 }
             } else {
                 final MessageRenderingSelector selector = item.getKey();
-                renderer.add(selector.duplicator, item.getValue(), new RowRenderer<MessageHolder>() {
-                    @Override
-                    public Renderer convert(int rowIndex, MessageHolder obj) {
-                        Renderer render = Renderer.create(selector.valueTarget, obj.message);
-                        render.add(":root", messageDuplicatorIndicatorAttrName, Clear);
-                        return render;
-                    }
+                renderer.add(selector.duplicator, item.getValue(), (MessageHolder obj) -> {
+                    Renderer render = Renderer.create(selector.valueTarget, obj.message);
+                    render.add(":root", messageDuplicatorIndicatorAttrName, Clear);
+                    return render;
                 });
                 renderer.add(new ElementNotFoundHandler(selector.duplicator) {
                     @Override
@@ -302,7 +301,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                     }
                 });
             }
-        }// end for loop
+        } // end for loop
 
         renderer.enableMissingSelectorWarning();
 
@@ -334,13 +333,10 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                             Renderer alternativeMsgRenderer = Renderer.create();
                             for (final Entry<MessageRenderingSelector, List<String>> item : alternativeMsgMap.entrySet()) {
                                 final MessageRenderingSelector selector = item.getKey();
-                                alternativeMsgRenderer.add(selector.duplicator, item.getValue(), new RowRenderer<String>() {
-                                    @Override
-                                    public Renderer convert(int rowIndex, String msg) {
-                                        Renderer render = Renderer.create(selector.valueTarget, msg);
-                                        render.add(":root", messageDuplicatorIndicatorAttrName, Clear);
-                                        return render;
-                                    }
+                                alternativeMsgRenderer.add(selector.duplicator, item.getValue(), (String msg) -> {
+                                    Renderer render = Renderer.create(selector.valueTarget, msg);
+                                    render.add(":root", messageDuplicatorIndicatorAttrName, Clear);
+                                    return render;
                                 });
                             }
                             return alternativeMsgRenderer;
@@ -376,13 +372,7 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
                 template = conf.getTemplateResolver().findTemplate(messageGlobalContainerSnippetFilePath);
             } catch (TemplateNotFoundException e) {
                 // then treat it as classpath resource
-                // TODO use MultiSearchPathResourceLoader instead for i18n
-                InputStream input = this.getClass().getClassLoader().getResourceAsStream(messageGlobalContainerSnippetFilePath);
-                if (input == null) {
-                    throw new NullPointerException("Configured message container snippet file[" + messageGlobalContainerSnippetFilePath +
-                            "] was not found");
-                }
-                template = new Template(messageGlobalContainerSnippetFilePath, input);
+                template = fallbackMessageContainerResolver.findTemplate(messageGlobalContainerSnippetFilePath);
             }
             return template.getDocumentClone().body().children();
         } catch (TemplateException | TemplateNotFoundException e) {
@@ -390,7 +380,8 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         }
     }
 
-    public void outputMessage(final MessageRenderingSelector selector, final MessageRenderingSelector alternativeSelector, final String msg) {
+    public void outputMessage(final MessageRenderingSelector selector, final MessageRenderingSelector alternativeSelector,
+            final String msg) {
         messageList.get().add(new MessageHolder(selector, alternativeSelector, msg));
         RedirectUtil.registerRedirectInterceptor(this.getClass().getName() + "#outputMessage", new RedirectInterceptor() {
             @Override
@@ -412,28 +403,54 @@ public class DefaultMessageRenderingHelper implements MessageRenderingHelper {
         });
     }
 
+    private void outputMessage(String duplicator, String msgTargetSelector, MessageRenderingSelector alternativeSelector, String msg) {
+        MessageRenderingSelector selector = null;
+        if (duplicator == null) {
+            // do nothing
+        } else {
+            if (msgTargetSelector == null) {
+                msgTargetSelector = ":root";
+            }
+            selector = new MessageRenderingSelector(duplicator, msgTargetSelector);
+        }
+        outputMessage(selector, alternativeSelector, msg);
+
+    }
+
     public void info(String msg) {
-        info(null, msg);
+        info(null, null, msg);
     }
 
     public void info(String selector, String msg) {
-        outputMessage(selector == null ? null : new MessageRenderingSelector(selector, ":root"), messageGlobalInfoSelector, msg);
+        info(selector, null, msg);
+    }
+
+    public void info(String duplicator, String msgTargetSelector, String msg) {
+        outputMessage(duplicator, msgTargetSelector, messageGlobalInfoSelector, msg);
     }
 
     public void warn(String msg) {
-        warn(null, msg);
+        warn(null, null, msg);
     }
 
     public void warn(String selector, String msg) {
-        outputMessage(selector == null ? null : new MessageRenderingSelector(selector, ":root"), messageGlobalWarnSelector, msg);
+        warn(selector, null, msg);
+    }
+
+    public void warn(String duplicator, String msgTargetSelector, String msg) {
+        outputMessage(duplicator, msgTargetSelector, messageGlobalWarnSelector, msg);
     }
 
     public void err(String msg) {
-        err(null, msg);
+        err(null, null, msg);
     }
 
     public void err(String selector, String msg) {
-        outputMessage(selector == null ? null : new MessageRenderingSelector(selector, ":root"), messageGlobalErrSelector, msg);
+        err(selector, null, msg);
+    }
+
+    public void err(String duplicator, String msgTargetSelector, String msg) {
+        outputMessage(duplicator, msgTargetSelector, messageGlobalErrSelector, msg);
     }
 
 }

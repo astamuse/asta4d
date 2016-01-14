@@ -8,6 +8,501 @@
         http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd
         http://www.w3.org/1999/xlink http://www.docbook.org/xml/5.0/xsd/xlink.xsd">
   <title>Built in form flow</title>
-  <remark>To be written. See the online sample: <ulink url="http://asta4dsample-xzer.rhcloud.com/form">Form Flow Sample</ulink></remark>
+  <remark>(Being written. See the online sample: <ulink url="http://asta4dsample-xzer.rhcloud.com/form">Form Flow Sample</ulink>)</remark>
+  <para>Asta4D affords built-in form flow to accelerate development of traditional form process. Asta4D's form flow mechanism supports 
+  various flow style and supplies several classical flow style as built-in. For most cases, the developers only need to implement the init 
+  and update method to complete the entire form related logic.</para>
+  <sect1>
+    <title>Startup</title>
+    <sect2>
+      <title>Form and form field</title>
+      <para>In a form process, the basic conception is a POJO which represents the whole form data. In Asta4D, we use @Form annotation to annotate a
+      POJO as a form object which can be handled by the the form flow.</para>
+      <para>Also, there must be fields to represent the concrete data of a form, which can also be annotated by a set of form field annotations.
+      There are several built-in form field annotations for common cases and you can implement your own form field annotation too(See <xref linkend="chapter-detail-form-flow"/>
+      for more details about form field annotation).</para>
+      <example>
+        <title>annotations on form POJO and form fields</title>
+        <programlisting language="java">
+<![CDATA[
+@Form
+public class PersonForm extends Person{
+
+    @Hidden
+    public Integer getId() {
+        return super.getId();
+    }
+
+    @Input
+    public String getName() {
+        return super.getName();
+    }
+    
+    @Select(name = "bloodtype")
+    public BloodType getBloodType() {
+        return super.getBloodType();
+    }
+
+}
+]]>
+        </programlisting>
+        <remark>The @Hidden represents a hidden input of html, @Input represents a traditional common input and @Select is matched to the pull-down element in html. 
+                We also recommend to implement the form POJO by extending from the existing entity POJO, see details at <xref linkend="common-usage-form-flow"/>.
+        </remark>
+      </example>
+    </sect2>
+    <sect2>
+      <title>Form handler</title>
+      <sect3>
+          <title>Brief of BasicFormFlowHandlerTrait and FormProcessData</title>
+          <para>After we defined our form POJO, we need to declare a request handler to handle the form request. There is an BasicFormFlowHandlerTrait which affords most
+                necessary common operations of form process.</para>
+          <para>The BasicFormFlowHandlerTrait is implemented as an interface with various default methods which afford a template that allows developer to override any 
+          method for customization.</para>
+          <para>To define a form flow, we need to plan a flow graph which describes how the flow flows.</para>
+          <para>(before first) &lt;--&gt; step 1 &lt;--&gt; step2 &lt;--&gt; step3 &lt;--&gt; ...</para>
+          <para>Assume we have a flow as above, note that there can be cycles or branches, which means you can go any step from any other step in the flow graph, 
+          what you need to do is to define how the step should be transfered. For example, the following flow graph is possible:</para>
+          <para>(before first) --&gt; step 1 &lt;--&gt; step2 &lt;--&gt; step3 --&gt; (finish)</para>
+          <para>(before first) --&gt; step 1 &lt;--&gt; step4 &lt;--&gt; step5 --&gt; (finish)</para>
+          <para>step 1 &lt;-- step3</para>
+          <para>step 1 &lt;-- step5</para>
+          <para>To describe the step transfer, there is an interface called FormProcessData which defined the basic step information:</para>
+          <example>
+            <title>FormProcessData</title>
+            <programlisting language="java">
+<![CDATA[
+public interface FormProcessData {
+
+    public abstract String getStepExit();
+    
+    public abstract String getStepBack();
+
+    public abstract String getStepCurrent();
+
+    public abstract String getStepFailed();
+
+    public abstract String getStepSuccess();
+
+    public abstract String getFlowTraceId();
+
+}
+]]>
+            </programlisting>
+          </example>
+          <para>The FormProcessData requires the developer to tell how to handle a form submit, the name of current step, the target step for success and the target for
+                failing, also want to know where to go if user want to go back to the previous step or exit. The getFlowTraceId will return a id which represents
+                all the state of current flow(can be considered as a "session" id for the current in-progress form flow).</para>
+          <para>The default implementation of FormProcessData is SimpleFormProcessData which retrieves the step information from the submitted http query parameters 
+                which can be put into the HTML template files as a part of the submitting form. However developers can always decide how to retrieve the step information by 
+                implement their own FormProcessData.</para>
+          <example>
+            <title>SimpleFormProcessData</title>
+            <programlisting language="java">
+<![CDATA[
+@ContextDataSet
+public class SimpleFormProcessData implements FormProcessData {
+
+    @QueryParam(name = "step-exit")
+    private String stepExit;
+
+    @QueryParam(name = "step-back")
+    private String stepBack;
+
+    @QueryParam(name = "step-current")
+    private String stepCurrent;
+
+    @QueryParam(name = "step-failed")
+    private String stepFailed;
+
+    @QueryParam(name = "step-success")
+    private String stepSuccess;
+
+    @QueryParam(name = FormFlowConstants.FORM_FLOW_TRACE_ID_QUERY_PARAM)
+    private String flowTraceId;
+}
+]]>
+            </programlisting>
+          </example>
+          <para>If we use the default SimpleFormProcessData, we will usually include the following HTML in our template file side:</para>
+          <example>
+            <title>HTML for SimpleFormProcessData</title>
+            <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="confirm">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">send</button>
+<button type="submit" name="step-back" class="btn btn-sm btn-default" value="input">back</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+            </programlisting>
+          </example>
+          <para>The details of how the BasicFormFlowHandlerTrait process the submitted form data and transfer the step can be found at the JavaDoc of BasicFormFlowHandlerTrait.
+                Here we will introduce the points that what the developers have to do to decide the rule of a form flow. There are 3 methods should be overridden for a certain
+                flow rule:</para>
+          <itemizedlist>
+            <listitem>
+              <para>String createTemplateFilePathForStep(String step)</para>
+              <para>decide how to convert a step to the corresponding target template file path</para>
+            </listitem>
+            <listitem>
+              <para>boolean skipStoreTraceData(String currentStep, String renderTargetStep, FormFlowTraceData traceData)</para>
+              <para>decide whether the flow trace data should be stored</para>
+            </listitem>
+            <listitem>
+              <para>boolean passDataToSnippetByFlash(String currentStep, String renderTargetStep, FormFlowTraceData traceData)</para>
+              <para>decide how to pass the form data for rendering to snippet, by flash scope or not.</para>
+            </listitem>
+          </itemizedlist>
+          <para>For most common situations, all the above things can be decided as general rules in the user project, so that a common parent class can be utilized to perform 
+                the common assumption. There are two built-in flows representing the classical situations: OneStepFormHandlerTrait and ClassicalMultiStepFormFlowHandlerTrait. 
+                Those two built-in interfaces will be introduced in the next section and can be considered as reference implementation of how to design and decide a form flow. 
+                User project is always recommended to extend from those two built-in flows rather than the basic mechanism trait BasicFormFlowHandlerTrait.
+          </para>
+      </sect3>
+      <sect3>
+          <title>built-in flows</title>
+          <para>There are two built-in handler traits to handle the most common situations of the form flow, which are OneStepFormHandlerTrait and 
+                ClassicalMultiStepFormFlowHandlerTrait.</para>
+          <para>The OneStepFormHandlerTrait represents a most simple form process: there is a single input page, after submit, the submitted data will be handled and then return to a 
+                before-input page which is usually a list page of items. To use OneStepFormHandlerTrait, you need to put the following HTML in your form template files if you are using
+                the default SimpleFormProcessData:</para>
+          <example>
+            <title>SimpleFormProcessData HTML for OneStepFormHandlerTrait</title>
+            <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="input">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">save</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+            </programlisting>
+            <remark>By OneStepFormHandlerTrait's default implementation, the "step-current" and "step-failed" must be "input", the "step-success" and the "step-exit" can be any non empty value
+                    (usually "complete" and "exit" is good enough).</remark>
+          </example>
+          <para>The ClassicalMultiStepFormFlowHandlerTrait represents a little bit complicated situations: there are multiple steps in the flow. ClassicalMultiStepFormFlowHandlerTrait
+                assumes that there is at least one input page and one confirm page with a possible complete page. For the single input page case, ClassicalMultiStepFormFlowHandlerTrait
+                can be used directly, but if there are multiple splitted input pages, the developer need to do more customization.</para>
+          <para>For a classical 3-step form flow(input, confirm, complete), the following HTML need to be put into the form template files:</para>
+          <example>
+            <title>SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of input page</title>
+            <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="input">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="confirm">confirm</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+            </programlisting>
+            <remark>At input page, the "step-current" and "step-failed" must be "input", the "step-success" must be "confirm", the "step-exit" can be any non empty value
+                    (usually "exit" is good enough).</remark>
+          </example>
+          <example>
+            <title>SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of confirm page</title>
+            <programlisting language="xml">
+<![CDATA[
+<input type="hidden" name="step-current" value="confirm">
+<input type="hidden" name="step-failed" value="input">
+<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">send</button>
+<button type="submit" name="step-back" class="btn btn-sm btn-default" value="input">back</button>
+<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+]]>
+            </programlisting>
+            <remark>At confirm page, the "step-current" must be "confirm","the step-failed" must be "input", the "step-success" must be "complete", the "step-back" must be
+                    "input", the "step-exit" can be any non empty value (usually "exit" is good enough).</remark>
+          </example>
+          <example>
+            <title>SimpleFormProcessData HTML for ClassicalMultiStepFormFlowHandlerTrait - buttons of complete page</title>
+            <programlisting language="xml">
+<![CDATA[
+<button type="submit" name="step-exit" value="exit">return</button>
+]]>
+            </programlisting>
+            <remark>At complete page, a non empty value of "step-exit" is enough.</remark>
+          </example>
+          <remark>Note that the value of steps' name are not fixed and you can always define your own names by overriding the corresponding methods about step names at
+                  ClassicalMultiStepFormFlowHandlerTrait.</remark>
+      </sect3>
+      <sect3>
+          <title>Implement a real form flow handler</title>
+          <para>As introduced in previous sections, we should always extend our own handler from the built-in classical traits, before which we also have to decide what our flow
+                should be: one step or multiple steps?</para>
+          <para>Further, In user project, a common parent class is always recommended. A project limited common parent class can be used to decide the special rules of the 
+                user project and the following two method is strongly recommended to be overridden to return a configured and validator.</para>
+          <itemizedlist>
+            <listitem>
+              <para>getTypeUnMatchValidator()</para>
+            </listitem>
+            <listitem>
+              <para>getValueValidator()</para>
+            </listitem>
+          </itemizedlist>
+          <example>
+            <title>A common parent handler in project:</title>
+            <programlisting language="java">
+<![CDATA[
+/**
+ * A common parent handler to configure the common actions of form flow process in application. <br>
+ * For quick start, an empty class body would be good enough. You only need to do the customization when you really need to do it!!!
+ * 
+ */
+public abstract class Asta4DSamplePrjCommonFormHandler<T> implements ClassicalMultiStepFormFlowHandlerTrait<T> {
+
+    // we use a field to store a pre generated instance rather than create it at every time
+    private SamplePrjTypeUnMatchValidator typeValidator = new SamplePrjTypeUnMatchValidator(false);
+
+    // as the same as type validator, we cache the value validator instance here
+    private SamplePrjValueValidator valueValidator = new SamplePrjValueValidator(false);
+
+    @Override
+    public FormValidator getTypeUnMatchValidator() {
+        return typeValidator;
+    }
+
+    @Override
+    public FormValidator getValueValidator() {
+        return valueValidator;
+    }
+
+}
+]]>
+            </programlisting>
+            <remark>At confirm page, the "step-current" must be "confirm","the step-failed" must be "input", the "step-success" must be "complete", the "step-back" must be
+                    "input", the "step-exit" can be any non empty value (usually "exit" is good enough).</remark>
+          </example>
+          <para>More details about validator can be found at later section.</para>
+          <para>In both OneStepFormHandlerTrait and ClassicalMultiStepFormFlowHandlerTrait, there are 3 methods which are required to be implemented by developers.</para>
+          <itemizedlist>
+            <listitem>
+              <para>Class&lt;T&gt; getFormCls()</para>
+              <para>Which specify the form type of current </para>
+            </listitem>
+            <listitem>
+              <para>T createInitForm()</para>
+              <para>To create form instance from the current request context. By default, this method will build a form instance from context by the given type returned by
+                    getFormCls(). A handler which need to retrieve the initial form data from storage should override this method to afford a initial form instance. For 
+                    common cases, a handler for adding is not necessary to override this method but a handler for updating should override this method to query database 
+                    and build the corresponding form instance.</para>
+                <example>
+                    <title>query updating target data from db in createInitForm()</title>
+                    <programlisting language="java">                                                                 
+<![CDATA[
+    @Override
+    protected PersonFormForMultiStep createInitForm() throws Exception {
+        PersonFormForMultiStep form = super.createInitForm();
+        if (form.getId() == null) {// add
+            return form;
+        } else {// update
+            // retrieve the form form db again
+            return PersonFormForMultiStep.buildFromPerson(PersonDbManager.instance().find(form.getId()));
+        }
+    }
+]]>
+                    </programlisting>
+                </example>
+            </listitem>
+            <listitem>
+              <para>void updateForm(T form)</para>
+              <para>Which is supposed to perform the final update logic of current form flow.</para>
+              <example>
+                <title>update form data</title>
+                <programlisting language="java">                                                                 
+<![CDATA[
+    @Override
+    protected void updateForm(PersonFormForMultiStep form) {
+        DefaultMessageRenderingHelper msgHelper = DefaultMessageRenderingHelper.getConfiguredInstance();
+        if (form.getId() == null) {// add
+            PersonDbManager.instance().add(Person.createByForm(form));
+            // output the success message to the global message bar
+            msgHelper.info("data inserted");
+        } else {// update
+            Person p = Person.createByForm(form);
+            PersonDbManager.instance().update(p);
+            // output the success message to specified DOM rather than the global message bar
+            msgHelper.info(".x-success-msg", "update succeed");
+        }
+    }
+]]>
+                </programlisting>
+                <remark>Note that there is a built-in message rendering mechanism to help developer supply a responsive interaction more easily. The 
+                        details will be introduced later, simply remember that you can output message by info/warn/error levels.</remark>
+              </example>
+            </listitem>
+          </itemizedlist>
+      </sect3>
+    </sect2>
+    <sect2>
+      <title>HTML template of form</title>
+      <para>As the common pages of Asta4D, the HTML template of a form is as pure HTML too.</para>
+      <example>
+        <title>Form template</title>
+        <programlisting language="xml">                                                                 
+<![CDATA[
+<form method="post" afd:render="form.SingleInputFormSnippet">
+
+  <input name="name" type="text"/>
+
+  <input name="age" type="text"/>
+
+  <input id="sex" name="sex" type="radio"/><label for="sex">M</label>
+
+  <select id="bloodtype" name="bloodtype">
+    <option value="A">A</option>
+    <option value="R" afd:clear>R</option>
+  </select>
+
+  <input id="language" name="language" type="checkbox"/><label for="language">M</label>
+
+  <textarea name="memo"></textarea>
+  
+  <input type="hidden" name="id">
+
+  <afd:embed target="/templates/form/singleInput/btns.html" />
+</form>
+]]>
+        </programlisting>
+      </example>
+      <para>As you see in the above example, there is no special declaration in the template, let us see how to declare a form POJO to handle the 
+      various form field types:</para>
+      <example>
+        <title>form template</title>
+        <programlisting language="java">                                                                 
+<![CDATA[
+//@Form to tell the framework this class can be initialized from context
+//extend from the entity POJO to annotate form field definitions on getters.
+@Form
+public class PersonForm {
+    @Hidden
+    private Integer id;
+
+    @Input
+    private String name;
+
+    @Input
+    private Integer age;
+
+    @Select(name = "bloodtype")
+    private BloodType bloodType;
+
+    // the field name would be displayed as "gender" rather than the original field name "sex" in validation messages
+    @Radio(nameLabel = "gender")
+    private SEX sex;
+
+    @Checkbox
+    private Language[] language;
+
+    @Textarea
+    private String memo;
+
+}
+]]>
+        </programlisting>
+      </example>
+      <para>The details of annotations will be introduced later, just remember that there is always an annotation which can represent a 
+      certain type of form field.</para>
+      <para>Another point here is that you can always declare all the fields by your business type rather than string type, the framework 
+      will handle the value conversion correctly.</para>
+    </sect2>
+    <sect2>
+      <title>Form snippet</title>
+      <para>To render the form values to template, we have to declare a snippet which extends from the AbstractFormFlowSnippet. As the same
+        as the built-in two classical handler traits, there are two corresponding snippet traits: OneStepFormSnippetTrait and ClassicalMultiStepFormFlowSnippetTrait.
+      </para>
+      <para>Also as the same as handlers, a project common parent snippet is recommended to perform common customization.</para>
+      <example>
+        <title>Form snippet implementation</title>
+        <programlisting language="java">
+<![CDATA[
+public class SingleInputFormSnippet extends Asta4DSamplePrjCommonFormSnippet {
+
+    /**
+     * override this method to supply the option data for select, radio and checkbox.
+     */
+    @Override
+    protected List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
+        List<FormFieldPrepareRenderer> list = new LinkedList<>();
+
+        list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
+
+        list.add(new RadioPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
+
+        list.add(new CheckboxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
+
+        return list;
+    }
+}
+]]>
+        </programlisting>
+      </example>
+      <para>Developers are usually asked to override the retrieveFieldPrepareRenderers method to supply extra data for field rendering, 
+            commonly the list of option data is required.</para>
+      <para>SelectPrepareRenderer can be used to afford option list for select element, RadioPrepareRenderer and CheckboxPrepareRenderer
+            can be used for radio and checbox input element.</para>
+      <para>Finally, do not forget to put your snippet declaration in your template file.</para>
+      <example>
+        <title>Declare snippet in form template</title>
+        <programlisting language="xml">
+<![CDATA[
+<form method="post" afd:render="form.SingleInputFormSnippet">
+</form>
+]]>
+        </programlisting>
+      </example>
+      <para>Basically, until now we have gotten a workable form flow implementation. There is only one thing left that is validation which
+            will be described in the next section.</para>
+    </sect2>
+    <sect2>
+      <title>Cascade form POJO and array field</title>
+    </sect2>
+  </sect1>
+  <sect1>
+    <title>Advanced</title>
+    <sect2>
+      <title>Validation</title>
+      <para>Asta4D allows any validation mechanism to be integrated and supports Bean Validation 1.1(JSR349 and JSR303) by default. We will explain
+            how to use the built-in Bean Validation mechanism in this section. The later section will introduce how to customize the validation.</para>
+      <para>To use Bean Validation, just simply add validation annotations to your form POJO as following:</para>
+      <example>
+        <title>Declare validation annotations</title>
+        <programlisting language="java">
+<![CDATA[
+@NotBlank
+@Size(max = 6)
+public String getName() {
+    return name;
+}
+
+public void setName(String name) {
+    this.name = name;
+}
+
+@Max(45)
+@NotNull
+public Integer getAge() {
+    return age;
+}
+]]>
+        </programlisting>
+      </example>
+      <para>More details of Bean Validation can be found at <ulink url="http://beanvalidation.org/">Bean Validation</ulink>. 
+            We are also using Hibernate Validator as the implementation(the only existing one in the earth currently). See details at
+            <ulink url="http://hibernate.org/validator/">Hibernate Validator</ulink>.</para>
+      <para>The validation will be invoked before the calling of method updateForm, if there is any validation error, the page will be
+            forwarded to the step specified by "step-failed" which is usually the input page, and the validation error message will be
+            rendered to page too. More details about validation message rendering will be introduced in later sections.</para>
+      <para>As recommended before, a project common parent class is recommended to afford a configured validator or any other customized
+            validator implementation.</para>
+    </sect2>
+    <sect2>
+      <title>Message rendering</title>
+    </sect2>
+    <sect2>
+      <title>Customize form field annotation</title>
+    </sect2>
+    <sect2>
+      <title>A sample of defining a new flow rule</title>
+      <para>(Include about how to implement multiple input steps)</para>
+    </sect2>
+  </sect1>
   
 </chapter>
