@@ -2,6 +2,5 @@
     <wb-module deploy-name="asta4d-core">
         <wb-resource deploy-path="/" source-path="/src/main/java"/>
         <wb-resource deploy-path="/" source-path="/src/main/jsoup"/>
-        <wb-resource deploy-path="/" source-path="/src/test/resources"/>
     </wb-module>
 </project-modules>
