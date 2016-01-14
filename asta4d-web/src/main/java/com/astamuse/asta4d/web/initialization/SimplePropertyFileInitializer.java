@@ -18,27 +18,27 @@ package com.astamuse.asta4d.web.initialization;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Enumeration;
-import java.util.Properties;
+import java.util.Iterator;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 
-public class SimplePropertyFileIntializer implements Initializer {
+public class SimplePropertyFileInitializer implements Initializer {
 
     @Override
     public void initliaze(InputStream input, WebApplicationConfiguration configuration) throws Exception {
-        Properties ps = new Properties();
-        ps.load(input);
+        PropertiesConfiguration pc = new PropertiesConfiguration();
+        pc.load(input);
 
         BeanUtilsBean bu = retrieveBeanUtilsBean();
-        Enumeration<Object> keys = ps.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement().toString();
-            String value = ps.getProperty(key);
+        Iterator<String> keys = pc.getKeys();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            String value = pc.getString(key);
             fillConfiguration(configuration, bu, key, value);
         }
 

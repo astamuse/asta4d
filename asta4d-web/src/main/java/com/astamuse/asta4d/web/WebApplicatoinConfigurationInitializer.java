@@ -25,7 +25,7 @@ import javax.servlet.ServletConfig;
 import org.apache.commons.io.FilenameUtils;
 
 import com.astamuse.asta4d.web.initialization.Initializer;
-import com.astamuse.asta4d.web.initialization.SimplePropertyFileIntializer;
+import com.astamuse.asta4d.web.initialization.SimplePropertyFileInitializer;
 import com.astamuse.asta4d.web.util.SystemPropertyUtil;
 import com.astamuse.asta4d.web.util.SystemPropertyUtil.PropertyScope;
 
@@ -83,7 +83,7 @@ public class WebApplicatoinConfigurationInitializer {
         // at present, we only support properties file, but we will try to support .js or .groovy as well in future.
         switch (fileType) {
         case "properties":
-            return new SimplePropertyFileIntializer();
+            return new SimplePropertyFileInitializer();
         default:
             throw new UnsupportedOperationException("File type of " + fileType +
                     " does not be supported for initialize asta4d Configuration.");
