@@ -1,5 +1,6 @@
 ## News
 
+- 2016-01-22, [asta4d-ide](https://github.com/astamuse/asta4d-ide) is release to accelerate our development with asta4d. 
 - 2015-12-25, 1.1 official release "1.1-Xmas" is released. 
 - 2015-12-17, the scala extension for asta4d [asta4d-scala](https://github.com/astamuse/asta4d-scala) is released. 
 - 2015-10-27, the 1.1-b3 with minor bug fixes is released.
