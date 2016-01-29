@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.mapping.ext;
+package com.astamuse.asta4d.web.dispatch.mapping;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,10 @@ import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.HttpMethod.ExtendHttpMethod;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
-import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRule;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleWithAttrOnly;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleWithForward;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleWithRemap;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.Asta4DPageTransformer;
 import com.astamuse.asta4d.web.dispatch.request.transformer.DefaultExceptionTransformer;

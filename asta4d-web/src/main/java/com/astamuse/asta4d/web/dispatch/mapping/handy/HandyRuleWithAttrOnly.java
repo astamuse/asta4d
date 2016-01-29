@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.mapping.ext;
+package com.astamuse.asta4d.web.dispatch.mapping.handy;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 
 public class HandyRuleWithAttrOnly {
 

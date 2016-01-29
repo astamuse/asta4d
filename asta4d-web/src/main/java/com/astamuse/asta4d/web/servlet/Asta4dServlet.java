@@ -38,7 +38,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 
 /**
  * Here we are going to implement a view first mechanism of view resolving. We need a url mapping algorithm too.

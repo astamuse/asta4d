@@ -15,7 +15,7 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.mapping.ext;
+package com.astamuse.asta4d.web.dispatch.mapping.handy;
 
 import java.util.List;
 

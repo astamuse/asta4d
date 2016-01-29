@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
 
 @Controller
 public class GenericController implements ApplicationContextAware {

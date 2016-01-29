@@ -15,9 +15,10 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.mapping.ext;
+package com.astamuse.asta4d.web.dispatch.mapping.handy;
 
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.request.MultiResultHolder;
 import com.astamuse.asta4d.web.dispatch.request.transformer.SimpleTypeMatchTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
