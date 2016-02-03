@@ -31,16 +31,16 @@ import com.astamuse.asta4d.sample.handler.form.SingleInputFormHandler;
 import com.astamuse.asta4d.sample.handler.form.SplittedFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
-import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleSet;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
 
-public class UrlRules implements UrlMappingRuleInitializer {
+public class UrlRules implements UrlMappingRuleInitializer<HandyRuleSet<?, ?>> {
 
     @Override
-    public void initUrlMappingRules(UrlMappingRuleHelper rules) {
+    public void initUrlMappingRules(HandyRuleSet<?, ?> rules) {
 
         // global error handling
 
@@ -63,7 +63,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
         //@formatter:on
     }
 
-    private void initSampleRules(UrlMappingRuleHelper rules) {
+    private void initSampleRules(HandyRuleSet<?, ?> rules) {
         //@formatter:off
         
         rules.add("/js/**/*").handler(new StaticResourceHandler());
@@ -89,7 +89,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
         rules.add("/ajax/getUserList").handler(GetUserListHandler.class).json();
         
-        rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).rest();
+        rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).xml();
         
         // @ShowCode:showSuccessStart
         rules.add("/handler")

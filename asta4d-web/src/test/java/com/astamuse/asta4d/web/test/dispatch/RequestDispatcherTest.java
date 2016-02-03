@@ -64,15 +64,13 @@ import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerInterceptor;
 import com.astamuse.asta4d.web.dispatch.interceptor.RequestHandlerResultHolder;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingResult;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleRewriter;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleSet;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
-import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
@@ -119,7 +117,7 @@ public class RequestDispatcherTest {
         webContext.setResponse(response);
     }
 
-    private void initTestRules(UrlMappingRuleHelper rules) {
+    private void initTestRules(HandyRuleSet rules) {
 
         rules.addRuleRewriter(new UrlMappingRuleRewriter() {
             @Override
@@ -187,7 +185,7 @@ public class RequestDispatcherTest {
         rules.add("/go-redirect-p").redirect("p:/go-redirect/p");
         rules.add("/go-redirect-t").redirect("t:/go-redirect/t");
         
-        rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).rest();
+        rules.add(HttpMethod.DELETE, "/restapi").handler(TestRestApiHandler.class).xml();
         
         rules.add("/getjson").handler(new TestJsonHandler(new TestJsonObject(123))).json();
         rules.add("/rewrite-attr").json();
@@ -238,6 +236,7 @@ public class RequestDispatcherTest {
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
+            /*
                 { "get", "/index", 0, getExpectedPage("/index.html")},
                 
                 { "get", "/index-rewrite", 0, getExpectedPage("/index.html") },
@@ -280,6 +279,10 @@ public class RequestDispatcherTest {
                 // to handle the extending http methods out of predeinfed methods by the framework
                 { "propfind", "/index", 404, new HeaderInfoProvider(404)},
                 { "proppatch", "/index", 0, getExpectedPage("/index-proppatch.html")},
+                */
+                
+                //{ "get", "/template-not-exists", 404, getExpectedPage("/notfound")},
+                { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
 
                 };
         //@formatter:on
@@ -309,14 +312,14 @@ public class RequestDispatcherTest {
             }
         });
 
-        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        initTestRules(helper);
+        HandyRuleSet ruleSet = new HandyRuleSet();
+        initTestRules(ruleSet);
 
         if (url.equals("/index-rewrite")) {
             context.setAccessURI("/index");
         }
 
-        dispatcher.dispatchAndProcess(helper.getArrangedRuleList());
+        dispatcher.dispatchAndProcess(ruleSet.getArrangedRuleList());
 
         // verify status at first then when contentProvider is null, we do not
         // need to do more verification

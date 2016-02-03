@@ -17,6 +17,6 @@
 
 package com.astamuse.asta4d.web.dispatch.mapping;
 
-public interface UrlMappingRuleInitializer {
-    public void initUrlMappingRules(UrlMappingRuleHelper rules);
+public interface UrlMappingRuleInitializer<T extends UrlMappingRuleSet<?, ?>> {
+    public void initUrlMappingRules(T rules);
 }

@@ -15,25 +15,15 @@
  * 
  */
 
-package com.astamuse.asta4d.web.dispatch.mapping.handy;
+package com.astamuse.asta4d.web.dispatch.request.transformer;
 
-import java.util.List;
+import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
+import com.astamuse.asta4d.web.dispatch.response.provider.XmlDataProvider;
 
-import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.util.bean.DeclareInstanceUtil;
+public class DefaultXmlTransformer implements ResultTransformer {
 
-public class HandyRuleWithHandler extends HandyRuleWithForward {
-
-    public HandyRuleWithHandler(UrlMappingRule rule) {
-        super(rule);
+    @Override
+    public Object transformToContentProvider(Object result) {
+        return new XmlDataProvider(result);
     }
-
-    public HandyRuleWithHandler handler(Object... handlerList) {
-        List<Object> list = rule.getHandlerList();
-        for (Object handler : handlerList) {
-            list.add(DeclareInstanceUtil.createInstance((handler)));
-        }
-        return this;
-    }
-
 }

@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleHelper;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleSet;
 
 @Controller
 public class GenericController implements ApplicationContextAware {
@@ -48,13 +48,18 @@ public class GenericController implements ApplicationContextAware {
     private List<UrlMappingRule> ruleList;
 
     public void init() {
-        WebApplicationConfiguration conf = beanCtx.getBean(WebApplicationConfiguration.class);
-        WebApplicationConfiguration.setConfiguration(conf);
-        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
-        UrlMappingRuleInitializer ruleInitializer = conf.getUrlMappingRuleInitializer();
-        ruleInitializer.initUrlMappingRules(helper);
-        ruleList = helper.getArrangedRuleList();
-        logger.info("url mapping rules are initialized.");
+        try {
+            WebApplicationConfiguration conf = beanCtx.getBean(WebApplicationConfiguration.class);
+            WebApplicationConfiguration.setConfiguration(conf);
+            UrlMappingRuleSet ruleSet = conf.getUrlMappingRuleSetCls().newInstance();
+            UrlMappingRuleInitializer ruleInitializer = conf.getUrlMappingRuleInitializer();
+            ruleInitializer.initUrlMappingRules(ruleSet);
+            ruleList = ruleSet.getArrangedRuleList();
+            logger.info("url mapping rules are initialized.");
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @RequestMapping(value = "/**")
