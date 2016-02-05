@@ -19,6 +19,7 @@ package com.astamuse.asta4d.web.form.flow.base;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -259,6 +260,9 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
         }
 
         T form = retrieveFormInstance(traceData, currentStep);
+        if (form instanceof LifecycleAwaredForm) {
+            ((LifecycleAwaredForm) form).rewriteAfterRetrieved(currentStep);
+        }
         traceData.getStepFormMap().put(currentStep, form);
 
         String renderTargetStep = null;
@@ -280,6 +284,15 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
         }
 
         rewriteTraceDataBeforeGoSnippet(currentStep, renderTargetStep, traceData);
+
+        if (form instanceof LifecycleAwaredForm) {
+            Map<String, Object> map = traceData.getStepFormMap();
+            for (Entry<String, Object> entry : map.entrySet()) {
+                Object tracedForm = entry.getValue();
+                ((LifecycleAwaredForm) tracedForm).rewriteBeforeStored(entry.getKey());
+            }
+        }
+
         if (skipStoreTraceData(currentStep, renderTargetStep, traceData)) {
             clearStoredTraceData(traceId);
             traceId = "";

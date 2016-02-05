@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.astamuse.asta4d.sample.handler.form.SplittedForm.CascadeJobForm;
+import com.astamuse.asta4d.sample.handler.form.SplittedForm.ConfirmStepForm;
 import com.astamuse.asta4d.sample.handler.form.common.Asta4DSamplePrjCommonFormHandler;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
 import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
@@ -31,11 +32,12 @@ import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowHandlerTrait;
+import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeValidationProcessor;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showSplittedFormHandlerStart
-public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandler<SplittedForm> implements
-        MultiInputStepFormFlowHandlerTrait<SplittedForm> {
+public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandler<SplittedForm>
+        implements MultiInputStepFormFlowHandlerTrait<SplittedForm>, SimpleFormFieldExcludeValidationProcessor {
 
     public Class<SplittedForm> getFormCls() {
         return SplittedForm.class;
@@ -43,16 +45,16 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
 
     @Override
     public String[] getInputSteps() {
-        return new String[] { SplittedForm.inputStep1, SplittedForm.inputStep2 };
+        return new String[] { SplittedForm.inputStep1, SplittedForm.inputStep2, SplittedForm.inputStep3 };
     }
 
     @Override
     public SplittedForm generateFormInstanceFromContext(String currentStep) {
         SplittedForm form = super.generateFormInstanceFromContext(currentStep);
 
-        if (SplittedForm.inputStep2.equalsIgnoreCase(currentStep)) {
+        if (SplittedForm.inputStep3.equalsIgnoreCase(currentStep)) {
             // rewrite the array to handle deleted items
-            CascadeJobForm cjForm = form.getCascadeJobForm();
+            CascadeJobForm cjForm = form.getForms().getCascadeJobForm();
 
             List<JobForm> rewriteJobList = new LinkedList<>();
             for (JobForm jobform : cjForm.getJobForms()) {
@@ -88,15 +90,15 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
         @Override
         public SplittedForm createInitForm() {
             SplittedForm form = new SplittedForm();
-
             return form;
         }
 
         @Override
         public void updateForm(SplittedForm form) {
-            PersonForm pForm = form.getPersonForm();
+            ConfirmStepForm allForms = form.getForms();
+            PersonForm pForm = allForms.getPersonForm();
             PersonDbManager.instance().add(pForm);
-            for (JobForm jobForm : form.getCascadeJobForm().getJobForms()) {
+            for (JobForm jobForm : allForms.getCascadeJobForm().getJobForms()) {
                 jobForm.setPersonId(pForm.getId());
                 JobExperenceDbManager.instance().add(jobForm);
                 for (JobPositionForm posForm : jobForm.getJobPositionForms()) {
@@ -119,7 +121,7 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
         public SplittedForm createInitForm() throws Exception {
             SplittedForm superform = super.createInitForm();
 
-            PersonForm pForm = PersonForm.buildFromPerson(PersonDbManager.instance().find(superform.getPersonForm().getId()));
+            PersonForm pForm = PersonForm.buildFromPerson(PersonDbManager.instance().find(superform.getForms().getPersonForm().getId()));
 
             List<JobExperence> jobs = JobExperenceDbManager.instance().find("personId", pForm.getId());
             List<JobForm> jobFormList = ListConvertUtil.transform(jobs, new RowConvertor<JobExperence, JobForm>() {
@@ -148,9 +150,7 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
             cjForm.setJobExperienceLength(jobForms.length);
 
             SplittedForm form = new SplittedForm();
-            form.setPersonForm(pForm);
-            form.setCascadeJobForm(cjForm);
-
+            form.setForms(pForm, cjForm);
             return form;
         }
 
@@ -164,12 +164,13 @@ public abstract class SplittedFormHandler extends Asta4DSamplePrjCommonFormHandl
 
         @Override
         public void updateForm(SplittedForm form) {
-            PersonForm pForm = form.getPersonForm();
+            ConfirmStepForm allForms = form.getForms();
+            PersonForm pForm = allForms.getPersonForm();
             PersonDbManager.instance().update(pForm);
 
             Set<Integer> validJobIds = new HashSet<>();
             Set<Integer> validPosIds = new HashSet<>();
-            for (JobForm jobForm : form.getCascadeJobForm().getJobForms()) {
+            for (JobForm jobForm : allForms.getCascadeJobForm().getJobForms()) {
                 jobForm.setPersonId(pForm.getId());
                 if (isExistingId(jobForm.getId())) {
                     JobExperenceDbManager.instance().update(jobForm);

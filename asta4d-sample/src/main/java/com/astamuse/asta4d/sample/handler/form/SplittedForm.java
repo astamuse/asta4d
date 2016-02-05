@@ -16,19 +16,57 @@
  */
 package com.astamuse.asta4d.sample.handler.form;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.validation.Valid;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
+import com.astamuse.asta4d.web.form.flow.base.LifecycleAwaredForm;
+import com.astamuse.asta4d.web.form.flow.base.StepRepresentableForm;
+import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
+import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeDescprition;
+import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeHelper;
 
 //@ShowCode:showSplittedFormStart
 @Form
-public class SplittedForm implements MultiInputStepForm {
+public class SplittedForm implements MultiInputStepForm, LifecycleAwaredForm {
+
+    @Form
+    public static class PersonFormStep1 extends PersonForm implements SimpleFormFieldExcludeDescprition, StepRepresentableForm {
+
+        @Override
+        public String[] retrieveRepresentingSteps() {
+            return new String[] { "input-1" };
+        }
+
+        @Override
+        public String[] getExcludeFields() {
+            return new String[] { "language", "memo" };
+        }
+
+    }
+
+    @Form
+    public static class PersonFormStep2 extends PersonForm implements SimpleFormFieldExcludeDescprition, StepRepresentableForm {
+
+        @Override
+        public String[] retrieveRepresentingSteps() {
+            return new String[] { "input-2" };
+        }
+
+        @Override
+        public String[] getExcludeFields() {
+            return new String[] { "name", "age", "bloodtype", "sex" };
+        }
+
+    }
 
     @Form
     public static class CascadeJobForm {
@@ -71,51 +109,101 @@ public class SplittedForm implements MultiInputStepForm {
         }
     }
 
+    @Form
+    public static class ConfirmStepForm implements StepRepresentableForm, SimpleFormFieldExcludeHelper {
+
+        @CascadeFormField
+        private PersonForm personForm = new PersonForm();
+
+        @CascadeFormField
+        private CascadeJobForm cascadeJobForm = new CascadeJobForm();
+
+        @Override
+        public String[] retrieveRepresentingSteps() {
+            return new String[] { ClassicalFormFlowConstant.STEP_CONFIRM, ClassicalFormFlowConstant.STEP_COMPLETE };
+        }
+
+        public void copydata(SplittedForm parentForm) {
+            copyIncludeFieldsOnly(personForm, parentForm.personFormStep1, parentForm.personFormStep2);
+            this.cascadeJobForm = parentForm.cascadeJobFormStep3;
+        }
+
+        public PersonForm getPersonForm() {
+            return personForm;
+        }
+
+        public CascadeJobForm getCascadeJobForm() {
+            return cascadeJobForm;
+        }
+
+    }
+
+    // private
+
     // show the input comments only when edit mode
     @AvailableWhenEditOnly(selector = "#input-comment")
     private String inputComment;
 
     // a field with @CascadeFormField without arrayLengthField configured will be treated a simple reused form POJO
     @CascadeFormField
-    @Valid
-    private PersonForm personForm;
+    private PersonFormStep1 personFormStep1;
 
     @CascadeFormField
-    @Valid
-    private CascadeJobForm cascadeJobForm;
+    private PersonFormStep2 personFormStep2;
 
-    public static final String inputStep2 = "input-2";
+    @CascadeFormField
+    private CascadeJobForm cascadeJobFormStep3;
+
+    @CascadeFormField
+    private ConfirmStepForm confirmStepForm;
 
     public static final String inputStep1 = "input-1";
 
+    public static final String inputStep2 = "input-2";
+
+    public static final String inputStep3 = "input-3";
+
     public SplittedForm() {
-        personForm = new PersonForm();
-        cascadeJobForm = new CascadeJobForm();
+        this.personFormStep1 = new PersonFormStep1();
+        this.personFormStep2 = new PersonFormStep2();
+        this.cascadeJobFormStep3 = new CascadeJobForm();
+        this.confirmStepForm = new ConfirmStepForm();
+        this.confirmStepForm.copydata(this);
+    }
+
+    @Override
+    public void rewriteBeforeStored(String step) {
+        // make sure all the instances of PersonFom holding all data
+        if (step.equalsIgnoreCase(ClassicalFormFlowConstant.STEP_CONFIRM)) {
+            this.confirmStepForm.copydata(this);
+        }
     }
 
     // getter/setter
-    public PersonForm getPersonForm() {
-        return personForm;
+
+    public void setForms(PersonForm personForm, CascadeJobForm cascadeJobForm) {
+        try {
+            BeanUtils.copyProperties(this.personFormStep1, personForm);
+            BeanUtils.copyProperties(this.personFormStep2, personForm);
+            this.cascadeJobFormStep3 = cascadeJobForm;
+            this.confirmStepForm.copydata(this);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void setPersonForm(PersonForm personForm) {
-        this.personForm = personForm;
-    }
-
-    public CascadeJobForm getCascadeJobForm() {
-        return cascadeJobForm;
-    }
-
-    public void setCascadeJobForm(CascadeJobForm cascadeJobForm) {
-        this.cascadeJobForm = cascadeJobForm;
+    public ConfirmStepForm getForms() {
+        return this.confirmStepForm;
     }
 
     @Override
     public Object getSubInputFormByStep(String step) {
         if (inputStep1.equalsIgnoreCase(step)) {
-            return this.getPersonForm();
+            return this.personFormStep1;
         } else if (inputStep2.equalsIgnoreCase(step)) {
-            return this.getCascadeJobForm();
+            return this.personFormStep2;
+        } else if (inputStep3.equalsIgnoreCase(step)) {
+            return this.cascadeJobFormStep3;
         } else {
             return null;
         }
@@ -124,14 +212,25 @@ public class SplittedForm implements MultiInputStepForm {
     @Override
     public void setSubInputFormForStep(String step, Object subForm) {
         if (inputStep1.equalsIgnoreCase(step)) {
-            this.setPersonForm((PersonForm) subForm);
+            personFormStep1 = (PersonFormStep1) subForm;
         } else if (inputStep2.equalsIgnoreCase(step)) {
-            this.setCascadeJobForm((CascadeJobForm) subForm);
+            personFormStep2 = (PersonFormStep2) subForm;
+        } else if (inputStep3.equalsIgnoreCase(step)) {
+            this.cascadeJobFormStep3 = (CascadeJobForm) subForm;
         } else {
             throw new IllegalArgumentException("Not recorgnized step:" + step);
         }
     }
 
+    @Override
+    public Object getValidationTarget(String step) {
+        if (step.equalsIgnoreCase(ClassicalFormFlowConstant.STEP_COMPLETE)) {
+            return this.confirmStepForm;
+        } else {
+            return MultiInputStepForm.super.getValidationTarget(step);
+        }
+
+    }
+
 }
 // @ShowCode:showSplittedFormEnd
-

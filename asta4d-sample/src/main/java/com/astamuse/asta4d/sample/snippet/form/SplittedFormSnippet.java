@@ -23,6 +23,7 @@ import java.util.List;
 import com.astamuse.asta4d.sample.handler.form.JobForm;
 import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
+import com.astamuse.asta4d.sample.handler.form.SplittedForm;
 import com.astamuse.asta4d.sample.snippet.form.common.Asta4DSamplePrjCommonFormSnippet;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
@@ -34,20 +35,28 @@ import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowSnippetTrait;
+import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeRenderable;
 
 //@ShowCode:showSplittedFormSnippetStart
-public class SplittedFormSnippet extends Asta4DSamplePrjCommonFormSnippet implements MultiInputStepFormFlowSnippetTrait {
+public class SplittedFormSnippet extends Asta4DSamplePrjCommonFormSnippet
+        implements MultiInputStepFormFlowSnippetTrait, SimpleFormFieldExcludeRenderable {
 
     @Override
     public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         List<FormFieldPrepareRenderer> list = new LinkedList<>();
 
-        // since there are cascade forms, so we have to differentiate the option data rendering for different forms
-        if (form instanceof PersonForm) {
+        // since there are cascade forms, so we can differentiate the option data rendering for different forms with the concern of
+        // performance
+        if (form instanceof SplittedForm.PersonFormStep1 || form instanceof SplittedForm.ConfirmStepForm) {
             list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
             list.add(new RadioPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
+        }
+
+        if (form instanceof SplittedForm.PersonFormStep2 || form instanceof SplittedForm.ConfirmStepForm) {
             list.add(new CheckboxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
-        } else if (form instanceof JobForm) {
+        }
+
+        if (form instanceof JobForm) {
             // to render the option data of arrayed form fields, simply use the field name with "@" mark as the same as plain fields
             list.add(new SelectPrepareRenderer(JobForm.class, "job-year-@").setOptionData(createYearOptionList()));
         }

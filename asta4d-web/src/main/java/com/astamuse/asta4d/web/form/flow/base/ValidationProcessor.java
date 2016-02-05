@@ -25,7 +25,9 @@ public interface ValidationProcessor {
      * @return
      */
     default CommonFormResult processValidation(FormProcessData processData, Object form) {
-        List<FormValidationMessage> validationMesssages = validate(form);
+        Object validationTarget = getValidationTarget(processData, form);
+        List<FormValidationMessage> validationMesssages = validate(validationTarget);
+        validationMesssages = postValidate(validationTarget, validationMesssages);
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;
         } else {
@@ -33,6 +35,14 @@ public interface ValidationProcessor {
                 outputValidationMessage(msg);
             }
             return CommonFormResult.FAILED;
+        }
+    }
+
+    default Object getValidationTarget(FormProcessData processData, Object form) {
+        if (form instanceof ValidationStepAwaredForm) {
+            return ((ValidationStepAwaredForm) form).getValidationTarget(processData.getStepCurrent());
+        } else {
+            return form;
         }
     }
 
@@ -75,6 +85,10 @@ public interface ValidationProcessor {
         }
 
         return validationMessages;
+    }
+
+    default List<FormValidationMessage> postValidate(Object form, List<FormValidationMessage> msgList) {
+        return msgList;
     }
 
     /**
