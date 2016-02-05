@@ -3,7 +3,7 @@
 <meta charset="utf-8" />
 </head>
 <body>
-<!-- @ShowCode:showInput1Start -->
+<!-- @ShowCode:showInput2Start -->
 <afd:extension parent="/templates/form/splitted/formBase.html">
 	<afd:block override="heading-block">
 		Input -Personal Info-
@@ -21,11 +21,11 @@
 			
 		</div>
 	</afd:block>
-<!-- @ShowCode:showInput1End -->
+<!-- @ShowCode:showInput2End -->
 	<afd:block append="source-block">
 		<div afd:render="ShowCodeSnippet:showCode" file="/UrlRules.java" startMark="showSplittedStart" endMark="showSplittedEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/formBase.html" startMark="showFormStart" endMark="showFormEnd"/>
-		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/input-1.html" startMark="showInput1Start" endMark="showInput1End"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/input-2.html" startMark="showInput2Start" endMark="showInput2End"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splitted/formPerson.html" startMark="showFormStart" endMark="showFormEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/form/SplittedFormSnippet.java" startMark="showSplittedFormSnippetStart" endMark="showSplittedFormSnippetEnd"/>
 		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/SplittedFormHandler.java" startMark="showSplittedFormHandlerStart" endMark="showSplittedFormHandlerEnd"/>
