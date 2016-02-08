@@ -39,8 +39,8 @@ public interface ValidationProcessor {
     }
 
     default Object getValidationTarget(FormProcessData processData, Object form) {
-        if (form instanceof ValidationStepAwaredForm) {
-            return ((ValidationStepAwaredForm) form).getValidationTarget(processData.getStepCurrent());
+        if (form instanceof StepAwaredValidatableForm) {
+            return ((StepAwaredValidatableForm) form).getValidationTarget(processData.getStepCurrent());
         } else {
             return form;
         }
