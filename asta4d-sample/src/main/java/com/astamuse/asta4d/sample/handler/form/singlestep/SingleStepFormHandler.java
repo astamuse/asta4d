@@ -22,7 +22,7 @@ import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
-// @ShowCode:showSingleInputFormHandlerStart
+// @ShowCode:showSingleStepFormHandlerStart
 public class SingleStepFormHandler implements OneStepFormHandlerTrait<PersonForm> {
 
     public Class<PersonForm> getFormCls() {
@@ -55,4 +55,4 @@ public class SingleStepFormHandler implements OneStepFormHandlerTrait<PersonForm
     }
 
 }
-// @ShowCode:showSingleInputFormHandlerEnd
+// @ShowCode:showSingleStepFormHandlerEnd

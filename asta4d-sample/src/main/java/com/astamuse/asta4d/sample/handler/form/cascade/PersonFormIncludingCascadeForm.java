@@ -30,20 +30,10 @@ import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
 
+// @ShowCode:showPersonFormIncludingCascadeFormStart
+
 @Form
 public class PersonFormIncludingCascadeForm extends PersonForm {
-
-    public static PersonFormIncludingCascadeForm buildFromPerson(Person p) {
-        PersonFormIncludingCascadeForm form = new PersonFormIncludingCascadeForm();
-        try {
-            BeanUtils.copyProperties(form, p);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-        return form;
-    }
-
-    // @ShowCode:showPersonFormIncludingCascadeFormStart
 
     // show the input comments only when edit mode
     @AvailableWhenEditOnly(selector = "#input-comment")
@@ -65,8 +55,6 @@ public class PersonFormIncludingCascadeForm extends PersonForm {
     @AvailableWhenEditOnly(selector = "#education-remove-btn")
     private String educationRemoveBtn;
 
-    // @ShowCode:showPersonFormIncludingCascadeFormEnd
-
     // getter/setter
     public Integer getEducationLength() {
         return educationLength;
@@ -82,5 +70,17 @@ public class PersonFormIncludingCascadeForm extends PersonForm {
 
     public void setEducationForms(EducationForm[] educationForms) {
         this.educationForms = educationForms;
+    }
+
+    // @ShowCode:showPersonFormIncludingCascadeFormEnd
+
+    public static PersonFormIncludingCascadeForm buildFromPerson(Person p) {
+        PersonFormIncludingCascadeForm form = new PersonFormIncludingCascadeForm();
+        try {
+            BeanUtils.copyProperties(form, p);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+        return form;
     }
 }

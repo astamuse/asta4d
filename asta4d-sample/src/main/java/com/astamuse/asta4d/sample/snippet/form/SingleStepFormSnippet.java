@@ -29,7 +29,7 @@ import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormSnippetTrait;
 
-//@ShowCode:showSingleInputFormSnippetStart
+//@ShowCode:showSingleStepFormSnippetStart
 public class SingleStepFormSnippet implements OneStepFormSnippetTrait {
 
     /**
@@ -48,4 +48,4 @@ public class SingleStepFormSnippet implements OneStepFormSnippetTrait {
         return list;
     }
 }
-// @ShowCode:showSingleInputFormSnippetEnd
+// @ShowCode:showSingleStepFormSnippetEnd
