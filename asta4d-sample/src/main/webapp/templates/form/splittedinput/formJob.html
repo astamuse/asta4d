@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+    <!-- @ShowCode:showFormStart -->
+    <afd:snippet render="form.SplittedInputFormSnippet">
+        job experiences *:
+            <a id="job-experience-add-btn" class="glyphicon glyphicon-plus"
+              href="javascript:void(0)" 
+              onclick="$acu.addRow.apply(this)"
+              cascade-ref-info-1="#job-experience", 
+              cascade-ref-info-2="[name=job-experience-length]", 
+              cascade-ref-info-3="[cascade-ref='job-experience-row-@']", 
+              cascade-ref-info-4="1"
+            ></a>
+        <div id="job-experience-err-msg" style="color: red"></div>
+        <input type="hidden" name="job-experience-length" value="0">
+        <!--  
+            The following "@" contained attributes will be rewritten to array index by default:
+                id
+                name
+                cascade-ref
+                cascade-ref-info-1, 
+                ... ,
+                cascade-ref-info-9
+            further rewriting can be performed by overriding the rewriteXXX methods in snippet. 
+        -->
+        <table border=0 class="form-input-table" id="job-experience" style="margin-left: 20px">
+            <tr cascade-ref="job-experience-row-@">
+                <td>
+                    <input type="hidden" name="job-id-@">
+                    <input type="hidden" name="job-person-id-@">
+                    <table>
+                        <tr>
+                            <td>year:</td>
+                            <td><select name="job-year-@">
+                                    <option value="1980">1980</option>
+                                </select>
+                            </td>
+                            <td>description:</td>
+                            <td>
+                                <input type="text" name="job-description-@">
+                                <a id="job-experience-remove-btn" href="javascript:void(0)" class="glyphicon glyphicon-minus"
+                                    onclick="$acu.removeRow.apply(this)" 
+                                    cascade-ref-info-1="[cascade-ref=job-experience-row-@]"
+                                ></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td id="job-position-@" colspan=3>
+                                job positions *:
+                                <a id="job-position-add-btn-@" href="javascript:void(0)" class="glyphicon glyphicon-plus" style="color:green"
+                                    onclick="$acu.addRow.apply(this)" 
+                                    cascade-ref-info-1="#job-position-@",
+                                    cascade-ref-info-2="[name=job-position-length-@]",
+                                    cascade-ref-info-3="[cascade-ref='job-position-row-@-@@']",
+                                    cascade-ref-info-4="2"
+                                ></a>
+                                <input type="hidden" name="job-position-length-@" value="0">
+                                <div cascade-ref="job-position-row-@-@@" style="margin-left:20px">
+                                    <input type="hidden" name="job-position-id-@-@@">
+                                    <input type="hidden" name="job-position-job-id-@-@@">
+                                    <input type="text" name="job-position-name-@-@@">
+                                    <a id="job-position-remove-btn-@" href="javascript:void(0)" class="glyphicon glyphicon-minus" style="color:green"
+                                        onclick="$acu.removeRow.apply(this)" 
+                                        cascade-ref-info-1="[cascade-ref=job-position-row-@-@@]" 
+                                    ></a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </afd:snippet>
+	<!-- @ShowCode:showFormEnd -->
+</body>
+</html>

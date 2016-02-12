@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.astamuse.asta4d.sample.handler.form.JobForm;
+import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
-import com.astamuse.asta4d.sample.handler.form.cascade.EducationForm;
+import com.astamuse.asta4d.sample.snippet.form.common.Asta4DSamplePrjCommonFormSnippet;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
 import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
@@ -31,10 +33,11 @@ import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
-import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowSnippetTrait;
+import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowSnippetTrait;
 
-//@ShowCode:showCascadeFormSnippetStart
-public class CascadeFormSnippet implements ClassicalMultiStepFormFlowSnippetTrait {
+//@ShowCode:showSplittedFormSnippetStart
+public class MultiInputFormSnippet extends Asta4DSamplePrjCommonFormSnippet implements MultiInputStepFormFlowSnippetTrait {
+
     @Override
     public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {
         List<FormFieldPrepareRenderer> list = new LinkedList<>();
@@ -44,9 +47,9 @@ public class CascadeFormSnippet implements ClassicalMultiStepFormFlowSnippetTrai
             list.add(new SelectPrepareRenderer(PersonForm.class, "bloodtype").setOptionData(BloodType.asOptionValueMap));
             list.add(new RadioPrepareRenderer(PersonForm.class, "sex").setOptionData(SEX.asOptionValueMap));
             list.add(new CheckboxPrepareRenderer(PersonForm.class, "language").setOptionData(Language.asOptionValueMap));
-        } else if (form instanceof EducationForm) {
+        } else if (form instanceof JobForm) {
             // to render the option data of arrayed form fields, simply use the field name with "@" mark as the same as plain fields
-            list.add(new SelectPrepareRenderer(EducationForm.class, "education-year-@").setOptionData(createYearOptionList()));
+            list.add(new SelectPrepareRenderer(JobForm.class, "job-year-@").setOptionData(createYearOptionList()));
         }
         return list;
     }
@@ -61,8 +64,12 @@ public class CascadeFormSnippet implements ClassicalMultiStepFormFlowSnippetTrai
 
     @Override
     public Object createFormInstanceForCascadeFormArrayTemplate(Class subFormType) throws InstantiationException, IllegalAccessException {
-        Object form = ClassicalMultiStepFormFlowSnippetTrait.super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
-        ((EducationForm) form).setPersonId(-1);
+        Object form = super.createFormInstanceForCascadeFormArrayTemplate(subFormType);
+        if (subFormType.equals(JobForm.class)) {
+            ((JobForm) form).setPersonId(-1);
+        } else if (subFormType.equals(JobPositionForm.class)) {
+            ((JobPositionForm) form).setJobId(-1);
+        }
         return form;
     }
 
@@ -70,5 +77,6 @@ public class CascadeFormSnippet implements ClassicalMultiStepFormFlowSnippetTrai
     public String clientCascadeUtilJsExportName() {
         return "$acu";
     }
+
 }
-// @ShowCode:showCascadeFormSnippetEnd
+// @ShowCode:showSplittedFormSnippetEnd

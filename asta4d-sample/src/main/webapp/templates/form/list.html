@@ -12,11 +12,11 @@
 		function getId(){
 			return document.getElementById("checkedRowId").getAttribute("value");
 		}
-		function singleInputAdd(){
-			location.href="form/singleInput";
+		function singleStepAdd(){
+			location.href="form/singlestep";
 		}
-		function singleInputMod(){
-			location.href="form/singleInput?id="+getId();
+		function singleStepMod(){
+			location.href="form/singlestep?id="+getId();
 		}
 		
 		function mstepadd(){
@@ -34,13 +34,21 @@
 		function casmod(){
 			location.href="form/cascade/edit?id="+getId();	
 		}
-				
+			
+		function minpadd(){
+			location.href="form/multiinput/add";
+		}
+		
+		function minpmod(){
+			location.href="form/multiinput/edit?id="+getId();	
+		}
+		
 		function spladd(){
-			location.href="form/splitted/add";
+			location.href="form/splittedinput/add";
 		}
 		
 		function splmod(){
-			location.href="form/splitted/edit?id="+getId();	
+			location.href="form/splittedinput/edit?id="+getId();	
 		}
 		
 		</script>
@@ -73,19 +81,20 @@
 				</table>
 				<afd:snippet render="form.ListSnippet:showTabs">
 				<ul id="btn-nav" class="nav nav-tabs" role="tablist">
-					<li id="single-input" class="active" target-btns="single-input-btns"><a href="/form?type=single-input">Single input step</a></li>
-					<li id="multi-step" target-btns="confirm-complete-btns"><a href="/form?type=multi-step">Confirm and Complete</a></li>
+					<li id="singlestep" class="active" target-btns="single-step-btns"><a href="/form?type=singlestep">Single input step</a></li>
+					<li id="multistep" target-btns="confirm-complete-btns"><a href="/form?type=multistep">Input, Confirm and Complete</a></li>
 					<li id="cascade" target-btns="cascade-form-btns"><a href="/form?type=cascade">Cascade and array field</a></li>
-					<li id="splitted" target-btns="splitted-form-btns"><a href="/form?type=splitted">Splitted input</a></li>
+					<li id="multiinput" target-btns="splitted-form-btns"><a href="/form?type=multiinput">Multiple input steps</a></li>
+					<li id="splittedinput" target-btns="splitted-form-btns"><a href="/form?type=splittedinput">Splitted input steps</a></li>
 				</ul>
-				<div class="form-btns x-remove" id="single-input">
-					<afd:embed target="/templates/form/singleInput/comment.html" />
+				<div class="form-btns x-remove" id="singlestep">
+					<afd:embed target="/templates/form/singlestep/comment.html" />
 					<div>
-						<button type=button class="btn btn-sm btn-default" onclick="singleInputAdd()">add</button>
-						<button type=button class="btn btn-sm btn-default" onclick="singleInputMod()">modify</button>
+						<button type=button class="btn btn-sm btn-default" onclick="singleStepAdd()">add</button>
+						<button type=button class="btn btn-sm btn-default" onclick="singleStepMod()">modify</button>
 					</div>
 				</div>
-				<div class="form-btns x-remove" id="multi-step">
+				<div class="form-btns x-remove" id="multistep">
 					<afd:embed target="/templates/form/multistep/comment.html" />
 					<div>
 						<button class="btn btn-sm btn-default" type=button onclick="mstepadd()">add</button>
@@ -99,8 +108,15 @@
 						<button type=button class="btn btn-sm btn-default" onclick="casmod()">modify</button>
 					</div>
 				</div>
-				<div class="form-btns x-remove" id="splitted">
-					<afd:embed target="/templates/form/splitted/comment.html" />
+				<div class="form-btns x-remove" id="multiinput">
+					<afd:embed target="/templates/form/multiinput/comment.html" />
+					<div>
+						<button type=button class="btn btn-sm btn-default" onclick="minpadd()">add</button>
+						<button type=button class="btn btn-sm btn-default" onclick="minpmod()">modify</button>
+					</div>
+				</div>
+				<div class="form-btns x-remove" id="splittedinput">
+					<afd:embed target="/templates/form/splittedinput/comment.html" />
 					<div>
 						<button type=button class="btn btn-sm btn-default" onclick="spladd()">add</button>
 						<button type=button class="btn btn-sm btn-default" onclick="splmod()">modify</button>

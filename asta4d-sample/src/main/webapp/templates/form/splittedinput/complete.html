@@ -1,0 +1,26 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<!-- @ShowCode:showCompleteStart -->
+<afd:extension parent="/templates/form/splittedinput/formBase.html">
+	<afd:block override="heading-block">
+		Complete
+	</afd:block>
+	<afd:block override="form-block">
+		<afd:embed target="/templates/form/splittedinput/formPerson.html"/>
+		<afd:embed target="/templates/form/splittedinput/formJob.html"/>
+	</afd:block>
+	<afd:block override="form-btns">
+		<div class="form-btn-bar">
+			<button type="submit" name="step-exit" value="exit">return</button>
+		</div>
+	</afd:block>
+<!-- @ShowCode:showCompleteEnd -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splittedinput/complete.html" startMark="showCompleteStart" endMark="showCompleteEnd"/>
+	</afd:block>
+</afd:extension>
+</body>
+</html>
