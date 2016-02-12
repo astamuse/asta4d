@@ -34,7 +34,7 @@ public class HandyRule extends HandyRuleWithHandler {
         return this;
     }
 
-    public HandyRule var(String key, Object value) {
+    public HandyRule pathVar(String key, Object value) {
         Map<String, Object> map = rule.getExtraVarMap();
         if (map == null) {
             map = new HashMap<String, Object>();
@@ -42,6 +42,10 @@ public class HandyRule extends HandyRuleWithHandler {
         }
         map.put(key, value);
         return this;
+    }
+
+    public HandyRule var(String key, Object value) {
+        return pathVar(key, value);
     }
 
     public HandyRule attribute(String attribute) {
