@@ -25,7 +25,6 @@ import com.astamuse.asta4d.sample.handler.form.JobForm;
 import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.handler.form.common.Asta4DSamplePrjCommonFormHandler;
-import com.astamuse.asta4d.sample.handler.form.multiinput.MultiInputForm.CascadeJobForm;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
 import com.astamuse.asta4d.sample.util.persondb.JobExperenceDbManager;
 import com.astamuse.asta4d.sample.util.persondb.JobPosition;

@@ -1,16 +1,11 @@
 package com.astamuse.asta4d.web.form.flow.ext;
 
+import java.util.Map;
+
 import com.astamuse.asta4d.web.form.flow.base.StepAwaredValidatableForm;
 
 public interface MultiInputStepForm extends StepAwaredValidatableForm {
 
-    public Object getSubInputFormByStep(String step);
+    public void mergeInputDataForConfirm(Map<String, Object> inputForms);
 
-    public void setSubInputFormForStep(String step, Object subForm);
-
-    @Override
-    default Object getValidationTarget(String step) {
-        Object validateObj = getSubInputFormByStep(step);
-        return validateObj == null ? this : validateObj;
-    }
 }

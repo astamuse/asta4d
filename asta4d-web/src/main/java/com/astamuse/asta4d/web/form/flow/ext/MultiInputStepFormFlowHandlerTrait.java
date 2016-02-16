@@ -1,11 +1,10 @@
 package com.astamuse.asta4d.web.form.flow.ext;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
-import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 
 /**
@@ -46,15 +45,17 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
     default T getCombinedFormInstanceForConfirmPage(FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
         // clone or not, we don't matter
-        T combineForm = (T) formMap.get(firstStepName());
+        T combineForm = (T) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
         String[] inputSteps = getInputSteps();
         T mergeForm;
         String step;
-        for (int i = 1; i < inputSteps.length; i++) {
+        Map<String, Object> mergeMap = new HashMap<>();
+        for (int i = 0; i < inputSteps.length; i++) {
             step = inputSteps[i];
             mergeForm = (T) formMap.get(step);
-            combineForm.setSubInputFormForStep(step, mergeForm.getSubInputFormByStep(step));
+            mergeMap.put(step, mergeForm);
         }
+        combineForm.mergeInputDataForConfirm(mergeMap);
         return combineForm;
     }
 
@@ -84,19 +85,4 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
 
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default CommonFormResult processValidation(FormProcessData processData, Object form) {
-        String currentStep = processData.getStepCurrent();
-
-        Object validateObj = form;
-        for (String step : getInputSteps()) {
-            if (currentStep.equalsIgnoreCase(step)) {
-                validateObj = ((T) validateObj).getSubInputFormByStep(step);
-                break;
-            }
-        }
-
-        return ClassicalMultiStepFormFlowHandlerTrait.super.processValidation(processData, validateObj);
-    }
 }

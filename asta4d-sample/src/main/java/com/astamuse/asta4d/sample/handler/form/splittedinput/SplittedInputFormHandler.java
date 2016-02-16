@@ -25,6 +25,7 @@ import com.astamuse.asta4d.sample.handler.form.JobForm;
 import com.astamuse.asta4d.sample.handler.form.JobPositionForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.handler.form.common.Asta4DSamplePrjCommonFormHandler;
+import com.astamuse.asta4d.sample.handler.form.multiinput.CascadeJobForm;
 import com.astamuse.asta4d.sample.handler.form.splittedinput.SplittedInputForm.CascadeJobFormStep3;
 import com.astamuse.asta4d.sample.handler.form.splittedinput.SplittedInputForm.ConfirmStepForm;
 import com.astamuse.asta4d.sample.util.persondb.JobExperence;
@@ -57,7 +58,7 @@ public abstract class SplittedInputFormHandler extends Asta4DSamplePrjCommonForm
 
         if (SplittedInputForm.inputStep3.equalsIgnoreCase(currentStep)) {
             // rewrite the array to handle deleted items
-            CascadeJobFormStep3 cjForm = form.getForms().getCascadeJobForm();
+            CascadeJobForm cjForm = form.getForms().getCascadeJobForm();
 
             List<JobForm> rewriteJobList = new LinkedList<>();
             for (JobForm jobform : cjForm.getJobForms()) {

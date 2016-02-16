@@ -16,62 +16,21 @@
  */
 package com.astamuse.asta4d.sample.handler.form.multiinput;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
-import com.astamuse.asta4d.sample.handler.form.JobForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
 import com.astamuse.asta4d.web.form.annotation.Form;
 import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
-import com.astamuse.asta4d.web.form.annotation.renderable.Hidden;
+import com.astamuse.asta4d.web.form.flow.base.StepAwaredValidationTarget;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
 
 //@ShowCode:showSplittedFormStart
 @Form
 public class MultiInputForm implements MultiInputStepForm {
-
-    @Form
-    public static class CascadeJobForm {
-
-        // a field with @CascadeFormField with arrayLengthField configured will be treated an array field
-        @CascadeFormField(name = "job-experience", arrayLengthField = "job-experience-length", containerSelector = "[cascade-ref=job-experience-row-@]")
-        @Valid
-        @NotEmpty
-        private JobForm[] jobForms;
-
-        @Hidden(name = "job-experience-length")
-        private Integer jobExperienceLength;
-
-        // show the add and remove buttons only when edit mode
-        @AvailableWhenEditOnly(selector = "#job-experience-add-btn")
-        private String jobExperienceAddBtn;
-
-        @AvailableWhenEditOnly(selector = "#job-experience-remove-btn")
-        private String jobExperienceRemoveBtn;
-
-        public CascadeJobForm() {
-            jobForms = new JobForm[0];
-            jobExperienceLength = jobForms.length;
-        }
-
-        public Integer getJobExperienceLength() {
-            return jobExperienceLength;
-        }
-
-        public void setJobExperienceLength(Integer jobExperienceLength) {
-            this.jobExperienceLength = jobExperienceLength;
-        }
-
-        public JobForm[] getJobForms() {
-            return jobForms;
-        }
-
-        public void setJobForms(JobForm[] jobForms) {
-            this.jobForms = jobForms;
-        }
-    }
 
     // show the input comments only when edit mode
     @AvailableWhenEditOnly(selector = "#input-comment")
@@ -80,15 +39,17 @@ public class MultiInputForm implements MultiInputStepForm {
     // a field with @CascadeFormField without arrayLengthField configured will be treated a simple reused form POJO
     @CascadeFormField
     @Valid
+    @StepAwaredValidationTarget(inputStep1)
     private PersonForm personForm;
 
     @CascadeFormField
     @Valid
+    @StepAwaredValidationTarget(inputStep2)
     private CascadeJobForm cascadeJobForm;
 
-    public static final String inputStep2 = "input-2";
-
     public static final String inputStep1 = "input-1";
+
+    public static final String inputStep2 = "input-2";
 
     public MultiInputForm() {
         personForm = new PersonForm();
@@ -113,24 +74,20 @@ public class MultiInputForm implements MultiInputStepForm {
     }
 
     @Override
-    public Object getSubInputFormByStep(String step) {
-        if (inputStep1.equalsIgnoreCase(step)) {
-            return this.getPersonForm();
-        } else if (inputStep2.equalsIgnoreCase(step)) {
-            return this.getCascadeJobForm();
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public void setSubInputFormForStep(String step, Object subForm) {
-        if (inputStep1.equalsIgnoreCase(step)) {
-            this.setPersonForm((PersonForm) subForm);
-        } else if (inputStep2.equalsIgnoreCase(step)) {
-            this.setCascadeJobForm((CascadeJobForm) subForm);
-        } else {
-            throw new IllegalArgumentException("Not recorgnized step:" + step);
+    public void mergeInputDataForConfirm(Map<String, Object> inputForms) {
+        for (Entry<String, Object> entry : inputForms.entrySet()) {
+            String step = entry.getKey();
+            MultiInputForm form = (MultiInputForm) entry.getValue();
+            switch (step) {
+            case inputStep1:
+                this.personForm = form.personForm;
+                break;
+            case inputStep2:
+                this.cascadeJobForm = form.cascadeJobForm;
+                break;
+            default:
+                //
+            }
         }
     }
 
