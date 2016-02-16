@@ -35,11 +35,11 @@ import com.astamuse.asta4d.web.form.field.impl.CheckboxPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.RadioPrepareRenderer;
 import com.astamuse.asta4d.web.form.field.impl.SelectPrepareRenderer;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowSnippetTrait;
-import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeRenderable;
+import com.astamuse.asta4d.web.form.flow.ext.ExcludingFieldRetrievableFormRenderable;
 
 //@ShowCode:showSplittedFormSnippetStart
 public class SplittedInputFormSnippet extends Asta4DSamplePrjCommonFormSnippet
-        implements MultiInputStepFormFlowSnippetTrait, SimpleFormFieldExcludeRenderable {
+        implements MultiInputStepFormFlowSnippetTrait, ExcludingFieldRetrievableFormRenderable {
 
     @Override
     public List<FormFieldPrepareRenderer> retrieveFieldPrepareRenderers(String renderTargetStep, Object form) {

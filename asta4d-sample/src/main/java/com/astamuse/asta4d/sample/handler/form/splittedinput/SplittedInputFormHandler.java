@@ -36,12 +36,12 @@ import com.astamuse.asta4d.sample.util.persondb.PersonDbManager;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepFormFlowHandlerTrait;
-import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeValidationProcessor;
+import com.astamuse.asta4d.web.form.flow.ext.ExcludingFieldRetrievableFormValidationProcessor;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 
 //@ShowCode:showSplittedFormHandlerStart
 public abstract class SplittedInputFormHandler extends Asta4DSamplePrjCommonFormHandler<SplittedInputForm>
-        implements MultiInputStepFormFlowHandlerTrait<SplittedInputForm>, SimpleFormFieldExcludeValidationProcessor {
+        implements MultiInputStepFormFlowHandlerTrait<SplittedInputForm>, ExcludingFieldRetrievableFormValidationProcessor {
 
     public Class<SplittedInputForm> getFormCls() {
         return SplittedInputForm.class;

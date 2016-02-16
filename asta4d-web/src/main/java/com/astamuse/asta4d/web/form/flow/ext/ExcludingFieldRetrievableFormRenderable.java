@@ -5,7 +5,7 @@ import static com.astamuse.asta4d.render.SpecialRenderer.Clear;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.web.form.flow.base.BasicFormFlowSnippetTrait;
 
-public interface SimpleFormFieldExcludeRenderable extends BasicFormFlowSnippetTrait {
+public interface ExcludingFieldRetrievableFormRenderable extends BasicFormFlowSnippetTrait {
 
     @Override
     default Renderer preRenderForm(String renderTargetStep, Object form, int[] indexes) {
@@ -14,8 +14,8 @@ public interface SimpleFormFieldExcludeRenderable extends BasicFormFlowSnippetTr
 
     default Renderer formFieldExcludeRendering(String renderTargetStep, Object form, int[] indexes) {
         Renderer renderer = Renderer.create();
-        if (form instanceof SimpleFormFieldExcludeDescprition) {
-            SimpleFormFieldExcludeDescprition desc = (SimpleFormFieldExcludeDescprition) form;
+        if (form instanceof ExcludingFieldRetrievableForm) {
+            ExcludingFieldRetrievableForm desc = (ExcludingFieldRetrievableForm) form;
             String[] fields = desc.getExcludeFields();
             for (String field : fields) {
                 renderer.add(exludeField(field));

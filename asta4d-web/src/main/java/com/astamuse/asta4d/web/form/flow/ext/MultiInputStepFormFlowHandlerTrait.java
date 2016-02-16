@@ -1,6 +1,5 @@
 package com.astamuse.asta4d.web.form.flow.ext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
@@ -41,22 +40,31 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
      * @param traceData
      * @return
      */
+
     @SuppressWarnings("unchecked")
-    default T getCombinedFormInstanceForConfirmPage(FormFlowTraceData traceData) {
+    default void mergeInputStepsToConfirmStep(T confirmStepForm, FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
-        // clone or not, we don't matter
-        T combineForm = (T) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
         String[] inputSteps = getInputSteps();
         T mergeForm;
         String step;
-        Map<String, Object> mergeMap = new HashMap<>();
         for (int i = 0; i < inputSteps.length; i++) {
             step = inputSteps[i];
             mergeForm = (T) formMap.get(step);
-            mergeMap.put(step, mergeForm);
+            confirmStepForm.mergeInputDataForConfirm(step, mergeForm);
         }
-        combineForm.mergeInputDataForConfirm(mergeMap);
-        return combineForm;
+    }
+
+    /**
+     * get the
+     * 
+     * @param traceData
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    default T getConfirmStepFormStub(FormFlowTraceData traceData) {
+        // clone or not, we don't matter
+        Map<String, Object> formMap = traceData.getStepFormMap();
+        return (T) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
     }
 
     @SuppressWarnings("unchecked")
@@ -64,7 +72,9 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
     default void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
         if (confirmStepName().equalsIgnoreCase(renderTargetStep)) {// ? -> confirm
-            formMap.put(confirmStepName(), getCombinedFormInstanceForConfirmPage(traceData));
+            T confirmStepForm = getConfirmStepFormStub(traceData);
+            mergeInputStepsToConfirmStep(confirmStepForm, traceData);
+            formMap.put(confirmStepName(), confirmStepForm);
         } else if (completeStepName().equalsIgnoreCase(renderTargetStep)) { // confirm -> complete
             formMap.put(renderTargetStep, formMap.get(currentStep));
         } else {// input x -> input y

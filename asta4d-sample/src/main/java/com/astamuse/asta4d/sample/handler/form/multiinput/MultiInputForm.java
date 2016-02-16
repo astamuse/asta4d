@@ -16,9 +16,6 @@
  */
 package com.astamuse.asta4d.sample.handler.form.multiinput;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.validation.Valid;
 
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
@@ -74,20 +71,17 @@ public class MultiInputForm implements MultiInputStepForm {
     }
 
     @Override
-    public void mergeInputDataForConfirm(Map<String, Object> inputForms) {
-        for (Entry<String, Object> entry : inputForms.entrySet()) {
-            String step = entry.getKey();
-            MultiInputForm form = (MultiInputForm) entry.getValue();
-            switch (step) {
-            case inputStep1:
-                this.personForm = form.personForm;
-                break;
-            case inputStep2:
-                this.cascadeJobForm = form.cascadeJobForm;
-                break;
-            default:
-                //
-            }
+    public void mergeInputDataForConfirm(String step, Object inputForm) {
+        MultiInputForm form = (MultiInputForm) inputForm;
+        switch (step) {
+        case inputStep1:
+            this.personForm = form.personForm;
+            break;
+        case inputStep2:
+            this.cascadeJobForm = form.cascadeJobForm;
+            break;
+        default:
+            //
         }
     }
 

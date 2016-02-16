@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 
-public interface SimpleFormFieldExcludeHelper {
+public class ExcludingFieldRetrievableFormHelper {
 
-    default void copyIncludeFieldsOnly(Object targetForm, SimpleFormFieldExcludeDescprition... froms) {
+    public static final void copyIncludeFieldsOnly(Object targetForm, ExcludingFieldRetrievableForm... froms) {
         try {
             List<AnnotatedPropertyInfo> toProps = AnnotatedPropertyUtil.retrieveProperties(targetForm.getClass());
             Map<String, AnnotatedPropertyInfo> toPropsMap = toProps.stream().collect(Collectors.toMap(p -> p.getName(), p -> p));
 
-            for (SimpleFormFieldExcludeDescprition from : froms) {
+            for (ExcludingFieldRetrievableForm from : froms) {
                 List<AnnotatedPropertyInfo> fromProps = AnnotatedPropertyUtil.retrieveProperties(from.getClass());
                 String[] excludes = from.getExcludeFields();
                 Set<String> set = new HashSet<>();

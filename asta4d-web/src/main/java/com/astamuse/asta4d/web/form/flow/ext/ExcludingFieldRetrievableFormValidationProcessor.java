@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import com.astamuse.asta4d.web.form.flow.base.ValidationProcessor;
 import com.astamuse.asta4d.web.form.validation.FormValidationMessage;
 
-public interface SimpleFormFieldExcludeValidationProcessor extends ValidationProcessor {
+public interface ExcludingFieldRetrievableFormValidationProcessor extends ValidationProcessor {
 
     default List<FormValidationMessage> postValidate(Object form, List<FormValidationMessage> msgList) {
         return filterExcludedFieldsMessages(form, msgList);
@@ -16,15 +16,15 @@ public interface SimpleFormFieldExcludeValidationProcessor extends ValidationPro
 
     /**
      * include/exclude corresponding field messages according to the {@link SimpleFormFieldIncludeDescription}/
-     * {@link SimpleFormFieldExcludeDescprition}
+     * {@link ExcludingFieldRetrievableForm}
      * 
      * @param form
      * @param msgList
      * @return
      */
     default List<FormValidationMessage> filterExcludedFieldsMessages(Object form, List<FormValidationMessage> msgList) {
-        if (form instanceof SimpleFormFieldExcludeDescprition) {
-            SimpleFormFieldExcludeDescprition vfe = (SimpleFormFieldExcludeDescprition) form;
+        if (form instanceof ExcludingFieldRetrievableForm) {
+            ExcludingFieldRetrievableForm vfe = (ExcludingFieldRetrievableForm) form;
             String[] fields = vfe.getExcludeFields();
             Set<String> set = new HashSet<>();
             for (String f : fields) {

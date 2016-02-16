@@ -16,12 +16,6 @@
  */
 package com.astamuse.asta4d.sample.handler.form.splittedinput;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.beanutils.BeanUtils;
-
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
 import com.astamuse.asta4d.sample.handler.form.multiinput.CascadeJobForm;
 import com.astamuse.asta4d.web.form.annotation.CascadeFormField;
@@ -31,15 +25,14 @@ import com.astamuse.asta4d.web.form.flow.base.StepAwaredValidationTarget;
 import com.astamuse.asta4d.web.form.flow.base.StepRepresentableForm;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
-import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeDescprition;
-import com.astamuse.asta4d.web.form.flow.ext.SimpleFormFieldExcludeHelper;
+import com.astamuse.asta4d.web.form.flow.ext.ExcludingFieldRetrievableForm;
 
 //@ShowCode:showSplittedFormStart
 @Form
-public class SplittedInputForm implements MultiInputStepForm, SimpleFormFieldExcludeHelper {
+public class SplittedInputForm implements MultiInputStepForm {
 
     @Form
-    public static class PersonFormStep1 extends PersonForm implements SimpleFormFieldExcludeDescprition, StepRepresentableForm {
+    public static class PersonFormStep1 extends PersonForm implements ExcludingFieldRetrievableForm, StepRepresentableForm {
 
         @Override
         public String[] retrieveRepresentingSteps() {
@@ -54,7 +47,7 @@ public class SplittedInputForm implements MultiInputStepForm, SimpleFormFieldExc
     }
 
     @Form
-    public static class PersonFormStep2 extends PersonForm implements SimpleFormFieldExcludeDescprition, StepRepresentableForm {
+    public static class PersonFormStep2 extends PersonForm implements ExcludingFieldRetrievableForm, StepRepresentableForm {
 
         @Override
         public String[] retrieveRepresentingSteps() {
@@ -77,7 +70,7 @@ public class SplittedInputForm implements MultiInputStepForm, SimpleFormFieldExc
     }
 
     @Form
-    public static class ConfirmStepForm implements StepRepresentableForm, SimpleFormFieldExcludeHelper {
+    public static class ConfirmStepForm implements StepRepresentableForm {
 
         @CascadeFormField
         private PersonForm personForm = new PersonForm();
@@ -138,13 +131,9 @@ public class SplittedInputForm implements MultiInputStepForm, SimpleFormFieldExc
     // getter/setter
 
     public void setForms(PersonForm personForm, CascadeJobForm cascadeJobForm) {
-        try {
-            BeanUtils.copyProperties(this.personFormStep1, personForm);
-            BeanUtils.copyProperties(this.personFormStep2, personForm);
-            BeanUtils.copyProperties(this.cascadeJobFormStep3, cascadeJobForm);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        this.personFormStep1.copyPropertiesFrom(personForm);
+        this.personFormStep2.copyPropertiesFrom(personForm);
+        this.cascadeJobFormStep3.copyPropertiesFrom(cascadeJobForm);
     }
 
     public ConfirmStepForm getForms() {
@@ -152,27 +141,20 @@ public class SplittedInputForm implements MultiInputStepForm, SimpleFormFieldExc
     }
 
     @Override
-    public void mergeInputDataForConfirm(Map<String, Object> inputForms) {
-        for (Entry<String, Object> entry : inputForms.entrySet()) {
-            String step = entry.getKey();
-            SplittedInputForm form = (SplittedInputForm) entry.getValue();
-            switch (step) {
-            case inputStep1:
-                copyIncludeFieldsOnly(this.confirmStepForm.personForm, form.personFormStep1);
-                break;
-            case inputStep2:
-                copyIncludeFieldsOnly(this.confirmStepForm.personForm, form.personFormStep2);
-                break;
-            case inputStep3:
-                try {
-                    BeanUtils.copyProperties(this.confirmStepForm.cascadeJobForm, form.cascadeJobFormStep3);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            default:
-                //
-            }
+    public void mergeInputDataForConfirm(String step, Object inputForm) {
+        SplittedInputForm form = (SplittedInputForm) inputForm;
+        switch (step) {
+        case inputStep1:
+            form.personFormStep1.copyIncludingFieldsTo(this.confirmStepForm.personForm);
+            break;
+        case inputStep2:
+            form.personFormStep2.copyIncludingFieldsTo(this.confirmStepForm.personForm);
+            break;
+        case inputStep3:
+            this.cascadeJobFormStep3.copyPropertiesTo(this.confirmStepForm.cascadeJobForm);
+            break;
+        default:
+            //
         }
     }
 
