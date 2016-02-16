@@ -166,7 +166,7 @@ public class SplittedInputForm implements MultiInputStepForm {
             form.personFormStep2.copyIncludingFieldsTo(this.confirmStepForm.personForm);
             break;
         case inputStep3:
-            this.cascadeJobFormStep3.copyPropertiesTo(this.confirmStepForm.cascadeJobForm);
+            form.cascadeJobFormStep3.copyPropertiesTo(this.confirmStepForm.cascadeJobForm);
             break;
         default:
             //
