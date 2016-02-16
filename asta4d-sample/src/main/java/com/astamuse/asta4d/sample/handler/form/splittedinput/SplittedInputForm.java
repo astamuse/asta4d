@@ -24,13 +24,26 @@ import com.astamuse.asta4d.web.form.annotation.renderable.AvailableWhenEditOnly;
 import com.astamuse.asta4d.web.form.flow.base.StepAwaredValidationTarget;
 import com.astamuse.asta4d.web.form.flow.base.StepRepresentableForm;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
-import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
 import com.astamuse.asta4d.web.form.flow.ext.ExcludingFieldRetrievableForm;
+import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
 
 //@ShowCode:showSplittedFormStart
+/**
+ * Declares four form instances to represent the steps: input-1, input-2, input-3, confirm(and complete).
+ * 
+ * @author e-ryu
+ *
+ */
 @Form
 public class SplittedInputForm implements MultiInputStepForm {
 
+    /**
+     * Implements {@link ExcludingFieldRetrievableForm} to declare fields to be excluded in validation and rendering. Implements
+     * {@link StepRepresentableForm} to declare whether this form instance should be rendered.
+     * 
+     * @author e-ryu
+     *
+     */
     @Form
     public static class PersonFormStep1 extends PersonForm implements ExcludingFieldRetrievableForm, StepRepresentableForm {
 
@@ -99,7 +112,9 @@ public class SplittedInputForm implements MultiInputStepForm {
     @AvailableWhenEditOnly(selector = "#input-comment")
     private String inputComment;
 
-    // a field with @CascadeFormField without arrayLengthField configured will be treated a simple reused form POJO
+    /**
+     * {@link StepAwaredValidationTarget} to suggest the validation target for certain step.
+     */
     @CascadeFormField
     @StepAwaredValidationTarget(inputStep1)
     private PersonFormStep1 personFormStep1;
