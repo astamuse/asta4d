@@ -22,10 +22,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -128,20 +130,29 @@ public class AnnotatedPropertyUtil {
     }
 
     private static class AnnotatedPropertyInfoMap {
-        Map<String, AnnotatedPropertyInfo> nameMap;
-        Map<String, AnnotatedPropertyInfo> beanNameMap;
+        Map<String, List<AnnotatedPropertyInfo>> nameMap;
+        Map<String, List<AnnotatedPropertyInfo>> beanNameMap;
         List<AnnotatedPropertyInfo> list;
 
         AnnotatedPropertyInfoMap(List<AnnotatedPropertyInfo> infoList) {
             list = infoList.stream().map(info -> new ReadOnlyAnnotatedPropertyInfo(info)).collect(Collectors.toList());
             list = Collections.unmodifiableList(list);
 
-            nameMap = list.stream().collect(Collectors.toMap(info -> info.getName(), info -> info));
+            nameMap = list.stream().collect(Collectors.groupingBy(info -> info.getName()));
+            makeListUnmodifiable(nameMap);
             nameMap = Collections.unmodifiableMap(nameMap);
 
-            beanNameMap = list.stream().collect(Collectors.toMap(info -> info.getBeanPropertyName(), info -> info));
+            beanNameMap = list.stream().collect(Collectors.groupingBy(info -> info.getBeanPropertyName()));
+            makeListUnmodifiable(beanNameMap);
             beanNameMap = Collections.unmodifiableMap(beanNameMap);
         }
+
+        void makeListUnmodifiable(Map<String, List<AnnotatedPropertyInfo>> map) {
+            for (String key : map.keySet()) {
+                map.put(key, Collections.unmodifiableList(map.get(key)));
+            }
+        }
+
     }
 
     private static final Logger logger = LoggerFactory.getLogger(AnnotatedPropertyUtil.class);
@@ -155,32 +166,7 @@ public class AnnotatedPropertyUtil {
         AnnotatedPropertyInfoMap map = propertiesMapCache.get(cacheKey);
         if (map == null) {
             List<AnnotatedPropertyInfo> infoList = new LinkedList<>();
-
-            List<Field> list = new ArrayList<>(ClassUtil.retrieveAllFieldsIncludeAllSuperClasses(cls));
-            Iterator<Field> it = list.iterator();
-
-            while (it.hasNext()) {
-                Field f = it.next();
-                List<Annotation> annoList = ConvertableAnnotationRetriever.retrieveAnnotationHierarchyList(AnnotatedProperty.class,
-                        f.getAnnotations());
-                if (CollectionUtils.isNotEmpty(annoList)) {
-                    AnnotatedProperty ap = (AnnotatedProperty) annoList.get(0);// must by
-                    String name = ap.name();
-                    if (StringUtils.isEmpty(name)) {
-                        name = f.getName();
-                    }
-
-                    AnnotatedPropertyInfo info = new AnnotatedPropertyInfo();
-                    info.setAnnotations(annoList);
-                    info.setBeanPropertyName(f.getName());
-                    info.setName(name);
-                    info.setField(f);
-                    info.setGetter(null);
-                    info.setSetter(null);
-                    info.setType(f.getType());
-                    infoList.add(info);
-                }
-            }
+            Set<String> beanPropertyNameSet = new HashSet<>();
 
             Method[] mtds = cls.getMethods();
             for (Method method : mtds) {
@@ -253,6 +239,39 @@ public class AnnotatedPropertyUtil {
                 }
 
                 infoList.add(info);
+                beanPropertyNameSet.add(info.getBeanPropertyName());
+            }
+
+            List<Field> list = new ArrayList<>(ClassUtil.retrieveAllFieldsIncludeAllSuperClasses(cls));
+            Iterator<Field> it = list.iterator();
+
+            while (it.hasNext()) {
+                Field f = it.next();
+                List<Annotation> annoList = ConvertableAnnotationRetriever.retrieveAnnotationHierarchyList(AnnotatedProperty.class,
+                        f.getAnnotations());
+                if (CollectionUtils.isNotEmpty(annoList)) {
+                    AnnotatedProperty ap = (AnnotatedProperty) annoList.get(0);// must by
+
+                    String beanPropertyName = f.getName();
+                    if (beanPropertyNameSet.contains(beanPropertyName)) {
+                        continue;
+                    }
+
+                    String name = ap.name();
+                    if (StringUtils.isEmpty(name)) {
+                        name = f.getName();
+                    }
+
+                    AnnotatedPropertyInfo info = new AnnotatedPropertyInfo();
+                    info.setAnnotations(annoList);
+                    info.setBeanPropertyName(beanPropertyName);
+                    info.setName(name);
+                    info.setField(f);
+                    info.setGetter(null);
+                    info.setSetter(null);
+                    info.setType(f.getType());
+                    infoList.add(info);
+                }
             }
 
             map = new AnnotatedPropertyInfoMap(infoList);
@@ -270,14 +289,33 @@ public class AnnotatedPropertyUtil {
     }
 
     @SuppressWarnings("rawtypes")
-    public static AnnotatedPropertyInfo retrievePropertyByName(Class cls, final String name) {
+    public static List<AnnotatedPropertyInfo> retrievePropertyByName(Class cls, final String name) {
         AnnotatedPropertyInfoMap map = retrievePropertiesMap(cls);
         return map.nameMap.get(name);
     }
 
     @SuppressWarnings("rawtypes")
-    public static AnnotatedPropertyInfo retrievePropertyByBeanPropertyName(Class cls, final String name) {
+    public static List<AnnotatedPropertyInfo> retrievePropertyByBeanPropertyName(Class cls, final String name) {
         AnnotatedPropertyInfoMap map = retrievePropertiesMap(cls);
         return map.beanNameMap.get(name);
+    }
+
+    public static void assignValueByName(Object instance, String name, Object value)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        List<AnnotatedPropertyInfo> list = retrievePropertyByName(instance.getClass(), name);
+        assignValue(list, instance, value);
+    }
+
+    public static void assignValueByBeanPropertyName(Object instance, String name, Object value)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        List<AnnotatedPropertyInfo> list = retrievePropertyByBeanPropertyName(instance.getClass(), name);
+        assignValue(list, instance, value);
+    }
+
+    public static void assignValue(List<AnnotatedPropertyInfo> list, Object instance, Object value)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        for (AnnotatedPropertyInfo p : list) {
+            p.assignValue(instance, value);
+        }
     }
 }

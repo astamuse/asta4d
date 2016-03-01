@@ -40,8 +40,7 @@ public class ExcludingFieldRetrievableFormHelper {
                     if (set.contains(p.getName())) {
                         continue;
                     }
-                    AnnotatedPropertyInfo targetProp = AnnotatedPropertyUtil.retrievePropertyByName(targetForm.getClass(), p.getName());
-                    targetProp.assignValue(targetForm, p.retrieveValue(from));
+                    AnnotatedPropertyUtil.assignValueByName(targetForm, p.getName(), p.retrieveValue(from));
                 }
 
             }
