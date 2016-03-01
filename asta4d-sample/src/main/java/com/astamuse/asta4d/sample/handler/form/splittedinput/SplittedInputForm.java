@@ -25,6 +25,7 @@ import com.astamuse.asta4d.web.form.flow.base.StepAwaredValidationTarget;
 import com.astamuse.asta4d.web.form.flow.base.StepRepresentableForm;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalFormFlowConstant;
 import com.astamuse.asta4d.web.form.flow.ext.ExcludingFieldRetrievableForm;
+import com.astamuse.asta4d.web.form.flow.ext.IncludingFieldRetrievableForm;
 import com.astamuse.asta4d.web.form.flow.ext.MultiInputStepForm;
 
 //@ShowCode:showSplittedFormStart
@@ -59,8 +60,14 @@ public class SplittedInputForm implements MultiInputStepForm {
 
     }
 
+    /**
+     * Use {@link IncludingFieldRetrievableForm} instead of {@link ExcludingFieldRetrievableForm} to simplify fields declaration.
+     * 
+     * @author e-ryu
+     *
+     */
     @Form
-    public static class PersonFormStep2 extends PersonForm implements ExcludingFieldRetrievableForm, StepRepresentableForm {
+    public static class PersonFormStep2 extends PersonForm implements IncludingFieldRetrievableForm, StepRepresentableForm {
 
         @Override
         public String[] retrieveRepresentingSteps() {
@@ -68,8 +75,8 @@ public class SplittedInputForm implements MultiInputStepForm {
         }
 
         @Override
-        public String[] getExcludeFields() {
-            return new String[] { "name", "age", "bloodtype", "sex" };
+        public String[] getIncludeFields() {
+            return new String[] { "language", "memo" };
         }
 
     }

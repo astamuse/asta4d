@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 
@@ -47,6 +49,12 @@ public class ExcludingFieldRetrievableFormHelper {
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public static final String[] retrieveExcludingFieldsByIncluding(Class<?> cls, String... includingFields) {
+        List<AnnotatedPropertyInfo> props = AnnotatedPropertyUtil.retrieveProperties(cls);
+        return props.stream().filter(p -> !ArrayUtils.contains(includingFields, p.getName())).map(p -> p.getName()).toArray(size -> {
+            return new String[size];
+        });
     }
 }
