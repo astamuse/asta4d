@@ -51,8 +51,10 @@ public class WebApplicationConfiguration extends Configuration {
 
     private DispatcherRuleMatcher ruleMatcher = new AntPathRuleMatcher();
 
+    @SuppressWarnings("rawtypes")
     private UrlMappingRuleInitializer urlMappingRuleInitializer = null;
 
+    @SuppressWarnings("rawtypes")
     private Class<? extends UrlMappingRuleSet> urlMappingRuleSetCls = HandyRuleSet.class;
 
     public WebApplicationConfiguration() {
@@ -144,18 +146,22 @@ public class WebApplicationConfiguration extends Configuration {
         this.ruleMatcher = ruleMatcher;
     }
 
+    @SuppressWarnings("rawtypes")
     public UrlMappingRuleInitializer getUrlMappingRuleInitializer() {
         return urlMappingRuleInitializer;
     }
 
+    @SuppressWarnings("rawtypes")
     public void setUrlMappingRuleInitializer(UrlMappingRuleInitializer urlMappingRuleInitializer) {
         this.urlMappingRuleInitializer = urlMappingRuleInitializer;
     }
 
+    @SuppressWarnings("rawtypes")
     public Class<? extends UrlMappingRuleSet> getUrlMappingRuleSetCls() {
         return urlMappingRuleSetCls;
     }
 
+    @SuppressWarnings("rawtypes")
     public void setUrlMappingRuleHelper(Class<? extends UrlMappingRuleSet> urlMappingRuleSetCls) {
         this.urlMappingRuleSetCls = urlMappingRuleSetCls;
     }
