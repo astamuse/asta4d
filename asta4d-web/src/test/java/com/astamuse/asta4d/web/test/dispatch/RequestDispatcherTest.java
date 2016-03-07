@@ -71,6 +71,8 @@ import com.astamuse.asta4d.web.dispatch.request.ResultTransformer;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.ContentProvider;
 import com.astamuse.asta4d.web.dispatch.response.provider.HeaderInfoProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.JsonDataProvider;
+import com.astamuse.asta4d.web.dispatch.response.provider.RedirectTargetProvider;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceAdapter;
 
 public class RequestDispatcherTest {
@@ -236,7 +238,6 @@ public class RequestDispatcherTest {
     public Object[][] getTestData() throws Exception {
         //@formatter:off
         return new Object[][] { 
-            /*
                 { "get", "/index", 0, getExpectedPage("/index.html")},
                 
                 { "get", "/index-rewrite", 0, getExpectedPage("/index.html") },
@@ -279,10 +280,7 @@ public class RequestDispatcherTest {
                 // to handle the extending http methods out of predeinfed methods by the framework
                 { "propfind", "/index", 404, new HeaderInfoProvider(404)},
                 { "proppatch", "/index", 0, getExpectedPage("/index-proppatch.html")},
-                */
-                
-                //{ "get", "/template-not-exists", 404, getExpectedPage("/notfound")},
-                { "get", "/thrownep", 501, getExpectedPage("/NullPointerException")},
+               
 
                 };
         //@formatter:on
