@@ -29,6 +29,8 @@ import com.astamuse.asta4d.web.dispatch.DefaultRequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.DispatcherRuleMatcher;
 import com.astamuse.asta4d.web.dispatch.RequestHandlerInvokerFactory;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleSet;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleSet;
 import com.astamuse.asta4d.web.util.bean.DeclareInstanceResolver;
 import com.astamuse.asta4d.web.util.message.DefaultMessageRenderingHelper;
 import com.astamuse.asta4d.web.util.message.MessageRenderingHelper;
@@ -49,7 +51,11 @@ public class WebApplicationConfiguration extends Configuration {
 
     private DispatcherRuleMatcher ruleMatcher = new AntPathRuleMatcher();
 
+    @SuppressWarnings("rawtypes")
     private UrlMappingRuleInitializer urlMappingRuleInitializer = null;
+
+    @SuppressWarnings("rawtypes")
+    private Class<? extends UrlMappingRuleSet> urlMappingRuleSetCls = HandyRuleSet.class;
 
     public WebApplicationConfiguration() {
         this.setTemplateResolver(new WebApplicationTemplateResolver());
@@ -140,12 +146,24 @@ public class WebApplicationConfiguration extends Configuration {
         this.ruleMatcher = ruleMatcher;
     }
 
+    @SuppressWarnings("rawtypes")
     public UrlMappingRuleInitializer getUrlMappingRuleInitializer() {
         return urlMappingRuleInitializer;
     }
 
+    @SuppressWarnings("rawtypes")
     public void setUrlMappingRuleInitializer(UrlMappingRuleInitializer urlMappingRuleInitializer) {
         this.urlMappingRuleInitializer = urlMappingRuleInitializer;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public Class<? extends UrlMappingRuleSet> getUrlMappingRuleSetCls() {
+        return urlMappingRuleSetCls;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void setUrlMappingRuleHelper(Class<? extends UrlMappingRuleSet> urlMappingRuleSetCls) {
+        this.urlMappingRuleSetCls = urlMappingRuleSetCls;
     }
 
 }
