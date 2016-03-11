@@ -71,6 +71,7 @@ public class Asta4dServlet extends HttpServlet {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private List<UrlMappingRule> createRuleList() throws InstantiationException, IllegalAccessException {
         WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
         UrlMappingRuleSet ruleSet = conf.getUrlMappingRuleSetCls().newInstance();
