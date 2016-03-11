@@ -162,7 +162,7 @@ public class WebApplicationConfiguration extends Configuration {
     }
 
     @SuppressWarnings("rawtypes")
-    public void setUrlMappingRuleHelper(Class<? extends UrlMappingRuleSet> urlMappingRuleSetCls) {
+    public void setUrlMappingRuleSetCls(Class<? extends UrlMappingRuleSet> urlMappingRuleSetCls) {
         this.urlMappingRuleSetCls = urlMappingRuleSetCls;
     }
 
