@@ -66,6 +66,8 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
 
     }
 
+    protected abstract String createCategorySpecifiedPath(String category, String path);
+
     /**
      * 
      * @param path
@@ -86,7 +88,7 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
             key = CacheKey.of(category, path);
             existingPath = cacheEnable ? existingPathCache.get(key) : null;
             if (existingPath == null) {// not check yet
-                String tryPath = createCategorySpecialPath(category, path);
+                String tryPath = createCategorySpecifiedPath(category, path);
                 T res = load(tryPath, extraInfomation);
                 if (res == null) {
                     existingPathCache.put(key, null);
@@ -103,18 +105,6 @@ public abstract class SiteCategoryAwaredResourceLoader<T> {
         }
         // it also means not found
         return null;
-    }
-
-    protected String createCategorySpecialPath(String category, String path) {
-        if (category.isEmpty()) {// category would not be null
-            return path;
-        } else {
-            if (path.startsWith("/")) {
-                return "/" + category + path;
-            } else {
-                return "/" + category + "/" + path;
-            }
-        }
     }
 
 }

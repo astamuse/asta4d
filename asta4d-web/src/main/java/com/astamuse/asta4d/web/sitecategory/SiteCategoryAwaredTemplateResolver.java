@@ -29,7 +29,7 @@ import com.astamuse.asta4d.util.MemorySafeResourceCache.ResouceHolder;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.WebApplicationTemplateResolver;
 
-public class SiteCategoryAwaredTemplateResolver implements TemplateResolver {
+public class SiteCategoryAwaredTemplateResolver implements TemplateResolver, SiteCategoryAwaredPathConvertor {
 
     private Class<? extends TemplateResolver> underlineTemplateResolverCls = null;
 
@@ -55,6 +55,11 @@ public class SiteCategoryAwaredTemplateResolver implements TemplateResolver {
             } catch (TemplateNotFoundException ex) {
                 return null;
             }
+        }
+
+        @Override
+        protected String createCategorySpecifiedPath(String category, String path) {
+            return convertCategorySpecifiedPath(category, path);
         }
     };
 

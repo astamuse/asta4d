@@ -24,12 +24,17 @@ import javax.servlet.ServletContext;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 
-public class SiteCategoryAwaredStaticResourceHandler extends StaticResourceHandler {
+public class SiteCategoryAwaredStaticResourceHandler extends StaticResourceHandler implements SiteCategoryAwaredPathConvertor {
 
     private SiteCategoryAwaredResourceLoader<StaticFileInfo> resourceLoader = new SiteCategoryAwaredResourceLoader<StaticFileInfo>() {
         @Override
         public StaticFileInfo load(String path, Object extraInfomation) throws Exception {
             return _super_retrieveStaticFileInfo(WebApplicationContext.getCurrentThreadWebApplicationContext().getServletContext(), path);
+        }
+
+        @Override
+        protected String createCategorySpecifiedPath(String category, String path) {
+            return convertCategorySpecifiedPath(category, path);
         }
     };
 
@@ -41,8 +46,8 @@ public class SiteCategoryAwaredStaticResourceHandler extends StaticResourceHandl
         super(basePath);
     }
 
-    private StaticFileInfo _super_retrieveStaticFileInfo(ServletContext servletContext, String path) throws FileNotFoundException,
-            IOException {
+    private StaticFileInfo _super_retrieveStaticFileInfo(ServletContext servletContext, String path)
+            throws FileNotFoundException, IOException {
         return super.retrieveStaticFileInfo(servletContext, path);
     }
 
