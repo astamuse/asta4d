@@ -25,22 +25,23 @@ import com.astamuse.asta4d.sample.handler.AddUserHandler;
 import com.astamuse.asta4d.sample.handler.EchoHandler;
 import com.astamuse.asta4d.sample.handler.GetUserListHandler;
 import com.astamuse.asta4d.sample.handler.LoginHandler;
-import com.astamuse.asta4d.sample.handler.form.CascadeFormHandler;
-import com.astamuse.asta4d.sample.handler.form.MultiStepFormHandler;
-import com.astamuse.asta4d.sample.handler.form.SingleInputFormHandler;
-import com.astamuse.asta4d.sample.handler.form.SplittedFormHandler;
+import com.astamuse.asta4d.sample.handler.form.cascade.CascadeFormHandler;
+import com.astamuse.asta4d.sample.handler.form.multiinput.MultiInputFormHandler;
+import com.astamuse.asta4d.sample.handler.form.multistep.MultiStepFormHandler;
+import com.astamuse.asta4d.sample.handler.form.singlestep.SingleStepFormHandler;
+import com.astamuse.asta4d.sample.handler.form.splittedinput.SplittedInputFormHandler;
 import com.astamuse.asta4d.web.builtin.StaticResourceHandler;
 import com.astamuse.asta4d.web.dispatch.HttpMethod;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleInitializer;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.mapping.handy.HandyRuleSet;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 import com.astamuse.asta4d.web.form.flow.classical.OneStepFormHandlerTrait;
 
-public class UrlRules implements UrlMappingRuleInitializer {
+public class UrlRules implements UrlMappingRuleInitializer<HandyRuleSet<?, ?>> {
 
     @Override
-    public void initUrlMappingRules(UrlMappingRuleHelper rules) {
+    public void initUrlMappingRules(HandyRuleSet<?, ?> rules) {
 
         // global error handling
 
@@ -63,10 +64,11 @@ public class UrlRules implements UrlMappingRuleInitializer {
         //@formatter:on
     }
 
-    private void initSampleRules(UrlMappingRuleHelper rules) {
+    private void initSampleRules(HandyRuleSet<?, ?> rules) {
         //@formatter:off
         
         rules.add("/js/**/*").handler(new StaticResourceHandler());
+        rules.add("/css/**/*").handler(new StaticResourceHandler());
         
         rules.add("/snippet", "/templates/snippet.html");
         
@@ -88,7 +90,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
 
         rules.add("/ajax/getUserList").handler(GetUserListHandler.class).json();
         
-        rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).rest();
+        rules.add(PUT, "/ajax/addUser").handler(AddUserHandler.class).xml();
         
         // @ShowCode:showSuccessStart
         rules.add("/handler")
@@ -108,14 +110,14 @@ public class UrlRules implements UrlMappingRuleInitializer {
         
         rules.add("/form", "/templates/form/list.html");
         
-        // @ShowCode:showSingleInputStart
-        rules.add((HttpMethod)null, "/form/singleInput")
+        // @ShowCode:showSingleStepStart
+        rules.add((HttpMethod)null, "/form/singlestep")
              //specify the target template file of input page by path var
-             .var(OneStepFormHandlerTrait.VAR_INPUT_TEMPLATE_FILE, "/templates/form/singleInput/edit.html")
-             .handler(SingleInputFormHandler.class)
+             .var(OneStepFormHandlerTrait.VAR_INPUT_TEMPLATE_FILE, "/templates/form/singlestep/edit.html")
+             .handler(SingleStepFormHandler.class)
              //specify the exit target
-             .redirect("/form?type=single-input");
-        // @ShowCode:showSingleInputEnd
+             .redirect("/form?type=singlestep");
+        // @ShowCode:showSingleStepEnd
              
         // @ShowCode:showMultiStepStart
         rules.add((HttpMethod)null, "/form/multistep")
@@ -123,7 +125,7 @@ public class UrlRules implements UrlMappingRuleInitializer {
              .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/multistep/")
              .handler(MultiStepFormHandler.class)
              //specify the exit target
-             .redirect("/form?type=multi-step");
+             .redirect("/form?type=multistep");
         // @ShowCode:showMultiStepEnd
         
         // @ShowCode:showCascadeStart
@@ -148,21 +150,37 @@ public class UrlRules implements UrlMappingRuleInitializer {
              .redirect("/form?type=cascade");
         // @ShowCode:showCascadeEnd
         
-        // @ShowCode:showSplittedStart
-        rules.add((HttpMethod)null, "/form/splitted/add")
+        // @ShowCode:showMultiInputStart
+        rules.add((HttpMethod)null, "/form/multiinput/add")
              //specify the base path of target template file by path var
-             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
-             .handler(SplittedFormHandler.Add.class)
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/multiinput/")
+             .handler(MultiInputFormHandler.Add.class)
              //specify the exit target
-             .redirect("/form?type=splitted");
+             .redirect("/form?type=multiinput");
 
-        rules.add((HttpMethod)null, "/form/splitted/edit")
+        rules.add((HttpMethod)null, "/form/multiinput/edit")
              //specify the base path of target template file by path var
-             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/splitted/")
-             .handler(SplittedFormHandler.Edit.class)
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/multiinput/")
+             .handler(MultiInputFormHandler.Edit.class)
              //specify the exit target
-             .redirect("/form?type=splitted");
-        // @ShowCode:showSplittedEnd
+             .redirect("/form?type=multiinput");
+        // @ShowCode:showMultiInputEnd
+        
+        // @ShowCode:showSplittedInputStart
+        rules.add((HttpMethod)null, "/form/splittedinput/add")
+             //specify the base path of target template file by path var
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/splittedinput/")
+             .handler(SplittedInputFormHandler.Add.class)
+             //specify the exit target
+             .redirect("/form?type=splittedinput");
+
+        rules.add((HttpMethod)null, "/form/splittedinput/edit")
+             //specify the base path of target template file by path var
+             .var(ClassicalMultiStepFormFlowHandlerTrait.VAR_TEMPLATE_BASE_PATH, "/templates/form/splittedinput/")
+             .handler(SplittedInputFormHandler.Edit.class)
+             //specify the exit target
+             .redirect("/form?type=splittedinput");
+        // @ShowCode:showSplittedInputEnd
 
         rules.add("/localize", "/templates/localize.html");
         

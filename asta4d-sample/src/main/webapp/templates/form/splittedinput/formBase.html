@@ -1,0 +1,40 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<afd:extension parent="/layout/common.html">
+	<afd:block override="global-message">
+		<!-- @ShowCode:showMessageBarStart -->
+		<afd:embed target="/templates/form/splittedinput/customGlobalMessageBar.html"/>
+		<!-- @ShowCode:showMessageBarEnd -->
+	</afd:block>
+	<afd:block override="content-title">
+		Splitted form
+	</afd:block>
+	<afd:block override="content-detail">
+		<div class="panel panel-warning">
+			<div class="panel-heading"><h3><afd:block id="heading-block"></afd:block></h3></div>
+			<div class="panel-body">
+				<div class="block-main">
+				<!-- @ShowCode:showFormStart -->
+				<section>
+					<article>
+						<form method="post">
+							<afd:block id="form-block"></afd:block>
+							<afd:block id="form-btns"></afd:block>
+						</form>
+					</article>
+				</section>
+				<!-- @ShowCode:showFormEnd -->
+				</div>
+				<div class="block-side-comment">
+					<afd:embed target="/templates/form/splittedinput/comment.html" />
+				</div>
+			</div>
+		</div>
+		<afd:block id="source-block"></afd:block>
+	</afd:block>
+</afd:extension>
+</body>
+</html>

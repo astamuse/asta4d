@@ -1,11 +1,25 @@
+/*
+ * Copyright 2016 astamuse company,Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
 package com.astamuse.asta4d.web.form.flow.ext;
 
 import java.util.Map;
 
-import com.astamuse.asta4d.web.form.flow.base.CommonFormResult;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowConstants;
 import com.astamuse.asta4d.web.form.flow.base.FormFlowTraceData;
-import com.astamuse.asta4d.web.form.flow.base.FormProcessData;
 import com.astamuse.asta4d.web.form.flow.classical.ClassicalMultiStepFormFlowHandlerTrait;
 
 /**
@@ -42,20 +56,31 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
      * @param traceData
      * @return
      */
+
     @SuppressWarnings("unchecked")
-    default T getCombinedFormInstanceForConfirmPage(FormFlowTraceData traceData) {
+    default void mergeInputStepsToConfirmStep(T confirmStepForm, FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
-        // clone or not, we don't matter
-        T combineForm = (T) formMap.get(firstStepName());
         String[] inputSteps = getInputSteps();
         T mergeForm;
         String step;
-        for (int i = 1; i < inputSteps.length; i++) {
+        for (int i = 0; i < inputSteps.length; i++) {
             step = inputSteps[i];
             mergeForm = (T) formMap.get(step);
-            combineForm.setSubInputFormForStep(step, mergeForm.getSubInputFormByStep(step));
+            confirmStepForm.mergeInputDataForConfirm(step, mergeForm);
         }
-        return combineForm;
+    }
+
+    /**
+     * get the
+     * 
+     * @param traceData
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    default T getConfirmStepFormStub(FormFlowTraceData traceData) {
+        // clone or not, we don't matter
+        Map<String, Object> formMap = traceData.getStepFormMap();
+        return (T) formMap.get(FormFlowConstants.FORM_STEP_BEFORE_FIRST);
     }
 
     @SuppressWarnings("unchecked")
@@ -63,7 +88,9 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
     default void rewriteTraceDataBeforeGoSnippet(String currentStep, String renderTargetStep, FormFlowTraceData traceData) {
         Map<String, Object> formMap = traceData.getStepFormMap();
         if (confirmStepName().equalsIgnoreCase(renderTargetStep)) {// ? -> confirm
-            formMap.put(confirmStepName(), getCombinedFormInstanceForConfirmPage(traceData));
+            T confirmStepForm = getConfirmStepFormStub(traceData);
+            mergeInputStepsToConfirmStep(confirmStepForm, traceData);
+            formMap.put(confirmStepName(), confirmStepForm);
         } else if (completeStepName().equalsIgnoreCase(renderTargetStep)) { // confirm -> complete
             formMap.put(renderTargetStep, formMap.get(currentStep));
         } else {// input x -> input y
@@ -84,19 +111,4 @@ public interface MultiInputStepFormFlowHandlerTrait<T extends MultiInputStepForm
 
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    default CommonFormResult processValidation(FormProcessData processData, Object form) {
-        String currentStep = processData.getStepCurrent();
-
-        Object validateObj = form;
-        for (String step : getInputSteps()) {
-            if (currentStep.equalsIgnoreCase(step)) {
-                validateObj = ((T) validateObj).getSubInputFormByStep(step);
-                break;
-            }
-        }
-
-        return ClassicalMultiStepFormFlowHandlerTrait.super.processValidation(processData, validateObj);
-    }
 }

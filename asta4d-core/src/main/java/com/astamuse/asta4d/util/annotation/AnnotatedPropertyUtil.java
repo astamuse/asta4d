@@ -21,19 +21,23 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.util.ClassUtil;
-import com.astamuse.asta4d.util.collection.ListConvertUtil;
-import com.astamuse.asta4d.util.collection.RowConvertor;
 
 public class AnnotatedPropertyUtil {
 
@@ -102,8 +106,8 @@ public class AnnotatedPropertyUtil {
             throw new UnsupportedOperationException();
         }
 
-        public void assignValue(Object instance, Object value) throws IllegalAccessException, IllegalArgumentException,
-                InvocationTargetException {
+        public void assignValue(Object instance, Object value)
+                throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
             info.assignValue(instance, value);
         }
 
@@ -125,141 +129,193 @@ public class AnnotatedPropertyUtil {
 
     }
 
+    private static class AnnotatedPropertyInfoMap {
+        Map<String, List<AnnotatedPropertyInfo>> nameMap;
+        Map<String, List<AnnotatedPropertyInfo>> beanNameMap;
+        List<AnnotatedPropertyInfo> list;
+
+        AnnotatedPropertyInfoMap(List<AnnotatedPropertyInfo> infoList) {
+            list = infoList.stream().map(info -> new ReadOnlyAnnotatedPropertyInfo(info)).collect(Collectors.toList());
+            list = Collections.unmodifiableList(list);
+
+            nameMap = list.stream().collect(Collectors.groupingBy(info -> info.getName()));
+            makeListUnmodifiable(nameMap);
+            nameMap = Collections.unmodifiableMap(nameMap);
+
+            beanNameMap = list.stream().collect(Collectors.groupingBy(info -> info.getBeanPropertyName()));
+            makeListUnmodifiable(beanNameMap);
+            beanNameMap = Collections.unmodifiableMap(beanNameMap);
+        }
+
+        void makeListUnmodifiable(Map<String, List<AnnotatedPropertyInfo>> map) {
+            for (String key : map.keySet()) {
+                map.put(key, Collections.unmodifiableList(map.get(key)));
+            }
+        }
+
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(AnnotatedPropertyUtil.class);
+
+    private static final ConcurrentHashMap<String, AnnotatedPropertyInfoMap> propertiesMapCache = new ConcurrentHashMap<>();
 
     // TODO allow method property to override field property to avoid duplicated properties
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static List<AnnotatedPropertyInfo> retrieveProperties(Class cls) {
+    private static AnnotatedPropertyInfoMap retrievePropertiesMap(Class cls) {
+        String cacheKey = cls.getName();
+        AnnotatedPropertyInfoMap map = propertiesMapCache.get(cacheKey);
+        if (map == null) {
+            List<AnnotatedPropertyInfo> infoList = new LinkedList<>();
+            Set<String> beanPropertyNameSet = new HashSet<>();
 
-        List<AnnotatedPropertyInfo> infoList = new LinkedList<>();
+            Method[] mtds = cls.getMethods();
+            for (Method method : mtds) {
+                List<Annotation> annoList = ConvertableAnnotationRetriever.retrieveAnnotationHierarchyList(AnnotatedProperty.class,
+                        method.getAnnotations());
 
-        List<Field> list = new ArrayList<>(ClassUtil.retrieveAllFieldsIncludeAllSuperClasses(cls));
-        Iterator<Field> it = list.iterator();
-
-        while (it.hasNext()) {
-            Field f = it.next();
-            List<Annotation> annoList = ConvertableAnnotationRetriever.retrieveAnnotationHierarchyList(AnnotatedProperty.class,
-                    f.getAnnotations());
-            if (CollectionUtils.isNotEmpty(annoList)) {
-                AnnotatedProperty ap = (AnnotatedProperty) annoList.get(0);// must by
-                String name = ap.name();
-                if (StringUtils.isEmpty(name)) {
-                    name = f.getName();
+                if (CollectionUtils.isEmpty(annoList)) {
+                    continue;
                 }
 
                 AnnotatedPropertyInfo info = new AnnotatedPropertyInfo();
                 info.setAnnotations(annoList);
-                info.setBeanPropertyName(f.getName());
+
+                boolean isGet = false;
+                boolean isSet = false;
+                String propertySuffixe = method.getName();
+                if (propertySuffixe.startsWith("set")) {
+                    propertySuffixe = propertySuffixe.substring(3);
+                    isSet = true;
+                } else if (propertySuffixe.startsWith("get")) {
+                    propertySuffixe = propertySuffixe.substring(3);
+                    isGet = true;
+                } else if (propertySuffixe.startsWith("is")) {
+                    propertySuffixe = propertySuffixe.substring(2);
+                    isSet = true;
+                } else {
+                    String msg = String.format("Method [%s]:[%s] can not be treated as a getter or setter method.", cls.getName(),
+                            method.toGenericString());
+                    throw new RuntimeException(msg);
+                }
+
+                char[] cs = propertySuffixe.toCharArray();
+                cs[0] = Character.toLowerCase(cs[0]);
+                info.setBeanPropertyName(new String(cs));
+
+                AnnotatedProperty ap = (AnnotatedProperty) annoList.get(0);// must by
+                String name = ap.name();
+                if (StringUtils.isEmpty(name)) {
+                    name = info.getBeanPropertyName();
+                }
+
                 info.setName(name);
-                info.setField(f);
-                info.setGetter(null);
-                info.setSetter(null);
-                info.setType(f.getType());
+
+                if (isGet) {
+                    info.setGetter(method);
+                    info.setType(method.getReturnType());
+                    String setterName = "set" + propertySuffixe;
+                    Method setter = null;
+                    try {
+                        setter = cls.getMethod(setterName, method.getReturnType());
+                    } catch (NoSuchMethodException | SecurityException e) {
+                        String msg = "Could not find setter method:[{}({})] in class[{}] for annotated getter:[{}]";
+                        logger.warn(msg, new Object[] { setterName, method.getReturnType().getName(), cls.getName(), method.getName() });
+                    }
+                    info.setSetter(setter);
+                }
+
+                if (isSet) {
+                    info.setSetter(method);
+                    info.setType(method.getParameterTypes()[0]);
+                    String getterName = "get" + propertySuffixe;
+                    Method getter = null;
+                    try {
+                        getter = cls.getMethod(getterName);
+                    } catch (NoSuchMethodException | SecurityException e) {
+                        String msg = "Could not find getter method:[{}:{}] in class[{}] for annotated setter:[{}]";
+                        logger.warn(msg, new Object[] { getterName, method.getReturnType().getName(), cls.getName(), method.getName() });
+                    }
+                    info.setGetter(getter);
+                }
+
                 infoList.add(info);
+                beanPropertyNameSet.add(info.getBeanPropertyName());
+            }
+
+            List<Field> list = new ArrayList<>(ClassUtil.retrieveAllFieldsIncludeAllSuperClasses(cls));
+            Iterator<Field> it = list.iterator();
+
+            while (it.hasNext()) {
+                Field f = it.next();
+                List<Annotation> annoList = ConvertableAnnotationRetriever.retrieveAnnotationHierarchyList(AnnotatedProperty.class,
+                        f.getAnnotations());
+                if (CollectionUtils.isNotEmpty(annoList)) {
+                    AnnotatedProperty ap = (AnnotatedProperty) annoList.get(0);// must by
+
+                    String beanPropertyName = f.getName();
+                    if (beanPropertyNameSet.contains(beanPropertyName)) {
+                        continue;
+                    }
+
+                    String name = ap.name();
+                    if (StringUtils.isEmpty(name)) {
+                        name = f.getName();
+                    }
+
+                    AnnotatedPropertyInfo info = new AnnotatedPropertyInfo();
+                    info.setAnnotations(annoList);
+                    info.setBeanPropertyName(beanPropertyName);
+                    info.setName(name);
+                    info.setField(f);
+                    info.setGetter(null);
+                    info.setSetter(null);
+                    info.setType(f.getType());
+                    infoList.add(info);
+                }
+            }
+
+            map = new AnnotatedPropertyInfoMap(infoList);
+            if (Configuration.getConfiguration().isCacheEnable()) {
+                propertiesMapCache.put(cacheKey, map);
             }
         }
-
-        Method[] mtds = cls.getMethods();
-        for (Method method : mtds) {
-            List<Annotation> annoList = ConvertableAnnotationRetriever.retrieveAnnotationHierarchyList(AnnotatedProperty.class,
-                    method.getAnnotations());
-
-            if (CollectionUtils.isEmpty(annoList)) {
-                continue;
-            }
-
-            AnnotatedPropertyInfo info = new AnnotatedPropertyInfo();
-            info.setAnnotations(annoList);
-
-            boolean isGet = false;
-            boolean isSet = false;
-            String propertySuffixe = method.getName();
-            if (propertySuffixe.startsWith("set")) {
-                propertySuffixe = propertySuffixe.substring(3);
-                isSet = true;
-            } else if (propertySuffixe.startsWith("get")) {
-                propertySuffixe = propertySuffixe.substring(3);
-                isGet = true;
-            } else if (propertySuffixe.startsWith("is")) {
-                propertySuffixe = propertySuffixe.substring(2);
-                isSet = true;
-            } else {
-                String msg = String.format("Method [%s]:[%s] can not be treated as a getter or setter method.", cls.getName(),
-                        method.toGenericString());
-                throw new RuntimeException(msg);
-            }
-
-            char[] cs = propertySuffixe.toCharArray();
-            cs[0] = Character.toLowerCase(cs[0]);
-            info.setBeanPropertyName(new String(cs));
-
-            AnnotatedProperty ap = (AnnotatedProperty) annoList.get(0);// must by
-            String name = ap.name();
-            if (StringUtils.isEmpty(name)) {
-                name = info.getBeanPropertyName();
-            }
-
-            info.setName(name);
-
-            if (isGet) {
-                info.setGetter(method);
-                info.setType(method.getReturnType());
-                String setterName = "set" + propertySuffixe;
-                Method setter = null;
-                try {
-                    setter = cls.getMethod(setterName, method.getReturnType());
-                } catch (NoSuchMethodException | SecurityException e) {
-                    String msg = "Could not find setter method:[{}({})] in class[{}] for annotated getter:[{}]";
-                    logger.warn(msg, new Object[] { setterName, method.getReturnType().getName(), cls.getName(), method.getName() });
-                }
-                info.setSetter(setter);
-            }
-
-            if (isSet) {
-                info.setSetter(method);
-                info.setType(method.getParameterTypes()[0]);
-                String getterName = "get" + propertySuffixe;
-                Method getter = null;
-                try {
-                    getter = cls.getMethod(getterName);
-                } catch (NoSuchMethodException | SecurityException e) {
-                    String msg = "Could not find getter method:[{}:{}] in class[{}] for annotated setter:[{}]";
-                    logger.warn(msg, new Object[] { getterName, method.getReturnType().getName(), cls.getName(), method.getName() });
-                }
-                info.setGetter(getter);
-            }
-
-            infoList.add(info);
-        }
-
-        return ListConvertUtil.transform(infoList, new RowConvertor<AnnotatedPropertyInfo, AnnotatedPropertyInfo>() {
-
-            @Override
-            public AnnotatedPropertyInfo convert(int rowIndex, AnnotatedPropertyInfo info) {
-                return new ReadOnlyAnnotatedPropertyInfo(info);
-            }
-        });
+        return map;
     }
 
     @SuppressWarnings("rawtypes")
-    public static AnnotatedPropertyInfo retrievePropertyByName(Class cls, final String name) {
-        List<AnnotatedPropertyInfo> list = retrieveProperties(cls);
-        return CollectionUtils.find(list, new Predicate<AnnotatedPropertyInfo>() {
-            @Override
-            public boolean evaluate(AnnotatedPropertyInfo info) {
-                return info.getName().equals(name);
-            }
-        });
+    public static List<AnnotatedPropertyInfo> retrieveProperties(Class cls) {
+        AnnotatedPropertyInfoMap map = retrievePropertiesMap(cls);
+        return map.list;
     }
 
     @SuppressWarnings("rawtypes")
-    public static AnnotatedPropertyInfo retrievePropertyByBeanPropertyName(Class cls, final String name) {
-        List<AnnotatedPropertyInfo> list = retrieveProperties(cls);
-        return CollectionUtils.find(list, new Predicate<AnnotatedPropertyInfo>() {
-            @Override
-            public boolean evaluate(AnnotatedPropertyInfo info) {
-                return info.getBeanPropertyName().equals(name);
-            }
-        });
+    public static List<AnnotatedPropertyInfo> retrievePropertyByName(Class cls, final String name) {
+        AnnotatedPropertyInfoMap map = retrievePropertiesMap(cls);
+        return map.nameMap.get(name);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static List<AnnotatedPropertyInfo> retrievePropertyByBeanPropertyName(Class cls, final String name) {
+        AnnotatedPropertyInfoMap map = retrievePropertiesMap(cls);
+        return map.beanNameMap.get(name);
+    }
+
+    public static void assignValueByName(Object instance, String name, Object value)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        List<AnnotatedPropertyInfo> list = retrievePropertyByName(instance.getClass(), name);
+        assignValue(list, instance, value);
+    }
+
+    public static void assignValueByBeanPropertyName(Object instance, String name, Object value)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        List<AnnotatedPropertyInfo> list = retrievePropertyByBeanPropertyName(instance.getClass(), name);
+        assignValue(list, instance, value);
+    }
+
+    public static void assignValue(List<AnnotatedPropertyInfo> list, Object instance, Object value)
+            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        for (AnnotatedPropertyInfo p : list) {
+            p.assignValue(instance, value);
+        }
     }
 }

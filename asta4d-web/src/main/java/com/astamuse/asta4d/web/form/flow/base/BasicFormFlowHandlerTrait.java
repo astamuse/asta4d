@@ -20,6 +20,7 @@ import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -280,6 +281,7 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
         }
 
         rewriteTraceDataBeforeGoSnippet(currentStep, renderTargetStep, traceData);
+
         if (skipStoreTraceData(currentStep, renderTargetStep, traceData)) {
             clearStoredTraceData(traceId);
             traceId = "";
@@ -370,10 +372,13 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
                         continue;
                     }
 
-                    AnnotatedPropertyInfo arrayLengthField = AnnotatedPropertyUtil.retrievePropertyByName(formCls, cff.arrayLengthField());
-                    if (arrayLengthField == null) {
+                    List<AnnotatedPropertyInfo> arrayLengthFieldList = AnnotatedPropertyUtil.retrievePropertyByName(formCls,
+                            cff.arrayLengthField());
+                    if (CollectionUtils.isEmpty(arrayLengthFieldList)) {
                         throw new NullPointerException("specified array length field [" + cff.arrayLengthField() + "] was not found");
                     }
+                    // we only need one
+                    AnnotatedPropertyInfo arrayLengthField = arrayLengthFieldList.get(0);
 
                     Integer len = (Integer) arrayLengthField.retrieveValue(form);
                     if (len == null) {

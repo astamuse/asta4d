@@ -20,14 +20,17 @@ import java.lang.annotation.Annotation;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.data.TypeUnMacthPolicy;
 import com.astamuse.asta4d.data.annotation.ContextData;
+import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.annotation.CookieData;
 import com.astamuse.asta4d.web.annotation.FlashData;
@@ -61,6 +64,16 @@ public class WebSpecialScopeConvertorTest {
 
         @SessionData(name = "session", typeUnMatch = TypeUnMacthPolicy.DEFAULT_VALUE)
         public String sessionData2;
+    }
+
+    @BeforeClass
+    public void setConf() {
+        WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
+        if (conf == null) {
+            conf = new WebApplicationConfiguration();
+            conf.setCacheEnable(false);
+            Configuration.setConfiguration(conf);
+        }
     }
 
     @BeforeMethod

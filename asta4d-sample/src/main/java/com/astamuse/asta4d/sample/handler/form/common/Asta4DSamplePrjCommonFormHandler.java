@@ -28,19 +28,19 @@ import com.astamuse.asta4d.web.form.validation.FormValidator;
 public abstract class Asta4DSamplePrjCommonFormHandler<T> implements ClassicalMultiStepFormFlowHandlerTrait<T> {
 
     // we use a field to store a pre generated instance rather than create it at every time
-    private SamplePrjTypeUnMatchValidator typeValidator = new SamplePrjTypeUnMatchValidator(false);
+    private static SamplePrjTypeUnMatchValidator TypeValidator = new SamplePrjTypeUnMatchValidator(false);
 
     // as the same as type validator, we cache the value validator instance here
-    private SamplePrjValueValidator valueValidator = new SamplePrjValueValidator(false);
+    private static SamplePrjValueValidator ValueValidator = new SamplePrjValueValidator(false);
 
     @Override
     public FormValidator getTypeUnMatchValidator() {
-        return typeValidator;
+        return TypeValidator;
     }
 
     @Override
     public FormValidator getValueValidator() {
-        return valueValidator;
+        return ValueValidator;
     }
 
 }

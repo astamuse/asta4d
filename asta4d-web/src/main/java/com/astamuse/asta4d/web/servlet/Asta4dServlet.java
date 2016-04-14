@@ -38,7 +38,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
 import com.astamuse.asta4d.web.dispatch.RequestDispatcher;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
-import com.astamuse.asta4d.web.dispatch.mapping.ext.UrlMappingRuleHelper;
+import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRuleSet;
 
 /**
  * Here we are going to implement a view first mechanism of view resolving. We need a url mapping algorithm too.
@@ -64,19 +64,20 @@ public class Asta4dServlet extends HttpServlet {
             WebApplicationConfiguration asta4dConf = createConfiguration();
             createConfigurationInitializer().initConfigurationFromFile(config, asta4dConf);
             Configuration.setConfiguration(asta4dConf);
+            WebApplicationConfiguration.getWebApplicationConfiguration().getExpirableDataManager().start();
+            ruleList = createRuleList();
         } catch (Exception e) {
             throw new ServletException(e);
         }
-        WebApplicationConfiguration.getWebApplicationConfiguration().getExpirableDataManager().start();
-        ruleList = createRuleList();
     }
 
-    private List<UrlMappingRule> createRuleList() {
-        UrlMappingRuleHelper helper = new UrlMappingRuleHelper();
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private List<UrlMappingRule> createRuleList() throws InstantiationException, IllegalAccessException {
         WebApplicationConfiguration conf = WebApplicationConfiguration.getWebApplicationConfiguration();
-        conf.getUrlMappingRuleInitializer().initUrlMappingRules(helper);
+        UrlMappingRuleSet ruleSet = conf.getUrlMappingRuleSetCls().newInstance();
+        conf.getUrlMappingRuleInitializer().initUrlMappingRules(ruleSet);
         logger.info("url mapping rules are initialized.");
-        return helper.getArrangedRuleList();
+        return ruleSet.getArrangedRuleList();
     }
 
     @Override

@@ -1,0 +1,59 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+	<!-- @ShowCode:showFormStart -->
+	<afd:snippet render="form.MultiInputFormSnippet">
+		<table border=0 class="form-input-table">
+			<tr>
+				<td>name *:</td>
+				<td class="name">
+					<input name="name" type="text"/><span id="input-comment">(length &lt;=6)</span>
+					<div><span id="name-err-msg" class="label label-danger"></span></div>
+				</td>
+			</tr>
+			<tr>
+				<td>age *:</td>
+				<td class="age">
+					<input name="age" type="text"/><span id="input-comment">(&lt;=45)</span>
+					<div><span id="age-err-msg" class="label label-danger"></span></div>
+				</td>
+			</tr>
+			<tr>
+				<td>sex *:</td>
+				<td class="sex">
+					<input id="sex" name="sex" type="radio"/><label for="sex">M</label>
+					<div><span id="sex-err-msg" class="label label-danger"></span></div>
+				</td>
+			</tr>
+			<tr>
+				<td>bloodtype *:</td>
+				<td class="bloodtype">
+					<select id="bloodtype" name="bloodtype">
+						<option value="A">A</option>
+						<option value="R" afd:clear>R</option>
+					</select>
+					<div><span id="bloodtype-err-msg" class="label label-danger"></span></div>
+				</td>
+			</tr>
+			<tr>
+				<td>language *:</td>
+				<td class="language">
+					<input id="language" name="language" type="checkbox"/><label for="language">M</label>
+					<div><span id="language-err-msg" class="label label-danger"></span></div>
+				</td>
+			</tr>
+			<tr>
+				<td>memo:</td>
+				<td class="memo">
+					<textarea name="memo"></textarea>
+					<div><span id="memo-err-msg" class="label label-danger"></span></div>
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" id="id" name="id">
+	</afd:snippet>
+	<!-- @ShowCode:showFormEnd -->
+</body>
+</html>

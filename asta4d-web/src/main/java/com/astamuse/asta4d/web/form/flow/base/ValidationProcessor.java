@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 astamuse company,Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
 package com.astamuse.asta4d.web.form.flow.base;
 
 import java.util.HashSet;
@@ -25,7 +41,9 @@ public interface ValidationProcessor {
      * @return
      */
     default CommonFormResult processValidation(FormProcessData processData, Object form) {
-        List<FormValidationMessage> validationMesssages = validate(form);
+        Object validationTarget = getValidationTarget(processData, form);
+        List<FormValidationMessage> validationMesssages = validate(validationTarget);
+        validationMesssages = postValidate(validationTarget, validationMesssages);
         if (validationMesssages.isEmpty()) {
             return CommonFormResult.SUCCESS;
         } else {
@@ -33,6 +51,14 @@ public interface ValidationProcessor {
                 outputValidationMessage(msg);
             }
             return CommonFormResult.FAILED;
+        }
+    }
+
+    default Object getValidationTarget(FormProcessData processData, Object form) {
+        if (form instanceof StepAwaredValidatableForm) {
+            return ((StepAwaredValidatableForm) form).getValidationTarget(processData.getStepCurrent());
+        } else {
+            return form;
         }
     }
 
@@ -75,6 +101,10 @@ public interface ValidationProcessor {
         }
 
         return validationMessages;
+    }
+
+    default List<FormValidationMessage> postValidate(Object form, List<FormValidationMessage> msgList) {
+        return msgList;
     }
 
     /**

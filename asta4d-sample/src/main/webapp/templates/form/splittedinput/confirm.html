@@ -1,0 +1,30 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<!-- @ShowCode:showConfirmStart -->
+<afd:extension parent="/templates/form/splittedinput/formBase.html">
+	<afd:block override="heading-block">
+		Confirm
+	</afd:block>
+	<afd:block override="form-block">
+		<afd:embed target="/templates/form/splittedinput/formPerson.html"/>
+		<afd:embed target="/templates/form/splittedinput/formJob.html"/>
+	</afd:block>
+	<afd:block override="form-btns">
+		<div class="form-btn-bar">
+			<input type="hidden" name="step-current" value="confirm">
+			<input type="hidden" name="step-failed" value="input-1">
+			<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+			<button type="submit" name="step-back" class="btn btn-sm btn-default" value="input-3">back</button>
+			<button type="submit" name="step-success" class="btn btn-sm btn-default" value="complete">send</button>
+		</div>
+	</afd:block>
+<!-- @ShowCode:showConfirmEnd -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/splittedinput/confirm.html" startMark="showConfirmStart" endMark="showConfirmEnd"/>
+	</afd:block>
+</afd:extension>
+</body>
+</html>

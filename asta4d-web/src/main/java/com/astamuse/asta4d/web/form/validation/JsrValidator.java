@@ -205,7 +205,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
                 }
                 String name = node.getName();
                 if (it.hasNext()) {// not the last
-                    AnnotatedPropertyInfo field = AnnotatedPropertyUtil.retrievePropertyByBeanPropertyName(cls, name);
+                    AnnotatedPropertyInfo field = AnnotatedPropertyUtil.retrievePropertyByBeanPropertyName(cls, name).get(0);
                     CascadeFormField cff = field.getAnnotation(CascadeFormField.class);
                     if (cff == null) {
                         // regular fields
@@ -223,7 +223,7 @@ public class JsrValidator extends CommonValidatorBase implements FormValidator {
 
                     continue;
                 } else {// the last
-                    AnnotatedPropertyInfo field = AnnotatedPropertyUtil.retrievePropertyByBeanPropertyName(cls, name);
+                    AnnotatedPropertyInfo field = AnnotatedPropertyUtil.retrievePropertyByBeanPropertyName(cls, name).get(0);
                     if (field == null) {
                         // it seems we got a unexpected error
                         return new ValidationPropertyInfo(path, null, indexes);

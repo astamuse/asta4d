@@ -63,7 +63,8 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
      * @throws Exception
      */
     default Renderer render(FormRenderingData renderingData) throws Exception {
-        Renderer renderer = renderTraceId(renderingData.getTraceId());
+        Renderer renderer = preRender(renderingData);
+        renderer.add(renderTraceId(renderingData.getTraceId()));
         Object form = retrieveRenderTargetForm(renderingData);
         renderer.add(renderForm(renderingData.getRenderTargetStep(), form, EMPTY_INDEXES));
         Element clientJs = retrieveClientCascadeUtilJsContent();
@@ -72,7 +73,16 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
                 elem.appendChild(clientJs);
             });
         }
+        renderer.add(postRender(renderingData));
         return renderer;
+    }
+
+    default Renderer preRender(FormRenderingData renderingData) {
+        return Renderer.create();
+    }
+
+    default Renderer postRender(FormRenderingData renderingData) {
+        return Renderer.create();
     }
 
     /**
@@ -117,7 +127,18 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
             return render;
         }
 
+        if (form instanceof StepRepresentableForm) {
+            String[] formRepresentingSteps = ((StepRepresentableForm) form).retrieveRepresentingSteps();
+            if (ArrayUtils.contains(formRepresentingSteps, renderTargetStep)) {
+                // it is OK
+            } else {
+                return render;
+            }
+        }
+
         render.disableMissingSelectorWarning();
+
+        render.add(preRenderForm(renderTargetStep, form, indexes));
 
         List<FormFieldPrepareRenderer> fieldDataPrepareRendererList = retrieveFieldPrepareRenderers(renderTargetStep, form);
 
@@ -135,13 +156,23 @@ public interface BasicFormFlowSnippetTrait extends CascadeArrayFunctions {
             render.add(formFieldDataPrepareRenderer.postRender(renderingInfo.editSelector, renderingInfo.displaySelector));
         }
 
+        render.add(postRenderForm(renderTargetStep, form, indexes));
+
         return render.enableMissingSelectorWarning();
+    }
+
+    default Renderer preRenderForm(String renderTargetStep, Object form, int[] indexes) throws Exception {
+        return Renderer.create();
+    }
+
+    default Renderer postRenderForm(String renderTargetStep, Object form, int[] indexes) throws Exception {
+        return Renderer.create();
     }
 
     /**
      * 
-     * PriorRenderMethod the value of all the given form's fields.The rendering of cascade forms will be done here as well(recursively call the
-     * {@link #renderForm(String, Object, int)}).
+     * PriorRenderMethod the value of all the given form's fields.The rendering of cascade forms will be done here as well(recursively call
+     * the {@link #renderForm(String, Object, int)}).
      * 
      * @param renderTargetStep
      * @param form

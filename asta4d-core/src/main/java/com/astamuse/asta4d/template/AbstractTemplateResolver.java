@@ -52,7 +52,7 @@ public abstract class AbstractTemplateResolver extends MultiSearchPathResourceLo
             // be probably initialized for hundreds times
             // thus there will be hundreds logs of template initializing in info
             // level.
-            String key = TemplateResolver.class.getName() + "##template-cache-map";
+            String key = this.getClass().getName() + "##template-cache-map";
             MemorySafeResourceCache<String, Template> contextCachedMap = context.getData(key);
             if (contextCachedMap == null) {
                 contextCachedMap = new MemorySafeResourceCache<>();

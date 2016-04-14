@@ -145,8 +145,8 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         Locale locale = LocalizeUtil.defaultWhenNull(null);
         String staticFileInfoKey = LocalizeUtil.createLocalizedKey(path, locale);
 
-        ResouceHolder<StaticFileInfo> cachedResource = Configuration.getConfiguration().isCacheEnable() ? StaticFileInfoMap
-                .get(staticFileInfoKey) : null;
+        ResouceHolder<StaticFileInfo> cachedResource = Configuration.getConfiguration().isCacheEnable()
+                ? StaticFileInfoMap.get(staticFileInfoKey) : null;
 
         StaticFileInfo info = null;
 
@@ -203,6 +203,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
             if (data == null) {
                 InputStream input = BinaryDataUtil.retrieveInputStreamByPath(servletContext, this.getClass().getClassLoader(),
                         info.actualPath);
+                // if we went to here, which means we are not overing the cache size limit, so we do not need to check null.
                 data = retrieveBytesFromInputStream(input, info.cacheLimit);
                 info.content = new SoftReference<byte[]>(data);
             }
@@ -220,8 +221,8 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         }
     }
 
-    private StaticFileInfo createInfo(final ServletContext servletContext, Locale locale, String path) throws FileNotFoundException,
-            IOException {
+    private StaticFileInfo createInfo(final ServletContext servletContext, Locale locale, String path)
+            throws FileNotFoundException, IOException {
 
         MultiSearchPathResourceLoader<Pair<String, InputStream>> loader = new MultiSearchPathResourceLoader<Pair<String, InputStream>>() {
             @Override
@@ -253,29 +254,44 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
 
         if (info.cacheLimit == 0) {// don't cache
             info.content = null;
+            // we will use the retrieved input stream at the first time for performance reason
             info.firstTimeInput = foundResource.getRight();
         } else {
             byte[] contentData = retrieveBytesFromInputStream(foundResource.getRight(), info.cacheLimit);
-            try {
-                info.content = new SoftReference<byte[]>(contentData);
-            } finally {
-                foundResource.getRight().close();
+            if (contentData == null) {// we cannot cache it due to over limited size
+                // fallback to no cache case
+                info.content = null;
+                info.firstTimeInput = null;
+            } else {
+                try {
+                    info.content = new SoftReference<byte[]>(contentData);
+                } finally {
+                    foundResource.getRight().close();
+                }
+                info.firstTimeInput = null;
             }
-            info.firstTimeInput = null;
         }
         return info;
     }
 
     private byte[] retrieveBytesFromInputStream(InputStream input, int cacheSize) throws IOException {
         byte[] b = new byte[cacheSize];
+        int len = input.read(b);
         if (input.read() >= 0) {// over the limit of cache size
             return null;
         } else {
-            return b;
+            if (len < cacheSize) {
+                byte[] nb = new byte[len];
+                System.arraycopy(b, 0, nb, 0, len);
+                return nb;
+            } else {// going to buy lottery
+                return b;
+            }
         }
     }
 
     private final static Map<String, String> MimeTypeMap = new HashMap<>();
+
     static {
         MimeTypeMap.put("js", "application/javascript");
         MimeTypeMap.put("css", "text/css");
@@ -370,7 +386,7 @@ public class StaticResourceHandler extends AbstractGenericPathHandler {
         Integer varCacheSize = Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_PATHVAR,
                 VAR_CONTENT_CACHE_SIZE_LIMIT_K);
         if (varCacheSize != null) {
-            return varCacheSize;
+            return varCacheSize * 1000;
         } else {
             return 0;
         }

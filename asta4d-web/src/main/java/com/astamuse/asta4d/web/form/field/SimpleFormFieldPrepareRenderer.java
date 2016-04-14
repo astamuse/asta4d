@@ -36,7 +36,7 @@ public abstract class SimpleFormFieldPrepareRenderer implements FormFieldPrepare
 
     @SuppressWarnings("rawtypes")
     public SimpleFormFieldPrepareRenderer(Class cls, String fieldName) {
-        this(AnnotatedPropertyUtil.retrievePropertyByName(cls, fieldName));
+        this(AnnotatedPropertyUtil.retrievePropertyByName(cls, fieldName).get(0));
     }
 
     /**

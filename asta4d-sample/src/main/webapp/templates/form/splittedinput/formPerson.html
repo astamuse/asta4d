@@ -1,0 +1,53 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+	<!-- @ShowCode:showFormStart -->
+	<afd:snippet render="form.SplittedInputFormSnippet">
+		<table border=0 class="form-input-table">
+			<tr id="name-container">
+				<td>name *:</td>
+				<td class="name">
+					<input name="name" type="text"/><span id="input-comment">(length &lt;=6)</span>
+				</td>
+			</tr>
+			<tr id="age-container">
+				<td>age *:</td>
+				<td class="age">
+					<input name="age" type="text"/><span id="input-comment">(&lt;=45)</span>
+				</td>
+			</tr>
+			<tr id="sex-container">
+				<td>sex *:</td>
+				<td class="sex">
+					<input id="sex" name="sex" type="radio"/><label for="sex">M</label>
+				</td>
+			</tr>
+			<tr id="bloodtype-container">
+				<td>bloodtype *:</td>
+				<td class="bloodtype">
+					<select id="bloodtype" name="bloodtype">
+						<option value="A">A</option>
+						<option value="R" afd:clear>R</option>
+					</select>
+				</td>
+			</tr>
+			<tr id="language-container">
+				<td>language *:</td>
+				<td class="language">
+					<input id="language" name="language" type="checkbox"/><label for="language">M</label>
+				</td>
+			</tr>
+			<tr id="memo-container">
+				<td>memo:</td>
+				<td class="memo">
+					<textarea name="memo"></textarea>
+				</td>
+			</tr>
+		</table>
+		<input type="hidden" id="id" name="id">
+	</afd:snippet>
+	<!-- @ShowCode:showFormEnd -->
+</body>
+</html>

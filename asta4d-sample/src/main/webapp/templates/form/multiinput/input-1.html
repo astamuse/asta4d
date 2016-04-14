@@ -1,0 +1,36 @@
+<html>
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<!-- @ShowCode:showInput1Start -->
+<afd:extension parent="/templates/form/multiinput/formBase.html">
+	<afd:block override="heading-block">
+		Input -Personal Info-
+	</afd:block>
+	<afd:block override="form-block">
+		<afd:embed target="/templates/form/multiinput/formPerson.html"/>
+	</afd:block>
+	<afd:block override="form-btns">
+		<div class="form-btn-bar">
+			<input type="hidden" name="step-current" value="input-1">
+			<input type="hidden" name="step-failed" value="input-1">
+			<button type="submit" name="step-exit" class="btn btn-sm btn-default" value="exit">cancel</button>
+			<button type="submit" name="step-back" class="btn btn-sm btn-default" value="input-1" style="visibility: hidden">back</button>
+			<button type="submit" name="step-success" class="btn btn-sm btn-default" value="input-2">next</button>
+		</div>
+	</afd:block>
+<!-- @ShowCode:showInput1End -->
+	<afd:block append="source-block">
+		<div afd:render="ShowCodeSnippet:showCode" file="/UrlRules.java" startMark="showMultiInputStart" endMark="showMultiInputEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multiinput/formBase.html" startMark="showFormStart" endMark="showFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multiinput/input-1.html" startMark="showInput1Start" endMark="showInput1End"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/templates/form/multiinput/formPerson.html" startMark="showFormStart" endMark="showFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/snippet/form/MultiInputFormSnippet.java" startMark="showSplittedFormSnippetStart" endMark="showSplittedFormSnippetEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/multiinput/MultiInputFormHandler.java" startMark="showSplittedFormHandlerStart" endMark="showSplittedFormHandlerEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/multiinput/MultiInputForm.java" startMark="showSplittedFormStart" endMark="showSplittedFormEnd"/>
+		<div afd:render="ShowCodeSnippet:showCode" file="/handler/form/PersonForm.java" startMark="showPersonFormStart" endMark="showPersonFormEnd"/>
+	</afd:block>
+</afd:extension>
+</body>
+</html>

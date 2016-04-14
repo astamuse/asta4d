@@ -1,5 +1,7 @@
 ## News
 
+- 2016-04-13, 1.2-M1 with some essential enhancements is released.
+- 2016-01-22, [asta4d-ide](https://github.com/astamuse/asta4d-ide) is release to accelerate our development with asta4d. 
 - 2015-12-25, 1.1 official release "1.1-Xmas" is released. 
 - 2015-12-17, the scala extension for asta4d [asta4d-scala](https://github.com/astamuse/asta4d-scala) is released. 
 - 2015-10-27, the 1.1-b3 with minor bug fixes is released.
@@ -8,6 +10,8 @@
 - 2015-02-14, the first official release "1.0-Valentines" is released at the Valentine's day!
 
 ## Quick start
+
+**NOTE: There are some breaking changes related to form flow and url initialization in the recent release of 1.2-M1. The user guide will be modified in the next release, thus there may be some unmatched contents in the document if you use the newest 1.2-M1 instead of the previous stable version 1.1-Xmas.**
 
 [documents](http://astamuse.github.io/asta4d/1.1-Xmas/)
 

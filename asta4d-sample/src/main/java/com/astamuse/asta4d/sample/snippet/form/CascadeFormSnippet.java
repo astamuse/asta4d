@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.astamuse.asta4d.sample.handler.form.EducationForm;
 import com.astamuse.asta4d.sample.handler.form.PersonForm;
+import com.astamuse.asta4d.sample.handler.form.cascade.EducationForm;
 import com.astamuse.asta4d.sample.util.persondb.Person.BloodType;
 import com.astamuse.asta4d.sample.util.persondb.Person.Language;
 import com.astamuse.asta4d.sample.util.persondb.Person.SEX;
