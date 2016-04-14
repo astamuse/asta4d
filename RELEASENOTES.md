@@ -1,5 +1,26 @@
 ## Release Notes
 
+-   1.2-M1 (2016.04.14)
+
+    There are some breaking changes related to form flow and url initialization. The user guide will be modified in the next release, thus there may be some unmatched contents in the document.
+
+    ADD
+    - add pathVar method to HandyRule to avoid literal name conflict in scala (var is the reversed word of scala)
+    - add cache support to AnnotatedPropertyUtil which makes injection and form process x times faster than before
+    - add sitecategory/SiteCategoryAwaredPathConvertor to make site category awared mechanism more easy to extend
+
+    FIX
+
+    - missing resource files in java source folder for package
+    - initialization should respect the item order in configuration file
+    - cache issue in AbstractTemplateResolver at debug mode(when cache disabled)
+    - static resource files are not responded correctly when cache size limit is set.
+
+    ENHANCE
+    - more flexible built-in multiple input steps form flow
+    - allow more eazily to extend the built-in handy rule DSL(also renamed UrlRuleMappingHelper to UrlRuleSet).
+
+
 -   1.1-Xmas (2015.12.25)
     
     ADD
