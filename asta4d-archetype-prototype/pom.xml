@@ -3,7 +3,7 @@
 
   <groupId>com.asta4d</groupId>
   <artifactId>asta4d-archetype-prototype</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2-M1</version>
   <packaging>war</packaging>
 
   <name>com.asta4d.asta4d-archetype-prototype</name>
