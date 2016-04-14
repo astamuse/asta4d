@@ -1,0 +1,662 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>11.&nbsp;Details of snippet class</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="prev" href="chapter-detail-template.html" title="10.&nbsp;Details of Template"><link rel="next" href="chapter-detail-var-injection.html" title="12.&nbsp;Variable injection"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">11.&nbsp;Details of snippet class</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-detail-template.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;III.&nbsp;Reference</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-var-injection.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-snippet"></a>11.&nbsp;Details of snippet class</h2></div></div></div>
+  
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e873"></a>11.1.&nbsp;Rendering APIs</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e877">11.1.1. Create and add Renderer instance</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#css-selector">11.1.2. CSS Selector</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1097">11.1.3. Render text</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1105">11.1.4. Render DOM attribution</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1142">11.1.5. Clear an Element</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1149">11.1.6. Render raw Element</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1156">11.1.7. Arbitrary rendering for an Element</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1166">11.1.8. Recursive rendering</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1171">11.1.9. Debug renderer</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1177">11.1.10. Missing selector warning</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1185">11.1.11. List rendering</a></span></dt></dl></div>
+    
+    <p>Asta4D provides various rendering APIs to help developers render value to the page. By those APIs, developer can render
+    text under a DOM element, set the attribute value for a DOM element, also can convert a list data to a list of DOM element,
+    and also other various manipulation on DOM elements.
+    </p>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e877"></a>11.1.1.&nbsp;Create and add Renderer instance</h3></div></div></div>
+      
+      <p>There are almost same two sets of overloaded methods: create and add. The create methods are static and can be
+      used to create a Renderer instance. The add methods are instance methods and can be used to add a implicitly created
+      Renderer instance to an existing Renderer instance. Both of the create and add methods return the created Renderer
+      instance therefore chain invoking can be performed as well.</p>
+      <div class="example"><a name="d5e880"></a><p class="title"><b>Example&nbsp;11.1.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+Renderer renderer = Renderer.create(<span class="hl-string">"#someId"</span>, <span class="hl-string">"xyz"</span>).add(<span class="hl-string">"sometag"</span>, <span class="hl-string">"hello"</span>);
+renderer.add(<span class="hl-string">".someclass"</span>, <span class="hl-string">"abc"</span>).add(<span class="hl-string">".someclass2"</span>, <span class="hl-string">"abc2"</span>);
+
+Renderer renderer2 = Renderer.create(<span class="hl-string">"#someId2"</span>, <span class="hl-string">"xyz2"</span>);
+Renderer renderer3 = Renderer.create(<span class="hl-string">"#someId3"</span>, <span class="hl-string">"xyz3"</span>);
+
+<span class="hl-comment">//add renderer2 and renderer3 to renderer</span>
+renderer.add(renderer2);
+renderer.add(renderer3);
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>Note that the order of a Renderer instance being added is significant but the target instance which a Renderer
+      is added to has no effect on the rendering order. In the following example, "add renderer2 to renderer then add renderer3 to renderer2"
+      is completely equal to "add renderer2 and renderer3 to renderer" at above example.
+      </p>
+      <div class="example"><a name="d5e883"></a><p class="title"><b>Example&nbsp;11.2.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+<span class="hl-comment">//add renderer2 to renderer then add renderer3 to renderer2</span>
+renderer.add(renderer2);
+renderer2.add(renderer3);
+
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>The following is equal too:</p>
+      <div class="example"><a name="d5e886"></a><p class="title"><b>Example&nbsp;11.3.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+<span class="hl-comment">//add renderer3 to renderer2 then add renderer2 to renderer</span>
+renderer2.add(renderer3);
+renderer.add(renderer2);
+
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>A instance of Renderer should not be considered as a single rendering declaration only, A instance of Renderer is exactly a
+      rendering chain holder, you can call add method on any instance of the chain but the added Renderer instance will be always added
+      to the tail of the chain. If the added Renderer instance is holding over than one Renderer instance in its own chain, the held chain
+      will be added to the tail of the chain of the target Renderer.</p>
+      
+      <p>There is also a non-parameter create method which can by used to create a "do nothing" Renderer for source convenience. In our
+      practice, we write the following line at the beginning of most of our snippet methods.</p>
+      <div class="example"><a name="d5e890"></a><p class="title"><b>Example&nbsp;11.4.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+Renderer renderer = Renderer.create();
+
+        </pre>
+      </div></div><br class="example-break">
+      
+      <p>In following sections, we will introduce add method only, but you should remember that there should be a equal create method for most
+      cases. You can also read the Java doc of Renderer for more details.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="css-selector"></a>11.1.2.&nbsp;CSS Selector</h3></div></div></div>
+      
+      <p>Asta4D is using a modified version of <a class="ulink" href="http://jsoup.org/" target="_top">jsoup library</a> to afford CSS selector function.
+      Currently, we support the following selectors:
+      </p>
+      
+      <div class="table"><a name="d5e897"></a><p class="title"><b>Table&nbsp;11.1.&nbsp;Supported selectors</b></p><div class="table-contents">
+      <table class="table" summary="Supported selectors" style="border-collapse: collapse;border-top: 1px solid ; border-bottom: 1px solid ; border-left: 1px solid ; border-right: 1px solid ; "><colgroup><col align="left" class="c1"><col align="left" class="c2"><col align="left" class="c3"></colgroup><thead><tr><th style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">Pattern</th><th style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">Matches</th><th style="border-bottom: 1px solid ; " align="left">Example</th></tr></thead><tbody><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">*</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">any element</td><td style="border-bottom: 1px solid ; " align="left">*</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">tag</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with the given tag name</td><td style="border-bottom: 1px solid ; " align="left">div</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">ns|E</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements of type E in the namespace ns</td><td style="border-bottom: 1px solid ; " align="left">fb|name finds &lt;fb:name&gt; elements</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">#id</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with attribute ID of "id"</td><td style="border-bottom: 1px solid ; " align="left">div#wrap, #logo</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">.class</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with a class name of "class"</td><td style="border-bottom: 1px solid ; " align="left">div.left, .result</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[attr]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute named "attr" (with any value)</td><td style="border-bottom: 1px solid ; " align="left">a[href], [title]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[^attrPrefix]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute name starting with "attrPrefix". Use to find elements with HTML5 datasets</td><td style="border-bottom: 1px solid ; " align="left">[^data-], div[^data-]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[attr=val]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute named "attr", and value equal to "val"</td><td style="border-bottom: 1px solid ; " align="left">img[width=500], a[rel=nofollow]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[attr^=valPrefix]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute named "attr", and value starting with "valPrefix"</td><td style="border-bottom: 1px solid ; " align="left">a[href^=http:]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[attr$=valSuffix]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute named "attr", and value ending with "valSuffix"</td><td style="border-bottom: 1px solid ; " align="left">img[src$=.png]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[attr*=valContaining]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute named "attr", and value containing "valContaining"</td><td style="border-bottom: 1px solid ; " align="left">a[href*=/search/]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">[attr~=regex]</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements with an attribute named "attr", and value matching the regular expression</td><td style="border-bottom: 1px solid ; " align="left">img[src~=(?i)\\.(png|jpe?g)]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">The above may be combined in any order</td><td style="border-bottom: 1px solid ; " align="left">div.header[title]</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-bottom: 1px solid ; " align="left">&nbsp;</td></tr><tr><td style="border-bottom: 1px solid ; " colspan="3" align="center" valign="bottom"><span class="emphasis"><em>Combinators</em></span></td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">E F</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">an F element descended from an E element</td><td style="border-bottom: 1px solid ; " align="left">div a, .logo h1</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">E &gt; F</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">an F direct child of E</td><td style="border-bottom: 1px solid ; " align="left">ol &gt; li</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">E + F</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">an F element immediately preceded by sibling E</td><td style="border-bottom: 1px solid ; " align="left">li + li, div.head + div</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">E ~ F</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">an F element preceded by sibling E</td><td style="border-bottom: 1px solid ; " align="left">h1 ~ p</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">E, F, G</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">all matching elements E, F, or G</td><td style="border-bottom: 1px solid ; " align="left">a[href], div, h3</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-bottom: 1px solid ; " align="left">&nbsp;</td></tr><tr><td style="border-bottom: 1px solid ; " colspan="3" align="center" valign="bottom"><span class="emphasis"><em>Pseudo selectors</em></span></td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:lt(n)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements whose sibling index is less than n</td><td style="border-bottom: 1px solid ; " align="left">td:lt(3) finds the first 2 cells of each row</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:gt(n)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements whose sibling index is greater than n</td><td style="border-bottom: 1px solid ; " align="left">td:gt(1) finds cells after skipping the first two</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:eq(n)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements whose sibling index is equal to n</td><td style="border-bottom: 1px solid ; " align="left">td:eq(0) finds the first cell of each row</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:has(selector)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that contains at least one element matching the selector</td><td style="border-bottom: 1px solid ; " align="left">div:has(p) finds divs that contain p elements</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:not(selector)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that do not match the selector. See also Elements.not(String)</td><td style="border-bottom: 1px solid ; " align="left">
+            <p>div:not(.logo) finds all divs that do not have the "logo" class.</p>
+            <p>div:not(:has(div)) finds divs that do not contain divs.</p>
+          </td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:contains(text)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that contains the specified text. The search is case insensitive. The text may appear in the found element, or any of its descendants.</td><td style="border-bottom: 1px solid ; " align="left">p:contains(jsoup) finds p elements containing the text "jsoup".</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:matches(regex)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements whose text matches the specified regular expression. The text may appear in the found element, or any of its descendants.</td><td style="border-bottom: 1px solid ; " align="left">td:matches(\\d+) finds table cells containing digits. div:matches((?i)login) finds divs containing the text, case insensitively.</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:containsOwn(text)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that directly contains the specified text. The search is case insensitive. The text must appear in the found element, not any of its descendants.</td><td style="border-bottom: 1px solid ; " align="left">p:containsOwn(jsoup) finds p elements with own text "jsoup".</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:matchesOwn(regex)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements whose own text matches the specified regular expression. The text must appear in the found element, not any of its descendants.</td><td style="border-bottom: 1px solid ; " align="left">td:matchesOwn(\\d+) finds table cells directly containing digits. div:matchesOwn((?i)login) finds divs containing the text, case insensitively.</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">The above may be combined in any order and with other selectors</td><td style="border-bottom: 1px solid ; " align="left">.light:contains(name):eq(0)</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">&nbsp;</td><td style="border-bottom: 1px solid ; " align="left">&nbsp;</td></tr><tr><td style="border-bottom: 1px solid ; " colspan="3" align="center" valign="bottom"><span class="emphasis"><em>Structural pseudo selectors</em></span></td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:root</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">The element that is the root of the document. In HTML, this is the html element. In a snippet method, this is the element where the current snippet method is declared. In a recursive Renderer, this is the target element which the current renderer is applied to.</td><td style="border-bottom: 1px solid ; " align="left">:root</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:nth-child(an+b)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that have an+b-1 siblings before it in the document tree, for any positive integer or zero value of n, and has a parent element. For values of a and b greater than zero, this effectively divides the element's children into groups of a elements (the last group taking the remainder), and selecting the bth element of each group. For example, this allows the selectors to address every other row in a table, and could be used to alternate the color of paragraph text in a cycle of four. The a and b values must be integers (positive, negative, or zero). The index of the first child of an element is 1.
+          In addition to this, :nth-child() can take odd and even as arguments instead. odd has the same signification as 2n+1, and even has the same signification as 2n.</td><td style="border-bottom: 1px solid ; " align="left">tr:nth-child(2n+1) finds every odd row of a table. :nth-child(10n-1) the 9th, 19th, 29th, etc, element. li:nth-child(5) the 5h li</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:nth-last-child(an+b)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that have an+b-1 siblings after it in the document tree. Otherwise like :nth-child()</td><td style="border-bottom: 1px solid ; " align="left">tr:nth-last-child(-n+2) the last two rows of a table</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:nth-of-type(an+b)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">pseudo-class notation represents an element that has an+b-1 siblings with the same expanded element name before it in the document tree, for any zero or positive integer value of n, and has a parent element</td><td style="border-bottom: 1px solid ; " align="left">img:nth-of-type(2n+1)</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:nth-last-of-type(an+b)</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">pseudo-class notation represents an element that has an+b-1 siblings with the same expanded element name after it in the document tree, for any zero or positive integer value of n, and has a parent element</td><td style="border-bottom: 1px solid ; " align="left">img:nth-last-of-type(2n+1)</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:first-child</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that are the first child of some other element.</td><td style="border-bottom: 1px solid ; " align="left">div &gt; p:first-child</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:last-child</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that are the last child of some other element.</td><td style="border-bottom: 1px solid ; " align="left">ol &gt; li:last-child</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:first-of-type</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that are the first sibling of its type in the list of children of its parent element</td><td style="border-bottom: 1px solid ; " align="left">dl dt:first-of-type</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:last-of-type</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that are the last sibling of its type in the list of children of its parent element</td><td style="border-bottom: 1px solid ; " align="left">tr &gt; td:last-of-type</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:only-child</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that have a parent element and whose parent element hasve no other element children</td><td style="border-bottom: 1px solid ; " align="left">&nbsp;</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:only-of-type</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">an element that has a parent element and whose parent element has no other element children with the same expanded element name</td><td style="border-bottom: 1px solid ; " align="left">&nbsp;</td></tr><tr><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">:empty</td><td style="border-right: 1px solid ; border-bottom: 1px solid ; " align="left">elements that have no children at all</td><td style="border-bottom: 1px solid ; " align="left">&nbsp;</td></tr><tr><td style="border-right: 1px solid ; " align="left">&nbsp;</td><td style="border-right: 1px solid ; " align="left">&nbsp;</td><td style="" align="left">&nbsp;</td></tr></tbody></table>
+      </div></div><br class="table-break">
+      <p class="remark"><em><span class="remark">Note: Because of the internal implementation of how to perform Renderer on target element, there may be unexpected temporary elements to be added into the 
+              Current DOM tree, which will be removed safely at the final stage of page production but may cause the structural pseudo selectors work incorrectly
+              (However, the :root selector can still work well).
+      </span></em></p>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1097"></a>11.1.3.&nbsp;Render text</h3></div></div></div>
+      
+      <p>add(String selector, String value) can be used to render a text under the element specified by given selector.
+      All child nodes of the target element specified by selector will be emptied and the given String value will be rendered as a single
+      text node of the target element.</p>
+      <div class="example"><a name="d5e1100"></a><p class="title"><b>Example&nbsp;11.5.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+renderer.add(<span class="hl-string">"#someId"</span>, <span class="hl-string">"xyz"</span>);
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>Long/long, Integer/int, Boolean/boolean will be treated as text rendering too.</p>
+      <div class="example"><a name="d5e1103"></a><p class="title"><b>Example&nbsp;11.6.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+renderer.add(<span class="hl-string">"#someIdForLong"</span>, <span class="hl-number">123L</span>);
+renderer.add(<span class="hl-string">"#someIdForInt"</span>, <span class="hl-number">123</span>);
+renderer.add(<span class="hl-string">"#someIdForBool"</span>, true);
+
+        </pre>
+      </div></div><br class="example-break">
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1105"></a>11.1.4.&nbsp;Render DOM attribution</h3></div></div></div>
+      
+      <p>add(String selector, String attr, String value) can be used to render attribute value of a DOM element. There are some rules will
+      be applied for the pattern of specified "attr" and "value":</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>add("+class", value)</p>
+          <p>call addClass(value) on target Element, null value will be treated as "null".</p>
+        </li><li class="listitem">
+          <p>add("-class", value)</p>
+          <p>call removeClass(value) on target Element, null value will be treated as "null".</p>
+        </li><li class="listitem">
+          <p>add("class", value)</p>
+          <p>call attr("class", value) on target Element if value is not null, for a null value, removeAttr("class") will be called.</p>
+        </li><li class="listitem">
+          <p>add("anyattr", value)</p>
+          <p>call attr("anyattr", value) on target Element if value is not null, for a null value, removeAttr("anyattr") will be called.</p>
+        </li><li class="listitem">
+          <p>add("anyattr", SpecialRenderer.Clear)</p>
+          <p>call removeAttr("anyattr") on target Element.</p>
+        </li><li class="listitem">
+          <p>add("+anyattr", value)</p>
+          <p>call attr("anyattr", value) on target Element if value is not null, for a null value, removeAttr("anyattr") will be called.</p>
+        </li><li class="listitem">
+          <p>add("+anyattr", SpecialRenderer.Clear)</p>
+          <p>call removeAttr("anyattr") on target Element.</p>
+        </li><li class="listitem">
+          <p>add("-anyattr", value)</p>
+          <p>call removeAttr("anyattr") on target Element.</p>
+        </li></ul></div>
+      
+      <p>There is also an add method for attribution rendering that accepts arbitrary data as Object type: add(String selector, String attr, Object value).
+      When the "value" is specified as a non-string value and the "attr" is specified as "+class" or "-class", A IllegalArgumentException will be thrown.
+      When an arbitrary Object value is rendered to attribute by such method, an internal object reference id will be rendered to the target attribute
+      instead of the original object since it cannot be treated as attribute string value directly. The object reference id can be used by variable injection
+      for the nested snippet rendering. See the following example, we pass a Date instance to the nested snippet method:
+      </p>
+      
+      <div class="example"><a name="d5e1134"></a><p class="title"><b>Example&nbsp;11.7.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"MySnippet:outer"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attribute">id</span>=<span class="hl-value">"inner"</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"MySnippet:inner"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;span</span> <span class="hl-attribute">id</span>=<span class="hl-value">"current-date"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/span&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+        </pre>
+        <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> MySnippet{
+
+    <span class="hl-keyword">public</span> Renderer outer(){
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#innder"</span>, <span class="hl-string">"now"</span>, <span class="hl-keyword">new</span> Date());
+    }
+    
+    <span class="hl-keyword">public</span> Renderer inner(Date now){
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#current-date"</span>, now);
+    }
+}
+
+        </pre>
+      </div></div><br class="example-break">
+      
+      <p>This mechanism can be used for parametrized embedding too. Parameters can be specified by attribution rendering 
+      in the snippet method of parent template file and can be retrieved by the snippet method of child template file as same
+      as the above example.
+      </p>
+      
+      <div class="example"><a name="d5e1138"></a><p class="title"><b>Example&nbsp;11.8.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-comment">&lt;!-- parent template --&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"MySnippet:outer"</span><span class="hl-tag">&gt;</span>
+  <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">id</span>=<span class="hl-value">"inner"</span> <span class="hl-attribute">target</span>=<span class="hl-value">"child.html"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+        </pre>
+        <pre class="programlisting">
+
+<span class="hl-comment">&lt;!-- child template --&gt;</span>
+  <span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"MySnippet:embed"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;span</span> <span class="hl-attribute">id</span>=<span class="hl-value">"current-date"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/span&gt;</span>
+  <span class="hl-tag">&lt;/div&gt;</span>
+
+        </pre>
+        <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> MySnippet{
+
+    <span class="hl-keyword">public</span> Renderer outer(){
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#innder"</span>, <span class="hl-string">"now"</span>, <span class="hl-keyword">new</span> Date());
+    }
+    
+    <span class="hl-keyword">public</span> Renderer embed(Date now){
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#current-date"</span>, now);
+    }
+}
+
+        </pre>
+      </div></div><br class="example-break">
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1142"></a>11.1.5.&nbsp;Clear an Element</h3></div></div></div>
+      
+      <p>On all the rendering methods, if the specified value is null, the target element will be removed. And there is also
+      an enumeration value of SpecialRenderer.Clear which can be used to declare a remove operation for an element too.</p>
+      <div class="example"><a name="d5e1145"></a><p class="title"><b>Example&nbsp;11.9.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-comment">//if the String value is null, the target element will be removed</span>
+String txt = null;
+Renderer.create(<span class="hl-string">"#someId"</span>, txt);
+
+        </pre>
+        <pre class="programlisting">
+
+<span class="hl-keyword">import</span> <span class="hl-keyword">static</span> com.astamuse.asta4d.render.SpecialRenderer.Clear
+
+Renderer.create(<span class="hl-string">"#someId"</span>, Clear);
+
+        </pre>
+      </div></div><br class="example-break">
+      <p class="remark"><em><span class="remark">Note that on the attribute rendering methods, if null value or SpecialRenderer.Clear are specified, as we mentioned in
+      the previous section, the target attribute will be removed and the target element will remain.</span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1149"></a>11.1.6.&nbsp;Render raw Element</h3></div></div></div>
+      
+      <p>An existing DOM element can be replaced by a new element by specifying the new element as the rendering value. The new element
+      can be generated by DOM APIs or simply parsed from raw html source.</p>
+      <div class="example"><a name="d5e1152"></a><p class="title"><b>Example&nbsp;11.10.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+Renderer renderer = Renderer.create();
+
+Element ul = <span class="hl-keyword">new</span> Element(Tag.valueOf(<span class="hl-string">"ul"</span>), <span class="hl-string">""</span>);
+List&lt;Node&gt; lis = <span class="hl-keyword">new</span> ArrayList&lt;&gt;();
+ul.appendChild(<span class="hl-keyword">new</span> Element(Tag.valueOf(<span class="hl-string">"li"</span>), <span class="hl-string">""</span>).appendText(<span class="hl-string">"This text is created by snippet.(1)"</span>));
+ul.appendChild(<span class="hl-keyword">new</span> Element(Tag.valueOf(<span class="hl-string">"li"</span>), <span class="hl-string">""</span>).appendText(<span class="hl-string">"This text is created by snippet.(2)"</span>));
+ul.appendChild(<span class="hl-keyword">new</span> Element(Tag.valueOf(<span class="hl-string">"li"</span>), <span class="hl-string">""</span>).appendText(<span class="hl-string">"This text is created by snippet.(3)"</span>));
+
+renderer.add(<span class="hl-string">"#someId"</span>, ul);
+
+String html = <span class="hl-string">"&lt;a href=\"https://github.com/astamuse/asta4d\"&gt;asta4d hp&lt;/a&gt;"</span>;
+renderer.add(<span class="hl-string">"#hp-link"</span>, ElementUtil.parseAsSingle(html));
+
+
+        </pre>
+      </div></div><br class="example-break">
+      
+      <p>There are several utility methods in ElementUtil that can help you operate DOM easier.</p>
+      <p class="remark"><em><span class="remark">ElementUtil#parseAsSingle would cause potential cross-site issues, so take care of it and make sure that you have escaped
+      all the raw html source correctly. Since Asta4D has provided plenty of rendering methods, you should try your best to avoid
+      create element from raw html source. If you have to do something on raw element level, your first option should be DOM APIs
+      and parsing raw html source should be your last alternative.</span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1156"></a>11.1.7.&nbsp;Arbitrary rendering for an Element</h3></div></div></div>
+      
+      <p>Sometimes you will want to access the rendering target on raw element level and Asta4D allow you access the rendering
+      target element by the interface of ElementSetter. ElementSetter asks the implementation of a callback method "set(Element elem)".
+      As a matter of fact, the text rendering and attribute rendering are achieved by built-in implementation of ElementSetter(TextSetter
+      and AttributeSetter).There is also another built-in ElementSetter implementation called ChildReplacer which can replace the children of rendering target
+      by given element.</p>
+      
+      <div class="example"><a name="d5e1159"></a><p class="title"><b>Example&nbsp;11.11.&nbsp;source of ChildReplacer</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> ChildReplacer <span class="hl-keyword">implements</span> ElementSetter {
+
+    <span class="hl-keyword">private</span> Element newChild;
+
+    <strong class="hl-tag" style="color: blue">/**
+     * Constructor
+     * 
+     * @param newChild
+     *            the new child node
+     */</strong>
+    <span class="hl-keyword">public</span> ChildReplacer(Element newChild) {
+        <span class="hl-keyword">this</span>.newChild = newChild;
+    }
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> set(Element elem) {
+        elem.empty();
+        elem.appendChild(newChild);
+    }
+}
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>You can regard the built-in TextSetter, AttributeSetter and ChildReplacer as
+      reference implementation in case of you need implement your own ElementSetter. Following example shows how to use ChildReplacer
+      or declare an anonymous class for ElementSetter on rendering.</p>
+      
+      <div class="example"><a name="d5e1163"></a><p class="title"><b>Example&nbsp;11.12.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+Renderer renderer = Renderer.create();
+
+renderer.add(<span class="hl-string">"#someId"</span>, <span class="hl-keyword">new</span> ChildReplacer(ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;aaa&lt;/div&gt;"</span>)));
+
+renderer.add(<span class="hl-string">"#someNode"</span>, <span class="hl-keyword">new</span> ElementSetter(){
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> set(Element elem) {
+        <span class="hl-keyword">if</span>(elem.tagName().equals(<span class="hl-string">"div"</span>)){
+            elem.addClass(<span class="hl-string">"someClass);
+</span>        }
+    }
+});
+
+
+        </pre>
+      </div></div><br class="example-break">
+
+      <p class="remark"><em><span class="remark">On element level, you can also parse element by Element#html(String html) method which will also cause potential
+      cross-site issues. As same as the raw element rendering, parsing raw html source should be your last alternative.</span></em></p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1166"></a>11.1.8.&nbsp;Recursive rendering</h3></div></div></div>
+      
+      <p>For a snippet method, the returned Renderer will be applied to the target element which declares the current snippet method.
+      In the returned Renderer chain, you can also specify recursive Renderer which is only applied to the element specified by given
+      CSS selector.</p>
+      <div class="example"><a name="d5e1169"></a><p class="title"><b>Example&nbsp;11.13.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+Renderer.create(<span class="hl-string">"#someId"</span>, Renderer.create(<span class="hl-string">"a"</span>, <span class="hl-string">"href"</span>, <span class="hl-string">"https://github.com/astamuse/asta4d"</span>));
+
+        </pre>
+      </div></div><br class="example-break">
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1171"></a>11.1.9.&nbsp;Debug renderer</h3></div></div></div>
+      
+      <p>Because the Renderer is applied after your snippet method finished, it is difficult to debug if there is something wrong. Asta4D
+      affords rendering debug function too. There are two overloaded debug method, one accepts a log message only and another accepts a log
+      message and a selector. The debug renderer will output the current status of rendering target element to log file, if the selector is
+      not specified, the whole rendering target of current snippet method will be output, if the selector is specified, only the matched child
+      elements will be output. Log level can be configured by "com.astamuse.asta4d.render.DebugRenderer".</p>
+      <div class="example"><a name="d5e1174"></a><p class="title"><b>Example&nbsp;11.14.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+<span class="hl-comment">//the whole target rendering target will be output before and after</span>
+
+renderer.addDebugger(<span class="hl-string">"before render value"</span>);
+
+renderer.add(<span class="hl-string">"#someId"</span>, value);
+
+renderer.addDebugger(<span class="hl-string">"after render value"</span>);
+
+
+<span class="hl-comment">//only the a tag element will be output before and after</span>
+
+renderer.addDebugger(<span class="hl-string">"before render value for link"</span>, <span class="hl-string">"a"</span>);
+
+renderer.add(<span class="hl-string">"a"</span>, <span class="hl-string">"href"</span>, url);
+
+renderer.addDebugger(<span class="hl-string">"after render value for link"</span>, <span class="hl-string">"a"</span>);
+
+
+        </pre>
+        <em><span class="remark">If you specified a selector on debugger but do not get any output, it usually means you specified wrong selector or the target
+        element has been removed by previous rendering or outer snippet rendering.</span></em>
+      </div></div><br class="example-break">
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1177"></a>11.1.10.&nbsp;Missing selector warning</h3></div></div></div>
+      
+      <p>If your specified selector on rendering method cannot match any element, Asta4D will output a warning message to log as <em><span class="remark">"There is no element 
+      found for selector [#someId] at [ com.astamuse.asta4d.test.render.RenderingTest$TestRender.classAttrSetting(RenderingTest.java:73) ], if it is 
+      deserved, try Renderer#disableMissingSelectorWarning() to disable this message and Renderer#enableMissingSelectorWarning could enable this 
+      warning again in your renderer chain"</span></em>.</p>
+      <p>Note that the place where the missing selector declared is output to log too, which is disabled by default since it is expensive on production
+      environment. You can enable the source row number output by Configuration#setSaveCallstackInfoOnRendererCreation.</p>
+      <p>Sometimes, the missing selector may be designed by your logic, you can disable the warning message on your rendering chain temporarily as
+      following:</p>
+      <div class="example"><a name="d5e1183"></a><p class="title"><b>Example&nbsp;11.15.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+renderer.disableMissingSelectorWarning();
+
+renderer.add(<span class="hl-string">"#notExistsId"</span>, <span class="hl-string">"abc"</span>);
+
+renderer.enableMissingSelectorWarning();
+
+        </pre>
+      </div></div><br class="example-break">
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1185"></a>11.1.11.&nbsp;List rendering</h3></div></div></div>
+      
+      <p>Asta4D does not only allow you to rendering single value to an element, but also allow you to duplicate elements by list data, which is
+      usually used to perform list rendering. java.lang.Iterable of String/Integer/Long/Boolean can be rendered directly as text rendering:</p>
+      
+      <div class="example"><a name="d5e1188"></a><p class="title"><b>Example&nbsp;11.16.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+Renderer renderer = Renderer.create();
+
+renderer.add(<span class="hl-string">"#strList"</span>, Arrays.asList(<span class="hl-string">"a"</span>, <span class="hl-string">"b"</span>, <span class="hl-string">"c"</span>));
+
+renderer.add(<span class="hl-string">"#intList"</span>, Arrays.asList(<span class="hl-number">1</span>, <span class="hl-number">2</span>, <span class="hl-number">3</span>));
+
+renderer.add(<span class="hl-string">"#longList"</span>, Arrays.asList(<span class="hl-number">1L</span>, <span class="hl-number">2L</span>, <span class="hl-number">3L</span>));
+
+renderer.add(<span class="hl-string">"#boolList"</span>, Arrays.asList(true, false, true));
+
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>On list rendering, the matched element will be duplicated times as the size of the list and the value will be rendered to each duplicated element. You
+      can also perform complex rendering for arbitrary list data by RowConvertor:</p>
+      
+      <div class="example"><a name="d5e1191"></a><p class="title"><b>Example&nbsp;11.17.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>), <span class="hl-keyword">new</span> RowConvertor&lt;Integer, Renderer&gt;() {
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> Renderer convert(<span class="hl-keyword">int</span> rowIndex, Integer obj) {
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#id"</span>, <span class="hl-string">"id-"</span> + obj).add(<span class="hl-string">"#otherId"</span>, <span class="hl-string">"otherId-"</span> + obj);
+    }
+});
+
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>Since we will return Renderer in most cases, the RowConvertor can be replaced by RowRenderer which can omit the type
+      declaration of Renderer:</p>
+      <div class="example"><a name="d5e1194"></a><p class="title"><b>Example&nbsp;11.18.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>), <span class="hl-keyword">new</span> RowRenderer&lt;Integer&gt;() {
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> Renderer convert(<span class="hl-keyword">int</span> rowIndex, Integer obj) {
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#id"</span>, <span class="hl-string">"id-"</span> + obj).add(<span class="hl-string">"#otherId"</span>, <span class="hl-string">"otherId-"</span> + obj);
+    }
+});
+
+
+        </pre>
+      </div></div><br class="example-break">
+      <p>The returned Renderer by RowConvertor/RowRenderer will be applied to each duplicated element by the given list data.</p>
+      
+      <p>On list rendering, the rendering method accepts java.lang.Iterable rather than java.util.List, which afford more flexibilities to
+      developers. Note that if the given iterable is empty, the target element will be duplicated 0 times, which means the target element
+      will be removed.</p>
+      
+      <p>Asta4D also afford parallel list rendering for you, simply use ParallelRowConvertor/ParallelRowRenderer instead of
+      RowConvertor/RowRenderer:</p>
+      
+      <div class="example"><a name="d5e1199"></a><p class="title"><b>Example&nbsp;11.19.&nbsp;</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>), <span class="hl-keyword">new</span> ParallelRowRenderer&lt;Integer&gt;() {
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> Renderer convert(<span class="hl-keyword">int</span> rowIndex, Integer obj) {
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#id"</span>, <span class="hl-string">"id-"</span> + obj).add(<span class="hl-string">"#otherId"</span>, <span class="hl-string">"otherId-"</span> + obj);
+    }
+});
+
+
+        </pre>
+      </div></div><br class="example-break">
+      
+      <p>The parallel list rendering ability is provided by an utility class called ListConvertUtil which basically provides various
+      transform methods for list data conversion like the map function in Scala/Java8. <em><span class="remark">For Java8, lambda and stream api support will
+      be added in future.</span></em></p>
+      
+      <p>The ListConvertUtil uses a thread pool to perform parallel transforming, the size of pool can be configured by
+      Configuration#listExecutorFactory#setPoolSize. There is also an import configuration of ParallelRecursivePolicy. When perform the parallel
+      list transforming recursively, thread dead lock would potentially occur, so you have to choose a policy to handle this case:</p>
+      
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>EXCEPTION</p>
+          <p>When recursive parallel list transforming is identified, throw an RuntimeException.</p>
+        </li><li class="listitem">
+          <p>CURRENT_THREAD</p>
+          <p>When recursive parallel list transforming is identified, the child transforming will be performed in the same thread of
+          parent transforming without picking up an usable thread from pool.</p>
+        </li><li class="listitem">
+          <p>NEW_THREAD</p>
+          <p>When recursive parallel list transforming is identified, the child transforming will be performed in a newly generated
+          thread out of the configured thread pool, the generated thread will be finished immediately after the child transforming
+          finished.</p>
+        </li></ul></div>
+      
+      <p>We recommend EXCEPTION or CURRENT_THREAD and the default is EXCEPTION.</p>
+      
+    </div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1215"></a>11.2.&nbsp;Other things about snippet and rendering</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1217">11.2.1. Nested snippet</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1225">11.2.2. InitializableSnippet</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1231">11.2.3. Component rendering</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1245">11.2.4. SnippetInterceptor</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1247">11.2.5. SnippetExtractor</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1249">11.2.6. SnippetResolver</a></span></dt><dt><span class="sect2"><a href="chapter-detail-snippet.html#d5e1251">11.2.7. SnippetInvoker</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1217"></a>11.2.1.&nbsp;Nested snippet</h3></div></div></div>
+      
+      <p>Snippet can be declared recursively.There is a convention that the outer snippet will always be executed on a prior order.</p>
+      <div class="example"><a name="d5e1220"></a><p class="title"><b>Example&nbsp;11.20.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"OuterSnippet"</span><span class="hl-tag">&gt;</span>
+    <span class="hl-tag">&lt;div</span> <span class="hl-attribute">id</span>=<span class="hl-value">"inner"</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"InnerSnippet"</span><span class="hl-tag">&gt;</span>  
+        <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>dummy name<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+        <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>0<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+    <span class="hl-tag">&lt;/div&gt;</span>
+<span class="hl-tag">&lt;/div&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+      <p>In the above example, the "InnerSnippet" will be executed after the "OuterSnippet" has been executed, which also means you can
+      configure the inner snippet dynamically.</p>
+      <div class="example"><a name="d5e1223"></a><p class="title"><b>Example&nbsp;11.21.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> OuterSnippet{
+
+    <span class="hl-keyword">public</span> Renderer render(){
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#inner"</span>, <span class="hl-string">"hasprofile"</span>, <span class="hl-string">"true"</span>);
+    }
+
+}
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> InnerSnippet{
+
+    <span class="hl-keyword">public</span> Renderer render(bool hasprofile){
+        <span class="hl-keyword">if</span>(hasprofile){
+            <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#name span"</span>, <span class="hl-string">"Bob"</span>).add(<span class="hl-string">"#age span"</span>, <span class="hl-number">27</span>);
+        }<span class="hl-keyword">else</span>{
+            <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"*"</span>, Clear);
+        }
+    }
+
+}
+
+      </pre>
+      </div></div><br class="example-break">
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1225"></a>11.2.2.&nbsp;InitializableSnippet</h3></div></div></div>
+      
+      <p>The snippet class instance is singleton in request scope and will be created at the first time a snippet is required. 
+      After the snippet class instance has been created, field value injection will be applied to the created instance once(About
+      detail of value injection, see the later chapter). After all the field has been injected, the framework will check whether
+      the current class implements the "InitializableSnippet" interface, if true, the init method of InitializableSnippet will
+      be invoked once.</p>
+      <div class="example"><a name="d5e1228"></a><p class="title"><b>Example&nbsp;11.22.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> InitSnippet <span class="hl-keyword">implements</span> InitializableSnippet {
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> String value;
+
+    <span class="hl-keyword">private</span> String resolvedValue;
+
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> init() <span class="hl-keyword">throws</span> SnippetInvokeException {
+        resolvedValue = value + <span class="hl-string">"-resolved"</span>;
+    }
+}
+
+      </pre>
+      </div></div><br class="example-break">
+      <p>In the above example, the field "value" will be injected after the instance is created, then the init method will be
+      applied to finish the complete initialization logic of the snippet class.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1231"></a>11.2.3.&nbsp;Component rendering</h3></div></div></div>
+      
+      <p>For the view first policy, we will treat the template files as first class things. The embed file mechanism allow you
+      separate some view blocks as independent components at template file layer. There is also a snippet class level mechanism that
+      afford you the same ability as embed file, which is called "Component".</p>
+      <p>Why we need "Component"? The embed file can only be include statically, but the "Component" is an extendible Java class
+      which can be configured by arbitrary Java code and polymorphism can be easily performed too. Basically, The "Component" mechanism
+      can help developer to build independent view component easier than static embed file.</p>
+
+      <p>The constructor of Component accepts a string value as an embed file path or an instance of Element, and also an
+      optional AttributesRequire can be specified to provide some initialization parameters as same as the parametrized embedding
+      introduced in the previous section.</p>
+      <div class="example"><a name="d5e1236"></a><p class="title"><b>Example&nbsp;11.23.&nbsp;constructors of Component</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+    <span class="hl-keyword">public</span> Component(Element elem, AttributesRequire attrs) <span class="hl-keyword">throws</span> Exception {
+        ...
+    }
+
+    <span class="hl-keyword">public</span> Component(Element elem) <span class="hl-keyword">throws</span> Exception {
+        ...
+    }
+
+    <span class="hl-keyword">public</span> Component(String path, AttributesRequire attrs) <span class="hl-keyword">throws</span> Exception {
+        ...
+    }
+
+    <span class="hl-keyword">public</span> Component(String path) <span class="hl-keyword">throws</span> Exception {
+        ...
+    }
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      <div class="example"><a name="d5e1239"></a><p class="title"><b>Example&nbsp;11.24.&nbsp;render a component</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> Renderer render(<span class="hl-keyword">final</span> String ctype) <span class="hl-keyword">throws</span> Exception {
+    <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"span"</span>, <span class="hl-keyword">new</span> Component(<span class="hl-string">"/ComponentRenderingTest_component.html"</span>, <span class="hl-keyword">new</span> AttributesRequire() {
+        <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+        <span class="hl-keyword">protected</span> <span class="hl-keyword">void</span> prepareAttributes() {
+            <span class="hl-keyword">this</span>.add(<span class="hl-string">"value"</span>, ctype);
+        }
+
+    }));
+}
+
+      </pre>
+      <p>In this example, the target element specified by the selector "span" will be completely replaced by the result of 
+      Component#toElement().</p>
+      </div></div><br class="example-break">
+      
+      <p>Commonly, we do not render a component as above example, we usually extend from Component and expose a constructor
+      with business initialization parameters or supply a group of business initialization methods, by which we can build an
+      independent view component simply.</p>
+      
+      <p>Further, Component also has a "toHtml" method which will return the html source of the component rendering result.
+      This method can be used by ajax request to acquire a dynamically rendered component.</p>
+    </div>
+
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1245"></a>11.2.4.&nbsp;SnippetInterceptor</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1247"></a>11.2.5.&nbsp;SnippetExtractor</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1249"></a>11.2.6.&nbsp;SnippetResolver</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1251"></a>11.2.7.&nbsp;SnippetInvoker</h3></div></div></div>
+      
+    </div>
+  </div>
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-detail-template.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-reference.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-var-injection.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">10.&nbsp;Details of Template&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;12.&nbsp;Variable injection</td></tr></table></div></body></html>

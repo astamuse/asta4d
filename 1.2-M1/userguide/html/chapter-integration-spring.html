@@ -1,0 +1,127 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>17.&nbsp;Integration with Spring</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="prev" href="overview.html" title="16.&nbsp;Asta4dServlet and configuration"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">17.&nbsp;Integration with Spring</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="overview.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;III.&nbsp;Reference</th><td width="20%" align="right">&nbsp;</td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-integration-spring"></a>17.&nbsp;Integration with Spring</h2></div></div></div>
+  
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="integrate-spring-ioc"></a>17.1.&nbsp;Integrate with Spring IOC</h2></div></div></div>
+    
+    <p>Asta4D can be integrated with any dependency injection mechanism. We will introduce how to integrate with Spring IOC 
+    as example.</p>
+    <p>There is a package called asta4d-spring which supplies reference implementation to show how to integrate a DI container 
+    to Asta4D. Firstly, as an alternative for Asta4dServlet introduced in the  previous chapter, SpringInitializableServlet can be 
+    used to initialize Spring configuration automatically. The web.xml file should be like following:</p>
+    
+    <div class="example"><a name="d5e1773"></a><p class="title"><b>Example&nbsp;17.1.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="hl-tag">&lt;web-app</span> <span class="hl-attribute">version</span>=<span class="hl-value">"2.5"</span> <span class="hl-attribute">xmlns</span>=<span class="hl-value">"http://java.sun.com/xml/ns/javaee"</span>
+    <span class="hl-attribute">xmlns:xsi</span>=<span class="hl-value">"http://www.w3.org/2001/XMLSchema-instance"</span>
+    <span class="hl-attribute">xsi:schemaLocation</span>=<span class="hl-value">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"</span><span class="hl-tag">&gt;</span>
+
+    <span class="hl-comment">&lt;!-- integrate with spring --&gt;</span>
+    <span class="hl-tag">&lt;servlet&gt;</span>
+        <span class="hl-tag">&lt;servlet-name&gt;</span>Asta4D Servlet<span class="hl-tag">&lt;/servlet-name&gt;</span>
+        <span class="hl-tag">&lt;servlet-class&gt;</span>com.astamuse.asta4d.misc.spring.SpringInitializableServlet<span class="hl-tag">&lt;/servlet-class&gt;</span>
+        <span class="hl-tag">&lt;init-param&gt;</span>
+            <span class="hl-tag">&lt;param-name&gt;</span>contextConfigLocation<span class="hl-tag">&lt;/param-name&gt;</span>
+            <span class="hl-tag">&lt;param-value&gt;</span>classpath:spring/configuration.xml<span class="hl-tag">&lt;/param-value&gt;</span>
+        <span class="hl-tag">&lt;/init-param&gt;</span>
+        <span class="hl-tag">&lt;load-on-startup&gt;</span>1<span class="hl-tag">&lt;/load-on-startup&gt;</span>
+    <span class="hl-tag">&lt;/servlet&gt;</span>
+
+    <span class="hl-tag">&lt;servlet-mapping&gt;</span>
+        <span class="hl-tag">&lt;servlet-name&gt;</span>Asta4D Servlet<span class="hl-tag">&lt;/servlet-name&gt;</span>
+        <span class="hl-tag">&lt;url-pattern&gt;</span>/<span class="hl-tag">&lt;/url-pattern&gt;</span>
+    <span class="hl-tag">&lt;/servlet-mapping&gt;</span>
+
+<span class="hl-tag">&lt;/web-app&gt;</span>
+
+      </pre>
+    </div></div><br class="example-break">
+    <p>Secondly, the WebApplicationConfiguration instance should be declared as a bean in spring with additional Spring special
+    configurations:</p>
+    <div class="example"><a name="d5e1776"></a><p class="title"><b>Example&nbsp;17.2.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"asta4dConfiguration"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.web.WebApplicationConfiguration"</span><span class="hl-tag">&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"snippetResolver"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"</span><span class="hl-tag">/&gt;</span>
+        <span class="hl-tag">&lt;/property&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"instanceResolverList"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;list&gt;</span>
+                <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.SpringManagedInstanceResolver"</span><span class="hl-tag">/&gt;</span>
+            <span class="hl-tag">&lt;/list&gt;</span>
+        <span class="hl-tag">&lt;/property&gt;</span>
+    <span class="hl-tag">&lt;/bean&gt;</span>
+
+      </pre>
+      <em><span class="remark">The SpringManagedSnippetResolver will retrieve snippet instance from Spring container and the SpringManagedInstanceResolver
+      will also retrieve request handler instance from Spring container. Further the SpringManagedSnippetResolver will treat the snippet
+      name in html template files as bean id.</span></em>
+    </div></div><br class="example-break">
+    <p>The following example shows a full image of Spring's configuration for Asta4D:</p>
+    <div class="example"><a name="d5e1780"></a><p class="title"><b>Example&nbsp;17.3.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-directive" style="color: maroon">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"asta4dConfiguration"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.web.WebApplicationConfiguration"</span><span class="hl-tag">&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"snippetResolver"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"</span><span class="hl-tag">/&gt;</span>
+        <span class="hl-tag">&lt;/property&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"instanceResolverList"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;list&gt;</span>
+                <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.SpringManagedInstanceResolver"</span><span class="hl-tag">/&gt;</span>
+            <span class="hl-tag">&lt;/list&gt;</span>
+        <span class="hl-tag">&lt;/property&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"pageInterceptorList"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;list&gt;</span>
+                <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.interceptor.SamplePageInterceptor"</span><span class="hl-tag">/&gt;</span>
+            <span class="hl-tag">&lt;/list&gt;</span>
+        <span class="hl-tag">&lt;/property&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"snippetInvoker"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"snippetInvoker"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.snippet.DefaultSnippetInvoker"</span><span class="hl-tag">&gt;</span>
+                <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"snippetInterceptorList"</span><span class="hl-tag">&gt;</span>
+                    <span class="hl-tag">&lt;list&gt;</span>
+                        <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.interceptor.SampleSnippetInterceptor"</span><span class="hl-tag">/&gt;</span>
+                    <span class="hl-tag">&lt;/list&gt;</span>
+                <span class="hl-tag">&lt;/property&gt;</span>
+            <span class="hl-tag">&lt;/bean&gt;</span>        
+        <span class="hl-tag">&lt;/property&gt;</span>
+        <span class="hl-tag">&lt;property</span> <span class="hl-attribute">name</span>=<span class="hl-value">"urlMappingRuleInitializer"</span><span class="hl-tag">&gt;</span>
+            <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.UrlRules"</span><span class="hl-tag">/&gt;</span>
+        <span class="hl-tag">&lt;/property&gt;</span>
+    <span class="hl-tag">&lt;/bean&gt;</span>
+    
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"ComplicatedSnippet"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.snippet.ComplicatedSnippet"</span> <span class="hl-attribute">scope</span>=<span class="hl-value">"prototype"</span><span class="hl-tag">/&gt;</span>
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"FormSnippet"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.snippet.FormSnippet"</span> <span class="hl-attribute">scope</span>=<span class="hl-value">"prototype"</span><span class="hl-tag">/&gt;</span>
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"SimpleSnippet"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.snippet.SimpleSnippet"</span> <span class="hl-attribute">scope</span>=<span class="hl-value">"prototype"</span><span class="hl-tag">/&gt;</span>
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">id</span>=<span class="hl-value">"ShowCodeSnippet"</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.snippet.ShowCodeSnippet"</span> <span class="hl-attribute">scope</span>=<span class="hl-value">"prototype"</span><span class="hl-tag">/&gt;</span>
+    
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.sample.handler.LoginHandler"</span><span class="hl-tag">/&gt;</span>
+
+      </pre>
+      <em><span class="remark">Note that Asta4D always treats snippet instance as singleton per request for field injection on snippet, 
+      so the scope of snippet beans should be "prototype" basically except there is no field injection in snippet
+      implementation. For the request handlers, "prototype" is not necessary since there is no field injection on
+      request handler.</span></em>
+    </div></div><br class="example-break">
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="integrate-spring-mvc"></a>17.2.&nbsp;Integrate with Spring MVC</h2></div></div></div>
+    
+    <p>Asta4D's template engine can be integrated to Spring MVC as view solution too. The following configuration shows how:</p>
+    <div class="example"><a name="d5e1786"></a><p class="title"><b>Example&nbsp;17.4.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateInitializer"</span><span class="hl-tag">/&gt;</span>
+    <span class="hl-tag">&lt;bean</span> <span class="hl-attribute">class</span>=<span class="hl-value">"com.astamuse.asta4d.misc.spring.mvc.SpringWebPageViewResolver"</span><span class="hl-tag">/&gt;</span>
+
+      </pre>
+    </div></div><br class="example-break">
+
+  </div>
+
+  
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="overview.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-reference.html">Up</a></td><td width="40%" align="right">&nbsp;</td></tr><tr><td width="40%" align="left" valign="top">16.&nbsp;Asta4dServlet and configuration&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;</td></tr></table></div></body></html>

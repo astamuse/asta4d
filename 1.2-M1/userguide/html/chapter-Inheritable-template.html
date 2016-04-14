@@ -1,0 +1,157 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>2.&nbsp;Flexible template</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="next" href="renderer.html" title="3.&nbsp;Renderer: easy to use, secure, testable"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">2.&nbsp;Flexible template</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="asta4d-user-guide.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="renderer.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-Inheritable-template"></a>2.&nbsp;Flexible template</h2></div></div></div>
+  
+  
+    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="inheritable-template"></a>2.1&nbsp;Inheritable template</h2></div></div></div>
+      
+      <p>
+      The template of Asta4D is inheritable, child template can override, append or insert content to certain place
+      in parent template. Let's see a sample:
+      </p>
+      <div class="example"><a name="d5e93"></a><p class="title"><b>Example&nbsp;2.1.&nbsp;parent.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;html&gt;</span>   
+    <span class="hl-tag">&lt;head&gt;</span>   
+        <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">id</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
+            <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+        <span class="hl-tag">&lt;/afd:block&gt;</span>   
+           
+        <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">id</span>=<span class="hl-value">"block2"</span><span class="hl-tag">&gt;</span>   
+            <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+        <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+        <span class="hl-tag">&lt;title&gt;</span>extension sample<span class="hl-tag">&lt;/title&gt;</span>   
+    <span class="hl-tag">&lt;/head&gt;</span>   
+    <span class="hl-tag">&lt;body&gt;</span>   
+        <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">id</span>=<span class="hl-value">"content"</span><span class="hl-tag">&gt;</span>content<span class="hl-tag">&lt;/afd:block&gt;</span>   
+    <span class="hl-tag">&lt;/body&gt;</span>   
+<span class="hl-tag">&lt;/html&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+
+      <p>Child template can declare inheritance by "afd:extension" and overriding can be declared by "afd:block":</p>
+      <div class="example"><a name="template-child"></a><p class="title"><b>Example&nbsp;2.2.&nbsp;child.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:extension</span> <span class="hl-attribute">parent</span>=<span class="hl-value">"parent.html"</span><span class="hl-tag">&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">append</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">insert</span>=<span class="hl-value">"block2"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">override</span>=<span class="hl-value">"content "</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;div&gt;</span>hello<span class="hl-tag">&lt;/div&gt;</span>   
+        <span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/templates/embed.html"</span><span class="hl-tag"> &gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+  
+<span class="hl-tag">&lt;/afd:extension&gt;</span>   
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      <p>
+      "afd:block" support 3 types action: insert, append and override. 
+      </p>
+      
+      <br>
+      
+      <p>
+      In the <a class="xref" href="chapter-Inheritable-template.html#template-child" title="Example&nbsp;2.2.&nbsp;child.html">Example&nbsp;2.2, &#8220;child.html&#8221;</a>, there is an additional declaration of including by "afd:embed" which embed 
+      the target file to the current place of the current file. Let's see the embed.html:
+      </p>
+      <div class="example"><a name="d5e104"></a><p class="title"><b>Example&nbsp;2.3.&nbsp;embed.html</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+    <span class="hl-tag">&lt;afd:block</span> <span class="hl-attribute">append</span>=<span class="hl-value">"block1"</span><span class="hl-tag">&gt;</span>   
+        <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"embed.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;/afd:block&gt;</span>   
+    <span class="hl-tag">&lt;div&gt;</span>good embed<span class="hl-tag">&lt;/div&gt;</span>   
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      <p>
+      The "afd:block" declaration in the embeded target file is available after the content of target file is inserted into the
+      <a class="xref" href="chapter-Inheritable-template.html#template-child" title="Example&nbsp;2.2.&nbsp;child.html">Example&nbsp;2.2, &#8220;child.html&#8221;</a>, all "afd:block" tags will be treated as overriding(inserting/appending) to the parent template
+      and the contents out of "afd:blocks" will be inserted at the place where the "afd:embed" is declared.
+      </p>
+      
+      <br>
+      
+      <p>After all the template files are merged, we will get the following result:</p>
+      <div class="example"><a name="d5e111"></a><p class="title"><b>Example&nbsp;2.4.&nbsp;The result of template merging:</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;html&gt;</span>   
+<span class="hl-tag">&lt;head&gt;</span>   
+       
+    <span class="hl-comment">&lt;!-- block1 --&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child1.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"embed.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+  
+    <span class="hl-comment">&lt;!-- block2 --&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"child2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+    <span class="hl-tag">&lt;link</span> <span class="hl-attribute">href</span>=<span class="hl-value">"parent2.css"</span> <span class="hl-attribute">rel</span>=<span class="hl-value">"stylesheet"</span> <span class="hl-attribute">type</span>=<span class="hl-value">"text/css"</span><span class="hl-tag"> /&gt;</span>   
+  
+    <span class="hl-tag">&lt;title&gt;</span>extension sample<span class="hl-tag">&lt;/title&gt;</span>   
+  
+<span class="hl-tag">&lt;/head&gt;</span>   
+<span class="hl-tag">&lt;body&gt;</span>   
+  
+    <span class="hl-comment">&lt;!-- content --&gt;</span>   
+    <span class="hl-tag">&lt;div&gt;</span>hello<span class="hl-tag">&lt;/div&gt;</span>   
+  
+    <span class="hl-comment">&lt;!-- embed --&gt;</span>   
+    <span class="hl-tag">&lt;div&gt;</span>good embed<span class="hl-tag">&lt;/div&gt;</span>   
+  
+<span class="hl-tag">&lt;/body&gt;</span>   
+<span class="hl-tag">&lt;/html&gt;</span>  
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      
+    </div>
+
+    <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="parametrized-embedding"></a>2.2&nbsp;Parametrized embedding</h2></div></div></div>
+      
+      
+      <p>
+      Extra parameters can be passed to the target embeded file by specifying the DOM attribute of "afd:embed" when we
+      are embeding files.
+      </p>
+      
+      <div class="example"><a name="d5e117"></a><p class="title"><b>Example&nbsp;2.5.&nbsp;Sample of parametrized embeding:</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;afd:embed</span> <span class="hl-attribute">target</span>=<span class="hl-value">"/xxx/showList.html"</span> <span class="hl-attribute">limit</span>=<span class="hl-value">"30"</span><span class="hl-tag">&gt;</span><span class="hl-tag">&lt;/afd:embed&gt;</span>
+
+      </pre>
+      </div></div><br class="example-break">
+
+      <p>
+      The "limit" parameter can be accessed by variable injection in the rendering logic of showList.html, by which we can
+      parameterize the embeding. This feature is very useful for creating a page component which encapsulates common
+      html snippets and can be controlled by the passed parameters. Basically, embeding a file in a template file
+      is similar to calling a function with(or without) arguments. Especially, the parameters are not limited to
+      specified static values in the template file, they can be valued dynamicaly at runtime too. Further, the
+      type of parameters is not restricted to the stringizable types such as String or Integer/Long, arbitrary Java type
+      can be specified dynamically at runtime. See the reference of Renering logic to learn more details. 
+      </p>
+    </div>
+
+  <p>
+  Simply, the idea of Asta4D's template system is akin to the traditional OOP model, the parent and child templates can be 
+  regarded as parent/child classes and the block can be viewed as a overridable virtual method. The embed external files can
+  be also treated as funcation calling. As a matter of fact, since arbitrary type of value can be passed to the embed files, 
+  there is actually no difference between Asta4D's embeding and common function calling.
+  </p>
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="asta4d-user-guide.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="renderer.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Part&nbsp;II.&nbsp;User Guide&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;3.&nbsp;Renderer: easy to use, secure, testable</td></tr></table></div></body></html>

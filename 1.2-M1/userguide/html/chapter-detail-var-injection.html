@@ -1,0 +1,336 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>12.&nbsp;Variable injection</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="prev" href="chapter-detail-snippet.html" title="11.&nbsp;Details of snippet class"><link rel="next" href="chapter-detail-url-rule.html" title="13.&nbsp;URL rule"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">12.&nbsp;Variable injection</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-detail-snippet.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;III.&nbsp;Reference</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-url-rule.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-var-injection"></a>12.&nbsp;Variable injection</h2></div></div></div>
+  
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="vi-context"></a>12.1.&nbsp;Context</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-var-injection.html#d5e1257">12.1.1. Context/WebApplicationContext</a></span></dt><dt><span class="sect2"><a href="chapter-detail-var-injection.html#vi-scope">12.1.2. Scope</a></span></dt><dt><span class="sect2"><a href="chapter-detail-var-injection.html#vi-ContextBindData">12.1.3. ContextBindData</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1257"></a>12.1.1.&nbsp;Context/WebApplicationContext</h3></div></div></div>
+      
+      <p>Asta4D use "Context" to manage data life cycle. The "Context" in asta4d-core supplies the basic data management mechanism
+      and the WebApplicationContext from asta4d-web afford more powerful extending for web application development. Commonly, we will
+      only use WebApplicationContext in our application. There are two ways to retrieve an instance of WebApplicationContext.</p>
+      <div class="example"><a name="d5e1260"></a><p class="title"><b>Example&nbsp;12.1.&nbsp;Retrieve an instance of WebApplicationContext by static method</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+WebApplicationContext context = Context.getCurrentThreadContext();
+
+      </pre>
+      </div></div><br class="example-break">
+      <div class="example"><a name="d5e1263"></a><p class="title"><b>Example&nbsp;12.2.&nbsp;Retrieve an instance of WebApplicationContext by injection</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> PageSnippet {
+
+    <span class="hl-keyword">public</span> Renderer render(WebApplicationContext context) {
+        ...
+    }
+}
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      <p>As the name of "getCurrentThreadContext" suggested, the context is managed per thread, and also that the context will be
+      initialized before every http request is processed and will be cleared after every http request process has finished.</p>
+      
+      <p>WebApplicationContext affords several methods to retrieving raw servlet apis and other helpful information:</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>getRequest</p>
+          <p>Return the HttpServletRequest instance of current request.</p>
+        </li><li class="listitem">
+          <p>getResponse</p>
+          <p>Return the HttpServletResponse instance of current request.</p>
+        </li><li class="listitem">
+          <p>getServletContext</p>
+          <p>Return the ServletContext instance of current request.</p>
+        </li><li class="listitem">
+          <p>getAccessURI</p>
+          <p>Return the rewritten url of current request. For details about URL rewritting, see later chapter.</p>
+        </li></ul></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="vi-scope"></a>12.1.2.&nbsp;Scope</h3></div></div></div>
+      
+      
+      <p>The context provides a mechanism to manage data by scopes. There are only 3 scopes supplied by asta4d-core's
+      Context, but the WebApplicationContext from asta4d-web supply more scopes to help web application development.</p>
+      
+      <div class="variablelist"><p class="title"><b>Available scopes(with the constant name):</b></p><dl class="variablelist"><dt><span class="term">global(SCOPE_GLOBAL)</span></dt><dd>
+            <p>The data saved in global scope can be accessed cross all the contexts, you can treat it as a static object pool.
+            </p>
+          </dd><dt><span class="term">default(SCOPE_DEFAULT)</span></dt><dd>
+            <p>The data saved in default scope can only be access by the current context.
+            </p>
+          </dd><dt><span class="term">element attribute(SCOPE_ATTR)</span></dt><dd>
+            <p>This scope is related to snippet rendering. An element attribute scope is a wrapping of element attribute. When you
+            try to retrieve data from element attribute scope, the attribute of current rendering target element will be checked and the
+            corresponding attribute value will be returned, further, if there is no corresponding attribute in the current rendering target
+            element's attributes, all the parents of current rendering target element will be checked recursively.
+            </p>
+          </dd><dt><span class="term">request(SCOPE_REQUEST)</span></dt><dd>
+            <p>The data saved in default scope can only be access in the current http request process. Note that the request scope is
+            simply delegated to the default scope and it is different from servlet api's http request attribute.
+            </p>
+          </dd><dt><span class="term">path var(SCOPE_PATHVAR)</span></dt><dd>
+            <p>Path var scope represents the variables declared in url rules.
+            </p>
+          </dd><dt><span class="term">query parameter(SCOPE_QUERYPARAM)</span></dt><dd>
+            <p>Query parameter scope represents the query parameters specified at the part after question mark in an url.</p>
+          </dd><dt><span class="term">session(SCOPE_SESSION)</span></dt><dd>
+            <p>Session scope represents the data saved in http session.</p>
+          </dd><dt><span class="term">header(SCOPE_HEADER)</span></dt><dd>
+            <p>Session scope represents the header data from a http request.</p>
+          </dd><dt><span class="term">cookie(SCOPE_COOKIE)</span></dt><dd>
+            <p>Cookie scope represents the cookie data from a http request.</p>
+          </dd><dt><span class="term">flash(SCOPE_FLASH)</span></dt><dd>
+            <p>Asta4D affords a mechanism to allow pass data to the redirected http request, which is called flash data.</p>
+          </dd></dl></div>
+
+      <p>Normally, the data saved in context can be accessed by variable injection. If you need get data manually, you can do it as
+      following:</p>      
+      <div class="example"><a name="d5e1327"></a><p class="title"><b>Example&nbsp;12.3.&nbsp;Retrieve data from context</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+WebApplicationContext context = Context.getCurrentThreadContext();
+
+<span class="hl-comment">//from default scope</span>
+Integer count = context.get(<span class="hl-string">"saved-count"</span>);
+
+<span class="hl-comment">//from session</span>
+Integer sessionCount = context.get(WebApplicationContext.SCOPE_SESSION, <span class="hl-string">"saved-count"</span>);
+
+      </pre>
+      </div></div><br class="example-break">
+
+      <p>You can implement your own customized scope or afford you customized implementation for existing scopes. You need extend from
+      WebApplicationContext then override the method called "createMapForScope".<em><span class="remark">(If you only want to split your data from default scope, you
+      can simply specify a new scope name and a new scope will be created automatically, the created scope's life cycle is as the same as
+      default scope)</span></em>
+      </p>
+      
+      <div class="example"><a name="d5e1332"></a><p class="title"><b>Example&nbsp;12.4.&nbsp;Customized memcached drived session management</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> MyContext <span class="hl-keyword">extends</span> WebApplicationContext {
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+    <span class="hl-keyword">protected</span> ContextMap createMapForScope(String scope) {
+        ContextMap map = null;
+        <span class="hl-keyword">switch</span> (scope) {
+        <span class="hl-keyword">case</span> SCOPE_SESSION: {
+            HttpServletRequest request = getRequest();
+            map = <span class="hl-keyword">new</span> MemcachedSessionMap(request);
+        <span class="hl-keyword">default</span>:
+            map = <span class="hl-keyword">super</span>.createMapForScope(scope);
+        }
+        <span class="hl-keyword">return</span> map;
+    }
+}
+
+      </pre>
+      </div></div><br class="example-break">
+      <p>See later chapter of Asta4dServerlet for how to configure Asta4D to use the customized Context implementation instead of the
+      default WebApplicationContext.</p>
+    </div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="vi-ContextBindData"></a>12.1.3.&nbsp;ContextBindData</h3></div></div></div>
+      
+      <p>Since all the data query logic are performed at snippet class, we will want to avoid duplicated query on same page
+      rendering. The recommended solution is caching your query result by cache library such as ehcache. But Asta4D also affords
+      you an alternative solution for some simple cases, which is called ContextBindData.</p>
+      
+      <p>ContextBindData can be treated as a lazy load instance field for Java class. It is warranted that a ContextBindData
+      will be initialized only once in a same Asta4D context and it will only be initialized when you first call it. There are 
+      some exceptions for the warranty about initializing only once, we will explain them later.</p>
+      
+      <div class="example"><a name="d5e1340"></a><p class="title"><b>Example&nbsp;12.5.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> PageSnippet {
+    
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> <span class="hl-keyword">int</span> count;
+
+    <span class="hl-keyword">private</span> ContextBindData&lt;Integer&gt; data = <span class="hl-keyword">new</span> ContextBindData&lt;Integer&gt;(true) {
+        <em><span class="hl-annotation" style="color: gray">@Override</span></em>
+        <span class="hl-keyword">protected</span> Integer buildData() {
+            <span class="hl-keyword">return</span> count + <span class="hl-number">1</span>;
+        }
+
+    };
+
+    <span class="hl-keyword">public</span> Renderer render() {
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"*"</span>, data.get());
+    }
+}
+
+      </pre>
+      </div></div><br class="example-break">
+      
+      <p>You should have noticed that we pass a "true" to the constructor of ContextBindData, which means we require the warranty
+      that it should be only initialize once in the current context. If we pass nothing or pass a "false" to the constructor, the buildData
+      method may be invoked multiple times in multi-thread rendering, but which is faster than warranted initialization simply because
+      of skipping the multi-thread lock process.</p>
+      
+      <p>Again, we recommend to use cache library to avoid duplicated query, but you can use ContextBindData as a simple, light weight
+      alternative. See detail of <a class="xref" href="chapter-best-practice.html#best-snippet-way" title="9.3.&nbsp;The best way of implementing a snippet">Section&nbsp;9.3, &#8220;The best way of implementing a snippet&#8221;</a>.</p>
+      
+    </div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="vi-injection"></a>12.2.&nbsp;Injection</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-var-injection.html#vi-contextdata">12.2.1. @ContextData</a></span></dt><dt><span class="sect2"><a href="chapter-detail-var-injection.html#vi-contextdataset">12.2.2. @ContextDataSet</a></span></dt><dt><span class="sect2"><a href="chapter-detail-var-injection.html#vi-ContextDataFinder">12.2.3. ContextDataFinder</a></span></dt><dt><span class="sect2"><a href="chapter-detail-var-injection.html#d5e1436">12.2.4. DataConvertor</a></span></dt><dt><span class="sect2"><a href="chapter-detail-var-injection.html#d5e1438">12.2.5. ContextDataHolder</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="vi-contextdata"></a>12.2.1.&nbsp;@ContextData</h3></div></div></div>
+      
+      <p>All fields annotated by @ContextData in a snippet class will be initialized/injected automatically when the snippet class instance is initialized.
+      Further, even the method parameters of snippet rendering method and request handle method are automatically injected, you can still customize the injection
+      by extra @ContextData annotation.</p>
+      
+      <p>Note that there are something different between field injection and method parameter injection. The fields of snippet class without @ContextData will 
+      not be injected, but method parameters will be always injected even without @ContextData.</p>
+      
+      <div class="variablelist"><p class="title"><b>Available configurations of @ContextData:</b></p><dl class="variablelist"><dt><span class="term">name</span></dt><dd>
+            <p>The name of saved data in context. If it is not specified, the field name or parameter name will be used(This requires that you reverse the parameter names
+            when compile).
+            </p>
+          </dd><dt><span class="term">scope</span></dt><dd>
+            <p>The scope of saved data in context. If it is no specified, Asta4D will try to search the data in all the scopes by a predefined order:</p>
+              <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                  <p>element attribute(SCOPE_ATTR)</p>
+                </li><li class="listitem">
+                  <p>path var(SCOPE_PATHVAR)</p>
+                </li><li class="listitem">
+                  <p>query parameter(SCOPE_QUERYPARAM)</p>
+                </li><li class="listitem">
+                  <p>flash(SCOPE_FLASH)</p>
+                </li><li class="listitem">
+                  <p>cookie(SCOPE_COOKIE)</p>
+                </li><li class="listitem">
+                  <p>hearder(SCOPE_HEADER)</p>
+                </li><li class="listitem">
+                  <p>request/default(SCOPE_REQUEST/SCOPE_DEFAULT)</p>
+                </li><li class="listitem">
+                  <p>session(SCOPE_SESSION)</p>
+                </li><li class="listitem">
+                  <p>global(SCOPE_GLOBAL)</p>
+                </li></ol></div>
+              <p>This order can be configured via WebApplicationContextDataFinder#setDataSearchScopeOrder.See details at <a class="xref" href="chapter-detail-var-injection.html#vi-ContextDataFinder" title="12.2.3.&nbsp;ContextDataFinder">Section&nbsp;12.2.3, &#8220;ContextDataFinder&#8221;</a></p>
+          </dd><dt><span class="term">typeUnMatch</span></dt><dd>
+            <p>The policy of how to handle the unmatched type on data conversion. The default action is throw Exception and another two value of "DEFAULT_VALUE" and "DEFAULT_VALUE_AND_TRACE"
+            can be specified.
+            </p>
+          </dd></dl></div>
+      
+      <p>There are several scope specified annotations can be used as convenience.</p>
+      
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>@SessionData</p>
+        </li><li class="listitem">
+          <p>@QueryParam</p>
+        </li><li class="listitem">
+          <p>@PathVar</p>
+        </li><li class="listitem">
+          <p>@HeaderData</p>
+        </li><li class="listitem">
+          <p>@CookieData</p>
+        </li><li class="listitem">
+          <p>@FlashData</p>
+        </li></ul></div>
+      
+      <p class="remark"><em><span class="remark">All the above annotation have the same configurable items with the original @ContextData annotation except being fixed with according data scope.</span></em></p>
+
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="vi-contextdataset"></a>12.2.2.&nbsp;@ContextDataSet</h3></div></div></div>
+      
+      <p>A pojo class annotated by @ContextDataSet will be treated as a variable holder. If the type of a snippet class field or a method parameter is a class annotated by
+      @ContextDataSet, when Asta4D do injection, a new instance will be created at first, then all the fields of current instance will be scanned and all the fields annotated by
+      @ContextData will be injected as same as the snippet class field injection. @ContextDataSet can be used to allocate all of the form data into one single instance as a
+      convenience.</p>
+      <div class="example"><a name="d5e1404"></a><p class="title"><b>Example&nbsp;12.6.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@ContextDataSet</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> MySet {
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> <span class="hl-keyword">long</span> f1;
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> String f2;
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">long</span> getF1() {
+        <span class="hl-keyword">return</span> f1;
+    }
+    
+    <span class="hl-keyword">public</span> String getF2() {
+        <span class="hl-keyword">return</span> f2;
+    }
+}
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> MySnippet {
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> render(MySet holder) {
+    }
+
+}
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">class</span> MySnippet2 {
+
+    <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+    <span class="hl-keyword">private</span> MySet holder;
+
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> render() {
+    }
+
+}
+
+
+
+
+      </pre>
+      <p>Note that even you declared @ContextDataSet on the class, you still need to declare the @ContextData on the field declaration. For method parameter, it is not necessary
+      since all the parameters are injected automatically. Further, for a declared @ContextDataSet, you still need to declare @ContextData on every field you want to be injected.</p>
+      </div></div><br class="example-break">
+      
+      <div class="variablelist"><p class="title"><b>Available configurations of @ContextData:</b></p><dl class="variablelist"><dt><span class="term">singletonInContext</span></dt><dd>
+            <p>A boolean value to indicate that whether the target ContextDataSet should be singleton in a single context life cycle. The default value is false, which means a new instance
+            would be created at every time when a ConextDataSet is required to inject.
+            </p>
+          </dd><dt><span class="term">factory</span></dt><dd>
+            <p>A factory class can be used to indicate how to create an instance of ContextDataSet. The default factory will call Class#newInstance() to create a new instance of ContextDataSet.
+            </p>
+          </dd></dl></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="vi-ContextDataFinder"></a>12.2.3.&nbsp;ContextDataFinder</h3></div></div></div>
+      
+      <p>Asta4D search data in context by pre configured ContextDataFinder implementation. The default implementation is WebApplicationContextDataFinder. You can supply your own
+      search mechanism by implementing the ContextDataFinder interface or extending from WebApplicationContextDataFinder. WebApplicationContextDataFinder defines the scope search
+      order if scope is not specified, and also returns some special data by hard coding type check:</p>
+      
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>Context/WebApplicationContext</p>
+        </li><li class="listitem">
+          <p>ResourceBundleHelper</p>
+        </li><li class="listitem">
+          <p>ParamMapResourceBundleHelper</p>
+        </li><li class="listitem">
+          <p>HttpServletRequest</p>
+        </li><li class="listitem">
+          <p>HttpServletResponse</p>
+        </li><li class="listitem">
+          <p>ServletContext</p>
+        </li><li class="listitem">
+          <p>UrlMappingRule</p>
+        </li></ul></div>
+      
+      <p>The first 3 types are afforded by the parent class of WebApplicationContextDataFinder: DefaultContextDataFinder. To supply your own logic, you can override the 
+      findDataInContext method and the WebApplicationContextDataFinder's source can be treated as reference implementation.</p>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1436"></a>12.2.4.&nbsp;DataConvertor</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1438"></a>12.2.5.&nbsp;ContextDataHolder</h3></div></div></div>
+      
+    </div>
+  </div>
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-detail-snippet.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-reference.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-url-rule.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">11.&nbsp;Details of snippet class&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;13.&nbsp;URL rule</td></tr></table></div></body></html>

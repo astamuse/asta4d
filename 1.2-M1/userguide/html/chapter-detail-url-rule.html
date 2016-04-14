@@ -1,0 +1,228 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>13.&nbsp;URL rule</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"><link rel="prev" href="chapter-detail-var-injection.html" title="12.&nbsp;Variable injection"><link rel="next" href="chapter-detail-form-flow.html" title="14.&nbsp;details of form flow"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">13.&nbsp;URL rule</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-detail-var-injection.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;III.&nbsp;Reference</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-form-flow.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-detail-url-rule"></a>13.&nbsp;URL rule</h2></div></div></div>
+  
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="rule-apis"></a>13.1.&nbsp;Rule apis</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-url-rule.html#UrlMappingRuleInitializer">13.1.1. UrlMappingRuleInitializer</a></span></dt><dt><span class="sect2"><a href="chapter-detail-url-rule.html#d5e1492">13.1.2. Handy rules</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="UrlMappingRuleInitializer"></a>13.1.1.&nbsp;UrlMappingRuleInitializer</h3></div></div></div>
+      
+      <p>All the url mapping rules can be supplied by implementing the UrlMappingRuleInitializer interface which can be configured by 
+      WebApplicationConfiguration#setUrlMappingRuleInitializer.</p>
+      
+      <p>UrlMappingRuleInitializer's initUrlMappingRules method does not return configured rules directly, it supply a UrlMappingRuleHelper
+      instance by parameter instead. The UrlMappingRuleHelper afford a group of methods to help developers build url mapping rules.</p>
+      
+      <p>UrlMappingRuleHelper allows add new rule by add methods, which will be discussed in next section, let us see the global configuration
+      methods of UrlMappingRuleHelper at first.</p>
+
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>addDefaultRequestHandler(Object... handlerList)</p>
+        </li><li class="listitem">
+          <p>addDefaultRequestHandler(String attribute, Object... handlerList)</p>
+          <br>
+          <p>There are two overloaded methods of addDefaultRequestHandler. Added request handlers without attribute declaration will be applied 
+          to all the rules and the ones with attribute declaration will be applied to therules with same attribute only.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>addGlobalForward(Object result, String targetPath)</p>
+        </li><li class="listitem">
+          <p>addGlobalForward(Object result, String targetPath, int status) </p>
+          <br>
+          <p>There are two overloaded methods of addGlobalForward. The one with status parameter can customize the http response code with specified
+          status code or the default code 200 will be returned to client.</p>
+          <br>
+        </li><li class="listitem">
+          <p>addGlobalRedirect(Object result, String targetPath) </p>
+          <br>
+          <p>A global redirect result mapping can be declared. There is a convention about the format of target path(the normal redirect on special rules follows
+          the same convention):</p>
+          <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+              <p>common url string("http://www.example.com/somepage.html")</p>
+              <p>The target url will be redirected as temporary(code 302).</p>
+            </li><li class="listitem">
+              <p>common url string with prefix("301:http://www.example.com/somepage.html")</p>
+              <p>The target url will be redirected as specified code by the prefix. 301 or 302 are acceptable and "p" or "t" can be used to represent "permanent"
+              or "temporary" as well(which means "301:http://www.example.com/somepage.html" equals to "p:http://www.example.com/somepage.html").</p>
+            </li></ul></div>
+          <br>
+        </li><li class="listitem">
+          <p>addRequestHandlerInterceptor(Object... interceptorList)</p>
+        </li><li class="listitem">
+          <p>addRequestHandlerInterceptor(String attribute, Object... interceptorList)</p>
+          <p><em><span class="remark">The request handler interceptor is need to be clarified more in the implementation. We skip the description at present.</span></em></p>
+          <br>
+        </li><li class="listitem">
+          <p>registerRestTransformer(ResultTransformer transformer)</p>
+        </li><li class="listitem">
+          <p>registerJsonTransformer(ResultTransformer transformer)</p>
+          <p>The returned value of a request handler which is declared as json at rule will be transformed to standard json string, and developers can still
+                register a customized result transformer to generate the response by the own way. Further, even the framework will do nothing on the returned value
+                of a handler if which is declared on a rest rule, developer can still use "registerRestTransformer" to add customized result transforming on a rule
+                declared as rest.</p>
+          <br>
+        </li><li class="listitem">
+          <p>setDefaultMethod(HttpMethod defaultMethod) </p>
+          <p>The default matching http method for url patterns without http method specified. The default value is GET.</p>
+        </li></ul></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1492"></a>13.1.2.&nbsp;Handy rules</h3></div></div></div>
+      
+      <p>There several add methods from UrlMappingRuleHelper which can be used to add new url rules. According to the certain being called add method, different
+      interface which is called handy rules will be returned for further declaration. Further, all the methods of the returned handy rule interface will return different
+      interface according to the certain method you are calling, it is complex to describe which interface will be returned on certain case, basically we suppose that 
+      the code auto completion function of you editor would help you to know what you can do in the next step.  All of these handy rules and their methods can be treated
+      as a group of DSL to help you build your own url rules for your site. We will describe all the available methods at following regardless of which certain interface
+      it belongs to. After that, we will also describe the basic rule of how the returned handy rules change.</p>
+      
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+          <p>add(String sourcePath)</p>
+        </li><li class="listitem">
+          <p>add(String sourcePath, String targetPath) </p>
+        </li><li class="listitem">
+          <p>add(HttpMethod method, String sourcePath) </p>
+        </li><li class="listitem">
+          <p>add(HttpMethod method, String sourcePath, String targetPath)</p>
+          <br>
+          <p>Add a new url rule. If the http method is not specified. the configured default method(see above setDefaultMethod) will be specified by default. If you
+          want the sourcePath is matched to all the http methods, null can be specified. The targetPath should be a template file path or a redirect target url string
+          with prefix "redirect:", the part after prefix "redirect:" follows the convention of redirect string format introduced in global redirect configuration.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>id(String id)</p>
+          <br>
+          <p>One added rule can be identified by a unique id.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>reMapTo(String ruleId)</p>
+          <br>
+          <p>Multi url patterns can be mapped to the same rule by reMapTo method. See following sample:
+          </p>
+          <div class="example"><a name="d5e1516"></a><p class="title"><b>Example&nbsp;13.1.&nbsp;Remap the rule to a existing rule</b></p><div class="example-contents">
+          <pre class="programlisting">
+
+    rules.add(<span class="hl-string">"/app/"</span>, <span class="hl-string">"/templates/index.html"</span>).id(<span class="hl-string">"index-page"</span>);
+    
+    rules.add(<span class="hl-string">"/app/index"</span>).reMapTo(<span class="hl-string">"index-page"</span>);
+    
+    rules.add(<span class="hl-string">"/app/handler"</span>).id(<span class="hl-string">"app-handler"</span>)
+         .handler(LoginHandler.<span class="hl-keyword">class</span>)
+         .handler(EchoHandler.<span class="hl-keyword">class</span>)
+         .forward(LoginFailure.<span class="hl-keyword">class</span>, <span class="hl-string">"/templates/error.html"</span>)
+         .forward(<span class="hl-string">"/templates/success.html"</span>);
+    
+    rules.add(<span class="hl-string">"/app/ex-handler"</span>).reMapTo(<span class="hl-string">"app-handler"</span>).attribute(<span class="hl-string">"ex-handler"</span>);
+        
+
+          </pre>
+          <p>In above sample, "/app/index" will be treated as same as the rule identified as "index-page" which sourc path is "/app/". Aslo the "/app/ex-handler"
+          will be configured as same as "/app/handler" with its special attribute configuration "ex-handler". Special path variable and priority can be configured to
+          remapped rules as well.</p>
+          </div></div><br class="example-break">
+          <br>
+        </li><li class="listitem">
+          <p>attribute(String attribute)</p>
+          <br>
+          <p>Multi attributes can be configured to a rule. The attributes can be used by global rule configurations to add certain extra operations on certain urls
+          which is attributed by certain attribute.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>var(String key, Object value)</p>
+          <br>
+          <p>Static path variables can be configured by this method, that can be accessed by context's path var scope and also can be automatically injected to snippets
+          or request handlers.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>handler(Object... handlerList)</p>
+          <br>
+          <p>Request handlers can be configured by this methods. Multi request handlers are acceptable and the details about multi request handlers will be explained in
+          later section.</p>
+          <p>The parameter of handler method can be arbitrary type: an instance of java.lang.Class or an arbitrary instance.  The framework explains received parameters by
+          the implementation of DeclareInstanceResolver configured by WebApplicationConfiguration. The default implementation provided by framework follows the following rules
+          to explain the declaration of request handler:</p>
+            <div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+                <p>If an instance of java.lang.Class is specified, the instance of request handler will be created by invoke "newInstance()"
+                on the specified Class.</p>
+              </li><li class="listitem">
+                <p>If a string is specified, the string will be treated as a class name and an instance of java.lang.Class will be created by 
+                calling "Class#forName", then the instance of request handler will be created by invoke "newInstance()" on the created Class.</p>
+              </li><li class="listitem">
+                <p>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
+                it is interesting that we can declare an anonymous class as a request handler:</p>
+                <div class="example"><a name="d5e1543"></a><p class="title"><b>Example&nbsp;13.2.&nbsp;</b></p><div class="example-contents">
+                  <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/handler"</span>)  
+     .handler(<span class="hl-keyword">new</span> Object(){  
+        <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>  
+        <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> handle(){  
+            <span class="hl-comment">//  </span>
+        }  
+     }); 
+
+                  </pre>
+                </div></div><br class="example-break">
+              </li></ol></div>
+            <p class="remark"><em><span class="remark">The asta4d-spring package also provides a resolver based on Spring IOC container, the request handler instance will be retrieved by
+            passing the specified parameter to the "Context#getBean" method of spring container. See details of integration of Spring IOC.</span></em></p>
+          <br>
+        </li><li class="listitem">
+          <p>forward(String targetPath)</p>
+        </li><li class="listitem">
+          <p>forward(String targetPath, int status)</p>
+        </li><li class="listitem">
+          <p>forward(Object result, String targetPath)</p>
+        </li><li class="listitem">
+          <p>forward(Object result, String targetPath, int status)</p>
+          <br>
+          <p>The request will be forwarded to the target template file with specified status code. The result parameter will be used to match the result from 
+          request handler(if there is any request handler configured for current rule).About result matching, see details in next section.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>redirect(String targetPath)</p>
+        </li><li class="listitem">
+          <p>redirect(Object result, String targetPath)</p>
+          <br>
+          <p>As the same as forward, the request will be redirected(301/302) to the target path. The target path string follows the convention  of redirect string 
+          format introduced in global redirect configuration.
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>json()</p>
+          <br>
+          <p>The result of request handler will be converted to a json string and be returned the client with MIME type "application/json".
+          </p>
+          <br>
+        </li><li class="listitem">
+          <p>rest()</p>
+          <br>
+          <p>This method does nothing for the current url by default, but declared as a hint that suggests the current rule will act as a restful api and will return customized
+          response which would be head only response in many cases.
+          </p>
+          <br>
+        </li></ul></div>
+    </div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e1575"></a>13.2.&nbsp;Request handler result process</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-detail-url-rule.html#d5e1578">13.2.1. Content provider</a></span></dt><dt><span class="sect2"><a href="chapter-detail-url-rule.html#d5e1580">13.2.2. Result transforming</a></span></dt><dt><span class="sect2"><a href="chapter-detail-url-rule.html#d5e1582">13.2.3. Request handler chain</a></span></dt></dl></div>
+    
+    <p>This section will describe some internal mechanism of how asta4d handle the result from a request handler. Especially for the part of result transforming, which is not
+    necessary for normal development but can help you understand how the request handler chain works.</p>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1578"></a>13.2.1.&nbsp;Content provider</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1580"></a>13.2.2.&nbsp;Result transforming</h3></div></div></div>
+      
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="d5e1582"></a>13.2.3.&nbsp;Request handler chain</h3></div></div></div>
+      
+    </div>
+  </div>
+
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-detail-var-injection.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-reference.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-detail-form-flow.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">12.&nbsp;Variable injection&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;14.&nbsp;details of form flow</td></tr></table></div></body></html>
