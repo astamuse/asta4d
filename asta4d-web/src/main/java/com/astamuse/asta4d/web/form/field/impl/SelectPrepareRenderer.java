@@ -23,7 +23,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
-import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
@@ -102,21 +101,15 @@ public class SelectPrepareRenderer extends SimpleFormFieldPrepareRenderer {
 
     private Renderer renderOptionGroup(String editSelector, List<OptGroup> groupList) {
         Renderer render = Renderer.create().disableMissingSelectorWarning();
-        return render.add(editSelector, Renderer.create("optGroup:eq(0)", groupList, new RowRenderer<OptGroup>() {
-            @Override
-            public Renderer convert(int rowIndex, OptGroup row) {
-                return Renderer.create("optGroup", "label", row.groupName).add(renderOptionList("optGroup", row.optionMap));
-            }
+        return render.add(editSelector, Renderer.create("optGroup:eq(0)", groupList, row -> {
+            return Renderer.create("optGroup", "label", row.groupName).add(renderOptionList("optGroup", row.optionMap));
         })).enableMissingSelectorWarning();
     }
 
     private Renderer renderOptionList(String editSelector, final OptionValueMap valueMap) {
 
-        return Renderer.create(editSelector, Renderer.create("option:eq(0)", valueMap.getOptionList(), new RowRenderer<OptionValuePair>() {
-            @Override
-            public Renderer convert(int rowIndex, OptionValuePair row) {
-                return Renderer.create("option", "value", row.getValue()).add("option", row.getDisplayText());
-            }
+        return Renderer.create(editSelector, Renderer.create("option:eq(0)", valueMap.getOptionList(), row -> {
+            return Renderer.create("option", "value", row.getValue()).add("option", row.getDisplayText());
         }));
     }
 

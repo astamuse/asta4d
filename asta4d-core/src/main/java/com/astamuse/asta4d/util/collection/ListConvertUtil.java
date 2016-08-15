@@ -97,27 +97,28 @@ public class ListConvertUtil {
                     public Future<T> convert(int rowIndex, final T obj) {
                         return new Future<T>() {
                             @Override
-                            public boolean cancel(boolean mayInterruptIfRunning) {
+                            public final boolean cancel(boolean mayInterruptIfRunning) {
                                 return false;
                             }
 
                             @Override
-                            public boolean isCancelled() {
+                            public final boolean isCancelled() {
                                 return false;
                             }
 
                             @Override
-                            public boolean isDone() {
+                            public final boolean isDone() {
                                 return true;
                             }
 
                             @Override
-                            public T get() throws InterruptedException, ExecutionException {
+                            public final T get() throws InterruptedException, ExecutionException {
                                 return obj;
                             }
 
                             @Override
-                            public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                            public final T get(long timeout, TimeUnit unit)
+                                    throws InterruptedException, ExecutionException, TimeoutException {
                                 return obj;
                             }
                         };
@@ -138,7 +139,7 @@ public class ListConvertUtil {
             default:
                 return Collections.emptyList();
             }
-        } else {// not in recursive converting
+        } else {// in non recursive converting
             Context newContext = context.clone();
             newContext.setData(ParallelListConversionMark, Boolean.TRUE);
             try {
@@ -160,16 +161,10 @@ public class ListConvertUtil {
                         return futureList;
                     }
                 });
-            } catch (
-
-            Exception e)
-
-            {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-        }
-
+        } // end else in non recursive
     }
 
     private static <S, T> Future<T> invokeByExecutor(ExecutorService es, RowConvertor<S, T> convertor, final int rowIndex, final S data) {

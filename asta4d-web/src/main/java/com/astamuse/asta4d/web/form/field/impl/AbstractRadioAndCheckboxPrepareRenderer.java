@@ -35,15 +35,13 @@ import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.util.IdGenerator;
 import com.astamuse.asta4d.util.SelectorUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
-import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
-import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
 import com.astamuse.asta4d.web.form.field.SimpleFormFieldPrepareRenderer;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends AbstractRadioAndCheckboxPrepareRenderer> extends
-        SimpleFormFieldPrepareRenderer {
+public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends AbstractRadioAndCheckboxPrepareRenderer>
+        extends SimpleFormFieldPrepareRenderer {
 
     public static final String LABEL_REF_ATTR = Configuration.getConfiguration().getTagNameSpace() + ":" + "label-ref-for-inputbox-id";
 
@@ -162,10 +160,10 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                 public Element invoke(Element elem) {
 
                     if (wrapperIdHolder.wrapperId != null) {
-                        throw new RuntimeException("The target of selector[" + editSelector +
-                                "] must be unique but over than 1 target was found." +
-                                "Perhaps you have specified an option value map on a group of elements " +
-                                "which is intented to be treated as predefined static options by html directly.");
+                        throw new RuntimeException(
+                                "The target of selector[" + editSelector + "] must be unique but over than 1 target was found." +
+                                        "Perhaps you have specified an option value map on a group of elements " +
+                                        "which is intented to be treated as predefined static options by html directly.");
                     }
 
                     String id = elem.id();
@@ -339,44 +337,41 @@ public abstract class AbstractRadioAndCheckboxPrepareRenderer<T extends Abstract
                         return Renderer.create();
                     }
                     String selector = duplicateSelector == null ? SelectorUtil.id(wrapperIdHolder.wrapperId) : duplicateSelector;
-                    return Renderer.create(selector, optionMap.getOptionList(), new RowRenderer<OptionValuePair>() {
-                        @Override
-                        public Renderer convert(int rowIndex, OptionValuePair row) {
+                    return Renderer.create(selector, optionMap.getOptionList(), row -> {
 
-                            Renderer renderer = Renderer.create().disableMissingSelectorWarning();
+                        Renderer renderer = Renderer.create().disableMissingSelectorWarning();
 
-                            String inputSelector = SelectorUtil.id("input", wrapperIdHolder.inputId);
-                            renderer.add(inputSelector, "value", row.getValue());
+                        String inputSelector = SelectorUtil.id("input", wrapperIdHolder.inputId);
+                        renderer.add(inputSelector, "value", row.getValue());
 
-                            // we have to generate a new uuid for the input element to make sure its id is unique even we duplicated it.
-                            String newInputId = inputIdByValue ? row.getValue() : IdGenerator.createId();
+                        // we have to generate a new uuid for the input element to make sure its id is unique even we duplicated it.
+                        String newInputId = inputIdByValue ? row.getValue() : IdGenerator.createId();
 
-                            // make the generated id more understandable by prefixing with original id
-                            newInputId = wrapperIdHolder.inputId + "-" + newInputId;
+                        // make the generated id more understandable by prefixing with original id
+                        newInputId = wrapperIdHolder.inputId + "-" + newInputId;
 
-                            String duplicatorRef = null;
+                        String duplicatorRef = null;
 
-                            if (duplicateSelector != null) {
-                                duplicatorRef = IdGenerator.createId();
-                            }
-
-                            renderer.add(":root", DUPLICATOR_REF_ID_ATTR, duplicatorRef);
-
-                            renderer.add(inputSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
-                            renderer.add(inputSelector, "id", newInputId);
-
-                            // may be a wrapper container of label
-                            renderer.add(wrapperIdHolder.labelSelector, LABEL_REF_ATTR, newInputId);
-                            if (labelWrapperIndicatorAttr != null) {
-                                renderer.add(wrapperIdHolder.labelSelector, labelWrapperIndicatorAttr, newInputId);
-                            }
-                            renderer.add(wrapperIdHolder.labelSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
-
-                            renderer.add("label", "for", newInputId);
-                            renderer.add("label", row.getDisplayText());
-
-                            return renderer.enableMissingSelectorWarning();
+                        if (duplicateSelector != null) {
+                            duplicatorRef = IdGenerator.createId();
                         }
+
+                        renderer.add(":root", DUPLICATOR_REF_ID_ATTR, duplicatorRef);
+
+                        renderer.add(inputSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
+                        renderer.add(inputSelector, "id", newInputId);
+
+                        // may be a wrapper container of label
+                        renderer.add(wrapperIdHolder.labelSelector, LABEL_REF_ATTR, newInputId);
+                        if (labelWrapperIndicatorAttr != null) {
+                            renderer.add(wrapperIdHolder.labelSelector, labelWrapperIndicatorAttr, newInputId);
+                        }
+                        renderer.add(wrapperIdHolder.labelSelector, DUPLICATOR_REF_ATTR, duplicatorRef);
+
+                        renderer.add("label", "for", newInputId);
+                        renderer.add("label", row.getDisplayText());
+
+                        return renderer.enableMissingSelectorWarning();
                     });
                 }
             }

@@ -38,7 +38,6 @@ import com.astamuse.asta4d.render.transformer.RendererTransformer;
 import com.astamuse.asta4d.render.transformer.Transformer;
 import com.astamuse.asta4d.render.transformer.TransformerFactory;
 import com.astamuse.asta4d.util.collection.ListConvertUtil;
-import com.astamuse.asta4d.util.collection.ParallelRowConvertor;
 import com.astamuse.asta4d.util.collection.RowConvertor;
 import com.astamuse.asta4d.util.collection.RowConvertorBuilder;
 
@@ -457,21 +456,6 @@ public class Renderer {
      */
     public <S, T> Renderer add(String selector, Iterable<S> list, Function<S, T> mapper) {
         return add(create(selector, list, mapper));
-    }
-
-    /**
-     * Create a renderer for list rendering by given parameter with given {@link ParallelRowConvertor} and add it to the current renderer.
-     * <p>
-     * Being deprecated. See {@link #create(String, Iterable, ParallelRowConvertor)}.
-     * 
-     * @param selector
-     * @param list
-     * @param convertor
-     * @return the created renderer for chain calling
-     */
-    @Deprecated
-    public <S, T> Renderer add(String selector, Iterable<S> list, ParallelRowConvertor<S, T> convertor) {
-        return add(create(selector, list, convertor));
     }
 
     /**
@@ -943,37 +927,6 @@ public class Renderer {
             return new Renderer(selector, new ElementRemover());
         } else {
             return create(selector, list, RowConvertorBuilder.map(mapper));
-        }
-    }
-
-    /**
-     * Create a renderer for list rendering by given parameter with given {@link ParallelRowConvertor}. This method will not block the
-     * current thread and will return immediately.
-     * 
-     * See {@link #create(String, List)}.
-     * 
-     * <p>
-     * Being deprecated. use the combination of {@link #create(String, Iterable, RowConvertor)} and
-     * {@link RowConvertorBuilder#parallel(Function)}/ {@link RowConvertorBuilder#parallel(RowConvertor)} instead.
-     * 
-     * <p>
-     * See {@link ParallelRowConvertor} for more details.
-     * 
-     * @param selector
-     *            a css selector
-     * @param list
-     *            a list with arbitrary type data
-     * @param convertor
-     *            a convertor that can convert the arbitrary types of the list data to the types supported by the non-list create methods of
-     *            Renderer
-     * @return the created renderer
-     */
-    @Deprecated
-    public final static <S, T> Renderer create(String selector, Iterable<S> list, final ParallelRowConvertor<S, T> convertor) {
-        if (list == null) {
-            return new Renderer(selector, new ElementRemover());
-        } else {
-            return create(selector, list, (RowConvertor<S, T>) convertor);
         }
     }
 
