@@ -67,9 +67,6 @@ public class Configuration {
 
     private ExecutorServiceFactory parallelListConvertingExecutorFactory = new DefaultExecutorServiceFactory("asta4d-parallel-list", 600);
 
-    private ExecutorServiceFactory parallelListConvertingDispatchExecutorFactory = new DefaultExecutorServiceFactory(
-            "asta4d-parallel-list-dispatch", 150);
-
     private boolean blockParallelListRendering = false;
 
     private ParallelRecursivePolicy recursivePolicyForParallelListConverting = ParallelRecursivePolicy.EXCEPTION;
@@ -186,14 +183,6 @@ public class Configuration {
 
     public void setParallelListConvertingExecutorFactory(ExecutorServiceFactory parallelListConvertingExecutorFactory) {
         this.parallelListConvertingExecutorFactory = parallelListConvertingExecutorFactory;
-    }
-
-    public ExecutorServiceFactory getParallelListConvertingDispatchExecutorFactory() {
-        return parallelListConvertingDispatchExecutorFactory;
-    }
-
-    public void setParallelListConvertingDispatchExecutorFactory(ExecutorServiceFactory parallelListConvertingDispatchExecutorFactory) {
-        this.parallelListConvertingDispatchExecutorFactory = parallelListConvertingDispatchExecutorFactory;
     }
 
     public ParallelRecursivePolicy getRecursivePolicyForParallelConverting() {

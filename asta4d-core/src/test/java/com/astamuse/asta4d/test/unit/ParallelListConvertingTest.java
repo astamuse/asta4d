@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
@@ -84,9 +85,20 @@ public class ParallelListConvertingTest extends BaseTest {
         });
     }
 
-    public void testNumberLimitOfParallel() {
+    @DataProvider(name = "data")
+    public Object[][] getNumberLimitOfParallelTestData() {
+        //@formatter:off
+        return new Object[][] {
+            {Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)},
+            {Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8)},
+            {Arrays.asList(1, 2, 3, 4, 5, 6, 7)},
+        };
+        //@formatter:on
+    }
+
+    @Test(dataProvider = "data")
+    public void testNumberLimitOfParallel(List<Integer> list) {
         Configuration.getConfiguration().setNumberLimitOfParallelListConverting(3);
-        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
         long start = System.currentTimeMillis();
         List<Integer> rList = ListConvertUtil.transform(list, RowConvertorBuilder.parallel((i) -> {
             try {
