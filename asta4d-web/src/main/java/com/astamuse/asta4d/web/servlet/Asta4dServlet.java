@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.util.concurrent.ListExecutorServiceUtil;
-import com.astamuse.asta4d.util.concurrent.SnippetExecutorServiceUtil;
 import com.astamuse.asta4d.web.WebApplicationConfiguration;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
@@ -64,7 +62,10 @@ public class Asta4dServlet extends HttpServlet {
             WebApplicationConfiguration asta4dConf = createConfiguration();
             createConfigurationInitializer().initConfigurationFromFile(config, asta4dConf);
             Configuration.setConfiguration(asta4dConf);
-            WebApplicationConfiguration.getWebApplicationConfiguration().getExpirableDataManager().start();
+            asta4dConf.getExpirableDataManager().start();
+            asta4dConf.addShutdownHookers(() -> {
+                asta4dConf.getExpirableDataManager().stop();
+            });
             ruleList = createRuleList();
         } catch (Exception e) {
             throw new ServletException(e);
@@ -136,10 +137,13 @@ public class Asta4dServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        // TODO we want a more elegant way to release the threads rather than shutdown them explicitly
-        ListExecutorServiceUtil.getExecutorService().shutdownNow();
-        SnippetExecutorServiceUtil.getExecutorService().shutdownNow();
-        WebApplicationConfiguration.getWebApplicationConfiguration().getExpirableDataManager().stop();
+        for (Runnable runnable : WebApplicationConfiguration.getConfiguration().getShutdownHookers()) {
+            try {
+                runnable.run();
+            } catch (Exception ex) {
+                logger.error("error occured to invoke shutdown hookers", ex);
+            }
+        }
         WebApplicationConfiguration.setConfiguration(null);// for gc
         System.gc();// if possible
         super.destroy();
