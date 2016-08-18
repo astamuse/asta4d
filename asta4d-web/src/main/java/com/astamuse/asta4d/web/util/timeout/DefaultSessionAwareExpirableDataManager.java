@@ -17,8 +17,10 @@
 
 package com.astamuse.asta4d.web.util.timeout;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -36,7 +38,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
 
     private static final String CheckSessionIdKey = DefaultSessionAwareExpirableDataManager.class + "#CheckSessionIdKey";
 
-    private ConcurrentHashMap<String, DataHolder> dataMap = null;
+    private Map<String, DataHolder> dataMap = null;
 
     private AtomicInteger dataCounter = null;
 
@@ -57,7 +59,8 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
     private String checkThreadName = this.getClass().getSimpleName() + "-check-thread";
 
     public DefaultSessionAwareExpirableDataManager() {
-
+        dataMap = createThreadSafeDataMap();
+        dataCounter = new AtomicInteger();
     }
 
     public void setExpirationCheckPeriodInMilliseconds(long expirationCheckPeriodInMilliseconds) {
@@ -80,11 +83,28 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
         this.maxSpinTimeInMilliseconds = maxSpinTimeInMilliseconds;
     }
 
+    protected Map<String, DataHolder> createThreadSafeDataMap() {
+        return new ConcurrentHashMap<>();
+    }
+
+    protected void decreaseCount() {
+        dataCounter.decrementAndGet();
+    }
+
+    protected void addCount(int delta) {
+        dataCounter.addAndGet(delta);
+    }
+
+    protected void increaseCount() {
+        dataCounter.incrementAndGet();
+    }
+
+    protected int getCurrentCount() {
+        return dataCounter.get();
+    }
+
     @Override
     public void start() {
-        // init fields
-        dataMap = new ConcurrentHashMap<>();
-        dataCounter = new AtomicInteger();
         service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -109,7 +129,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
                     }
                 }
                 if (removedCounter > 0) {
-                    dataCounter.addAndGet(-removedCounter);
+                    addCount(-removedCounter);
                 }
             }
         }, expirationCheckPeriodInMilliseconds, expirationCheckPeriodInMilliseconds, TimeUnit.MILLISECONDS);
@@ -129,7 +149,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
         if (remove) {
             holder = dataMap.remove(dataId);
             if (holder != null) {
-                dataCounter.decrementAndGet();
+                decreaseCount();
                 if (holder.isExpired(System.currentTimeMillis())) {
                     holder = null;
                 }
@@ -140,7 +160,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
                 if (holder.isExpired(System.currentTimeMillis())) {
                     holder = dataMap.remove(dataId);
                     if (holder != null) {
-                        dataCounter.decrementAndGet();
+                        decreaseCount();
                         holder = null;
                     }
                 }
@@ -158,13 +178,20 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
     }
 
     public void put(String dataId, Object data, long expireMilliSeconds) {
-        if (dataCounter.get() >= maxDataSize) {
+        Object existing = dataMap.put(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
+        if (existing == null) {
+            increaseCount();
+        }
+    }
+
+    protected void checkSize() {
+        if (getCurrentCount() >= maxDataSize) {
             try {
                 long spinTimeTotal = 0;
-                while (dataCounter.get() >= maxDataSize) {
+                while (getCurrentCount() >= maxDataSize) {
                     if (spinTimeTotal >= maxSpinTimeInMilliseconds) {
-                        String msg = "There are too many data in %s and we could not get empty space after waiting for %d milliseconds."
-                                + " The configured max size is %d and perhaps you should increase the value.";
+                        String msg = "There are too many data in %s and we could not get empty space after waiting for %d milliseconds." +
+                                " The configured max size is %d and perhaps you should increase the value.";
                         msg = String.format(msg, this.getClass().getName(), spinTimeTotal, maxDataSize);
                         throw new TooManyDataException(msg);
                     }
@@ -174,10 +201,6 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }
-        Object existing = dataMap.put(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
-        if (existing == null) {
-            dataCounter.incrementAndGet();
         }
     }
 
@@ -200,7 +223,11 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
         super.finalize();
     }
 
-    private static class DataHolder {
+    protected static class DataHolder implements Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         private final Object data;
         private final long creationTime;
         private final long expireMilliSeconds;
