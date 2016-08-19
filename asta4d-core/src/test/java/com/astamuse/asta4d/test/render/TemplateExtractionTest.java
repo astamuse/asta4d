@@ -82,4 +82,19 @@ public class TemplateExtractionTest extends BaseTest {
     public void loadTemplateWithThreeLevelExtension() throws Throwable {
         new SimpleCase("ThreeLevelExtension_Child.html");
     }
+
+    @Test
+    public void loadTemplateWithoutBodyTag() throws Throwable {
+        new SimpleCase("TemplateWithoutBodyTag.html");
+    }
+
+    @Test
+    public void loadTemplateWithBodyOnlyAttr() throws Throwable {
+        new SimpleCase("TemplateWithBodyOnlyAttr.html");
+    }
+
+    @Test
+    public void loadTemplateWithBodyOnlyMeta() throws Throwable {
+        new SimpleCase("TemplateWithBodyOnlyMeta.html");
+    }
 }
