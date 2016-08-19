@@ -178,6 +178,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
     }
 
     public void put(String dataId, Object data, long expireMilliSeconds) {
+        checkSize();
         Object existing = dataMap.put(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
         if (existing == null) {
             increaseCount();
