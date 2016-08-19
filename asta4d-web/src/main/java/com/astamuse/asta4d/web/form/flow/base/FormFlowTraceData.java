@@ -16,10 +16,16 @@
  */
 package com.astamuse.asta4d.web.form.flow.base;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FormFlowTraceData {
+public class FormFlowTraceData implements Serializable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
     private Map<String, Object> stepFormMap;
 
