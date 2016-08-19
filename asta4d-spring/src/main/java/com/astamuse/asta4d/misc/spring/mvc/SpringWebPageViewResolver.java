@@ -23,18 +23,39 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 import com.astamuse.asta4d.Page;
-import com.astamuse.asta4d.template.TemplateException;
+import com.astamuse.asta4d.template.TemplateNotFoundException;
 import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
 public class SpringWebPageViewResolver implements ViewResolver {
 
+    private boolean exceptionOnTemplateNotFound = true;
+    private String prefix = "";
+    private String suffix = "";
+
     @Override
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         try {
-            return new SpringWebPageView(new Asta4DPageProvider(Page.buildFromPath(viewName)));
-        } catch (TemplateException e) {
-            return null;
+            String path = prefix + viewName + suffix;
+            return new SpringWebPageView(new Asta4DPageProvider(Page.buildFromPath(path)));
+        } catch (TemplateNotFoundException e) {
+            if (exceptionOnTemplateNotFound) {
+                throw e;
+            } else {
+                return null;
+            }
         }
+    }
+
+    public void setExceptionOnTemplateNotFound(boolean exceptionOnTemplateNotFound) {
+        this.exceptionOnTemplateNotFound = exceptionOnTemplateNotFound;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 
 }

@@ -33,9 +33,22 @@ import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
 public class SpringWebPageView implements View {
 
-    private Asta4DPageProvider templateProvider;
+    public static final String BODY_ONLY_FLAG = "BODY_ONLY#" + SpringWebPageView.class;
 
-    private UrlMappingRule dummyRule = new UrlMappingRule();
+    private static final UrlMappingRule NormalPageRule;
+
+    private static final UrlMappingRule BodyOnlyRule;
+
+    static {
+        NormalPageRule = new UrlMappingRule().asUnmodifiable();
+        {
+            UrlMappingRule rule = new UrlMappingRule();
+            rule.getAttributeList().add(Asta4DPageProvider.AttrBodyOnly);
+            BodyOnlyRule = rule.asUnmodifiable();
+        }
+    }
+
+    private Asta4DPageProvider templateProvider;
 
     public SpringWebPageView(Asta4DPageProvider templateProvider) throws TemplateException {
         super();
@@ -53,7 +66,18 @@ public class SpringWebPageView implements View {
         for (Entry<String, ?> entry : model.entrySet()) {
             context.setData(entry.getKey(), entry.getValue());
         }
+        UrlMappingRule dummyRule;
+        if (context.getData(BODY_ONLY_FLAG) != null) {
+            dummyRule = BodyOnlyRule;
+        } else {
+            dummyRule = NormalPageRule;
+        }
         templateProvider.produce(dummyRule, response);
+    }
+
+    public static void setCurrentRequestAsBodyOnly() {
+        WebApplicationContext context = Context.getCurrentThreadContext();
+        context.setData(BODY_ONLY_FLAG, "bodyonly");// the value is not matter
     }
 
 }

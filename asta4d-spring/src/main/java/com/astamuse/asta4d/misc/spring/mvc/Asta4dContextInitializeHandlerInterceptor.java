@@ -45,7 +45,7 @@ import com.astamuse.asta4d.web.WebApplicatoinConfigurationInitializer;
  * @author e-ryu
  * 
  */
-public class Asta4dTemplateInitializer extends HandlerInterceptorAdapter implements ServletContextAware, ApplicationContextAware,
+public class Asta4dContextInitializeHandlerInterceptor extends HandlerInterceptorAdapter implements ServletContextAware, ApplicationContextAware,
         InitializingBean, ServletConfigAware {
 
     private ServletConfig servletConfig;
