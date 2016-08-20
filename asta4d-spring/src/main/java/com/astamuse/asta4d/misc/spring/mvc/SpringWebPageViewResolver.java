@@ -22,9 +22,10 @@ import java.util.Locale;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
-import com.astamuse.asta4d.Page;
+import com.astamuse.asta4d.Configuration;
+import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateNotFoundException;
-import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
+import com.astamuse.asta4d.template.TemplateResolver;
 
 public class SpringWebPageViewResolver implements ViewResolver {
 
@@ -36,7 +37,10 @@ public class SpringWebPageViewResolver implements ViewResolver {
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         try {
             String path = prefix + viewName + suffix;
-            return new SpringWebPageView(new Asta4DPageProvider(Page.buildFromPath(path)));
+            Configuration conf = Configuration.getConfiguration();
+            TemplateResolver templateResolver = conf.getTemplateResolver();
+            Template template = templateResolver.findTemplate(path);
+            return new SpringWebPageView(template);
         } catch (TemplateNotFoundException e) {
             if (exceptionOnTemplateNotFound) {
                 throw e;
