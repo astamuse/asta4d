@@ -113,7 +113,7 @@ public class ParallelListConvertingTest extends BaseTest {
         if (timeUsed < 200) {
             throw new AssertionError("Time used is less than 200 milliseconds with only " + timeUsed + " milliseconds.");
         }
-        if (timeUsed > 350) {
+        if (timeUsed > 400) {
             throw new AssertionError("Time used is over than 350 milliseconds and it takes " + timeUsed + " milliseconds.");
         }
         Assert.assertEquals(rList, list);
