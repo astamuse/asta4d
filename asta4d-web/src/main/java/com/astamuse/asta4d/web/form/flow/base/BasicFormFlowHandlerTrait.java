@@ -25,12 +25,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.data.InjectTrace;
 import com.astamuse.asta4d.data.InjectUtil;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyInfo;
 import com.astamuse.asta4d.util.annotation.AnnotatedPropertyUtil;
 import com.astamuse.asta4d.web.WebApplicationContext;
-import com.astamuse.asta4d.web.dispatch.RedirectInterceptor;
 import com.astamuse.asta4d.web.dispatch.RedirectUtil;
 import com.astamuse.asta4d.web.dispatch.request.RequestHandler;
 import com.astamuse.asta4d.web.form.CascadeArrayFunctions;
@@ -121,8 +119,6 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
     public static final String FORM_PRE_DEFINED = "FORM_PRE_DEFINED#" + BasicFormFlowHandlerTrait.class.getName();
 
     public static final String FORM_EXTRA_DATA = "FORM_EXTRA_DATA#" + BasicFormFlowHandlerTrait.class.getName();
-
-    public static final String PRE_INJECTION_TRACE_INFO = "PRE_INJECTION_TRACE_INFO#" + BasicFormFlowHandlerTrait.class.getName();
 
     /**
      * Sub classes must tell us the name of first step
@@ -458,20 +454,8 @@ public interface BasicFormFlowHandlerTrait<T> extends CascadeArrayFunctions, For
 
         if (byFlash) {
 
-            RedirectUtil.registerRedirectInterceptor(this.getClass().getName() + "#passDataToSnippet", new RedirectInterceptor() {
-                @Override
-                public void beforeRedirect() {
-                    RedirectUtil.addFlashScopeData(PRE_INJECTION_TRACE_INFO, InjectTrace.retrieveTraceList());
-                }
-
-                @Override
-                public void afterRedirectDataRestore() {
-                    List list = (List) Context.getCurrentThreadContext().getData(WebApplicationContext.SCOPE_FLASH,
-                            PRE_INJECTION_TRACE_INFO);
-                    InjectTrace.restoreTraceList(list);
-
-                }
-            });
+            RedirectUtil.registerRedirectInterceptor(this.getClass().getName() + "#passDataToSnippet",
+                    new InjectionTraceDataRedirectInterceptor());
         }
     }
 
