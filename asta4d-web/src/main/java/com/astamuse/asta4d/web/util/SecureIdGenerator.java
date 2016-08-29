@@ -28,6 +28,7 @@ import com.astamuse.asta4d.util.IdGenerator;
 public class SecureIdGenerator {
 
     private final static SecureRandom sr;
+
     static {
         // use the last 32 bit of current time as the seed
         ByteBuffer bb = ByteBuffer.allocate(64);
@@ -40,9 +41,8 @@ public class SecureIdGenerator {
 
     public static String createEncryptedURLSafeId() {
         try {
-            String uuid = IdGenerator.createId();
+            byte[] idBytes = IdGenerator.createIdBytes();
 
-            byte[] idBytes = uuid.getBytes();
             ByteBuffer bb = ByteBuffer.allocate(idBytes.length + 4);
             bb.put(idBytes);
 
