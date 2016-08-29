@@ -1,5 +1,7 @@
 package com.astamuse.asta4d.misc.spring;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
 
@@ -22,7 +24,7 @@ public class Asta4dBeanNameGenerator extends AnnotationBeanNameGenerator {
     }
 
     public void setSnippetSearchPathList(String... snippetSearchPathList) {
-        this.snippetSearchPathList = snippetSearchPathList.clone();
+        this.snippetSearchPathList = Arrays.stream(snippetSearchPathList).map(s -> s + ".").toArray(len -> new String[len]);
     }
 
 }
