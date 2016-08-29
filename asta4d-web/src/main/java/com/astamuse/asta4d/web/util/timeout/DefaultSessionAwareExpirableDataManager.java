@@ -36,7 +36,7 @@ import com.astamuse.asta4d.web.WebApplicationContext;
 
 public class DefaultSessionAwareExpirableDataManager implements ExpirableDataManager {
 
-    private static final String CheckSessionIdKey = DefaultSessionAwareExpirableDataManager.class + "#CheckSessionIdKey";
+    private static final String SessionCheckIdKey = DefaultSessionAwareExpirableDataManager.class + "#SessionCheckIdKey";
 
     private Map<String, DataHolder> dataMap = null;
 
@@ -169,7 +169,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
         if (holder == null) {
             return null;
         } else {
-            if (StringUtils.equals(retrieveSessionId(false), holder.sessionId)) {
+            if (StringUtils.equals(retrieveSessionCheckId(false), holder.sessionId)) {
                 return (T) holder.getData();
             } else {
                 return null;
@@ -179,7 +179,7 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
 
     public void put(String dataId, Object data, long expireMilliSeconds) {
         checkSize();
-        Object existing = dataMap.put(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionId(true)));
+        Object existing = dataMap.put(dataId, new DataHolder(data, expireMilliSeconds, retrieveSessionCheckId(true)));
         if (existing == null) {
             increaseCount();
         }
@@ -205,17 +205,24 @@ public class DefaultSessionAwareExpirableDataManager implements ExpirableDataMan
         }
     }
 
-    protected String retrieveSessionId(boolean create) {
-        String sessionId = null;
+    /**
+     * NOTE: Because there is no way to retrieve the session id via WebApplicationContext, thus we use a independent check id which is
+     * different from the http request session id to check whether current request client is the same client from previous request.
+     * 
+     * @param create
+     * @return
+     */
+    protected String retrieveSessionCheckId(boolean create) {
+        String sessionCheckId = null;
         if (sessionAware) {
             WebApplicationContext context = WebApplicationContext.getCurrentThreadWebApplicationContext();
-            sessionId = context.getData(WebApplicationContext.SCOPE_SESSION, CheckSessionIdKey);
-            if (sessionId == null && create) {
-                sessionId = IdGenerator.createId();
-                context.setData(WebApplicationContext.SCOPE_SESSION, CheckSessionIdKey, sessionId);
+            sessionCheckId = context.getData(WebApplicationContext.SCOPE_SESSION, SessionCheckIdKey);
+            if (sessionCheckId == null && create) {
+                sessionCheckId = IdGenerator.createId();
+                context.setData(WebApplicationContext.SCOPE_SESSION, SessionCheckIdKey, sessionCheckId);
             }
         }
-        return sessionId;
+        return sessionCheckId;
     }
 
     @Override

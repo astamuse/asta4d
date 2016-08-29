@@ -30,7 +30,7 @@ public class DefaultSessionAwareExpirableDataManagerTest {
         String mockedSessionId = null;
 
         @Override
-        protected String retrieveSessionId(boolean create) {
+        protected String retrieveSessionCheckId(boolean create) {
             return mockedSessionId;
         }
 
