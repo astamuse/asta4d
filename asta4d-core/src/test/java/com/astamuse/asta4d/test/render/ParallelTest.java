@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
+import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
@@ -35,6 +36,7 @@ public class ParallelTest extends BaseTest {
     public static class TestRender {
 
         public Renderer listTextRenderingLambda() {
+            Configuration.getConfiguration().setNumberLimitOfParallelListConverting(50);
             List<String> list = Arrays.asList("a", "b", "c", "d");
             Renderer renderer = Renderer.create("div#test", list, RowConvertorBuilder.parallel(obj -> {
                 try {
