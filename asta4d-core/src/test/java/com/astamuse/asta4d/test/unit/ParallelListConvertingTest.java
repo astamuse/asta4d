@@ -96,7 +96,8 @@ public class ParallelListConvertingTest extends BaseTest {
         //@formatter:on
     }
 
-    @Test(dataProvider = "data")
+    /* we have to warm up the test at first, or the measured time may over 330ms due to the overhead of thread splitting*/
+    @Test(dataProvider = "data", dependsOnMethods = "testNumberLimitOfParallelWarmingup")
     public void testNumberLimitOfParallel(List<Integer> list) {
         Configuration.getConfiguration().setNumberLimitOfParallelListConverting(3);
         long start = System.currentTimeMillis();
@@ -113,10 +114,20 @@ public class ParallelListConvertingTest extends BaseTest {
         if (timeUsed < 200) {
             throw new AssertionError("Time used is less than 200 milliseconds with only " + timeUsed + " milliseconds.");
         }
-        if (timeUsed > 400) {
-            throw new AssertionError("Time used is over than 350 milliseconds and it takes " + timeUsed + " milliseconds.");
+        if (timeUsed > 330) {
+            throw new AssertionError("Time used is over than 330 milliseconds and it takes " + timeUsed + " milliseconds.");
         }
         Assert.assertEquals(rList, list);
+    }
+
+    @Test(dataProvider = "data")
+    public void testNumberLimitOfParallelWarmingup(List<Integer> list) {
+        Configuration.getConfiguration().setNumberLimitOfParallelListConverting(3);
+        for (int i = 0; i < 10_0000; i++) {
+            List<Integer> rList = ListConvertUtil.transform(list, RowConvertorBuilder.parallel((k) -> {
+                return k;
+            }));
+        }
     }
 
 }
