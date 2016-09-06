@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.template.Template;
@@ -36,6 +37,13 @@ public class SpringWebPageViewResolver implements ViewResolver {
     @Override
     public View resolveViewName(String viewName, Locale locale) throws Exception {
         try {
+            // TODO we should follow the spring mvc default implementation of UrlBasedViewResolver
+            String redirectPrefix = "redirect:";
+            if (viewName.startsWith(redirectPrefix)) {
+                String redirect = viewName.substring(redirectPrefix.length());
+                return new RedirectView(redirect);
+            }
+
             String path = prefix + viewName + suffix;
             Configuration conf = Configuration.getConfiguration();
             TemplateResolver templateResolver = conf.getTemplateResolver();
