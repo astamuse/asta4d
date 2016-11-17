@@ -53,7 +53,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
         <property name="snippetResolver">
-            <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver"/>
+            <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver">
+                <property name="searchPathList">
+                    <list>
+                        <value>com.foo.web.snippet</value>
+                    </list>
+                </property>
+            </bean>
         </property>
         <property name="instanceResolverList">
             <list>
@@ -121,8 +127,27 @@
     <example>
       <programlisting language="xml">
 <![CDATA[
-    <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dTemplateInitializer"/>
-    <bean class="com.astamuse.asta4d.misc.spring.mvc.SpringWebPageViewResolver"/>
+    <bean id="asta4dConfiguration" class="com.astamuse.asta4d.web.WebApplicationConfiguration">
+        <property name="snippetResolver">
+            <bean class="com.astamuse.asta4d.misc.spring.SpringManagedSnippetResolver">
+                <property name="searchPathList">
+                    <array>
+                        <value>com.foo.web.snippet</value>
+                    </array>
+                </property>
+            </bean>
+        </property>
+        <property name="cacheEnable" value="false"/>
+    </bean>
+    
+    <bean class="com.astamuse.asta4d.misc.spring.mvc.SpringWebPageViewResolver">
+        <property name="prefix" value="/templates"/>
+        <property name="suffix" value=".html"/>
+    </bean>
+    
+    <mvc:interceptors>
+        <bean class="com.astamuse.asta4d.misc.spring.mvc.Asta4dContextInitializeHandlerInterceptor"/>
+    </mvc:interceptors>
 ]]>
       </programlisting>
     </example>
