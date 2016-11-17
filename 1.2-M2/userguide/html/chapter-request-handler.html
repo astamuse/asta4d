@@ -1,0 +1,256 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>6.&nbsp;Impement request handler and url mapping</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="chapter-side-effect.html" title="5.&nbsp;Side effect and request handler"><link rel="next" href="chapter-adv-request-handler.html" title="7.&nbsp;Advanced usage of request handler"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">6.&nbsp;Impement request handler and url mapping</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-side-effect.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-adv-request-handler.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-request-handler"></a>6.&nbsp;Impement request handler and url mapping</h2></div></div></div>
+  
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e264"></a>6.1&nbsp;@RequestHandler</h2></div></div></div>
+    
+    <p>It is not complicated to implement a request handler. @RequestHandler can be used to annotate a handle
+    method in arbitrary Java class which will be treated as a request handler.</p>
+    
+    <div class="example"><a name="d5e267"></a><p class="title"><b>Example&nbsp;6.1.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> LoginHandler {  
+  
+    <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>  
+    <span class="hl-keyword">public</span> LoginFailure doLogin(String flag) <span class="hl-keyword">throws</span> LoginFailure {  
+        <span class="hl-keyword">if</span> (StringUtils.isEmpty(flag)) {  
+            <span class="hl-keyword">return</span> null;  
+        }  
+        <span class="hl-keyword">if</span> (<span class="hl-string">"error"</span>.equals(flag)) {  
+            <span class="hl-keyword">throw</span> <span class="hl-keyword">new</span> LoginFailure();  
+        }  
+        <span class="hl-keyword">if</span> (!Boolean.parseBoolean(flag)) {  
+            <span class="hl-keyword">return</span> <span class="hl-keyword">new</span> LoginFailure();  
+        }  
+        <span class="hl-keyword">return</span> null;  
+    }  
+}  
+
+      </pre>
+      <p>
+      Take a look at the parameters of the handle method, the handle method of a request handler accepts parameter injection
+      as same as the snippet method. More details can be found at the descriptions of the snippet method.
+      </p>
+    </div></div><br class="example-break">
+  </div>
+ 
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e270"></a>6.2&nbsp;delcare url rule for request handler</h2></div></div></div>
+    
+    <p>Previously we have introduced how to forward a http request to a certain template file by url mapping. We can declare 
+    a request handler for q http request by the same way:
+    </p>
+    
+    <div class="example"><a name="d5e273"></a><p class="title"><b>Example&nbsp;6.2.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/handler"</span>)  
+     .handler(LoginHandler.<span class="hl-keyword">class</span>) <span class="hl-comment">// (1)  </span>
+     .forward(LoginFailure.<span class="hl-keyword">class</span>, <span class="hl-string">"/templates/error.html"</span>) <span class="hl-comment">//(2)  </span>
+     .redirect(FurtherConfirm.<span class="hl-keyword">class</span>, <span class="hl-string">"/app/furtherConfirm"</span>)<span class="hl-comment">//(3)  </span>
+     .forward(<span class="hl-string">"/templates/success.html"</span>); <span class="hl-comment">//(4)  </span>
+
+      </pre>
+      <p>
+      Simply explain:
+        </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+            <p>Forward the request to "/app/handler" to the request handler "LoginHandler".</p>
+          </li><li class="listitem">
+            <p>If "LoginHandler" returns a result of "LoginFailure", forward the request to the template file "error.html".</p>
+          </li><li class="listitem">
+            <p>If "LoginHandler" returns a result of "FurtherConfirm", redirect the current request to "/app/furtherConfirm" 
+            by http code 302(302 is by default).</p>
+          </li><li class="listitem">
+            <p>If "LoginHandler" does not return a meaningful result(it usually means success by a null return) , forward the request 
+            to the template file "success.html".</p>
+          </li></ol></div><p>
+      </p>
+    </div></div><br class="example-break">
+    
+    <p>
+      More verbose details:
+    </p>
+    
+    <p>
+      The handler method is used to add a request handler and accepts arbitrary type as the the parameter: an instance of java.lang.Class or an
+      arbitrary instance. The framework explains received parameters by the implementation of DeclareInstanceResolver configured by
+      WebApplicationConfiguration. Thee default implementation provided by framework follows the following rules to explain the declaration
+      of request handler:
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">
+          <p>If an instance of java.lang.Class is specified, the instance of request handler will be created by invoke "newInstance()"
+          on the specified Class.</p>
+        </li><li class="listitem">
+          <p>If a string is specified, the string will be treated as a class name and an instance of java.lang.Class will be created by 
+          calling "Class#forName", then the instance of request handler will be created by invoke "newInstance()" on the created Class.</p>
+        </li><li class="listitem">
+          <p>The specified parameter will be treated as a request handler directly if it is neither a Class nor a string. By this rule,
+          it is interesting that we can declare an anonymous class as a request handler:</p>
+          <div class="example"><a name="d5e294"></a><p class="title"><b>Example&nbsp;6.3.&nbsp;</b></p><div class="example-contents">
+            <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/handler"</span>)  
+     .handler(<span class="hl-keyword">new</span> Object(){  
+        <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>  
+        <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> handle(){  
+            <span class="hl-comment">//  </span>
+        }  
+     }); 
+
+            </pre>
+          </div></div><br class="example-break">
+        </li></ol></div><p>
+      <em><span class="remark">The asta4d-spring package also provides a resolver based on Spring IOC container, the request handler instance will be retrieved by
+      passing the specified parameter to the "Context#getBean" method of spring container.</span></em>
+    </p>
+    
+    <p>
+    The forward method adds a transforming rule for the result of request handler.There must be a handler method annotated by @RequestHandler and the
+    returned value of the handle method is viewed as the result of the request handler, thrown exceptions in the handle method are treated as the result
+    too. The framework will attempt to match the result to the expected result specified by forward method then transforms the result to the corresponding
+    template file(The real mechanism of result transforming is more complicated and is explained at ...). When the matching attempt is performed, the
+    equals method will be used at first, if the equals method returns false and the expected result by forward method is an instance of java.lang.Class,
+    "Class#isAssignableFrom" will be utilized, if false again, skip the current forward rule and do the same check on the next forward rule. A forward rule
+    without the expected result specified will be viewed as a default rule, if matched forward rule for a result is missing or the request handler returns
+    a pointless result(void declaration of handle method or returns null), the default rule will be applied.
+    </p>
+    
+    <p>
+    The redirect method follows the same rule of forward method except it will cause a 302 redirect(302 is default, 301 can be declared) instead of forwarding
+    to a template file.
+    </p>
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e299"></a>6.3&nbsp;Default request handler</h2></div></div></div>
+    
+    <p>
+    You can not only declare request handler to a certain url, but also declare global request handlers which is available to
+    all the urls and prior to the request handlers declared on certain urls. There is a conception of request handler chain
+    for multi handlers, we will explain it in a later chapter.
+    </p>
+    
+    <div class="example"><a name="d5e302"></a><p class="title"><b>Example&nbsp;6.4.&nbsp;Default request handler</b></p><div class="example-contents">
+      
+      <pre class="programlisting">
+
+rules.addDefaultRequestHandler(GlobalHandler.<span class="hl-keyword">class</span>);  
+  
+rules.addDefaultRequestHandler(<span class="hl-string">"authcheck"</span>, AuthCheckHandler.<span class="hl-keyword">class</span>);  
+
+      </pre>
+    </div></div><br class="example-break">
+    
+    <p>
+    At the second line declaration for AuthCheckHandler, an attribute can be specified at the same time, which cause the declared request handler
+    is only available to the rules that declared the same attribute.
+    </p>
+    
+    <div class="example"><a name="d5e306"></a><p class="title"><b>Example&nbsp;6.5.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+rules.add(<span class="hl-string">"/app/handler"</span>).attribute(<span class="hl-string">"authcheck"</span>)  
+        ...  
+
+      </pre>
+    </div></div><br class="example-break">
+    
+    <p class="remark"><em><span class="remark">
+    In the framework's internal implementation, a static match rule table will be generated after all the url mapping declaration finished. A global
+    request handler that is only available to certain rules will be configured to the the certain url rules only, by which unnecessary performance
+    cost is avoid.
+    </span></em></p>
+    
+    <p>
+    In our practice, we found that it is very inconvenient to declare necessary attribute on every rule. In most situations, we will
+    want to do something like configure a same default request handler to all the url paths under "/xxx", which can be done by delcaring
+    a non attribute default request handler which judges the url pattern by itself, but such way will lose the performance benefit of
+    attribute declaration. Thus, we provide an alternative way for this situation: url rule rewrite.
+    </p>
+    
+    <div class="example"><a name="d5e310"></a><p class="title"><b>Example&nbsp;6.6.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+rules.addRuleRewriter(<span class="hl-keyword">new</span> UrlMappingRuleRewriter() {  
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>  
+    <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> rewrite(UrlMappingRule rule) {  
+        <span class="hl-keyword">if</span>(rule.getSourcePath().startsWith(<span class="hl-string">"/privatedata/"</span>)){  
+            rule.getAttributeList().add(<span class="hl-string">"authcheck"</span>);  
+        }  
+    }  
+});   
+
+      </pre>
+    </div></div><br class="example-break">
+
+    <p>
+    Please note that, untill now all the introduced configuration for url mapping are achieved by a group of interface called
+    HandyRule which convert all the declaration to the instance of UrlMappingRule which is used by framework internally. But in
+    the url rule rewritter implementation, developers have to cope with the raw UrlMappingRule which is difficult to understand,
+    so complex url rewriting is not appreciated. Basically, the scenario of url rule rewriting is only for add attributes to rules in
+    bulk.
+    </p>
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e313"></a>6.4&nbsp;Global forward/redirect</h2></div></div></div>
+    
+
+    <p>
+    Previously we mentioned that the result of a request handler will be matched in the forward declaration, if there is no matched forward found,
+    the global forward rule will be checked.
+    </p>
+    
+    <div class="example"><a name="d5e316"></a><p class="title"><b>Example&nbsp;6.7.&nbsp;Global forward</b></p><div class="example-contents">
+      
+      <pre class="programlisting">
+
+rules.addGlobalForward(PageNotFoundException.<span class="hl-keyword">class</span>, <span class="hl-string">"/pagenotfound.html"</span>, <span class="hl-number">404</span>);  
+
+      </pre>
+
+      <p>
+      The above source declares that if the result of request handler is PageNotFoundException(Exception is treated as the result of the request handler),
+      forward the request to pagenotfound.html by http status code 404.
+      </p>
+      
+    </div></div><br class="example-break">
+    
+    <p>
+    Global redirect can be declared by the same way.
+    </p>
+    
+    <div class="example"><a name="d5e321"></a><p class="title"><b>Example&nbsp;6.8.&nbsp;Global redirect</b></p><div class="example-contents">
+      
+      <pre class="programlisting">
+
+rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, <span class="hl-string">"/somewhere"</span>);  
+
+      </pre>
+    </div></div><br class="example-break">
+
+    <p>
+    The global forward rules are applied before the default forward rule(the forward rule without result) on certain url mapping rule.
+    </p>
+
+    <div class="example"><a name="d5e325"></a><p class="title"><b>Example&nbsp;6.9.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+rules.addGlobalForward(PageNotFoundException.<span class="hl-keyword">class</span>, <span class="hl-string">"/pagenotfound.html"</span>, <span class="hl-number">404</span>);  
+
+rules.addGlobalRedirect(REDIRECT_TO_SOMEWHERE, <span class="hl-string">"/somewhere"</span>);  
+
+rules.add(<span class="hl-string">"/app/handler"</span>)  
+     .handler(LoginHandler.<span class="hl-keyword">class</span>) 
+     .forward(LoginFailure.<span class="hl-keyword">class</span>, <span class="hl-string">"/templates/error.html"</span>) 
+     .redirect(FurtherConfirm.<span class="hl-keyword">class</span>, <span class="hl-string">"/app/furtherConfirm"</span>)  
+     .forward(<span class="hl-string">"/templates/success.html"</span>);
+
+      </pre>
+    </div></div><br class="example-break">
+    
+    <p>
+    In the above sample, the result of LoginHandler will be matched by the following order:
+    </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem">LoginFailer</li><li class="listitem">FurtherConfirm</li><li class="listitem">PageNotFoundException</li><li class="listitem">REDIRECT_TO_SOMEWHERE</li><li class="listitem">(default-&gt; "success.html")</li></ol></div><p>
+    </p>
+  </div>
+
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-side-effect.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-adv-request-handler.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">5.&nbsp;Side effect and request handler&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;7.&nbsp;Advanced usage of request handler</td></tr></table></div></body></html>

@@ -1,0 +1,215 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>3.&nbsp;Renderer: easy to use, secure, testable</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="chapter-Inheritable-template.html" title="2.&nbsp;Flexible template"><link rel="next" href="url-mapping.html" title="4.&nbsp;View first URL mapping and variable injection"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">3.&nbsp;Renderer: easy to use, secure, testable</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-Inheritable-template.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="url-mapping.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="renderer"></a>3.&nbsp;Renderer: easy to use, secure, testable</h2></div></div></div>
+  
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="split-rendering"></a>3.1&nbsp;Split rendering logic from template</h2></div></div></div>
+    
+    
+    <p>
+    There is no dynamic code in a template file. An Asta4D template file is always a pure HTML file which can be easily 
+    maintained by front-end developers, it is very design friendly and we can reduce the workload for source 
+    refactoring by over 90%.
+    </p>
+    
+    <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+        <p>Declare snippet class in template file</p>
+        <div class="example"><a name="d5e130"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;Sample of snippet declaration:</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-tag">&lt;section&gt;</span>  
+    <span class="hl-tag">&lt;article&gt;</span>  
+        <span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"SimpleSnippet"</span><span class="hl-tag">&gt;</span>dummy text<span class="hl-tag">&lt;/div&gt;</span>  
+        <span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"SimpleSnippet:setProfile"</span><span class="hl-tag">&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>dummy name<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>0<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+        <span class="hl-tag">&lt;/afd:snippet&gt;</span>  
+    <span class="hl-tag">&lt;/article&gt;</span>  
+<span class="hl-tag">&lt;/section&gt;</span>
+
+        </pre>
+        </div></div><br class="example-break">
+    
+        <p>
+        The "afd:render" attribute in div tag declares a Java class which is in charge of the concrete rendering logic, such Java
+        class is usually called as a snippet class. A snippet class can be declared by a "afd:snippet" tag too, as you have seen
+        in above sample. The rendering logic is secluded to independent Java classes by snippet declaration and it is not necessary
+        to learn any new template language for back-end developers. The back-end guys can achieve all the rendering logic easily
+        by powerful Java language which they have been adept to, no learning costs, no magic codes, succinct Java source only.
+        </p>
+        
+        <br>
+        
+      </li><li class="listitem">
+        <p>Implement a snippet class</p>
+        <div class="example"><a name="d5e137"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;Sample of snippet class:</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> SimpleSnippet {  
+  
+    <span class="hl-keyword">public</span> Renderer render(String name) {  
+        <span class="hl-keyword">if</span> (StringUtils.isEmpty(name)) {  
+            name = <span class="hl-string">"Asta4D"</span>;  
+        }
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"div"</span>, name);  
+    }  
+  
+    <span class="hl-keyword">public</span> Renderer setProfile() {  
+        Renderer render = Renderer.create(); 
+        render.add(<span class="hl-string">"p#name span"</span>, <span class="hl-string">"asta4d"</span>);  
+        render.add(<span class="hl-string">"p#age span"</span>, <span class="hl-number">20</span>);  
+        <span class="hl-keyword">return</span> render;  
+    }  
+}
+
+        </pre>
+        </div></div><br class="example-break">
+        
+        <p>
+        The Renderer class is provided by framework to declare rendering actions. Renderer uses traditional CSS selector to
+        reference the rendering target and receive the rendering value at the same time, amazing and powerful.
+        </p>
+        <br>
+        
+        <p>If the above template file and snippet class are executed, we would get the following result:</p>
+        <div class="example"><a name="d5e143"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Result of snippet execution:</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+<span class="hl-tag">&lt;section&gt;</span>  
+    <span class="hl-tag">&lt;article&gt;</span>  
+        <span class="hl-tag">&lt;span&gt;</span>Hello Asta4D<span class="hl-tag">&lt;/span&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"name"</span><span class="hl-tag">&gt;</span>name:<span class="hl-tag">&lt;span&gt;</span>asta4d/span&gt;<span class="hl-tag">&lt;/p&gt;</span>  
+            <span class="hl-tag">&lt;p</span> <span class="hl-attribute">id</span>=<span class="hl-value">"age"</span><span class="hl-tag">&gt;</span>age:<span class="hl-tag">&lt;span&gt;</span>20<span class="hl-tag">&lt;/span&gt;</span><span class="hl-tag">&lt;/p&gt;</span>  
+    <span class="hl-tag">&lt;/article&gt;</span>  
+<span class="hl-tag">&lt;/section&gt;</span>
+
+        </pre>
+        </div></div><br class="example-break">
+      </li></ul></div>
+
+    <p>
+    Asta4D introduces 4 extra tags to the html template file: afd:extension, afd:block, afd:embed, afd:snippet, which will not
+    disturb most html editors, accordingly Asta4D is extremely friendly to front-end engineers. On the other hand, we can see
+    that all the rendering logic is fulfiled by Java code and the back-end engineers can compose their back-end logic and rendering logic
+    very smoothly without magic skills and extra learning costs, which means highly boost of productivity.
+    </p>
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="render-to-page"></a>3.2&nbsp;Render data to page</h2></div></div></div>
+    
+    <p class="remark"><em><span class="remark">Be careful of "ElementUtil.parseAsSingle" which would cause cross-site issues. Basically the parseAsSingle api is not recommended for
+            common use. See more at<a class="xref" href="renderer.html#immune-from-xss" title="3.3&nbsp;Immune from cross-site hole">Section&nbsp;3.3, &#8220;Immune from cross-site hole&#8221;</a>.</span></em></p>
+    <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+        <p>In Asta4D, all the rendering logic is declared by a Renderer class which accepts various types as rendering value.</p>
+        <div class="example"><a name="d5e154"></a><p class="title"><b>Example&nbsp;3.4.&nbsp;Sample usage of Renderer</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+Renderer render = Renderer.create();
+render.add(<span class="hl-string">"#someIdForInt"</span>, <span class="hl-number">12345</span>);  
+render.add(<span class="hl-string">"#someIdForLong"</span>, <span class="hl-number">12345L</span>);  
+render.add(<span class="hl-string">"#someIdForBool"</span>, true);  
+render.add(<span class="hl-string">"#someIdForStr"</span>, <span class="hl-string">"a str"</span>);  
+render.add(<span class="hl-string">"#someIdForNull"</span>, (Object) null);  
+render.add(<span class="hl-string">"#someIdForClear"</span>, Clear);  
+
+<span class="hl-comment">// NOTE: parseAsSingle is not recommended to use</span>
+Element newChild = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;&lt;/div&gt;"</span>);  
+
+render.add(<span class="hl-string">"#someIdForElementSetter"</span>, <span class="hl-keyword">new</span> ChildReplacer(newChild));  
+render.add(<span class="hl-string">"#someIdForElement"</span>, ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;eee&lt;/div&gt;"</span>));  
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Renderer.create(<span class="hl-string">"#value"</span>, <span class="hl-string">"value"</span>));  
+
+        </pre>
+        </div></div><br class="example-break">
+      </li><li class="listitem">
+        <p>List of data can be rendered via Renderer too:</p>
+        <div class="example"><a name="d5e159"></a><p class="title"><b>Example&nbsp;3.5.&nbsp;Sample of list rendering</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+Renderer render = Renderer.create()();  
+render.add(<span class="hl-string">"#someIdForInt"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>));  
+render.add(<span class="hl-string">"#someIdForLong"</span>, Arrays.asList(<span class="hl-number">123L</span>, <span class="hl-number">456L</span>, <span class="hl-number">789L</span>));  
+render.add(<span class="hl-string">"#someIdForBool"</span>, Arrays.asList(true, true, false));  
+render.add(<span class="hl-string">"#someIdForStr"</span>, Arrays.asList(<span class="hl-string">"str1"</span>, <span class="hl-string">"str2"</span>, <span class="hl-string">"str3"</span>));  
+
+<span class="hl-comment">// NOTE: parseAsSingle is not recommended to use</span>
+
+Element newChild1 = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;1&lt;/div&gt;"</span>);  
+Element newChild2 = ElementUtil.parseAsSingle(<span class="hl-string">"&lt;div&gt;2&lt;/div&gt;"</span>);  
+
+render.add(<span class="hl-string">"#someIdForElementSetter"</span>, Arrays.asList(<span class="hl-keyword">new</span> ChildReplacer(newChild1), <span class="hl-keyword">new</span> ChildReplacer(newChild2)));  
+render.add(<span class="hl-string">"#someIdForElement"</span>, Arrays.asList(newChild1, newChild2));  
+render.add(<span class="hl-string">"#someIdForRenderer"</span>, Arrays.asList(<span class="hl-number">123</span>, <span class="hl-number">456</span>, <span class="hl-number">789</span>), <span class="hl-keyword">new</span> RowRenderer&lt;Integer&gt;() {  
+    <em><span class="hl-annotation" style="color: gray">@Override</span></em>  
+    <span class="hl-keyword">public</span> Renderer convert(<span class="hl-keyword">int</span> rowIndex, Integer obj) {  
+        <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">"#id"</span>, <span class="hl-string">"id-"</span> + obj).add(<span class="hl-string">"#otherId"</span>, <span class="hl-string">"otherId-"</span> + obj);  
+    }  
+});   
+
+        </pre>
+        </div></div><br class="example-break">
+      </li><li class="listitem">
+        <p>DOM attribution can be done too:</p>
+        <div class="example"><a name="d5e164"></a><p class="title"><b>Example&nbsp;3.6.&nbsp;Sample of DOM attribution rendering</b></p><div class="example-contents">
+        <pre class="programlisting">
+
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"+class"</span>, <span class="hl-string">"yyy"</span>);  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"-class"</span>, <span class="hl-string">"zzz"</span>);  
+  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"+class"</span>, <span class="hl-string">"xxx"</span>);  
+  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"value"</span>, <span class="hl-string">"hg"</span>);  
+render.add(<span class="hl-string">"#id"</span>, <span class="hl-string">"href"</span>, null);  
+  
+render.add(<span class="hl-string">"#X"</span>, <span class="hl-string">"value"</span>, <span class="hl-keyword">new</span> Date(<span class="hl-number">123456L</span>));
+
+        </pre>
+        </div></div><br class="example-break">
+      </li></ul></div>
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="immune-from-xss"></a>3.3&nbsp;Immune from cross-site hole</h2></div></div></div>
+    
+    <p>
+    The previous samples show us that all the operations to DOM are delegated by Renderer except create DOM
+    from String value by "ElementUtil#parseAsSingle". As a matter of fact, all the delegated operations cause
+    all the rendering values are escaped by force, which means that your system is, by nature, immune from
+    cross-site problems if there is no "ElementUtil#parseAsSingle" calling in your system. You do not need
+    to be wary of illegal characters by from the clients since all the values will be escaped as HTML compulsorily.
+    </p>
+    
+    On the other hand, according to our practice, it is rarely that you have to call &#8220;ElementUtil.parseAsSingle&#8221;
+    to generate the rendering content from a raw HTML string, so just take care of your usage of this exceptional api
+    then you can say bye-bye to the cross-site holes.    
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="test-rendering"></a>3.4&nbsp;Test your rendering logic</h2></div></div></div>
+    
+    <p>
+    Testing web page is always a complex task and we usually verify rendering results by selenuim which is as a common
+    technology. By Asta4D, testable Renderer can replace over than half of selenium tests to simpler junit tests.
+    </p>
+    
+    <p>
+    According to the previous samples, all the rendering logic is holded by an instance of Renderer class, so simply,
+    we can verify almost rendering logic by testing the returned Renderer instance from the snippet method. 
+    </p>
+    
+    <div class="example"><a name="d5e174"></a><p class="title"><b>Example&nbsp;3.7.&nbsp;Sample RendererTester</b></p><div class="example-contents">
+    <pre class="programlisting">
+
+RendererTester tester = RendererTester.forRenderer(render);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForInt"</span>), <span class="hl-number">12345</span>);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForLong"</span>), <span class="hl-number">12345L</span>);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForBool"</span>), true);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForStr"</span>), <span class="hl-string">"a str"</span>);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForNull"</span>), null);  
+Assert.assertEquals(tester.get(<span class="hl-string">"#someIdForClear"</span>), Clear);  
+
+    </pre>
+    <p>More samples can be found in <a class="ulink" href="https://github.com/astamuse/asta4d/blob/develop/asta4d-core/src/test/java/com/astamuse/asta4d/test/unit/RenderTesterTest.java" target="_top">source</a></p>
+    </div></div><br class="example-break">
+
+  </div>
+  
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-Inheritable-template.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="url-mapping.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">2.&nbsp;Flexible template&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;4.&nbsp;View first URL mapping and variable injection</td></tr></table></div></body></html>

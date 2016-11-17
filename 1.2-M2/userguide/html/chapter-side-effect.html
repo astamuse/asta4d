@@ -1,0 +1,109 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>5.&nbsp;Side effect and request handler</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="url-mapping.html" title="4.&nbsp;View first URL mapping and variable injection"><link rel="next" href="chapter-request-handler.html" title="6.&nbsp;Impement request handler and url mapping"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">5.&nbsp;Side effect and request handler</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="url-mapping.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="chapter-request-handler.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-side-effect"></a>5.&nbsp;Side effect and request handler</h2></div></div></div>
+  
+ 
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e243"></a>5.1&nbsp;The role with responsibility to http request: Request Handler</h2></div></div></div>
+    
+    <p>
+    Even Asta4D complies with the principle of view first, there is still a role similar with the controller in MVC
+    architecture, such role is called request handler. We believe that there should be a role who takes responsiblity
+    of a certain http request and such role can be considered as an alternative to controller of MVC in some situations
+    too.
+    </p>
+    
+    <p>
+    According to the view first rule, a request handler can be ignored in most cases. You can also assume that there is
+    is a default request handler which navigates all the http requests to the corresponding template files(The real 
+    story is more complex but you can try to understand the theory conceptually by this way).
+    </p>
+    
+    <p>
+    Now the question is when we need a request handler? Before we can answer this question, we have to discuss the conception
+    of "side effect".
+    </p>
+  </div>
+
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e248"></a>5.2&nbsp;Side effect of system operations</h2></div></div></div>
+    
+
+    <p>
+    A system always afford users various operations such as query, update, etc. All of these operations will affect the status
+    of system in various ways. In Asta4D, we say that there are two types of action in a system, one is with &#8220;side effect&#8221;, 
+    another one is without &#8220;side effect&#8221;. &#8220;actions with side effect&#8221; are ones that will change the system status once they are
+    performed. For instance, for the same URL, a login request (if succeeded) will cause a client&#8217;s privilege to be changed and 
+    the client could probably get a different page view from what the client get before login, because of which we say a login 
+    request is an action with side effect. Another obvious example is a database update operation. Once an update is committed, 
+    all the related clients will get a different output from the result before the update, which is also classified as &#8220;an action 
+    with side effect&#8221;. 
+    </p>
+    
+    <p>
+    How about a query? We consider a query as an operation without side effect, it means that a client will always get the same
+    result regardless of how many times the query is executed. Some people may ask how about counting on query times? For counting
+    on query times, we can still split the counting and query to two individual operations, one is with side effect and another one
+    is without side effect.
+    </p>
+  </div>
+  
+  <div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d5e252"></a>5.3&nbsp;Isolate side effect and multi thread rendering</h2></div></div></div>
+    
+
+    <p>
+    We believe the actions with side effect should be managed seriously and we do that by putting all the actions with side effect
+    to request handlers so that the view layer is purified and this makes the source more clear and maintainable. This is also means 
+    with Asta4D we can easily perform multi thread rendering on a single page because they are now all side-effect free, which is a
+    high light function of Asta4D.
+    </p>
+
+    <p>
+    In traditional MVC architecture, the responsibility of controller is tangled, a controller does not only handle the duty of altering
+    system status(date update), but also takes the responsibility of preparing data for view layer. We often have to expand the database
+    session(transaction) to the view layer for handling lazy load issue, which makes transaction management more complicated. Additionally,
+    especially for the pages that can be split to relatively individual blocks, hypothetically we can accelerate the page loading
+    by retrieving data in multi threads for each block, but in reality it is impossible due to the source complexity and development costs.
+    The developers still have to access each data source sequentially to retrieve data for each block even the page is splitable as individual
+    blocks.
+    </p>
+
+    <p>
+    For Asta4D, the logic layers of system is clarified by isolating side effects at architecture level. The database session(transaction)
+    does no longer need keep opening cross layers, it is clear that the duty of request handler is altering system status but not preparing
+    data for view layer. At the mean time, at the view layer, acquiring data and rendering data are performed at the same time, at the same
+    place: We access data source and retrieve data in snippet method, and pass the data to Renderer to perform rendering immediately in the
+    same snippet method. Further, the complexity can be reduced drastically because all the accesses to certain data are isolated in certain
+    snippet methods and there is no cross layer invoking and coupling any more.
+    </p>
+    
+    <p>
+    On the other hand, we can simply perform multi thread rendering by calling each snippet method in different threads, which is transparent to
+    developer. Because all the side effects has been isolated in request handler layer, we do not need to considerate sync or mutex even we
+    are performing multi thread rendering since the view layer is side effect free now.
+    </p>
+    
+    <p>
+    Let us see how easy we can achieve parallel rendering 
+    </p>
+    
+    <div class="example"><a name="d5e259"></a><p class="title"><b>Example&nbsp;5.1.&nbsp;</b></p><div class="example-contents">
+      <pre class="programlisting">
+
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">afd:render</span>=<span class="hl-value">"ParallelTest$TestRender:snippetInDiv"</span> <span class="hl-attribute">afd:parallel&gt;</span>  
+    <span class="hl-attribute">&lt;div</span> <span class="hl-attribute">id</span>=<span class="hl-value">"test"</span><span class="hl-tag">&gt;</span>xx<span class="hl-tag">&lt;/div&gt;</span>  
+<span class="hl-tag">&lt;/div&gt;</span>  
+  
+<span class="hl-tag">&lt;afd:snippet</span> <span class="hl-attribute">render</span>=<span class="hl-value">"ParallelTest$TestRender:snippetReplaceDiv"</span> <span class="hl-attribute">parallel&gt;</span>  
+    <span class="hl-attribute">&lt;div</span> <span class="hl-attribute">id</span>=<span class="hl-value">"test"</span><span class="hl-tag">&gt;</span>xx<span class="hl-tag">&lt;/div&gt;</span>  
+<span class="hl-tag">&lt;/afd:snippet&gt;</span>
+
+      </pre>
+      <p>
+      All the snippets declared with parallel(afd:parallel) attribution will not block the http request main thread, the http request main thread
+      will wait for the parallel rendering after all the non-parallel rendering finished, then merge the result and output to the client.
+      </p>
+    </div></div><br class="example-break">
+  </div>
+
+
+
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="url-mapping.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="chapter-request-handler.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">4.&nbsp;View first URL mapping and variable injection&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;6.&nbsp;Impement request handler and url mapping</td></tr></table></div></body></html>

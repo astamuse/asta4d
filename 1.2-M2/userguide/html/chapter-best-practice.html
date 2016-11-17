@@ -1,0 +1,281 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>9.&nbsp;Best practice</title><link rel="stylesheet" type="text/css" href="css/manual-multipage.css"><meta name="generator" content="DocBook XSL Stylesheets V1.79.1"><meta name="keywords" content="java, view first, web framework"><link rel="home" href="index.html" title="Asta4D Framework User Guide"><link rel="up" href="asta4d-user-guide.html" title="Part&nbsp;II.&nbsp;User Guide"><link rel="prev" href="chapter-form-flow.html" title="8.&nbsp;Built in form flow"><link rel="next" href="asta4d-reference.html" title="Part&nbsp;III.&nbsp;Reference"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">9.&nbsp;Best practice</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter-form-flow.html">Prev</a>&nbsp;</td><th width="60%" align="center">Part&nbsp;II.&nbsp;User Guide</th><td width="20%" align="right">&nbsp;<a accesskey="n" href="asta4d-reference.html">Next</a></td></tr></table><hr></div><div class="chapter"><div class="titlepage"><div><div><h2 class="title"><a name="chapter-best-practice"></a>9.&nbsp;Best practice</h2></div></div></div>
+  
+  
+  <p>In this chapter, we will introduce the best practice of Asta4D from our own experiences. There are some conventions and assumption in this chapter, 
+        absolutely there are always special cases which are out of our assumption, however you can break any rules to handle your special cases, we only
+        discuss the common cases in this chapter.
+  </p>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="division-responsibilities"></a>9.1.&nbsp;Division of responsibilities between request handler and snippet</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-best-practice.html#do-update-by-request-handler">9.1.1. Do update by request handler</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#normalize-page-condition">9.1.2. Normalize page condition by request handler</a></span></dt><dd><dl><dt><span class="sect3"><a href="chapter-best-practice.html#url-of-unique-resource-id">The URL of current page represents the unique resource id of an entity(resource)</a></span></dt><dt><span class="sect3"><a href="chapter-best-practice.html#url-of-search-condition-for-list">The URL of current page represents a search condition which can be used to retrieve a list of entities(resources)</a></span></dt></dl></dd></dl></div>
+  
+  <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="do-update-by-request-handler"></a>9.1.1.&nbsp;Do update by request handler</h3></div></div></div>
+    
+    <p>MUST do all the operations with side effect at request handler side, that is so we called isolating side effect.</p>
+    <p>NEVER do any operations with side effect at snippet side.</p>
+  </div>
+  <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="normalize-page-condition"></a>9.1.2.&nbsp;Normalize page condition by request handler</h3></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect3"><a href="chapter-best-practice.html#url-of-unique-resource-id">The URL of current page represents the unique resource id of an entity(resource)</a></span></dt><dt><span class="sect3"><a href="chapter-best-practice.html#url-of-search-condition-for-list">The URL of current page represents a search condition which can be used to retrieve a list of entities(resources)</a></span></dt></dl></div>
+      
+      <p>It is a little bit difficult to explain this rule. For a page, we assume that there are always only 2 types of pages. Let us see how we 
+            should divide our logic between the request handler and snippet.
+      </p>
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="url-of-unique-resource-id"></a>The URL of current page represents the unique resource id of an entity(resource)</h4></div></div></div>
+        
+        <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>request handler</p>
+              <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                      <p>Retrieve the entity(resource) from back-end storage(usually the db) by given id which is specified by the URL</p>
+                  </li><li class="listitem">
+                      <p>Decide how/what to response</p>
+                      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: square; "><li class="listitem">
+                              <p>(for example)If the target entity does not exist, return a 404 to the client</p>
+                          </li><li class="listitem">
+                              <p>(for example)If the target entity has been changed/migrated to another entity, return a 301 to the client</p>
+                          </li><li class="listitem">
+                              <p>(usually)Save the entity to Context and then forward to the target html template</p>
+                          </li></ul></div>
+                  </li></ul></div>
+            </li><li class="listitem">
+              <p>snippet</p>
+              <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                      <p>Retrieve the saved entity(resource) from Context(by @ContextData)</p>
+                  </li><li class="listitem">
+                      <p>Perform other necessary query for rendering</p>
+                  </li></ul></div>
+            </li></ul></div>
+      </div>
+      <div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a name="url-of-search-condition-for-list"></a>The URL of current page represents a search condition which can be used to retrieve a list of entities(resources)</h4></div></div></div>
+        
+        <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>request handler</p>
+              <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                      <p>For simple cases, a request handler is not necessary</p> 
+                      <p>Because the snippet can retrieve the condition by @ContextData directly.
+                            However we recommend to declare a POJO to represent your search condition for a little bit complicated situations.
+                      </p>
+                      <div class="example"><a name="d5e614"></a><p class="title"><b>Example&nbsp;9.1.&nbsp;Snippet handling a search condition POJO</b></p><div class="example-contents">
+                          
+                          <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@ContextDataSet</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> Condition{
+ 
+  <em><span class="hl-annotation" style="color: gray">@QueryParam</span></em>
+  <span class="hl-keyword">private</span> String queryword;
+ 
+  <span class="hl-keyword">public</span> String getQueryword(){
+    <span class="hl-keyword">return</span> queryword;
+  } 
+}
+
+                                </pre>
+                                <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> MySnippet{
+ 
+  <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+  <span class="hl-keyword">private</span> Condition condition;
+  
+}
+
+                          </pre>
+                      </div></div><br class="example-break">
+                  </li><li class="listitem">
+                      <p>Normalize the search condition POJO</p>
+                      <p>In some complicated situations, you may need to retrieve the POJO in request handler then do some necessary normalization. After the
+                            POJO was normalized, you should save it into Context to pass to snippet.
+                      </p>
+                      <div class="example"><a name="d5e621"></a><p class="title"><b>Example&nbsp;9.2.&nbsp;Normalize the search condition POJO</b></p><div class="example-contents">
+                          
+                          <pre class="programlisting">
+
+<em><span class="hl-annotation" style="color: gray">@ContextDataSet(singletonInContext=true)</span></em>
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> MyHandler{
+
+  <span class="hl-keyword">public</span> <span class="hl-keyword">static</span> <span class="hl-keyword">final</span> String SEARCH_CONDITION = <span class="hl-string">"SEARCH_CONDITION#MyHandler"</span>;
+ 
+  <em><span class="hl-annotation" style="color: gray">@RequestHandler</span></em>
+  <span class="hl-keyword">public</span> <span class="hl-keyword">void</span> handle(Condition condition){
+    <span class="hl-comment">//do some normalization here</span>
+    ...
+    <span class="hl-comment">//This is not necessary</span>
+    <span class="hl-comment">//Context.getCurrentThreadContext().setData(SEARCH_CONDITION, condition);</span>
+  } 
+}
+
+                          </pre>
+                          <pre class="programlisting">
+
+<span class="hl-keyword">public</span> <span class="hl-keyword">class</span> MySnippet{
+ 
+  <em><span class="hl-annotation" style="color: gray">@ContextData</span></em>
+  <span class="hl-keyword">private</span> Condition condition;
+  
+}
+
+                          </pre>
+                          <em><span class="remark">There is a trick that if we define a ContextDataSet's singletonInContext to true, there will be only on single instance in the context, 
+                          thus we do not need to declare the name of ContextData even we stored the POJO by name at the handler side. Even that you do not need to save the
+                          condition POJO explicitly since it is the single instance in the Context.</span></em>
+                      </div></div><br class="example-break">
+                  </li></ul></div>
+            </li><li class="listitem">
+              <p>snippet</p>
+              <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem">
+                      <p>Retrieve the saved search condition POJO from Context(by @ContextData) or simply declare the search condition as its own fields(by @ContextData)</p>
+                  </li><li class="listitem">
+                      <p>Perform the query by given search condition to retrieve the list of entities(resources)</p>
+                  </li><li class="listitem">
+                      <p>Perform other necessary query for rendering</p>
+                  </li></ul></div>
+            </li></ul></div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="common-usage-form-flow"></a>9.2.&nbsp;Common usage of form flow</h2></div></div></div>
+    
+    <p class="remark"><em><span class="remark">To be written.</span></em></p>
+  </div>
+
+  <div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="best-snippet-way"></a>9.3.&nbsp;The best way of implementing a snippet</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl class="toc"><dt><span class="sect2"><a href="chapter-best-practice.html#perform-queries-simple">9.3.1. Perform queries as simple as possible</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#make-use-of-parallelRowRender">9.3.2. Make use of ParallelRowRender</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#cache-data">9.3.3. Cache your data</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#avoid-duplicated-query">9.3.4. Avoid duplicated query</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#prepare-snippet-instance">9.3.5. Prepare snippet instance(set default value) by InitializableSnippet</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#selector-x-convention">9.3.6. "x-" convention selector</a></span></dt><dt><span class="sect2"><a href="chapter-best-practice.html#remove-rather-than-add">9.3.7. Remove contents rather than add contents for conditional rendering</a></span></dt></dl></div>
+    
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="perform-queries-simple"></a>9.3.1.&nbsp;Perform queries as simple as possible</h3></div></div></div>
+      
+      <p>We encourage developers to retrieve the data at the place where the data is required rather than retrieve a complicated data structure which holds all the necessary
+            data for the whole page rendering in bulk. We make a convention that there are only 4 type of return value in our service layer(where the queries are performed exactly):
+      </p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>a single entity which is usually the POJO for ORMAP</p>
+          </li><li class="listitem">
+              <p>an list of entities' ids(not the entities themselves)</p>
+          </li><li class="listitem">
+              <p>a count of some aggregation queries</p>
+          </li><li class="listitem">
+              <p>a map as &lt;id, count&gt; of some aggregation queries</p>
+          </li></ul></div>
+      <p>In the implementation of render methods, we always retrieve the entity instance one by one even we are rendering a list of entity
+            (exactly we only have a list of entities' ids). For the concern about performance, see the later description of cache. However, there must be some 
+            situations that we cannot be satisfied with the performance by retrieving data in a too small granularity. We handle these cases as following steps:
+      </p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+            <p>Ask yourself, is it true that the granularity of data retrieving is the bottleneck of current performance issue.</p>
+        </li><li class="listitem">
+            <p>Ask your team members to confirm the bottleneck again.</p>
+        </li><li class="listitem">
+            <p>Implement a query method which returns a map as &lt;id, entity&gt; in bulk, then retrieve the entity from the map in the list rendering.</p>
+        </li><li class="listitem">
+            <p>If there is still a performance issue, ask yourself and ask your team members to confirm the bottleneck again.</p>
+        </li><li class="listitem">
+            <p>Build a query to retrieve all necessary data in bulk then return a complicated data structure from the query method just like what we are used to do
+                  in the traditional MVC mode.</p>
+        </li></ul></div>
+      <p>In fact, the complicated data structures are rare in our system and most of our cases can be satisfied with the basic ORMAP entities.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="make-use-of-parallelRowRender"></a>9.3.2.&nbsp;Make use of ParallelRowRender</h3></div></div></div>
+      
+      <p>The ParallelRowRender splits the rendering action to threads with the size of rendered list. If there are some heavy operations in the list rendering, 
+            ParallelRowRender is a good option to reduce the time of rendering.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="cache-data"></a>9.3.3.&nbsp;Cache your data</h3></div></div></div>
+      
+      <p>Since we are encouraging developers to retrieve data by a small granularity, the cache is very important to the system. Especially we often retrieve entities one by one
+      in the list rendering, the cache of entities is the most important thing for performance. As a matter of fact, we can use the cache more effective because of the small 
+      data granularity.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="avoid-duplicated-query"></a>9.3.4.&nbsp;Avoid duplicated query</h3></div></div></div>
+      
+      <p>An frequently asked question is how to avoid duplicated query in the snippet class. That is actually an problem since we encourage the developers perform queries at 
+      the place where the data is required. We have the following options to combat this issue:</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>Global query lock via AOP</p>
+              <p>This is the first option that we recommend for query heavy systems and exactly what we did in our system before we moved to saas architecture. We split all the real 
+              queries to a service layer then perform a global lock for all the equal calling parameters on the same method. We use spring as our IOC container and simply add the 
+              lock logic by the spring's AOP mechanism.</p>
+          </li><li class="listitem">
+              <p>ContextBindData</p>
+              <p>For the lighter systems, ContextBindData would be a good choice for most situations. The get method of ContextBindData will be executed only once in the current
+                    Context. See the detail of ContextBindData at <a class="xref" href="chapter-detail-var-injection.html#vi-ContextDataFinder" title="12.2.3.&nbsp;ContextDataFinder">Section&nbsp;12.2.3, &#8220;ContextDataFinder&#8221;</a>.
+              </p>
+              <p>ContextBindData can also be used as a graceful simple wrapping mechanism for data retrieving at snippet layer. Developers can declare the common queries of a snippet
+                    class as ContextBindData fields of it.
+              </p>
+          </li><li class="listitem">
+              <p>InitializableSnippet</p>
+              <p>A snippt class can also implement an interface called InitializableSnippet. The init() method of a snippet which implements the InitializableSnippet will be
+                    called once after the snippet instance is created. Developer can do some prepare work for rendering by this mechanism such as performing common queries. 
+                    However, performing query in init() method is not recommended but everything is by your choice.
+              </p>
+              <p class="remark"><em><span class="remark">In multiple thread rendering, the snippet classes may still be instantiated multiple times. There is no warranty about it.
+              </span></em></p>
+          </li></ul></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="prepare-snippet-instance"></a>9.3.5.&nbsp;Prepare snippet instance(set default value) by InitializableSnippet</h3></div></div></div>
+      
+      <p>As we mentioned above, InitializableSnippet can be used to do some initialization work after the snippet instance is created. We do not recommend to perform common
+            queries in init() method of InitializableSnippet, but the InitializableSnippet interface is still a good option for preparing a snippet instance.</p>
+      <p>The classical usage of InitializableSnippet is that we can set default value of declared @ContextData fields if some of them are set to null.</p>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="selector-x-convention"></a>9.3.6.&nbsp;"x-" convention selector</h3></div></div></div>
+      
+      <p>Though we can use various selectors to render data into the template file, we recommend to use css class name selector in common cases, which affords the best
+      compatibility to the frond-end refactoring. We also made a convention which is called "x-" convention. we will always add a css class started with "x-" to the data rendering
+      target, which tells the front-end guys try their best to keep the compatibility against the "x-" marked elements when they are refactoring the html sources.</p>
+      <p>Although we always use "x-" convention to render our data, there are still some acceptable exceptions in our practice:</p>
+      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
+              <p>use "a" directly when rendering the link to the "href" attribute</p>
+          </li><li class="listitem">
+              <p>use "img" directly when rendering the link to the "src" attribute</p>
+          </li><li class="listitem">
+              <p>use "li" directly when rendering a list</p>
+              <p class="remark"><em><span class="remark">This one is controversial, some of our members argue that we should use "x-" instead of direct "li" selector.</span></em></p>
+          </li></ul></div>
+    </div>
+    <div class="sect2"><div class="titlepage"><div><div><h3 class="title"><a name="remove-rather-than-add"></a>9.3.7.&nbsp;Remove contents rather than add contents for conditional rendering</h3></div></div></div>
+      
+      <p>Sometimes we need to do conditional rendering. For instance, we assume that there are two tabs which can be switched by different query parameter, a possible way is 
+      to create the target tab contents dynamically at snippet side as following:</p>
+      <div class="example"><a name="d5e706"></a><p class="title"><b>Example&nbsp;9.3.&nbsp;create contents dynamically</b></p><div class="example-contents">
+          
+          <pre class="programlisting">
+
+<span class="hl-keyword">public</span> Renderer render(<span class="hl-keyword">int</span> id){
+    Element elem = null;
+    <span class="hl-keyword">if</span>(id == <span class="hl-number">0</span>){
+        elem = ElementUtil.ParseAsSingle(<span class="hl-string">"&lt;div&gt;"</span> + id + <span class="hl-string">"&lt;/div&gt;"</span>);
+    }<span class="hl-keyword">else</span>{
+        elem = ElementUtil.ParseAsSingle(<span class="hl-string">"&lt;div class="</span>great<span class="hl-string">"&gt;"</span> + id + <span class="hl-string">"&lt;/div&gt;"</span>);
+    }
+    <span class="hl-keyword">return</span> Renderer.create(<span class="hl-string">".x-target"</span>, elem);
+}
+
+          </pre>
+      </div></div><br class="example-break">
+      <p>Apparently there is bad smell in above example, we generate DOM element at snippet side, which makes front-end refactoring difficult. The recommended way is to write all
+      the possible contents in template file and remove the unnecessary ones in snippet.</p>
+      <div class="example"><a name="d5e710"></a><p class="title"><b>Example&nbsp;9.4.&nbsp;remove redundant contents</b></p><div class="example-contents">
+          
+          <pre class="programlisting">
+
+<span class="hl-keyword">public</span> Renderer render(<span class="hl-keyword">int</span> id){
+    Renderer renderer = Renderer.create();
+    <span class="hl-comment">//remove the clear mark</span>
+    renderer.add(<span class="hl-string">".x-target-"</span> + id, <span class="hl-string">"-class"</span>, <span class="hl-string">"x-clear"</span>);
+    <span class="hl-comment">//then clear the left ones which is not necessary</span>
+    renderer.add(<span class="hl-string">".x-clear"</span>, Clear);
+    <span class="hl-keyword">return</span> renderer;
+}
+
+            </pre>
+            <pre class="programlisting">
+
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"x-target-0 x-clear"</span><span class="hl-tag">&gt;</span>0<span class="hl-tag">&lt;div&gt;</span>
+<span class="hl-tag">&lt;div</span> <span class="hl-attribute">class</span>=<span class="hl-value">"x-target-1 x-clear"</span><span class="hl-tag">&gt;</span>1<span class="hl-tag">&lt;div&gt;</span>
+
+          </pre>
+      </div></div><br class="example-break">
+    </div>
+  </div>
+
+</div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter-form-flow.html">Prev</a>&nbsp;</td><td width="20%" align="center"><a accesskey="u" href="asta4d-user-guide.html">Up</a></td><td width="40%" align="right">&nbsp;<a accesskey="n" href="asta4d-reference.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">8.&nbsp;Built in form flow&nbsp;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&nbsp;Part&nbsp;III.&nbsp;Reference</td></tr></table></div></body></html>
