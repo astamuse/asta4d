@@ -1,5 +1,6 @@
 ## News
 
+- 2016-11-17, 1.2-M2 is released.
 - 2016-04-13, 1.2-M1 with some essential enhancements is released.
 - 2016-01-22, [asta4d-ide](https://github.com/astamuse/asta4d-ide) is release to accelerate our development with asta4d. 
 - 2015-12-25, 1.1 official release "1.1-Xmas" is released. 
