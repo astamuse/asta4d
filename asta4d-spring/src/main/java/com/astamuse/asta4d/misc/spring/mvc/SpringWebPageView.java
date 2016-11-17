@@ -26,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.View;
 
 import com.astamuse.asta4d.Context;
+import com.astamuse.asta4d.Page;
+import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateException;
 import com.astamuse.asta4d.web.WebApplicationContext;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
@@ -33,13 +35,13 @@ import com.astamuse.asta4d.web.dispatch.response.provider.Asta4DPageProvider;
 
 public class SpringWebPageView implements View {
 
-    private Asta4DPageProvider templateProvider;
+    private static final UrlMappingRule DummyPageRule = new UrlMappingRule().asUnmodifiable();
 
-    private UrlMappingRule dummyRule = new UrlMappingRule();
+    private Template template;
 
-    public SpringWebPageView(Asta4DPageProvider templateProvider) throws TemplateException {
+    public SpringWebPageView(Template template) throws TemplateException {
         super();
-        this.templateProvider = templateProvider;
+        this.template = template;
     }
 
     @Override
@@ -53,7 +55,8 @@ public class SpringWebPageView implements View {
         for (Entry<String, ?> entry : model.entrySet()) {
             context.setData(entry.getKey(), entry.getValue());
         }
-        templateProvider.produce(dummyRule, response);
+        // since the page will be rendered when the page instance is created, so we have to create the page here rather than at resolver
+        new Asta4DPageProvider(new Page(template)).produce(DummyPageRule, response);
     }
 
 }

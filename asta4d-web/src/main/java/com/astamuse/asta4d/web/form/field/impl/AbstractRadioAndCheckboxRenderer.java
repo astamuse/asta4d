@@ -33,7 +33,6 @@ import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
 import com.astamuse.asta4d.util.SelectorUtil;
-import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
@@ -116,7 +115,7 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
                                 }
                             });
                         }
-                    }// end for loop
+                    } // end for loop
                     return render;
                 }
             });
@@ -176,15 +175,11 @@ public class AbstractRadioAndCheckboxRenderer extends SimpleFormFieldWithOptionV
 
         // render the shown value to target element by displayTargetSelector
         render.add(displayTargetSelector, new Renderable() {
-
             @Override
             public Renderer render() {
-                return Renderer.create(displayTargetSelector, valueList, new RowRenderer<String>() {
-                    @Override
-                    public Renderer convert(int rowIndex, String v) {
-                        return renderToDisplayTarget(displayTargetSelector,
-                                retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, v));
-                    }
+                return Renderer.create(displayTargetSelector, valueList, v -> {
+                    return renderToDisplayTarget(displayTargetSelector,
+                            retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, v));
                 });
             }
         });

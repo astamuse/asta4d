@@ -18,6 +18,7 @@
 package com.astamuse.asta4d;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.astamuse.asta4d.data.ContextDataFinder;
@@ -78,6 +79,11 @@ public class Configuration {
     private String tagNameSpace = "afd";
 
     private boolean saveCallstackInfoOnRendererCreation = false;
+
+    /**
+     * application should retrieve this list and invoke all the hookers when shutdown.
+     */
+    private List<Runnable> shutdownHookers = new LinkedList<>();
 
     private static Configuration instance;
 
@@ -241,4 +247,11 @@ public class Configuration {
         this.numberLimitOfParallelListConverting = numberLimitOfParallelListConverting;
     }
 
+    public List<Runnable> getShutdownHookers() {
+        return new ArrayList<>(shutdownHookers);
+    }
+
+    public void addShutdownHookers(Runnable runnable) {
+        shutdownHookers.add(runnable);
+    }
 }

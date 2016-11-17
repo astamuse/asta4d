@@ -19,14 +19,19 @@ package com.astamuse.asta4d.web.dispatch.response.provider;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import com.astamuse.asta4d.Page;
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.web.dispatch.mapping.UrlMappingRule;
 
 public class Asta4DPageProvider implements ContentProvider {
 
+    /**
+     * This attribute hash been deprecated and you should use afd:bodyonly in template file or just create a template file without body
+     * tag(also without html and head tags).
+     * 
+     * @see ExtNodeConstants#ATTR_BODY_ONLY_WITH_NS
+     */
+    @Deprecated
     public final static String AttrBodyOnly = Asta4DPageProvider.class.getName() + "##bodyOnly";
 
     private Page page;
@@ -48,27 +53,14 @@ public class Asta4DPageProvider implements ContentProvider {
         return false;
     }
 
-    protected final static String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
-
-    protected String getContentType(Document doc) {
-        Elements elems = doc.select("meta[http-equiv=Content-Type]");
-        if (elems.size() == 0) {
-            return DEFAULT_CONTENT_TYPE;
-        } else {
-            return elems.get(0).attr("content");
-        }
-    }
-
+    @SuppressWarnings("deprecation")
     @Override
     public void produce(UrlMappingRule currentRule, HttpServletResponse response) throws Exception {
-        Document doc = page.getRenderedDocument();
-        response.setContentType(getContentType(doc));
-
-        // TODO we should try to retrieve the content type
+        response.setContentType(page.getContentType());
         if (currentRule.hasAttribute(AttrBodyOnly)) {
-            response.getOutputStream().write(doc.body().html().getBytes("UTF-8"));
+            page.outputBodyOnly(response.getOutputStream());
         } else {
-            response.getOutputStream().write(doc.outerHtml().getBytes("UTF-8"));
+            page.output(response.getOutputStream());
         }
     }
 

@@ -16,6 +16,7 @@
  */
 package com.astamuse.asta4d.data;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ import com.astamuse.asta4d.Context;
 @SuppressWarnings("rawtypes")
 public class InjectTrace {
 
-    private static class TraceMap extends HashMap<String, ContextDataHolder> {
+    private static class TraceMap extends HashMap<String, ContextDataHolder>implements Serializable {
 
         /**
          * 
@@ -39,7 +40,7 @@ public class InjectTrace {
 
     }
 
-    private static class InstanceTraceList extends LinkedList<TraceMap> {
+    private static class InstanceTraceList extends LinkedList<TraceMap>implements Serializable {
 
         /**
          * 

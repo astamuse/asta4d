@@ -14,20 +14,16 @@
  * limitations under the License.
  * 
  */
+package com.astamuse.asta4d.render;
 
-package com.astamuse.asta4d.util.collection;
+import java.util.function.Function;
 
 /**
- * Use {@link RowConvertorBuilder#parallel(RowConvertor)} or {@link RowConvertorBuilder#parallel(java.util.function.Function)} instead.
  * 
  * @author e-ryu
  *
- * @param <S>
- * @param <T>
  */
-@Deprecated
-public abstract class ParallelRowConvertor<S, T> implements RowConvertor<S, T> {
-    public boolean isParallel() {
-        return true;
-    }
+@FunctionalInterface
+public interface RowRenderer<S> extends Function<S, Renderer> {
+
 }

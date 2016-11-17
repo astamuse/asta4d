@@ -28,10 +28,10 @@ import com.astamuse.asta4d.render.ElementNotFoundHandler;
 import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.GoThroughRenderer;
 import com.astamuse.asta4d.render.Renderer;
+import com.astamuse.asta4d.render.RowRenderer;
 import com.astamuse.asta4d.test.render.infra.BaseTest;
 import com.astamuse.asta4d.test.render.infra.SimpleCase;
 import com.astamuse.asta4d.util.ElementUtil;
-import com.astamuse.asta4d.util.collection.RowRenderer;
 
 public class AdvancedRenderingTest extends BaseTest {
 
@@ -85,9 +85,8 @@ public class AdvancedRenderingTest extends BaseTest {
 
         public Renderer pseudoRootRenderingWithNestedSnippet_outer() {
             Renderer renderer = Renderer.create("#inner", Arrays.asList(1, 2, 3), new RowRenderer<Integer>() {
-
                 @Override
-                public Renderer convert(int rowIndex, Integer row) {
+                public Renderer apply(Integer row) {
                     return Renderer.create(":root", "value", row);
                 }
             });

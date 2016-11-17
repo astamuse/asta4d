@@ -22,6 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.astamuse.asta4d.Configuration;
+
 public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
 
     private final static AtomicInteger instanceCounter = new AtomicInteger();
@@ -64,13 +66,17 @@ public class DefaultExecutorServiceFactory implements ExecutorServiceFactory {
     @Override
     public ExecutorService createExecutorService() {
         final int instanceId = instanceCounter.incrementAndGet();
-        return Executors.newFixedThreadPool(poolSize, new ThreadFactory() {
+        ExecutorService es = Executors.newFixedThreadPool(poolSize, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 String name = threadName + "-" + instanceId + "-t-" + counter.incrementAndGet();
                 return new Thread(r, name);
             }
         });
+        Configuration.getConfiguration().addShutdownHookers(() -> {
+            es.shutdown();
+        });
+        return es;
     }
 
 }

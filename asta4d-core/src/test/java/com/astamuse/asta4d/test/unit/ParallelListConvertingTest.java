@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.astamuse.asta4d.Configuration;
@@ -84,9 +85,21 @@ public class ParallelListConvertingTest extends BaseTest {
         });
     }
 
-    public void testNumberLimitOfParallel() {
+    @DataProvider(name = "data")
+    public Object[][] getNumberLimitOfParallelTestData() {
+        //@formatter:off
+        return new Object[][] {
+            {Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)},
+            {Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8)},
+            {Arrays.asList(1, 2, 3, 4, 5, 6, 7)},
+        };
+        //@formatter:on
+    }
+
+    /* we have to warm up the test at first, or the measured time may over 350ms due to the overhead of thread splitting*/
+    @Test(dataProvider = "data", dependsOnMethods = "testNumberLimitOfParallelWarmingup")
+    public void testNumberLimitOfParallel(List<Integer> list) {
         Configuration.getConfiguration().setNumberLimitOfParallelListConverting(3);
-        List<Integer> list = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
         long start = System.currentTimeMillis();
         List<Integer> rList = ListConvertUtil.transform(list, RowConvertorBuilder.parallel((i) -> {
             try {
@@ -105,6 +118,16 @@ public class ParallelListConvertingTest extends BaseTest {
             throw new AssertionError("Time used is over than 350 milliseconds and it takes " + timeUsed + " milliseconds.");
         }
         Assert.assertEquals(rList, list);
+    }
+
+    @Test(dataProvider = "data")
+    public void testNumberLimitOfParallelWarmingup(List<Integer> list) {
+        Configuration.getConfiguration().setNumberLimitOfParallelListConverting(3);
+        for (int i = 0; i < 10_0000; i++) {
+            List<Integer> rList = ListConvertUtil.transform(list, RowConvertorBuilder.parallel((k) -> {
+                return k;
+            }));
+        }
     }
 
 }

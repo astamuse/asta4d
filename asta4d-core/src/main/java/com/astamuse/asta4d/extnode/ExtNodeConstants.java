@@ -107,6 +107,37 @@ public class ExtNodeConstants {
     public final static String ATTR_CLEAR = "clear";
     public final static String ATTR_CLEAR_WITH_NS = addNS(ATTR_CLEAR);
 
+    /**
+     * sample of attr with body tag: <br>
+     * 
+     * <pre>
+     *  &lt;body afd:bodyonly&gt;
+     *    &lt;div&gt;aaa&lt;/div&gt;
+     *  &lt;/body&gt;
+     * </pre>
+     * 
+     * sample of attr in meta: <br>
+     * 
+     * 
+     * <pre>
+     *  &lt;html&gt;
+     *  &lt;head&gt;
+     *    &lt;meta afd:bodyonly&gt;
+     *  &lt;/head&gt;
+     *  &lt;body&gt;
+     *    &lt;div&gt;aaa&lt;/div&gt;
+     *  &lt;/body&gt;
+     *  &lt;/html&gt;
+     * </pre>
+     * 
+     * The output of both of above are as same as following:
+     * 
+     * <pre>
+     *    &lt;div&gt;aaa&lt;/div&gt;
+     * </pre>
+     */
+    public final static String ATTR_BODY_ONLY_WITH_NS = addNS("bodyonly");
+
     public final static String ATTR_DATAREF_PREFIX = "dataref-";
     public final static String ATTR_DATAREF_PREFIX_WITH_NS = addNS(ATTR_DATAREF_PREFIX);
 

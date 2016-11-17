@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.DocumentType;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
+import org.jsoup.parser.Token.StartTag;
 
 import com.astamuse.asta4d.extnode.ExtNodeConstants;
 
@@ -275,7 +276,12 @@ enum Asta4DTagSupportHtmlTreeBuilderState {
         }
 
         private boolean anythingElse(Token t, Asta4DTagSupportHtmlTreeBuilder tb) {
-            tb.process(new Token.StartTag("body"));
+            StartTag tag = new Token.StartTag("body");
+            // asta4d customization start
+            tag.appendAttributeName(ExtNodeConstants.ATTR_BODY_ONLY_WITH_NS);
+            tag.finaliseTag();
+            // asta4d customization end
+            tb.process(tag);
             tb.framesetOk(true);
             return tb.process(t);
         }
@@ -989,8 +995,8 @@ enum Asta4DTagSupportHtmlTreeBuilderState {
                     tb.transition(InTable);
                 }
             } else if ((t.isStartTag() &&
-                    StringUtil.in(t.asStartTag().name(), "caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr") || t
-                    .isEndTag() && t.asEndTag().name().equals("table"))) {
+                    StringUtil.in(t.asStartTag().name(), "caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr") ||
+                    t.isEndTag() && t.asEndTag().name().equals("table"))) {
                 tb.error(this);
                 boolean processed = tb.process(new Token.EndTag("caption"));
                 if (processed)
@@ -1332,7 +1338,8 @@ enum Asta4DTagSupportHtmlTreeBuilderState {
                 tb.error(this);
                 tb.process(new Token.EndTag("select"));
                 return tb.process(t);
-            } else if (t.isEndTag() && StringUtil.in(t.asEndTag().name(), "caption", "table", "tbody", "tfoot", "thead", "tr", "td", "th")) {
+            } else
+                if (t.isEndTag() && StringUtil.in(t.asEndTag().name(), "caption", "table", "tbody", "tfoot", "thead", "tr", "td", "th")) {
                 tb.error(this);
                 if (tb.inTableScope(t.asEndTag().name())) {
                     tb.process(new Token.EndTag("select"));
@@ -1519,9 +1526,9 @@ enum Asta4DTagSupportHtmlTreeBuilderState {
     private static final class Constants {
         private static final String[] InBodyStartToHead = new String[] { "base", "basefont", "bgsound", "command", "link", "meta",
                 "noframes", "script", "style", "title" };
-        private static final String[] InBodyStartPClosers = new String[] { "address", "article", "aside", "blockquote", "center",
-                "details", "dir", "div", "dl", "fieldset", "figcaption", "figure", "footer", "header", "hgroup", "menu", "nav", "ol", "p",
-                "section", "summary", "ul" };
+        private static final String[] InBodyStartPClosers = new String[] { "address", "article", "aside", "blockquote", "center", "details",
+                "dir", "div", "dl", "fieldset", "figcaption", "figure", "footer", "header", "hgroup", "menu", "nav", "ol", "p", "section",
+                "summary", "ul" };
         private static final String[] Headings = new String[] { "h1", "h2", "h3", "h4", "h5", "h6" };
         private static final String[] InBodyStartPreListing = new String[] { "pre", "listing" };
         private static final String[] InBodyStartLiBreakers = new String[] { "address", "div", "p" };

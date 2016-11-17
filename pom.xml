@@ -10,7 +10,7 @@
 
   <groupId>com.astamuse</groupId>
   <artifactId>asta4d</artifactId>
-  <version>1.2-M1</version>
+  <version>1.2-M2</version>
   <packaging>pom</packaging>
 
   <name>asta4d framework</name>

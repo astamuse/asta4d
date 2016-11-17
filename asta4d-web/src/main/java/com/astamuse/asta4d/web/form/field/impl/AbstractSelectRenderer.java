@@ -30,7 +30,6 @@ import com.astamuse.asta4d.render.ElementSetter;
 import com.astamuse.asta4d.render.Renderable;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.render.transformer.ElementTransformer;
-import com.astamuse.asta4d.util.collection.RowRenderer;
 import com.astamuse.asta4d.web.form.field.OptionValueMap;
 import com.astamuse.asta4d.web.form.field.OptionValuePair;
 import com.astamuse.asta4d.web.form.field.PrepareRenderingDataUtil;
@@ -75,8 +74,8 @@ public abstract class AbstractSelectRenderer extends SimpleFormFieldWithOptionVa
                         displayText = opt.text();
                         optionList.add(new OptionValuePair(value, displayText));
                     }
-                    PrepareRenderingDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector, new OptionValueMap(
-                            optionList));
+                    PrepareRenderingDataUtil.storeDataToContextBySelector(editTargetSelector, displayTargetSelector,
+                            new OptionValueMap(optionList));
                 }
             });
         }
@@ -88,15 +87,11 @@ public abstract class AbstractSelectRenderer extends SimpleFormFieldWithOptionVa
 
         // render the shown value to target element by displayTargetSelector
         render.add(displayTargetSelector, new Renderable() {
-
             @Override
             public Renderer render() {
-                return Renderer.create(displayTargetSelector, valueList, new RowRenderer<String>() {
-                    @Override
-                    public Renderer convert(int rowIndex, String v) {
-                        return renderToDisplayTarget(displayTargetSelector,
-                                retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, v));
-                    }
+                return Renderer.create(displayTargetSelector, valueList, v -> {
+                    return renderToDisplayTarget(displayTargetSelector,
+                            retrieveDisplayStringFromStoredOptionValueMap(displayTargetSelector, v));
                 });
             }
         });

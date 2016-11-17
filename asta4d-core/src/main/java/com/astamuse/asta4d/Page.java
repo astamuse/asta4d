@@ -17,13 +17,15 @@
 
 package com.astamuse.asta4d;
 
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
+import com.astamuse.asta4d.extnode.ExtNodeConstants;
 import com.astamuse.asta4d.interceptor.PageInterceptor;
 import com.astamuse.asta4d.interceptor.base.ExceptionHandler;
 import com.astamuse.asta4d.interceptor.base.Executor;
@@ -34,6 +36,7 @@ import com.astamuse.asta4d.render.RenderUtil;
 import com.astamuse.asta4d.render.Renderer;
 import com.astamuse.asta4d.template.Template;
 import com.astamuse.asta4d.template.TemplateResolver;
+import com.astamuse.asta4d.util.SelectorUtil;
 
 public class Page {
 
@@ -75,8 +78,10 @@ public class Page {
 
     }
 
-    private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper.buildList(Configuration
-            .getConfiguration().getPageInterceptorList());
+    private final static List<PageInterceptorWrapper> WrapperPageInterceptorList = PageInterceptorWrapper
+            .buildList(Configuration.getConfiguration().getPageInterceptorList());
+
+    protected final static String DEFAULT_CONTENT_TYPE = "text/html; charset=UTF-8";
 
     private Document renderedDocument;
 
@@ -108,24 +113,49 @@ public class Page {
         return doc;
     }
 
-    public Document getRenderedDocument() {
+    protected Document getRenderedDocument() {
         return renderedDocument;
     }
 
+    public String getContentType() {
+        Elements elems = renderedDocument.select("meta[http-equiv=Content-Type]");
+        if (elems.size() == 0) {
+            return DEFAULT_CONTENT_TYPE;
+        } else {
+            return elems.get(0).attr("content");
+        }
+    }
+
     public void output(OutputStream out) throws Exception {
-        out.write(renderedDocument.outerHtml().getBytes("utf-8"));
+        out.write(output().getBytes(StandardCharsets.UTF_8));
     }
 
     public String output() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            output(bos);
-            return bos.toString("utf-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
 
+        // body only attr on body
+        if (renderedDocument.body().hasAttr(ExtNodeConstants.ATTR_BODY_ONLY_WITH_NS)) {
+            return renderedDocument.body().html();
         }
+
+        // body only meta
+        Elements bodyonlyMeta = renderedDocument.head().select(SelectorUtil.attr("meta", ExtNodeConstants.ATTR_BODY_ONLY_WITH_NS, null));
+        if (bodyonlyMeta.size() > 0) {
+            return renderedDocument.body().html();
+        }
+
+        // full page
+        return renderedDocument.outerHtml();
+    }
+
+    /**
+     * This method is for back forward compatibility in framework internal implementation, client developers should never use it.
+     * 
+     * @param out
+     * @throws Exception
+     */
+    @Deprecated
+    public void outputBodyOnly(OutputStream out) throws Exception {
+        out.write(renderedDocument.body().html().getBytes(StandardCharsets.UTF_8));
 
     }
 }

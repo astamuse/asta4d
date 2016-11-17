@@ -1,5 +1,29 @@
 ## Release Notes
 
+-   1.2-M2 (2016.11.17)
+
+    There are some breaking changes related to form flow and url initialization. The user guide will be modified in the next release, thus there may be some unmatched contents in the document.
+
+    ADD
+    - new RowRenderer for convenience of Function<?, Renderer> (removed old RowRenderer)
+    - shutdown hooker mechanism to handle shutdown logic ideally
+    - snippet annotation to simplify use asta4d snippet with spring autowire mechanism
+
+    FIX
+
+    - FormFlowTraceData should be Serializable
+    - inject trace data should be Serializable
+
+    REMOVE
+    - RowRenderer and ParallelRowRenderer (BREAKING)
+
+    ENHANCE
+    -  better parallel converting implementation(without blocking on dispatch, reduce cross thread lock)
+    -  make DefaultSessionAwareExpirableDataManager more eazy to extend
+    -  better spring mvc integration support
+    -  new body only template file mechanism (now support template file without body tag)
+    -  faster id generator implementation(use base64 instead of string join)
+    
 -   1.2-M1 (2016.04.14)
 
     There are some breaking changes related to form flow and url initialization. The user guide will be modified in the next release, thus there may be some unmatched contents in the document.

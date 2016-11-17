@@ -18,33 +18,36 @@
 package com.astamuse.asta4d.util.collection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.astamuse.asta4d.Configuration;
 import com.astamuse.asta4d.Context;
-import com.astamuse.asta4d.util.concurrent.ListExecutorServiceUtil;
 
 public class ListConvertUtil {
 
-    private final static Logger logger = LoggerFactory.getLogger(ListConvertUtil.class);
+    // private final static Logger logger = LoggerFactory.getLogger(ListConvertUtil.class);
 
     private final static String ParallelListConversionMark = "ParallelListConversionMark##" + ListConvertUtil.class.getName();
 
-    private final static ExecutorService ParallelFallbackExecutor = Executors.newCachedThreadPool();
+    private final static ExecutorService ListExecutorService;
+
+    private final static ExecutorService ParallelFallbackExecutor;
+
+    static {
+        Configuration conf = Configuration.getConfiguration();
+        ListExecutorService = conf.getParallelListConvertingExecutorFactory().createExecutorService();
+        ParallelFallbackExecutor = Executors.newCachedThreadPool();
+    }
 
     private final static <S, T> List<T> _transform(Iterable<S> sourceList, RowConvertor<S, T> convertor) {
         List<T> newList = new LinkedList<>();
@@ -97,131 +100,137 @@ public class ListConvertUtil {
                     public Future<T> convert(int rowIndex, final T obj) {
                         return new Future<T>() {
                             @Override
-                            public boolean cancel(boolean mayInterruptIfRunning) {
+                            public final boolean cancel(boolean mayInterruptIfRunning) {
                                 return false;
                             }
 
                             @Override
-                            public boolean isCancelled() {
+                            public final boolean isCancelled() {
                                 return false;
                             }
 
                             @Override
-                            public boolean isDone() {
+                            public final boolean isDone() {
                                 return true;
                             }
 
                             @Override
-                            public T get() throws InterruptedException, ExecutionException {
+                            public final T get() throws InterruptedException, ExecutionException {
                                 return obj;
                             }
 
                             @Override
-                            public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                            public final T get(long timeout, TimeUnit unit)
+                                    throws InterruptedException, ExecutionException, TimeoutException {
                                 return obj;
                             }
                         };
                     }
                 });
             case NEW_THREAD:
-                ExecutorService executor = ParallelFallbackExecutor;
-                /*
-                List<Future<T>> futureList = new LinkedList<>();
-                int index = 0;
-                for (S obj : sourceList) {
-                    futureList.add(invokeByExecutor(executor, convertor, index, obj));
-                    index++;
-                }
-                */
-                List<Future<T>> futureList = invokeByExecutor(executor, sourceList, convertor, 2);
-                return futureList;
+                return invokeByExecutor(ParallelFallbackExecutor, sourceList, convertor, 2);
             default:
                 return Collections.emptyList();
             }
-        } else {// not in recursive converting
+        } else {// in non recursive converting
             Context newContext = context.clone();
             newContext.setData(ParallelListConversionMark, Boolean.TRUE);
             try {
-                return Context.with(newContext, new Callable<List<Future<T>>>() {
-
-                    @Override
-                    public List<Future<T>> call() throws Exception {
-                        ExecutorService executor = ListExecutorServiceUtil.getExecutorService();
-                        /*
-                        List<Future<T>> futureList = new LinkedList<>();
-                        int index = 0;
-                        for (S obj : sourceList) {
-                            futureList.add(invokeByExecutor(executor, convertor, index, obj));
-                            index++;
-                        }
-                        */
-                        List<Future<T>> futureList = invokeByExecutor(executor, sourceList, convertor,
-                                conf.getNumberLimitOfParallelListConverting());
-                        return futureList;
-                    }
+                return Context.with(newContext, () -> {
+                    return invokeByExecutor(ListExecutorService, sourceList, convertor, conf.getNumberLimitOfParallelListConverting());
                 });
-            } catch (
-
-            Exception e)
-
-            {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
-        }
-
+        } // end else in non recursive
     }
 
-    private static <S, T> Future<T> invokeByExecutor(ExecutorService es, RowConvertor<S, T> convertor, final int rowIndex, final S data) {
+    private static <S, T> List<Future<T>> invokeByExecutor(ExecutorService taskService, Iterable<S> sourceList,
+            RowConvertor<S, T> convertor, int maxParallelNumber) {
+
+        /*
+         * At first, we extract and dispatch the source list elements to slots as following order:
+         * slot 0, slot 1, slot 2, ..., slot n
+         * 0,      1,      2,      ..., n-1
+         * n,      n+1,    n+2,    ..., 2n-1
+         * .
+         * .
+         * .
+         * xn,     xn+1,   xn+2,  xn+3(last)
+         * 
+         * Then we dispatch each slot to executor service to perform the transforming, after that, we build a future list 
+         * which contains delegated future which delegate all the future methods to the future of corresponding slot and 
+         * then retrieve the corresponding element by calculated index.
+         */
+        @SuppressWarnings("unchecked")
+        List<S>[] groupedListArray = new List[maxParallelNumber];
+        for (int i = 0; i < maxParallelNumber; i++) {
+            groupedListArray[i] = new LinkedList<>();
+        }
+        Iterator<S> srcIt = sourceList.iterator();
+        int count = 0;
+        while (srcIt.hasNext()) {
+            groupedListArray[count % maxParallelNumber].add(srcIt.next());
+            count++;
+        }
+        @SuppressWarnings("unchecked")
+        Future<T>[] futureArray = new Future[count];
         final Context context = Context.getCurrentThreadContext();
-        return es.submit(new Callable<T>() {
-            @Override
-            public T call() throws Exception {
-                return Context.with(context, new Callable<T>() {
-                    @Override
-                    public T call() throws Exception {
-                        return convertor.convert(rowIndex, data);
-                    }
-                });
+        for (int i = 0; i < maxParallelNumber; i++) {
+            List<S> groupedList = groupedListArray[i];
+            if (groupedList.isEmpty()) {
+                continue;
             }
-        });
-    }
+            final Future<List<T>> f = taskService.submit(() -> {
+                return Context.with(context, () -> {
+                    // NOTE: this newList must be ArrayList for later retrieving performance
+                    List<T> newList = new ArrayList<>(groupedList.size());
+                    Iterator<S> it = groupedList.iterator();
+                    int idx = 0;
+                    while (it.hasNext()) {
+                        newList.add(convertor.convert(idx, it.next()));
+                        idx++;
+                    }
+                    return newList;
+                });
+            });
+            for (int k = 0; k < groupedList.size(); k++) {
+                final int fk = k;
+                futureArray[k * maxParallelNumber + i] = new Future<T>() {
 
-    private static <S, T> List<Future<T>> invokeByExecutor(ExecutorService es, Iterable<S> sourceList, RowConvertor<S, T> convertor,
-            int maxParallelNumber) {
-        try {
-            final Semaphore available = new Semaphore(maxParallelNumber, false);
-            final Context context = Context.getCurrentThreadContext();
-            List<Future<T>> futureList = new LinkedList<>();
-            int index = 0;
-            Future<T> f;
-            for (S obj : sourceList) {
-                final int rowIndex = index;
-                // logger.debug("acquiring:{}", rowIndex);
-                available.acquire();
-                // logger.debug("acquired:{}", rowIndex);
-                f = es.submit(new Callable<T>() {
                     @Override
-                    public T call() throws Exception {
-                        try {
-                            return Context.with(context, new Callable<T>() {
-                                @Override
-                                public T call() throws Exception {
-                                    return convertor.convert(rowIndex, obj);
-                                }
-                            });
-                        } finally {
-                            // logger.debug("released:{}", rowIndex);
-                            available.release();
-                        }
+                    public boolean cancel(boolean mayInterruptIfRunning) {
+                        return f.cancel(mayInterruptIfRunning);
                     }
-                });
-                futureList.add(f);
-                index++;
+
+                    @Override
+                    public boolean isCancelled() {
+                        return f.isCancelled();
+                    }
+
+                    @Override
+                    public boolean isDone() {
+                        return f.isDone();
+                    }
+
+                    @Override
+                    public T get() throws InterruptedException, ExecutionException {
+                        List<T> list = f.get();
+                        // the list is promised to be ArrayList so that there is no performance issue on get invoking
+                        return list.get(fk);
+                    }
+
+                    @Override
+                    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                        List<T> list = f.get(timeout, unit);
+                        // the list is promised to be ArrayList so that there is no performance issue on get invoking
+                        return list.get(fk);
+                    }
+                };
             }
-            return futureList;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
         }
+        return Arrays.asList(futureArray);
+
     }
 }
