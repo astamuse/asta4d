@@ -46,6 +46,6 @@ public class TextareaTest extends WebTestBase {
 
     @Test
     public void test() throws Throwable {
-        new FormRenderCase("/TextArea.html");
+        new FormRenderCase("Textarea.html");
     }
 }
